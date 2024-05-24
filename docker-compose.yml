@@ -1,0 +1,52 @@
+version: "3"
+services:
+  # ==================================================================================
+  # A. Database Setup (Postgres + PgAdmin4)
+  # ==================================================================================
+
+  # ==========================
+  # Keycloak Database
+  # ==========================
+  keycloak-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: keycloakDb
+    volumes:
+      - ./keycloak-db-data:/var/lib/postgresql/data
+    networks:
+      - db-network
+
+  # ==========================
+  # Song Database
+  # ==========================
+  song-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: songDb
+    volumes:
+      - ./song-db-data:/var/lib/postgresql/data
+    networks:
+      - db-network
+
+  # ==========================
+  # pgAdmin4
+  # ==========================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5051:80"
+    networks:
+      - db-network
+
+# ==========================
+# Networks
+# ==========================
+networks:
+  db-network:
