@@ -4,6 +4,8 @@ The Overture Composer project aims to provide those interested in gaining hands-
 
 > [!NOTE]
 > **This repository is under development** 
+> - Commits for the first implementation will be pushed to the [develop branch linked here](https://github.com/overture-stack/composer/tree/develop)
+> - While progress will be reviewed and tracked on [the pull request linked here](https://github.com/overture-stack/composer/pull/1)
 
 ## Rational
 
@@ -44,10 +46,6 @@ Implementation is split into six segments:
 | E. Search (Elasticsearch, Maestro & Arranger-server) | Start Elasticsearch first, create index with mapping, then start arranger with matching configs |
 | F. Discovery (Stage, Arranger Components) | Replicate Stage image from demo portal. Keep this image specific to the Composer.|               
 
-## Implementation Details
-
-- Commits for the first implementation will be pushed to the branch linked here
-- While progress will be reviewed and tracked on the pull request linked here.
 
 
 
