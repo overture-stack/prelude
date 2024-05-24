@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: keycloakDb
     volumes:
-      - ./keycloak-db-data:/var/lib/postgresql/data
+      - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     networks:
       - db-network
 
@@ -28,7 +28,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: songDb
     volumes:
-      - ./song-db-data:/var/lib/postgresql/data
+      - ./persistentStorage/data-song-db:/var/lib/postgresql/data
     networks:
       - db-network
 
@@ -44,6 +44,33 @@ services:
       - "5051:80"
     networks:
       - db-network
+
+  # ==================================================================================
+  # B. Object Storage (Minio)
+  # ==================================================================================
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    command: server --console-address ":9001" /data
+    volumes:
+      - ./persistentStorage/data-minio:/data
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
+      /usr/bin/mc mb myminio/state &&
+      /usr/bin/mc mb myminio/object;
+      exit 0;
+      "
 
 # ==========================
 # Networks
