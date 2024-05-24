@@ -17,6 +17,12 @@ services:
       - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     networks:
       - db-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   # ==========================
   # Song Database
@@ -31,6 +37,13 @@ services:
       - ./persistentStorage/data-song-db:/var/lib/postgresql/data
     networks:
       - db-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
 
   # ==========================
   # pgAdmin4
@@ -46,8 +59,12 @@ services:
       - db-network
 
   # ==================================================================================
-  # B. Object Storage (Minio)
+  # B. Object Storage (Minio, Minio Client)
   # ==================================================================================
+  
+  # ==========================
+  # Minio
+  # ==========================
   minio:
     image: minio/minio
     ports:
@@ -60,7 +77,10 @@ services:
     volumes:
       - ./persistentStorage/data-minio:/data
 
-  createbuckets:
+  # ==========================
+  # Minio Client
+  # ==========================
+  minio-client:
     image: minio/mc
     depends_on:
       - minio
@@ -71,6 +91,42 @@ services:
       /usr/bin/mc mb myminio/object;
       exit 0;
       "
+
+  # ==================================================================================
+  # C. OAuth (KeyCloak)
+  # ==================================================================================
+  
+  # ==========================
+  # Keycloak
+  # ==========================
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    container_name: keycloak
+    ports:
+      - "8443:8443"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KC_HOSTNAME: localhost
+    volumes:
+      - ./configurationFiles/keycloakConfigs/server.keystore:/opt/keycloak/conf/server.keystore
+      - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
+      - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
+      - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
+    networks:
+      - db-network
+    command: >
+      start
+      --import-realm
+      --db=postgres
+      --db-url=jdbc:postgresql://keycloak-db:5432/keycloakDb
+      --db-username=admin
+      --db-password=admin123
+      --https-key-store-file=/opt/keycloak/conf/server.keystore
+      --https-key-store-password=password
 
 # ==========================
 # Networks

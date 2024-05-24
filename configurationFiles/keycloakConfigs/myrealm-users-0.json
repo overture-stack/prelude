@@ -1,0 +1,64 @@
+{
+    "realm" : "myrealm",
+    "users" : [ {
+      "id" : "e64e4228-b9fb-48b3-9b57-5425937d4df2",
+      "createdTimestamp" : 1700587923345,
+      "username" : "service-account-score",
+      "enabled" : true,
+      "totp" : false,
+      "emailVerified" : false,
+      "serviceAccountClientId" : "score",
+      "credentials" : [ ],
+      "disableableCredentialTypes" : [ ],
+      "requiredActions" : [ ],
+      "realmRoles" : [ "default-roles-myrealm" ],
+      "clientRoles" : {
+        "score" : [ "uma_protection" ]
+      },
+      "notBefore" : 0,
+      "groups" : [ ]
+    }, {
+      "id" : "76fa81e0-ae36-4f80-b891-a939d67a82e0",
+      "createdTimestamp" : 1695916686570,
+      "username" : "service-account-song",
+      "enabled" : true,
+      "totp" : false,
+      "emailVerified" : false,
+      "serviceAccountClientId" : "song",
+      "credentials" : [ ],
+      "disableableCredentialTypes" : [ ],
+      "requiredActions" : [ ],
+      "realmRoles" : [ "default-roles-myrealm" ],
+      "clientRoles" : {
+        "song" : [ "uma_protection" ]
+      },
+      "notBefore" : 0,
+      "groups" : [ ]
+    }, {
+      "id" : "8b11be5f-c738-408b-85d5-9e0966c2fd7a",
+      "createdTimestamp" : 1695916594573,
+      "username" : "user@example.com",
+      "enabled" : true,
+      "totp" : false,
+      "emailVerified" : true,
+      "firstName" : "user",
+      "lastName" : "example",
+      "email" : "user@example.com",
+      "attributes" : {
+        "api-keys" : [ "{\"name\":\"F4C094A60BA88FB3F42BB9D20D75931286549D7F3C2E448F62D81CE20237B9BC\",\"scope\":[\"ABC123.READ\",\"ABC123.WRITE\"],\"expiryDate\":1830297599000,\"issueDate\":1701960265122,\"isRevoked\":false,\"description\":\"ApiKey for ABC123 study only\"}" ]
+      },
+      "credentials" : [ {
+        "id" : "4ee844f9-25bc-4f33-8ee1-ed89e25f78fc",
+        "type" : "password",
+        "userLabel" : "My password",
+        "createdDate" : 1695916612424,
+        "secretData" : "{\"value\":\"+QJdAuFVawvqg4m2M5oiZyj1kIZIZf0IRDUy9s/Du2o=\",\"salt\":\"VyfgE81KbbxdNYRKzvYziQ==\",\"additionalParameters\":{}}",
+        "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+      } ],
+      "disableableCredentialTypes" : [ ],
+      "requiredActions" : [ ],
+      "realmRoles" : [ "default-roles-myrealm" ],
+      "notBefore" : 0,
+      "groups" : [ "/STUDYGROUP" ]
+    } ]
+  }
