@@ -20,10 +20,10 @@ services:
       - db-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
-      interval: 5s
-      timeout: 5s
+      interval: 10s
+      timeout: 10s
       retries: 5
-      start_period: 5s
+      start_period: 10s
 
   # ==========================
   # Song Database
@@ -41,10 +41,10 @@ services:
       - db-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
-      interval: 5s
-      timeout: 5s
+      interval: 10s
+      timeout: 10s
       retries: 5
-      start_period: 5s
+      start_period: 10s
 
   # ==========================
   # pgAdmin4
@@ -187,6 +187,7 @@ services:
   song:
     image: ghcr.io/overture-stack/song-server:438c2c42
     container_name: song
+    platform: linux/amd64
     depends_on:
       keycloak:
         condition: service_started
@@ -242,6 +243,7 @@ services:
   score:
     image: ghcr.io/overture-stack/score-server:47f006ce
     container_name: score
+    platform: linux/amd64
     depends_on:
       keycloak:
         condition: service_started
@@ -319,6 +321,7 @@ services:
   arranger-server:
     image: ghcr.io/overture-stack/arranger-server:0b57cf15
     container_name: arranger-server
+    platform: linux/amd64
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -340,6 +343,7 @@ services:
   maestro:
     image: ghcr.io/overture-stack/maestro:4.4.0-snapshot-07a3a41
     container_name: maestro
+    platform: linux/amd64
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -380,6 +384,50 @@ services:
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song_analysis
     networks:
+      - db-network
+      - index-network
+
+  # ==================================================================================
+  #  F. Discovery (Stage)
+  # ==================================================================================
+
+  # ==========================
+  # Stage
+  # ==========================
+  stage:
+    image: ghcr.io/overture-stack/stage:297e6eb
+    container_name: stage
+    platform: linux/amd64
+    depends_on:
+      arranger-server:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    environment:
+      # Arranger Integration
+      NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: analysis
+      NEXT_PUBLIC_ARRANGER_INDEX: analysis_centric
+      NEXT_PUBLIC_ARRANGER_API_URL: arranger-server:5050
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id, study_id
+      # Score Integration
+      NEXT_PUBLIC_SCORE_API_URL: score:8087
+      # Keycloak Integration
+      NEXT_PUBLIC_AUTH_PROVIDER: keycloak
+      ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
+      SESSION_ENCRYPTION_SECRET: this_is_a_super_secret_secret
+      NEXT_PUBLIC_KEYCLOAK_HOST: keycloak:8443
+      NEXT_PUBLIC_KEYCLOAK_REALM: myrealm
+      NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: webclient
+      KEYCLOAK_CLIENT_SECRET: stagesecret
+      NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: song
+      # Stage Configs
+      NEXT_PUBLIC_LAB_NAME: Overture Composer Portal
+      NEXT_PUBLIC_DEBUG: true
+      NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
+    networks:
+      - db-network
       - index-network
 
 # ==========================
