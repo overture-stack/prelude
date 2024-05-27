@@ -1,0 +1,24 @@
+{
+	"matchbox": [
+		{
+			"displayName": "file",
+			"fieldName": ""
+		},
+		{
+			"displayName": "Donors",
+			"fieldName": "donors"
+		},
+		{
+			"displayName": "Donors Specimens",
+			"fieldName": "donors.specimens"
+		},
+		{
+			"displayName": "Donors Specimens Samples",
+			"fieldName": "donors.specimens.samples"
+		},
+		{
+			"displayName": "Repositories",
+			"fieldName": "repositories"
+		}
+	]
+}

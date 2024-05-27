@@ -9,6 +9,7 @@ services:
   # ==========================
   keycloak-db:
     image: postgres:latest
+    container_name: keycloak-db
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
@@ -29,6 +30,7 @@ services:
   # ==========================
   song-db:
     image: postgres:latest
+    container_name: song-db
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
@@ -44,12 +46,12 @@ services:
       retries: 5
       start_period: 5s
 
-
   # ==========================
   # pgAdmin4
   # ==========================
   pgadmin:
     image: dpage/pgadmin4:latest
+    container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin123
@@ -67,6 +69,7 @@ services:
   # ==========================
   minio:
     image: minio/minio
+    container_name: minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -82,6 +85,7 @@ services:
   # ==========================
   minio-client:
     image: minio/mc
+    container_name: minio-client
     depends_on:
       - minio
     entrypoint: >
@@ -101,10 +105,10 @@ services:
   # ==========================
   keycloak:
     image: quay.io/keycloak/keycloak:22.0
+    container_name: keycloak
     depends_on:
       keycloak-db:
         condition: service_healthy
-    container_name: keycloak
     ports:
       - "8443:8443"
     environment:
@@ -138,6 +142,7 @@ services:
   # ==========================
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -155,6 +160,7 @@ services:
   # ==========================
   kafka:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -180,7 +186,10 @@ services:
   # ==========================
   song:
     image: ghcr.io/overture-stack/song-server:438c2c42
+    container_name: song
     depends_on:
+      keycloak:
+        condition: service_started
       song-db:
         condition: service_healthy
       kafka:
@@ -232,8 +241,12 @@ services:
   # ==========================
   score:
     image: ghcr.io/overture-stack/score-server:47f006ce
+    container_name: score
     depends_on:
-      - song
+      keycloak:
+        condition: service_started
+      song:
+        condition: service_started
     ports:
       - "8087:8087"
     environment:
@@ -270,8 +283,108 @@ services:
       UPLOAD_PARTSIZE: 1073741824
       UPLOAD_CONNECTION_TIMEOUT: 1200000
 
+  # ==================================================================================
+  #  E. Search (Maestro, Elasticsearch, Arranger)
+  # ==================================================================================
+  
+  # ==========================
+  # Elasticsearch
+  # ==========================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
+    container_name: elasticsearch
+    environment:
+      discovery.type: single-node
+      cluster.name: workflow.elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx2048m
+      ELASTIC_PASSWORD: myelasticpassword
+      xpack.security.enabled: "true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    healthcheck:
+      test: "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - index-network
+
+  # ==========================
+  # Arranger-Server
+  # ==========================
+  arranger-server:
+    image: ghcr.io/overture-stack/arranger-server:0b57cf15
+    container_name: arranger-server
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "5050:5050"
+    environment:
+      ENABLE_LOGS: "false"
+      ES_HOST: "http://elasticsearch:9200"
+      ES_USER: "elastic"
+      ES_PASS: "myelasticpassword"  
+    volumes:
+      - "./configurationFiles/arrangerConfigs:/app/modules/server/configs"
+    networks:
+      - index-network
+
+  # ==========================
+  # Maestro
+  # ==========================
+  maestro:
+    image: ghcr.io/overture-stack/maestro:4.4.0-snapshot-07a3a41
+    container_name: maestro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      song:
+        condition: service_started
+      arranger-server:
+        condition: service_started
+    ports:
+      - "11235:11235"
+    environment:
+      # Logging Configuration
+      LOGGING_LEVEL_ROOT: DEBUG
+      MAESTRO_FAILURELOG_DIR: /app/app-data
+      # Spring MVC Settings
+      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
+      # Slack Integration
+      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
+      # Elasticsearch Settings
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_CLIENT_CONNECTIONTIMEOUT: 300000
+      MAESTRO_ELASTICSEARCH_CLIENT_SOCKETTIMEOUT: 300000
+      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNEDCERT: true
+      MAESTRO_ELASTICSEARCH_CLUSTERNODES: elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
+      MAESTRO_ELASTICSEARCH_INDEXES_FILE_CENTRIC_NAME: file_centric_1.0
+      # Song Configuration
+      MAESTRO_REPOSITORIES_0_CODE: song.composer
+      MAESTRO_REPOSITORIES_0_COUNTRY: CA
+      MAESTRO_REPOSITORIES_0_NAME: local song
+      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_0_URL: song:8080
+      MAESTRO_SONG_PAGELIMIT: 50
+      MAESTRO_SONG_TIMEOUTSEC_ANALYSIS: 3600
+      MAESTRO_SONG_TIMEOUTSEC_STUDY: 3600
+      # Kafka Configurations
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song_analysis
+    networks:
+      - index-network
+
 # ==========================
 # Networks
 # ==========================
 networks:
   db-network:
+  index-network:

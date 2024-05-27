@@ -1,0 +1,200 @@
+{
+	"facets": {
+		"aggregations": [
+			{
+				"fieldName": "analysis__analysis_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "analysis__analysis_state",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "analysis__analysis_tools",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "analysis__analysis_type",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "analysis__analysis_version",
+				"isActive": true
+			},
+			{
+				"fieldName": "analysis__experiment",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "data_type",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__donor_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__age",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__gender",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__samples__matched_normal_submitter_sample_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__samples__sample_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__samples__sample_type",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__samples__collection_date",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__samples__submitter_sample_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__specimen_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__specimen_tissue_source",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__specimen_type",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__submitter_specimen_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__specimens__tumour_normal_designation",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__submitter_donor_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "donors__vaccinated",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file__index_file__file_type",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file__index_file__md5sum",
+				"isActive": true
+			},
+			{
+				"fieldName": "file__index_file__name",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file__index_file__object_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file__index_file__size",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file__md5sum",
+				"isActive": true
+			},
+			{
+				"fieldName": "file__name",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file__size",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file_access",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "file_autocomplete",
+				"isActive": true
+			},
+			{
+				"fieldName": "file_type",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "object_id",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "repositories__code",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "repositories__country",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "repositories__name",
+				"isActive": true
+			},
+			{
+				"fieldName": "repositories__organization",
+				"isActive": true,
+				"show": true
+			},
+			{
+				"fieldName": "repositories__url",
+				"isActive": true
+			},
+			{
+				"fieldName": "study_id",
+				"isActive": true,
+				"show": true
+			}
+		]
+	}
+}
