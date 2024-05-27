@@ -97,7 +97,7 @@ services:
   # ==================================================================================
   
   # ==========================
-  # Keycloak
+  # Keycloak 
   # ==========================
   keycloak:
     image: quay.io/keycloak/keycloak:22.0
@@ -111,6 +111,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin123
       KC_HOSTNAME: localhost
+      KC_HEALTH_ENABLED: true 
     volumes:
       - ./configurationFiles/keycloakConfigs/server.keystore:/opt/keycloak/conf/server.keystore
       - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
@@ -127,6 +128,147 @@ services:
       --db-password=admin123
       --https-key-store-file=/opt/keycloak/conf/server.keystore
       --https-key-store-password=password
+
+  # ==================================================================================
+  # C. File Management (Song, Score, Kafka, Zookeeper)
+  # ==================================================================================
+  
+  # ==========================
+  # Zookeeper
+  # ==========================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+    healthcheck:
+      test: ["CMD-SHELL", "echo srvr | nc 127.0.0.1 2181 | grep Mode"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ==========================
+  # Kafka
+  # ==========================
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "29092:29092"
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --list --bootstrap-server localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+  
+  # ==========================
+  # Song
+  # ==========================
+  song:
+    image: ghcr.io/overture-stack/song-server:438c2c42
+    depends_on:
+      song-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # PostgreSQL connection details
+      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      # Flyway migration settings
+      SPRING_FLYWAY_ENABLED: false
+      # SPRING_FLYWAY_LOCATIONS: classpath:flyway/sql,classpath:db/migration
+      # Spring Run Profiles
+      SPRING_PROFILES_ACTIVE: prod,secure,score-client-cred,kafka
+      # Keycloak Integration
+      AUTH_SERVER_INTROSPECTIONURI: https://localhost:8443/realms/myrealm/apikey/check_api_key/
+      AUTH_SERVER_CLIENTID: song
+      AUTH_SERVER_CLIENTSECRET: songsecret
+      AUTH_SERVER_TOKENNAME: apikey
+      AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_KEYCLOAK_HOST: https://localhost
+      AUTH_SERVER_KEYCLOAK_REALM: myrealm
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: ABC123.
+      AUTH_SERVER_SCOPE_STUDY_SUFFIX: .WRITE
+      AUTH_SERVER_SCOPE_SYSTEM: song.WRITE
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: https://localhost:8443/realms/myrealm/protocol/openid-connect/certs
+      # Score Integration (Required)
+      SCORE_URL: http://host.docker.internal:8087
+      SCORE_CLIENTCREDENTIALS_ID: score
+      SCORE_CLIENTCREDENTIALS_SECRET: scoresecret
+      SCORE_CLIENTCREDENTIALS_TOKENURL: http://host.docker.internal:8087/oauth/token
+      SCORE_CLIENTCREDENTIALS_SYSTEMSCOPE: score.WRITE
+      # ID Management configuration
+      ID_USELOCAL: true
+      # Schema Strictness Configuration
+      SCHEMAS_ENFORCELATEST: true
+      # Kafka Event Management Configuration
+      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:9092
+      SPRING_KAFKA_TEMPLATE_DEFAULT-TOPIC: song-analysis
+    networks:
+      - db-network
+
+  # ==========================
+  # Score
+  # ==========================
+  score:
+    image: ghcr.io/overture-stack/score-server:47f006ce
+    depends_on:
+      - song
+    ports:
+      - "8087:8087"
+    environment:
+      # Spring Run Profiles and server configurations
+      SPRING_PROFILES_ACTIVE: collaboratory,prod,secure
+      SERVER_PORT: 8087
+      SERVER_SSL_ENABLED: false
+      # Logging Configuration
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: INFO
+      LOGGING_LEVEL_BIO_OVERTURE_SCORE_SERVER: INFO
+      LOGGING_LEVEL_ROOT: INFO
+      # Authentication Server
+      AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_KEYCLOAK_HOST: http://host.docker.internal:8443
+      AUTH_SERVER_KEYCLOAK_REALM: myrealm
+      AUTH_SERVER_URL: http://host.docker.internal:8443/realms/myrealm/apikey/check_api_key/
+      AUTH_SERVER_TOKENNAME: apiKey
+      AUTH_SERVER_CLIENTID: score
+      AUTH_SERVER_CLIENTSECRET: scoresecret
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: ABC123.
+      AUTH_SERVER_SCOPE_DOWNLOAD_SUFFIX: .READ
+      AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.WRITE
+      AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.READ
+      AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: https://localhost:8443/realms/myrealm/protocol/openid-connect/certs
+      # Metadata Manager (Song)
+      METADATA_URL: song:8080
+      # Object Storage (Minio)
+      S3_ENDPOINT: minio:9001
+      S3_ACCESSKEY: admin
+      S3_SECRETKEY: admin123
+      BUCKET_NAME_OBJECT: object
+      BUCKET_NAME_STATE: state
+      UPLOAD_PARTSIZE: 1073741824
+      UPLOAD_CONNECTION_TIMEOUT: 1200000
 
 # ==========================
 # Networks
