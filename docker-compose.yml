@@ -154,6 +154,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+    networks:
+      - db-network
 
   # ==========================
   # Kafka
@@ -180,6 +182,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+    networks:
+      - db-network
   
   # ==========================
   # Song
@@ -417,12 +421,14 @@ services:
       NEXT_PUBLIC_AUTH_PROVIDER: keycloak
       ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
       SESSION_ENCRYPTION_SECRET: this_is_a_super_secret_secret
-      NEXT_PUBLIC_KEYCLOAK_HOST: keycloak:8443
+      NEXT_PUBLIC_KEYCLOAK_HOST: https://keycloak:8443 
       NEXT_PUBLIC_KEYCLOAK_REALM: myrealm
       NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: webclient
-      KEYCLOAK_CLIENT_SECRET: stagesecret
+      KEYCLOAK_CLIENT_SECRET: ikksyrYaKX07acf4hpGrpKWcUGaFkEdM
       NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: song
       # Stage Configs
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      NEXTAUTH_URL: http://localhost:3000/api/auth
       NEXT_PUBLIC_LAB_NAME: Overture Composer Portal
       NEXT_PUBLIC_DEBUG: true
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
