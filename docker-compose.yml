@@ -123,6 +123,7 @@ services:
       - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
     networks:
       - db-network
+      - index-network
     command: >
       start
       --import-realm
@@ -147,7 +148,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "22181:2181"
+      - "2181:2181"
     healthcheck:
       test: ["CMD-SHELL", "echo srvr | nc 127.0.0.1 2181 | grep Mode"]
       interval: 10s
@@ -161,8 +162,9 @@ services:
   # Kafka
   # ==========================
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:5.4.0
     container_name: kafka
+    platform: linux/amd64
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -171,20 +173,21 @@ services:
       - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:9092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics --list --bootstrap-server localhost:9092"]
       interval: 10s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 40s
     networks:
       - db-network
-  
+
   # ==========================
   # Song
   # ==========================
@@ -204,6 +207,8 @@ services:
     ports:
       - "8080:8080"
     environment:
+      # Swagger URL
+      SWAGGER_ALTERNATEURL: /api
       # PostgreSQL connection details
       SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb
       SPRING_DATASOURCE_USERNAME: admin
@@ -249,6 +254,8 @@ services:
     container_name: score
     platform: linux/amd64
     depends_on:
+      minio-client:
+        condition: service_completed_successfully
       keycloak:
         condition: service_started
       song:
@@ -294,17 +301,69 @@ services:
   # ==================================================================================
   
   # ==========================
+  # Maestro
+  # ==========================
+  maestro:
+    image: ghcr.io/overture-stack/maestro:4.3.0
+    container_name: maestro
+    platform: linux/amd64
+    depends_on:
+      song:
+        condition: service_started
+      index-setup:
+        condition: service_completed_successfully
+    ports:
+      - "11235:11235"
+    environment:
+      # Elasticsearch Integration
+      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_NAME: analysis-composer-index
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ALIAS: analysis_centric
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: true
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: false
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
+      MANAGEMENT.SECURITY_ENABLED: false
+      # Song Integration
+      MAESTRO_REPOSITORIES_0_CODE: song.overture
+      MAESTRO_REPOSITORIES_0_URL: song:8080
+      MAESTRO_REPOSITORIES_0_NAME: "Overture"
+      MAESTRO_REPOSITORIES_0_ORGANIZATION: Overture
+      MAESTRO_REPOSITORIES_0_COUNTRY: CA
+      # Maestro Configurations
+      MAESTRO_FAILURELOG_ENABLED: true
+      MAESTRO_FAILURELOG_DIR: app/logs/maestro
+      MAESTRO_LOGGING_LEVEL_ROOT: INFO
+      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
+      # Spring Settings
+      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
+      SPRINGDOC_SWAGGERUI_PATH: /api
+      # Kafka Integration
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
+    networks:
+      - db-network
+      - index-network
+
+  # ==========================
   # Elasticsearch
   # ==========================
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: elasticsearch
+    ports:
+      - "9200:9200"
     environment:
       discovery.type: single-node
       cluster.name: workflow.elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx2048m
       ELASTIC_PASSWORD: myelasticpassword
       xpack.security.enabled: "true"
+      MANAGE_INDEX_TEMPLATES: "true"
+      NETWORK_HOST: http://localhost:9200
     logging:
       driver: "json-file"
       options:
@@ -318,6 +377,32 @@ services:
       start_period: 20s
     networks:
       - index-network
+  
+  # ==========================
+  # Index Setup
+  # ==========================
+  index-setup:
+    image: alpine:latest
+    container_name: index-setup
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "9201:9201"
+    volumes:
+      - ./configurationFiles/elasticsearchConfigs/composer_index_template.json:/usr/share/elasticsearch/config/composer_index_template.json
+      - ./configurationFiles/elasticsearchConfigs/composer_component_template.json:/usr/share/elasticsearch/config/composer_component_template.json
+    command: >
+      sh -c "
+      apk --no-cache add curl && 
+      sleep 30 && 
+      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_component_template/component_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/composer_component_template.json && 
+      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_index_template/index_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/composer_index_template.json && 
+      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/analysis-composer-index' -H 'Content-Type: application/json' -d '{\"aliases\": {\"analysis_centric\": {\"is_write_index\": true}}}' && 
+      echo 'Templates and index created successfully.'
+      " 
+    networks:
+      - index-network
 
   # ==========================
   # Arranger-Server
@@ -327,68 +412,24 @@ services:
     container_name: arranger-server
     platform: linux/amd64
     depends_on:
-      elasticsearch:
-        condition: service_healthy
+      index-setup:
+        condition: service_completed_successfully
     ports:
       - "5050:5050"
-    environment:
-      ENABLE_LOGS: "false"
-      ES_HOST: "http://elasticsearch:9200"
-      ES_USER: "elastic"
-      ES_PASS: "myelasticpassword"  
     volumes:
-      - "./configurationFiles/arrangerConfigs:/app/modules/server/configs"
-    networks:
-      - index-network
-
-  # ==========================
-  # Maestro
-  # ==========================
-  maestro:
-    image: ghcr.io/overture-stack/maestro:4.4.0-snapshot-07a3a41
-    container_name: maestro
-    platform: linux/amd64
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-      song:
-        condition: service_started
-      arranger-server:
-        condition: service_started
-    ports:
-      - "11235:11235"
+     - ./configurationFiles/arrangerConfigs/base.json:/app/modules/server/configs/base.json
+     - ./configurationFiles/arrangerConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./configurationFiles/arrangerConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./configurationFiles/arrangerConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./configurationFiles/arrangerConfigs/table.json:/app/modules/server/configs/table.json
     environment:
-      # Logging Configuration
-      LOGGING_LEVEL_ROOT: DEBUG
-      MAESTRO_FAILURELOG_DIR: /app/app-data
-      # Spring MVC Settings
-      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
-      # Slack Integration
-      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
-      # Elasticsearch Settings
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
-      MAESTRO_ELASTICSEARCH_CLIENT_CONNECTIONTIMEOUT: 300000
-      MAESTRO_ELASTICSEARCH_CLIENT_SOCKETTIMEOUT: 300000
-      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNEDCERT: true
-      MAESTRO_ELASTICSEARCH_CLUSTERNODES: elasticsearch:9200
-      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
-      MAESTRO_ELASTICSEARCH_INDEXES_FILE_CENTRIC_NAME: file_centric_1.0
-      # Song Configuration
-      MAESTRO_REPOSITORIES_0_CODE: song.composer
-      MAESTRO_REPOSITORIES_0_COUNTRY: CA
-      MAESTRO_REPOSITORIES_0_NAME: local song
-      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
-      MAESTRO_REPOSITORIES_0_URL: song:8080
-      MAESTRO_SONG_PAGELIMIT: 50
-      MAESTRO_SONG_TIMEOUTSEC_ANALYSIS: 3600
-      MAESTRO_SONG_TIMEOUTSEC_STUDY: 3600
-      # Kafka Configurations
-      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
-      SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song_analysis
+      ENABLE_LOGS: false
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      REACT_APP_BASE_URL: http://localhost:3000
+      REACT_APP_ARRANGER_ADMIN_ROOT: http://localhost:5050/graphql
     networks:
-      - db-network
       - index-network
 
   # ==================================================================================
@@ -399,7 +440,7 @@ services:
   # Stage
   # ==========================
   stage:
-    image: ghcr.io/overture-stack/stage:297e6eb
+    image: ghcr.io/overture-stack/stage:3ede4e2
     container_name: stage
     platform: linux/amd64
     depends_on:
@@ -412,24 +453,25 @@ services:
     environment:
       # Arranger Integration
       NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: analysis
-      NEXT_PUBLIC_ARRANGER_INDEX: analysis_centric
-      NEXT_PUBLIC_ARRANGER_API_URL: arranger-server:5050
+      NEXT_PUBLIC_ARRANGER_INDEX: analysis-composer-index
+      NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id, study_id
       # Score Integration
       NEXT_PUBLIC_SCORE_API_URL: score:8087
       # Keycloak Integration
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
       NEXT_PUBLIC_AUTH_PROVIDER: keycloak
       ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
       SESSION_ENCRYPTION_SECRET: this_is_a_super_secret_secret
-      NEXT_PUBLIC_KEYCLOAK_HOST: https://keycloak:8443 
+      NEXT_PUBLIC_KEYCLOAK_HOST: https://keycloak:8443
       NEXT_PUBLIC_KEYCLOAK_REALM: myrealm
       NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: webclient
       KEYCLOAK_CLIENT_SECRET: ikksyrYaKX07acf4hpGrpKWcUGaFkEdM
       NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: song
       # Stage Configs
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
       NEXTAUTH_URL: http://localhost:3000/api/auth
       NEXT_PUBLIC_LAB_NAME: Overture Composer Portal
+      NEXT_PUBLIC_ADMIN_EMAIL: contact@overture.bio
       NEXT_PUBLIC_DEBUG: true
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
     networks:

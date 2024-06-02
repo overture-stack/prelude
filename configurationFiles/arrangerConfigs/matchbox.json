@@ -2,23 +2,38 @@
 	"matchbox": [
 		{
 			"displayName": "file",
-			"fieldName": ""
+			"fieldName": "",
+			"isActive": false,
+			"keyFieldName": null,
+			"searchFields": []
 		},
 		{
 			"displayName": "Donors",
-			"fieldName": "donors"
+			"fieldName": "donors",
+			"isActive": false,
+			"keyFieldName": null,
+			"searchFields": []
 		},
 		{
 			"displayName": "Donors Specimens",
-			"fieldName": "donors.specimens"
+			"fieldName": "donors.specimens",
+			"isActive": false,
+			"keyFieldName": null,
+			"searchFields": []
 		},
 		{
 			"displayName": "Donors Specimens Samples",
-			"fieldName": "donors.specimens.samples"
+			"fieldName": "donors.specimens.samples",
+			"isActive": false,
+			"keyFieldName": null,
+			"searchFields": []
 		},
 		{
 			"displayName": "Repositories",
-			"fieldName": "repositories"
+			"fieldName": "repositories",
+			"isActive": false,
+			"keyFieldName": null,
+			"searchFields": []
 		}
 	]
 }
