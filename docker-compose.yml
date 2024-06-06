@@ -29,7 +29,7 @@ services:
   # Song Database
   # ==========================
   song-db:
-    image: postgres:latest
+    image: postgres:11.1
     container_name: song-db
     environment:
       POSTGRES_USER: admin
@@ -110,14 +110,13 @@ services:
       keycloak-db:
         condition: service_healthy
     ports:
-      - "8443:8443"
+      - "8180:8080"
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin123
       KC_HOSTNAME: localhost
       KC_HEALTH_ENABLED: true 
     volumes:
-      - ./configurationFiles/keycloakConfigs/server.keystore:/opt/keycloak/conf/server.keystore
       - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
       - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
       - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
@@ -125,14 +124,13 @@ services:
       - db-network
       - index-network
     command: >
-      start
+      start-dev
+      --hostname-port=8180
       --import-realm
       --db=postgres
       --db-url=jdbc:postgresql://keycloak-db:5432/keycloakDb
       --db-username=admin
       --db-password=admin123
-      --https-key-store-file=/opt/keycloak/conf/server.keystore
-      --https-key-store-password=password
 
   # ==================================================================================
   # C. File Management (Song, Score, Kafka, Zookeeper)
@@ -196,6 +194,8 @@ services:
     container_name: song
     platform: linux/amd64
     depends_on:
+      pgadmin:
+        condition: service_started
       keycloak:
         condition: service_started
       song-db:
@@ -208,28 +208,28 @@ services:
       - "8080:8080"
     environment:
       # Swagger URL
-      SWAGGER_ALTERNATEURL: /api
+      SWAGGER_ALTERNATEURL: /swagger-api
       # PostgreSQL connection details
-      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb?stringtype=unspecified
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
       # Flyway migration settings
-      SPRING_FLYWAY_ENABLED: false
-      # SPRING_FLYWAY_LOCATIONS: classpath:flyway/sql,classpath:db/migration
+      SPRING_FLYWAY_ENABLED: true
+      # SPRING_FLYWAY_LOCATIONS: classpath:db/migration
       # Spring Run Profiles
       SPRING_PROFILES_ACTIVE: prod,secure,score-client-cred,kafka
       # Keycloak Integration
-      AUTH_SERVER_INTROSPECTIONURI: https://localhost:8443/realms/myrealm/apikey/check_api_key/
+      AUTH_SERVER_INTROSPECTIONURI: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
       AUTH_SERVER_CLIENTID: song
       AUTH_SERVER_CLIENTSECRET: songsecret
       AUTH_SERVER_TOKENNAME: apikey
       AUTH_SERVER_PROVIDER: keycloak
-      AUTH_SERVER_KEYCLOAK_HOST: https://localhost
+      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
       AUTH_SERVER_KEYCLOAK_REALM: myrealm
       AUTH_SERVER_SCOPE_STUDY_PREFIX: ABC123.
       AUTH_SERVER_SCOPE_STUDY_SUFFIX: .WRITE
       AUTH_SERVER_SCOPE_SYSTEM: song.WRITE
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: https://localhost:8443/realms/myrealm/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
       # Score Integration (Required)
       SCORE_URL: http://host.docker.internal:8087
       SCORE_CLIENTCREDENTIALS_ID: score
@@ -273,9 +273,9 @@ services:
       LOGGING_LEVEL_ROOT: INFO
       # Authentication Server
       AUTH_SERVER_PROVIDER: keycloak
-      AUTH_SERVER_KEYCLOAK_HOST: http://host.docker.internal:8443
+      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
       AUTH_SERVER_KEYCLOAK_REALM: myrealm
-      AUTH_SERVER_URL: http://host.docker.internal:8443/realms/myrealm/apikey/check_api_key/
+      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
       AUTH_SERVER_TOKENNAME: apiKey
       AUTH_SERVER_CLIENTID: score
       AUTH_SERVER_CLIENTSECRET: scoresecret
@@ -284,7 +284,7 @@ services:
       AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.WRITE
       AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.READ
       AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: https://localhost:8443/realms/myrealm/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
       # Metadata Manager (Song)
       METADATA_URL: song:8080
       # Object Storage (Minio)
@@ -323,10 +323,10 @@ services:
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_NAME: analysis-composer-index
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ALIAS: analysis_centric
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: true
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: false
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
       MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
-      MANAGEMENT.SECURITY_ENABLED: false
+      MANAGEMENT_SECURITY_ENABLED: false
       # Song Integration
       MAESTRO_REPOSITORIES_0_CODE: song.overture
       MAESTRO_REPOSITORIES_0_URL: song:8080
@@ -463,7 +463,7 @@ services:
       NEXT_PUBLIC_AUTH_PROVIDER: keycloak
       ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
       SESSION_ENCRYPTION_SECRET: this_is_a_super_secret_secret
-      NEXT_PUBLIC_KEYCLOAK_HOST: https://keycloak:8443
+      NEXT_PUBLIC_KEYCLOAK_HOST: http://keycloak:8080
       NEXT_PUBLIC_KEYCLOAK_REALM: myrealm
       NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: webclient
       KEYCLOAK_CLIENT_SECRET: ikksyrYaKX07acf4hpGrpKWcUGaFkEdM
