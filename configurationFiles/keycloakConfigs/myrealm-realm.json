@@ -634,12 +634,12 @@
         } ],
         "icon_uri" : ""
       }, {
-        "name" : "SECA-CA",
+        "name" : "score",
         "ownerManagedAccess" : false,
-        "displayName" : "SECA-CA",
+        "displayName" : "Score",
         "attributes" : { },
-        "_id" : "b556794e-ff6a-45f3-a5d6-a18554d7617f",
-        "uris" : [ ],
+        "_id" : "438670f0-ce2f-499d-a672-15cea0cca69c",
+        "uris" : [ "/*" ],
         "scopes" : [ {
           "name" : "READ"
         }, {
@@ -647,12 +647,12 @@
         } ],
         "icon_uri" : ""
       }, {
-        "name" : "score",
+        "name" : "SECA-CA",
         "ownerManagedAccess" : false,
-        "displayName" : "Score",
+        "displayName" : "SECA-CA",
         "attributes" : { },
-        "_id" : "438670f0-ce2f-499d-a672-15cea0cca69c",
-        "uris" : [ "/*" ],
+        "_id" : "9d88369a-5864-4139-ac5e-169ce9bb941d",
+        "uris" : [ ],
         "scopes" : [ {
           "name" : "READ"
         }, {
