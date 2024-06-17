@@ -257,11 +257,11 @@
       "admin-cli" : [ ],
       "account-console" : [ ],
       "dataManagementServices" : [ {
-        "id" : "ef06463d-41cb-4604-a1d8-dde60972840a",
+        "id" : "fbda0408-d0d0-44a2-b172-4d241d4474e7",
         "name" : "uma_protection",
         "composite" : false,
         "clientRole" : true,
-        "containerId" : "ee805965-5064-4025-9812-3f2981da7f15",
+        "containerId" : "9ab540e5-aafc-4c27-b792-5a93640faa70",
         "attributes" : { }
       } ],
       "broker" : [ {
@@ -375,7 +375,7 @@
   "otpPolicyLookAheadWindow" : 1,
   "otpPolicyPeriod" : 30,
   "otpPolicyCodeReusable" : false,
-  "otpSupportedApplications" : [ "totpAppFreeOTPName", "totpAppMicrosoftAuthenticatorName", "totpAppGoogleName" ],
+  "otpSupportedApplications" : [ "totpAppFreeOTPName", "totpAppGoogleName", "totpAppMicrosoftAuthenticatorName" ],
   "webAuthnPolicyRpEntityName" : "keycloak",
   "webAuthnPolicySignatureAlgorithms" : [ "ES256" ],
   "webAuthnPolicyRpId" : "",
@@ -532,9 +532,9 @@
     "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
-    "id" : "ee805965-5064-4025-9812-3f2981da7f15",
+    "id" : "9ab540e5-aafc-4c27-b792-5a93640faa70",
     "clientId" : "dataManagementServices",
-    "name" : "Data Management Services (Song & Score)",
+    "name" : "",
     "description" : "",
     "rootUrl" : "",
     "adminUrl" : "",
@@ -543,9 +543,9 @@
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "secret" : "Hqg6ArwegBoF2oL3cFyiipIwTHUZsdrG",
-    "redirectUris" : [ "" ],
-    "webOrigins" : [ "" ],
+    "secret" : "OkPPa84qFR7JCVHJ1jkOSaI0GiK2eKwr",
+    "redirectUris" : [ "/*" ],
+    "webOrigins" : [ "/*" ],
     "notBefore" : 0,
     "bearerOnly" : false,
     "consentRequired" : false,
@@ -559,30 +559,16 @@
     "protocol" : "openid-connect",
     "attributes" : {
       "oidc.ciba.grant.enabled" : "false",
-      "client.secret.creation.time" : "1718634622",
-      "backchannel.logout.session.required" : "true",
       "oauth2.device.authorization.grant.enabled" : "false",
-      "display.on.consent.screen" : "false",
+      "client.secret.creation.time" : "1718653064",
+      "backchannel.logout.session.required" : "true",
       "backchannel.logout.revoke.offline.tokens" : "false"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : true,
     "nodeReRegistrationTimeout" : -1,
     "protocolMappers" : [ {
-      "id" : "2cb8a007-3618-48c8-a908-f434d98c6e79",
-      "name" : "Client Host",
-      "protocol" : "openid-connect",
-      "protocolMapper" : "oidc-usersessionmodel-note-mapper",
-      "consentRequired" : false,
-      "config" : {
-        "user.session.note" : "clientHost",
-        "id.token.claim" : "true",
-        "access.token.claim" : "true",
-        "claim.name" : "clientHost",
-        "jsonType.label" : "String"
-      }
-    }, {
-      "id" : "c488d400-a695-4f26-8fc8-384e9d31831f",
+      "id" : "4d8397db-329a-4031-8945-88cbf28c50f3",
       "name" : "Client IP Address",
       "protocol" : "openid-connect",
       "protocolMapper" : "oidc-usersessionmodel-note-mapper",
@@ -595,7 +581,7 @@
         "jsonType.label" : "String"
       }
     }, {
-      "id" : "b6bc3947-9c60-4ccc-b51b-0a78fb51d251",
+      "id" : "b9ceee73-0eee-4559-ab5b-ae67ecca5d47",
       "name" : "Client ID",
       "protocol" : "openid-connect",
       "protocolMapper" : "oidc-usersessionmodel-note-mapper",
@@ -605,6 +591,19 @@
         "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "client_id",
+        "jsonType.label" : "String"
+      }
+    }, {
+      "id" : "836f4a39-9800-4f71-abd8-c03bd1a5073f",
+      "name" : "Client Host",
+      "protocol" : "openid-connect",
+      "protocolMapper" : "oidc-usersessionmodel-note-mapper",
+      "consentRequired" : false,
+      "config" : {
+        "user.session.note" : "clientHost",
+        "id.token.claim" : "true",
+        "access.token.claim" : "true",
+        "claim.name" : "clientHost",
         "jsonType.label" : "String"
       }
     } ],
@@ -618,14 +617,14 @@
         "type" : "urn:dataManagementServices:resources:default",
         "ownerManagedAccess" : false,
         "attributes" : { },
-        "_id" : "7e0fa009-4a28-4cd3-8b12-68d110abcdbe",
+        "_id" : "2ea872f9-93c2-40fb-bbd1-a7fa8e01191b",
         "uris" : [ "/*" ]
       }, {
         "name" : "song",
         "ownerManagedAccess" : false,
         "displayName" : "Song",
         "attributes" : { },
-        "_id" : "039752a0-6c28-4b2a-b97a-564029c41586",
+        "_id" : "ea8dd958-1ad0-4805-9d36-8a046e5e1884",
         "uris" : [ "http://localhost:8080" ],
         "scopes" : [ {
           "name" : "READ"
@@ -638,8 +637,8 @@
         "ownerManagedAccess" : false,
         "displayName" : "Score",
         "attributes" : { },
-        "_id" : "438670f0-ce2f-499d-a672-15cea0cca69c",
-        "uris" : [ "/*" ],
+        "_id" : "6b65152f-06d3-4cf6-b105-f2c9a52ac198",
+        "uris" : [ ],
         "scopes" : [ {
           "name" : "READ"
         }, {
@@ -647,11 +646,11 @@
         } ],
         "icon_uri" : ""
       }, {
-        "name" : "SECA-CA",
+        "name" : "SECA",
         "ownerManagedAccess" : false,
-        "displayName" : "SECA-CA",
+        "displayName" : "SECA",
         "attributes" : { },
-        "_id" : "9d88369a-5864-4139-ac5e-169ce9bb941d",
+        "_id" : "d4a2a321-9d78-4fdd-8fbe-8e70c4f3a102",
         "uris" : [ ],
         "scopes" : [ {
           "name" : "READ"
@@ -661,7 +660,7 @@
         "icon_uri" : ""
       } ],
       "policies" : [ {
-        "id" : "c5bfef45-18e2-424c-8d65-ce2ae47a541b",
+        "id" : "10cdcf9a-0d19-4821-8017-fad8bb1f5820",
         "name" : "Default Policy",
         "description" : "A policy that grants access only for users within this realm",
         "type" : "js",
@@ -671,8 +670,8 @@
           "code" : "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
         }
       }, {
-        "id" : "904e4445-1231-4d34-844f-2a73af6a07ff",
-        "name" : "POLICY_ADMIN_GROUP",
+        "id" : "6cff9fd2-92b7-43ac-b05a-04ba3110377a",
+        "name" : "ADMIN_GROUP_POLICY",
         "description" : "",
         "type" : "group",
         "logic" : "POSITIVE",
@@ -682,7 +681,7 @@
           "groupsClaim" : ""
         }
       }, {
-        "id" : "0ec21605-b1f4-4994-b86d-ffb7fdb53440",
+        "id" : "8ab3ea4e-a29b-4e2c-bec8-182229b79e5a",
         "name" : "Default Permission",
         "description" : "A permission that applies to the default resource type",
         "type" : "resource",
@@ -693,23 +692,23 @@
           "applyPolicies" : "[\"Default Policy\"]"
         }
       }, {
-        "id" : "f13864f3-e6a4-40e7-92de-b2c8f9895f16",
-        "name" : "PERMISSION_ADMIN_GROUP",
+        "id" : "15ae8c0a-725f-4874-b9e3-8e0f064c277b",
+        "name" : "ADMIN_PERMISSION",
         "description" : "",
         "type" : "resource",
         "logic" : "POSITIVE",
         "decisionStrategy" : "AFFIRMATIVE",
         "config" : {
-          "resources" : "[\"SECA-CA\",\"song\",\"score\"]",
-          "applyPolicies" : "[\"POLICY_ADMIN_GROUP\"]"
+          "resources" : "[\"score\",\"song\",\"SECA\"]",
+          "applyPolicies" : "[\"ADMIN_GROUP_POLICY\"]"
         }
       } ],
       "scopes" : [ {
-        "id" : "51cf126d-71a0-42f9-9005-4099b6004582",
+        "id" : "0c1367c9-36e4-45b5-a768-085398fcb3cb",
         "name" : "READ",
         "iconUri" : ""
       }, {
-        "id" : "05b23a38-b1a5-4918-8b22-1bafdea570f1",
+        "id" : "543b9332-b00c-45ba-82ef-e19a31198b5f",
         "name" : "WRITE",
         "iconUri" : ""
       } ],
@@ -1342,7 +1341,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper", "saml-user-attribute-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper" ]
       }
     }, {
       "id" : "60e95445-5b19-456a-b4ab-f38d190a5692",
@@ -1351,7 +1350,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-address-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "oidc-sha256-pairwise-sub-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-full-name-mapper", "saml-user-attribute-mapper", "oidc-usermodel-attribute-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper" ]
       }
     }, {
       "id" : "a80fe473-48e2-4d14-a341-d90a0b92216a",

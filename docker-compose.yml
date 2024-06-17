@@ -169,7 +169,7 @@ services:
       # Keycloak Variables
       AUTH_SERVER_PROVIDER: keycloak
       AUTH_SERVER_CLIENTID: dataManagementServices
-      AUTH_SERVER_CLIENTSECRET: Hqg6ArwegBoF2oL3cFyiipIwTHUZsdrG
+      AUTH_SERVER_CLIENTSECRET: OkPPa84qFR7JCVHJ1jkOSaI0GiK2eKwr
       AUTH_SERVER_TOKENNAME: apiKey
       AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
       AUTH_SERVER_KEYCLOAK_REALM: myrealm
@@ -265,7 +265,7 @@ services:
       # Keycloak Variables
       AUTH_SERVER_PROVIDER: keycloak
       AUTH_SERVER_CLIENTID: dataManagementServices
-      AUTH_SERVER_CLIENTSECRET: Hqg6ArwegBoF2oL3cFyiipIwTHUZsdrG
+      AUTH_SERVER_CLIENTSECRET: OkPPa84qFR7JCVHJ1jkOSaI0GiK2eKwr
       AUTH_SERVER_TOKENNAME: apiKey
       AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
       AUTH_SERVER_KEYCLOAK_REALM: myrealm
@@ -379,7 +379,7 @@ services:
     command: >
       sh -c "
       apk --no-cache add curl && 
-      sleep 30 && 
+      sleep 60 && 
       curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_component_template/component_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/composer_component_template.json && 
       curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_index_template/index_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/composer_index_template.json && 
       curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/analysis-composer-index' -H 'Content-Type: application/json' -d '{\"aliases\": {\"analysis_centric\": {\"is_write_index\": true}}}' && 
