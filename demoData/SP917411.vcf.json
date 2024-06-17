@@ -1,0 +1,117 @@
+{
+  "studyId": "SECA-CA",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP917411",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": "SP917401",
+      "specimen": {
+        "submitterSpecimenId": "SP917411",
+        "specimenType": "Tumour - unknown if derived from primary or metastatic",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Lymph node"
+      },
+      "donor": {
+        "submitterDonorId": "DO9174",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP917411.snv.vcf.gz",
+      "fileSize": 17242,
+      "fileMd5sum": "108e4a883d397e532200125aed41ac54",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP917411.snv.vcf.gz.tbi",
+      "fileSize": 149,
+      "fileMd5sum": "8c7592368713158b49882e4b39a69ccf",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD917401",
+    "submitterSpecimenId": "SP917401",
+    "specimenAnatomicLocation": "C65",
+    "tumourGradingSystem": "Grading system for GNETs",
+    "tumourGrade": "GX"
+  },
+  "donor": {
+    "submitterDonorId": "DO9174",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD917401",
+        "ageAtDiagnosis": 86,
+        "cancerTypeCode": "C71.8",
+        "clinicalTumourStagingSystem": "Lugano staging system",
+        "clinicalStageGroup": "Stage IIIA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR917401",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO917401",
+            "submitterTreatmentId": "TR917401",
+            "intervalOfFollowUp": 35,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000009174",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000009174"
+      }
+    ],
+    "runId": "RI9174",
+    "sessionId": "SI9174"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

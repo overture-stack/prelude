@@ -1,0 +1,127 @@
+{
+  "studyId": "SECA-CA",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP059911",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": "SP059901",
+      "specimen": {
+        "submitterSpecimenId": "SP059911",
+        "specimenType": "Metastatic tumour - metastasis to distant location",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived"
+      },
+      "donor": {
+        "submitterDonorId": "DO0599",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP059911.indel.vcf.gz",
+      "fileSize": 17335,
+      "fileMd5sum": "bb0039a0383ddb6d255ca75467678a45",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP059911.indel.vcf.gz.tbi",
+      "fileSize": 151,
+      "fileMd5sum": "8a81e9d383716e6e1f0c87741c5df4fa",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD059901",
+    "submitterSpecimenId": "SP059901",
+    "specimenAnatomicLocation": "C62",
+    "tumourGradingSystem": "Four-tier grading system",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO0599",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD059901",
+        "ageAtDiagnosis": 50,
+        "cancerTypeCode": "C34.2",
+        "clinicalTumourStagingSystem": "Binet staging system",
+        "clinicalStageGroup": "Stage A",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR059901",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 58,
+            "treatmentDuration": 52,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Tamoxifen"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO059901",
+            "submitterTreatmentId": "TR059901",
+            "intervalOfFollowUp": 45,
+            "diseaseStatusAtFollowUp": "Stable",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000000599",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000000599"
+      }
+    ],
+    "runId": "RI0599",
+    "sessionId": "SI0599"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

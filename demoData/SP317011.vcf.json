@@ -1,0 +1,117 @@
+{
+  "studyId": "SECA-CA",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP317011",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": "SP317001",
+      "specimen": {
+        "submitterSpecimenId": "SP317011",
+        "specimenType": "Tumour - unknown if derived from primary or metastatic",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Lymph node"
+      },
+      "donor": {
+        "submitterDonorId": "DO3170",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP317011.snv.vcf.gz",
+      "fileSize": 17246,
+      "fileMd5sum": "71c24eaa480e5afbc3a259532c6f9625",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP317011.snv.vcf.gz.tbi",
+      "fileSize": 143,
+      "fileMd5sum": "9b56f0e7978975a6ec2571483213768b",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD317001",
+    "submitterSpecimenId": "SP317001",
+    "specimenAnatomicLocation": "C27",
+    "tumourGradingSystem": "Four-tier grading system",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO3170",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD317001",
+        "ageAtDiagnosis": 86,
+        "cancerTypeCode": "C88.3",
+        "clinicalTumourStagingSystem": "St Jude staging system",
+        "clinicalStageGroup": "Stage IV",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR317001",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO317001",
+            "submitterTreatmentId": "TR317001",
+            "intervalOfFollowUp": 20,
+            "diseaseStatusAtFollowUp": "Loco-regional progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000003170",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000003170"
+      }
+    ],
+    "runId": "RI3170",
+    "sessionId": "SI3170"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

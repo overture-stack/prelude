@@ -1,0 +1,127 @@
+{
+  "studyId": "PACA-AU",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP919801",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP919801",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO9198",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP919801.indel.vcf.gz",
+      "fileSize": 17330,
+      "fileMd5sum": "d4968ece01282590f24f6b90a97c5af3",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP919801.indel.vcf.gz.tbi",
+      "fileSize": 143,
+      "fileMd5sum": "c719518af10bce03d220bc56c11e970d",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD919801",
+    "submitterSpecimenId": "SP919801",
+    "specimenAnatomicLocation": "C76",
+    "tumourGradingSystem": "Two-tier grading system",
+    "tumourGrade": "High grade"
+  },
+  "donor": {
+    "submitterDonorId": "DO9198",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1465,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD919801",
+        "ageAtDiagnosis": 43,
+        "cancerTypeCode": "C34.0",
+        "clinicalTumourStagingSystem": "FIGO staging system",
+        "clinicalStageGroup": "Stage IB1",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR919801",
+            "treatmentType": [
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 86,
+            "treatmentDuration": 84,
+            "responseToTreatment": "Minor response",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Anastrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO919801",
+            "submitterTreatmentId": "TR919801",
+            "intervalOfFollowUp": 81,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WXS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000009198",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000009198"
+      }
+    ],
+    "runId": "RI9198",
+    "sessionId": "SI9198"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}

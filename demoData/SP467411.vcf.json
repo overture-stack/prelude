@@ -1,0 +1,151 @@
+{
+  "studyId": "PACA-AU",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP467411",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": "SP467401",
+      "specimen": {
+        "submitterSpecimenId": "SP467411",
+        "specimenType": "Primary tumour - additional new primary",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived - peripheral blood"
+      },
+      "donor": {
+        "submitterDonorId": "DO4674",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP467411.snv.vcf.gz",
+      "fileSize": 17245,
+      "fileMd5sum": "bb1cb278b5144bf0546f3eecf959ae6d",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP467411.snv.vcf.gz.tbi",
+      "fileSize": 149,
+      "fileMd5sum": "333961c21671652fa39c3f7b7d21de0a",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD467401",
+    "submitterSpecimenId": "SP467401",
+    "specimenAnatomicLocation": "C68",
+    "tumourGradingSystem": "Four-tier grading system",
+    "tumourGrade": "G4"
+  },
+  "donor": {
+    "submitterDonorId": "DO4674",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 232,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD467401",
+        "ageAtDiagnosis": 35,
+        "cancerTypeCode": "C71.5",
+        "clinicalTumourStagingSystem": "Durie-Salmon staging system",
+        "clinicalStageGroup": "Stage 1",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR467401",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO467401",
+            "submitterTreatmentId": "TR467401",
+            "intervalOfFollowUp": 6,
+            "diseaseStatusAtFollowUp": "Complete remission",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD467402",
+        "ageAtDiagnosis": 85,
+        "cancerTypeCode": "C71.4",
+        "clinicalTumourStagingSystem": "Lugano staging system",
+        "clinicalStageGroup": "Stage IEA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR467402",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 87,
+            "treatmentDuration": 73,
+            "responseToTreatment": "Minor response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Tamoxifen"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO467402",
+            "submitterTreatmentId": "TR467402",
+            "intervalOfFollowUp": 28,
+            "diseaseStatusAtFollowUp": "Complete remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WGS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000004674",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000004674"
+      }
+    ],
+    "runId": "RI4674",
+    "sessionId": "SI4674"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}

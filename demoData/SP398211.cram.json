@@ -1,0 +1,158 @@
+{
+  "studyId": "PACA-AU",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP398211",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": "SP398201",
+      "specimen": {
+        "submitterSpecimenId": "SP398211",
+        "specimenType": "Primary tumour - adjacent to normal",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Lymph node"
+      },
+      "donor": {
+        "submitterDonorId": "DO3982",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP398211.cram",
+      "fileSize": 116085,
+      "fileMd5sum": "33e9cc92cc7741ae249f5ee89caa8464",
+      "fileAccess": "open",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP398211.cram.crai",
+      "fileSize": 52,
+      "fileMd5sum": "9a3582ff3b60352357fc4628d4fc459f",
+      "fileAccess": "open",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD398201",
+    "submitterSpecimenId": "SP398201",
+    "specimenAnatomicLocation": "C24",
+    "tumourGradingSystem": "ISUP grading system",
+    "tumourGrade": "G2"
+  },
+  "donor": {
+    "submitterDonorId": "DO3982",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD398201",
+        "ageAtDiagnosis": 4,
+        "cancerTypeCode": "C88.3",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR398201",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO398201",
+            "submitterTreatmentId": "TR398201",
+            "intervalOfFollowUp": 68,
+            "diseaseStatusAtFollowUp": "Progression NOS",
+            "relapseType": "Local recurrence and distant metastasis"
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD398202",
+        "ageAtDiagnosis": 80,
+        "cancerTypeCode": "C88.3",
+        "clinicalTumourStagingSystem": "Ann Arbor staging system",
+        "clinicalStageGroup": "Stage IES",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR398202",
+            "treatmentType": [
+              "Chemotherapy",
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 10,
+            "treatmentDuration": 73,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Paclitaxel"
+                ]
+              }
+            ],
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Anastrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO398202",
+            "submitterTreatmentId": "TR398202",
+            "intervalOfFollowUp": 24,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WGS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000003982"
+      }
+    ],
+    "runId": "RI3982",
+    "sessionId": "SI3982"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "studyId": "CESC-US",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP577401",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP577401",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO5774",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP577401.cram",
+      "fileSize": 115956,
+      "fileMd5sum": "f107b1504ac9c4007a1fe7713a6bcc59",
+      "fileAccess": "controlled",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP577401.cram.crai",
+      "fileSize": 52,
+      "fileMd5sum": "1d70787bd2df467ef4f48a81e7f64604",
+      "fileAccess": "controlled",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD577401",
+    "submitterSpecimenId": "SP577401",
+    "specimenAnatomicLocation": "C86",
+    "tumourGradingSystem": "Two-tier grading system",
+    "tumourGrade": "Low grade"
+  },
+  "donor": {
+    "submitterDonorId": "DO5774",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD577401",
+        "ageAtDiagnosis": 35,
+        "cancerTypeCode": "C88.0",
+        "clinicalTumourStagingSystem": "Ann Arbor staging system",
+        "clinicalStageGroup": "Stage IBE",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR577401",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO577401",
+            "submitterTreatmentId": "TR577401",
+            "intervalOfFollowUp": 31,
+            "diseaseStatusAtFollowUp": "Complete remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Bowtie2 Alignment",
+    "workflowShortName": "Bowtie2Aln",
+    "workflowVersion": "0.1.0",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000005774"
+      }
+    ],
+    "runId": "RI5774",
+    "sessionId": "SI5774"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

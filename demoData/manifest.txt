@@ -1,0 +1,3 @@
+b065e639-6009-4449-a5e6-396009a449da		
+287f58f6-1e04-5ed5-b117-fa676db7d524	/output/SP011511.indel.vcf.gz.tbi	ae025b596b2fb562d33073338eb23a7d
+540739b9-fa98-5ead-a1a0-423ca81dfb65	/output/SP011511.indel.vcf.gz	c445d6cd5e1aa1d7dec13096feae788c

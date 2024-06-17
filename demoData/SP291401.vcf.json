@@ -1,0 +1,127 @@
+{
+  "studyId": "PACA-AU",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP291401",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP291401",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Intestine"
+      },
+      "donor": {
+        "submitterDonorId": "DO2914",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP291401.snv.vcf.gz",
+      "fileSize": 17245,
+      "fileMd5sum": "62135ab1463627c17711f97121d6726f",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP291401.snv.vcf.gz.tbi",
+      "fileSize": 147,
+      "fileMd5sum": "0d7326e977df7ab25839f03eea85beb3",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD291401",
+    "submitterSpecimenId": "SP291401",
+    "specimenAnatomicLocation": "C57",
+    "tumourGradingSystem": "Grading system for GNETs",
+    "tumourGrade": "G2"
+  },
+  "donor": {
+    "submitterDonorId": "DO2914",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 560,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD291401",
+        "ageAtDiagnosis": 79,
+        "cancerTypeCode": "C88.2",
+        "clinicalTumourStagingSystem": "St Jude staging system",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR291401",
+            "treatmentType": [
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 16,
+            "treatmentDuration": 44,
+            "responseToTreatment": "Minor response",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Letrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO291401",
+            "submitterTreatmentId": "TR291401",
+            "intervalOfFollowUp": 35,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WXS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000002914",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000002914"
+      }
+    ],
+    "runId": "RI2914",
+    "sessionId": "SI2914"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "studyId": "BRCA-MX",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP526011",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": "SP526001",
+      "specimen": {
+        "submitterSpecimenId": "SP526011",
+        "specimenType": "Primary tumour - additional new primary",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Lymph node"
+      },
+      "donor": {
+        "submitterDonorId": "DO5260",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP526011.indel.vcf.gz",
+      "fileSize": 17314,
+      "fileMd5sum": "d8d4af1a636758eb789184be8752cf08",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP526011.indel.vcf.gz.tbi",
+      "fileSize": 150,
+      "fileMd5sum": "9e7fb882f571135b8d3f83f89fa2db00",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD526001",
+    "submitterSpecimenId": "SP526001",
+    "specimenAnatomicLocation": "C63",
+    "tumourGradingSystem": "Grading system for GISTs",
+    "tumourGrade": "High"
+  },
+  "donor": {
+    "submitterDonorId": "DO5260",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1299,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD526001",
+        "ageAtDiagnosis": 19,
+        "cancerTypeCode": "C71.6",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR526001",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO526001",
+            "submitterTreatmentId": "TR526001",
+            "intervalOfFollowUp": 37,
+            "diseaseStatusAtFollowUp": "Loco-regional progression",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD526002",
+        "ageAtDiagnosis": 56,
+        "cancerTypeCode": "C71.5",
+        "clinicalTumourStagingSystem": "Lugano staging system",
+        "clinicalStageGroup": "Stage IIEB",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR526002",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO526002",
+            "submitterTreatmentId": "TR526002",
+            "intervalOfFollowUp": 20,
+            "diseaseStatusAtFollowUp": "Relapse or recurrence",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WGS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000005260",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000005260"
+      }
+    ],
+    "runId": "RI5260",
+    "sessionId": "SI5260"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

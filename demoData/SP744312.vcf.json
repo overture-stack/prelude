@@ -1,0 +1,127 @@
+{
+  "studyId": "SECA-CA",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP744312",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": "SP744302",
+      "specimen": {
+        "submitterSpecimenId": "SP744312",
+        "specimenType": "Metastatic tumour - additional metastatic",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived"
+      },
+      "donor": {
+        "submitterDonorId": "DO7443",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP744312.indel.vcf.gz",
+      "fileSize": 17380,
+      "fileMd5sum": "d713f83a36ff6d95a49268905b8a0206",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP744312.indel.vcf.gz.tbi",
+      "fileSize": 151,
+      "fileMd5sum": "0fffe3a8969892bebfb92554748d1d60",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD744301",
+    "submitterSpecimenId": "SP744302",
+    "specimenAnatomicLocation": "C47",
+    "tumourGradingSystem": "ISUP grading system",
+    "tumourGrade": "G1"
+  },
+  "donor": {
+    "submitterDonorId": "DO7443",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD744301",
+        "ageAtDiagnosis": 57,
+        "cancerTypeCode": "C88.3",
+        "clinicalTumourStagingSystem": "AJCC 7th edition",
+        "clinicalStageGroup": "Stage IIC",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR744301",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 21,
+            "treatmentDuration": 70,
+            "responseToTreatment": "Disease progression",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Azacitidine"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO744301",
+            "submitterTreatmentId": "TR744301",
+            "intervalOfFollowUp": 67,
+            "diseaseStatusAtFollowUp": "Complete remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000007443",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000007443"
+      }
+    ],
+    "runId": "RI7443",
+    "sessionId": "SI7443"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "studyId": "BRCA-MX",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP291412",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": "SP291402",
+      "specimen": {
+        "submitterSpecimenId": "SP291412",
+        "specimenType": "Metastatic tumour - metastasis local to lymph node",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived - peripheral blood"
+      },
+      "donor": {
+        "submitterDonorId": "DO2914",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP291412.snv.vcf.gz",
+      "fileSize": 17246,
+      "fileMd5sum": "152cdcc4bc07060eb1649b415f5c6685",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP291412.snv.vcf.gz.tbi",
+      "fileSize": 145,
+      "fileMd5sum": "1d5a74b431258fb1bf95bb839eed8792",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD291401",
+    "submitterSpecimenId": "SP291402",
+    "specimenAnatomicLocation": "C60",
+    "tumourGradingSystem": "Scarff-Bloom-Richardson grading system",
+    "tumourGrade": "G1"
+  },
+  "donor": {
+    "submitterDonorId": "DO2914",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 560,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD291401",
+        "ageAtDiagnosis": 79,
+        "cancerTypeCode": "C88.2",
+        "clinicalTumourStagingSystem": "St Jude staging system",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR291401",
+            "treatmentType": [
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 16,
+            "treatmentDuration": 44,
+            "responseToTreatment": "Minor response",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Letrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO291401",
+            "submitterTreatmentId": "TR291401",
+            "intervalOfFollowUp": 35,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WGS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000002914",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000002914"
+      }
+    ],
+    "runId": "RI2914",
+    "sessionId": "SI2914"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

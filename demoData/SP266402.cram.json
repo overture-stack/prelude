@@ -1,0 +1,125 @@
+{
+  "studyId": "SECA-CA",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP266402",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP266402",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived"
+      },
+      "donor": {
+        "submitterDonorId": "DO2664",
+        "gender": "Other"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP266402.cram",
+      "fileSize": 116047,
+      "fileMd5sum": "e83e062fc6716410b96eb05a5912fbaa",
+      "fileAccess": "open",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP266402.cram.crai",
+      "fileSize": 52,
+      "fileMd5sum": "f4b98677ee84bc43d11770bdbff8bec2",
+      "fileAccess": "open",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD266401",
+    "submitterSpecimenId": "SP266402",
+    "specimenAnatomicLocation": "C12",
+    "tumourGradingSystem": "ISUP grading system",
+    "tumourGrade": "G1"
+  },
+  "donor": {
+    "submitterDonorId": "DO2664",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD266401",
+        "ageAtDiagnosis": 60,
+        "cancerTypeCode": "C88.0",
+        "clinicalTumourStagingSystem": "Durie-Salmon staging system",
+        "clinicalStageGroup": "Stage IIIA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR266401",
+            "treatmentType": [
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 82,
+            "treatmentDuration": 97,
+            "responseToTreatment": "Minor response",
+            "radiation": [
+              {
+                "radiationTherapyModality": "Heavy Ions",
+                "anatomicalSiteIrradiated": "Neck"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO266401",
+            "submitterTreatmentId": "TR266401",
+            "intervalOfFollowUp": 51,
+            "diseaseStatusAtFollowUp": "No evidence of disease",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000002664"
+      }
+    ],
+    "runId": "RI2664",
+    "sessionId": "SI2664"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

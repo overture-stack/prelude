@@ -1,0 +1,151 @@
+{
+  "studyId": "SECA-CA",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP945811",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": "SP945801",
+      "specimen": {
+        "submitterSpecimenId": "SP945811",
+        "specimenType": "Primary tumour - adjacent to normal",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Lymph node"
+      },
+      "donor": {
+        "submitterDonorId": "DO9458",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP945811.indel.vcf.gz",
+      "fileSize": 17331,
+      "fileMd5sum": "e9e35ec83e4da4c4716caffe6ae4b284",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP945811.indel.vcf.gz.tbi",
+      "fileSize": 160,
+      "fileMd5sum": "b5c4010ba21646384b5544b191d03975",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD945801",
+    "submitterSpecimenId": "SP945801",
+    "specimenAnatomicLocation": "C36",
+    "tumourGradingSystem": "Four-tier grading system",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO9458",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1108,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD945801",
+        "ageAtDiagnosis": 44,
+        "cancerTypeCode": "C34.3",
+        "clinicalTumourStagingSystem": "FIGO staging system",
+        "clinicalStageGroup": "Stage IA2",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR945801",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO945801",
+            "submitterTreatmentId": "TR945801",
+            "intervalOfFollowUp": 92,
+            "diseaseStatusAtFollowUp": "Relapse or recurrence",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD945802",
+        "ageAtDiagnosis": 3,
+        "cancerTypeCode": "C34.3",
+        "clinicalTumourStagingSystem": "AJCC 7th edition",
+        "clinicalStageGroup": "Stage IIIC",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR945802",
+            "treatmentType": [
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 11,
+            "treatmentDuration": 61,
+            "responseToTreatment": "Complete response",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Exemestane"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO945802",
+            "submitterTreatmentId": "TR945802",
+            "intervalOfFollowUp": 33,
+            "diseaseStatusAtFollowUp": "Relapse or recurrence",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000009458",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000009458"
+      }
+    ],
+    "runId": "RI9458",
+    "sessionId": "SI9458"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

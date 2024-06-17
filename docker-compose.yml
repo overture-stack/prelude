@@ -1,14 +1,14 @@
 version: "3"
 services:
   # ==================================================================================
-  # A. Database Setup (Postgres + PgAdmin4)
+  # OAuth (KeyCloak)
   # ==================================================================================
-
+  
   # ==========================
   # Keycloak Database
   # ==========================
   keycloak-db:
-    image: postgres:latest
+    image: postgres:14
     container_name: keycloak-db
     environment:
       POSTGRES_USER: admin
@@ -17,7 +17,7 @@ services:
     volumes:
       - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     networks:
-      - db-network
+      - backend-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
       interval: 10s
@@ -25,81 +25,6 @@ services:
       retries: 5
       start_period: 10s
 
-  # ==========================
-  # Song Database
-  # ==========================
-  song-db:
-    image: postgres:11.1
-    container_name: song-db
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: songDb
-    volumes:
-      - ./persistentStorage/data-song-db:/var/lib/postgresql/data
-    networks:
-      - db-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 10s
-
-  # ==========================
-  # pgAdmin4
-  # ==========================
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-    ports:
-      - "5051:80"
-    networks:
-      - db-network
-
-  # ==================================================================================
-  # B. Object Storage (Minio, Minio Client)
-  # ==================================================================================
-  
-  # ==========================
-  # Minio
-  # ==========================
-  minio:
-    image: minio/minio
-    container_name: minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: admin123
-    command: server --console-address ":9001" /data
-    volumes:
-      - ./persistentStorage/data-minio:/data
-
-  # ==========================
-  # Minio Client
-  # ==========================
-  minio-client:
-    image: minio/mc
-    container_name: minio-client
-    depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
-      /usr/bin/mc mb myminio/state &&
-      /usr/bin/mc mb myminio/object;
-      exit 0;
-      "
-
-  # ==================================================================================
-  # C. OAuth (KeyCloak)
-  # ==================================================================================
-  
   # ==========================
   # Keycloak 
   # ==========================
@@ -112,6 +37,12 @@ services:
     ports:
       - "8180:8080"
     environment:
+      # Postgres Variables
+      KC_DB: postgres
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin123
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloakDb
+      # Keycloak Variables
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin123
       KC_HOSTNAME: localhost
@@ -121,19 +52,16 @@ services:
       - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
       - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
     networks:
-      - db-network
-      - index-network
+      - backend-network
+      - frontend-network
+    # --import-realm and --hostname-port are required
     command: >
       start-dev
-      --hostname-port=8180
       --import-realm
-      --db=postgres
-      --db-url=jdbc:postgresql://keycloak-db:5432/keycloakDb
-      --db-username=admin
-      --db-password=admin123
+      --hostname-port=8180
 
   # ==================================================================================
-  # C. File Management (Song, Score, Kafka, Zookeeper)
+  # File Management (Song, Score, Kafka, Zookeeper, Minio)
   # ==================================================================================
   
   # ==========================
@@ -154,7 +82,7 @@ services:
       retries: 3
       start_period: 20s
     networks:
-      - db-network
+      - backend-network
 
   # ==========================
   # Kafka
@@ -162,7 +90,6 @@ services:
   kafka:
     image: confluentinc/cp-kafka:5.4.0
     container_name: kafka
-    platform: linux/amd64
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -178,13 +105,34 @@ services:
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:9092
       CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --list --bootstrap-server localhost:9092"]
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       interval: 10s
       timeout: 10s
       retries: 3
       start_period: 40s
     networks:
-      - db-network
+      - backend-network
+
+  # ==========================
+  # Song Database
+  # ==========================
+  song-db:
+    image: postgres:11.1
+    container_name: song-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: songDb
+    volumes:
+      - ./persistentStorage/data-song-db:/var/lib/postgresql/data
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   # ==========================
   # Song
@@ -194,8 +142,6 @@ services:
     container_name: song
     platform: linux/amd64
     depends_on:
-      pgadmin:
-        condition: service_started
       keycloak:
         condition: service_started
       song-db:
@@ -207,44 +153,80 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Swagger URL
-      SWAGGER_ALTERNATEURL: /swagger-api
-      # PostgreSQL connection details
-      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb?stringtype=unspecified
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: admin123
-      # Flyway migration settings
-      SPRING_FLYWAY_ENABLED: true
-      # SPRING_FLYWAY_LOCATIONS: classpath:db/migration
-      # Spring Run Profiles
+      # Spring Variables
       SPRING_PROFILES_ACTIVE: prod,secure,score-client-cred,kafka
-      # Keycloak Integration
-      AUTH_SERVER_INTROSPECTIONURI: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
-      AUTH_SERVER_CLIENTID: song
-      AUTH_SERVER_CLIENTSECRET: songsecret
-      AUTH_SERVER_TOKENNAME: apikey
+      # Flyway variables
+      SPRING_FLYWAY_ENABLED: true
+      # Song Variables
+      ID_USELOCAL: true
+      SCHEMAS_ENFORCELATEST: true
+      # Score Variables
+      SCORE_URL: http://localhost:8087
+      SCORE_CLIENTCREDENTIALS_ID: score
+      SCORE_CLIENTCREDENTIALS_SECRET: scoresecret
+      SCORE_CLIENTCREDENTIALS_TOKENURL: http://score:8087/oauth/token
+      SCORE_CLIENTCREDENTIALS_SYSTEMSCOPE: score.WRITE
+      # Keycloak Variables
       AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_CLIENTID: dataManagementServices
+      AUTH_SERVER_CLIENTSECRET: Hqg6ArwegBoF2oL3cFyiipIwTHUZsdrG
+      AUTH_SERVER_TOKENNAME: apiKey
       AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
       AUTH_SERVER_KEYCLOAK_REALM: myrealm
-      AUTH_SERVER_SCOPE_STUDY_PREFIX: ABC123.
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.
       AUTH_SERVER_SCOPE_STUDY_SUFFIX: .WRITE
       AUTH_SERVER_SCOPE_SYSTEM: song.WRITE
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
-      # Score Integration (Required)
-      SCORE_URL: http://host.docker.internal:8087
-      SCORE_CLIENTCREDENTIALS_ID: score
-      SCORE_CLIENTCREDENTIALS_SECRET: scoresecret
-      SCORE_CLIENTCREDENTIALS_TOKENURL: http://host.docker.internal:8087/oauth/token
-      SCORE_CLIENTCREDENTIALS_SYSTEMSCOPE: score.WRITE
-      # ID Management configuration
-      ID_USELOCAL: true
-      # Schema Strictness Configuration
-      SCHEMAS_ENFORCELATEST: true
-      # Kafka Event Management Configuration
-      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:9092
-      SPRING_KAFKA_TEMPLATE_DEFAULT-TOPIC: song-analysis
+      AUTH_SERVER_INTROSPECTIONURI: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
+      # Postgres Variables
+      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb?stringtype=unspecified
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      # Kafka Variables
+      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:9092
+      SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
+      # Swagger Variable
+      SWAGGER_ALTERNATEURL: /swagger-api
     networks:
-      - db-network
+      - backend-network
+
+  # ==========================
+  # Minio
+  # ==========================
+  minio:
+    image: minio/minio:RELEASE.2018-05-11T00-29-24Z
+    container_name: minio
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: admin123
+    command: server /data
+    volumes:
+      - ./persistentStorage/data-minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  
+  # ==========================
+  # Minio Client
+  # ==========================
+  minio-client:
+    image: minio/mc
+    container_name: minio-client
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
+      /usr/bin/mc mb myminio/state &&
+      /usr/bin/mc mb myminio/object &&
+      /usr/bin/mc mb myminio/object/data;
+      exit 0;
+      "
 
   # ==========================
   # Score
@@ -254,8 +236,6 @@ services:
     container_name: score
     platform: linux/amd64
     depends_on:
-      minio-client:
-        condition: service_completed_successfully
       keycloak:
         condition: service_started
       song:
@@ -263,38 +243,42 @@ services:
     ports:
       - "8087:8087"
     environment:
-      # Spring Run Profiles and server configurations
-      SPRING_PROFILES_ACTIVE: collaboratory,prod,secure
+      # Spring Variables
+      SPRING_PROFILES_ACTIVE: default,collaboratory,prod,secure,jwt
       SERVER_PORT: 8087
-      SERVER_SSL_ENABLED: false
-      # Logging Configuration
-      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: INFO
-      LOGGING_LEVEL_BIO_OVERTURE_SCORE_SERVER: INFO
-      LOGGING_LEVEL_ROOT: INFO
-      # Authentication Server
-      AUTH_SERVER_PROVIDER: keycloak
-      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
-      AUTH_SERVER_KEYCLOAK_REALM: myrealm
-      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
-      AUTH_SERVER_TOKENNAME: apiKey
-      AUTH_SERVER_CLIENTID: score
-      AUTH_SERVER_CLIENTSECRET: scoresecret
-      AUTH_SERVER_SCOPE_STUDY_PREFIX: ABC123.
-      AUTH_SERVER_SCOPE_DOWNLOAD_SUFFIX: .READ
-      AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.WRITE
-      AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.READ
-      AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
-      # Metadata Manager (Song)
-      METADATA_URL: song:8080
-      # Object Storage (Minio)
-      S3_ENDPOINT: minio:9001
+      # Song Variable
+      METADATA_URL: http://song:8080
+      # Score Variables
+      SERVER_SSL_ENABLED: "false"
+      # Minio Variables
+      S3_ENDPOINT: http://host.docker.internal:9000
       S3_ACCESSKEY: admin
       S3_SECRETKEY: admin123
+      S3_SIGV4ENABLED: true
+      S3_SECURED: false
+      # Test object for pinging
+      OBJECT_SENTINEL: heliograph
       BUCKET_NAME_OBJECT: object
       BUCKET_NAME_STATE: state
       UPLOAD_PARTSIZE: 1073741824
       UPLOAD_CONNECTION_TIMEOUT: 1200000
+      # Keycloak Variables
+      AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_CLIENTID: dataManagementServices
+      AUTH_SERVER_CLIENTSECRET: Hqg6ArwegBoF2oL3cFyiipIwTHUZsdrG
+      AUTH_SERVER_TOKENNAME: apiKey
+      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
+      AUTH_SERVER_KEYCLOAK_REALM: myrealm
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.            
+      AUTH_SERVER_SCOPE_DOWNLOAD_SUFFIX: .READ
+      AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.READ
+      AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.WRITE
+      AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
+      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/      
+      AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
+    networks:
+      - backend-network
 
   # ==================================================================================
   #  E. Search (Maestro, Elasticsearch, Arranger)
@@ -315,7 +299,18 @@ services:
     ports:
       - "11235:11235"
     environment:
-      # Elasticsearch Integration
+      # Maestro Variables
+      MAESTRO_FAILURELOG_ENABLED: true
+      MAESTRO_FAILURELOG_DIR: app/logs/maestro
+      MAESTRO_LOGGING_LEVEL_ROOT: INFO
+      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
+      # Song Variables
+      MAESTRO_REPOSITORIES_0_CODE: song.overture
+      MAESTRO_REPOSITORIES_0_URL: song:8080
+      MAESTRO_REPOSITORIES_0_NAME: "Overture"
+      MAESTRO_REPOSITORIES_0_ORGANIZATION: Overture
+      MAESTRO_REPOSITORIES_0_COUNTRY: CA
+      # Elasticsearch Variables
       MAESTRO_ELASTICSEARCH_CLUSTER_NODES: elasticsearch:9200
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
@@ -327,26 +322,15 @@ services:
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
       MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
       MANAGEMENT_SECURITY_ENABLED: false
-      # Song Integration
-      MAESTRO_REPOSITORIES_0_CODE: song.overture
-      MAESTRO_REPOSITORIES_0_URL: song:8080
-      MAESTRO_REPOSITORIES_0_NAME: "Overture"
-      MAESTRO_REPOSITORIES_0_ORGANIZATION: Overture
-      MAESTRO_REPOSITORIES_0_COUNTRY: CA
-      # Maestro Configurations
-      MAESTRO_FAILURELOG_ENABLED: true
-      MAESTRO_FAILURELOG_DIR: app/logs/maestro
-      MAESTRO_LOGGING_LEVEL_ROOT: INFO
-      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
-      # Spring Settings
+      # Spring Variables
       SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
-      SPRINGDOC_SWAGGERUI_PATH: /api
-      # Kafka Integration
+      SPRINGDOC_SWAGGERUI_PATH: /swagger-api
+      # Kafka Variables
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
     networks:
-      - db-network
-      - index-network
+      - backend-network
+      - frontend-network
 
   # ==========================
   # Elasticsearch
@@ -376,7 +360,7 @@ services:
       retries: 5
       start_period: 20s
     networks:
-      - index-network
+      - frontend-network
   
   # ==========================
   # Index Setup
@@ -402,7 +386,7 @@ services:
       echo 'Templates and index created successfully.'
       " 
     networks:
-      - index-network
+      - frontend-network
 
   # ==========================
   # Arranger-Server
@@ -423,14 +407,17 @@ services:
      - ./configurationFiles/arrangerConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
      - ./configurationFiles/arrangerConfigs/table.json:/app/modules/server/configs/table.json
     environment:
+      # Arranger Variables
       ENABLE_LOGS: false
+      # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
+      # Stage Variables
       REACT_APP_BASE_URL: http://localhost:3000
       REACT_APP_ARRANGER_ADMIN_ROOT: http://localhost:5050/graphql
     networks:
-      - index-network
+      - frontend-network
 
   # ==================================================================================
   #  F. Discovery (Stage)
@@ -451,14 +438,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Arranger Integration
-      NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: analysis
-      NEXT_PUBLIC_ARRANGER_INDEX: analysis-composer-index
-      NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
-      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id, study_id
-      # Score Integration
-      NEXT_PUBLIC_SCORE_API_URL: score:8087
-      # Keycloak Integration
+      # Stage Variables
+      NEXTAUTH_URL: http://localhost:3000/api/auth
+      NEXT_PUBLIC_LAB_NAME: Overture Composer Portal
+      NEXT_PUBLIC_ADMIN_EMAIL: contact@overture.bio
+      NEXT_PUBLIC_DEBUG: true
+      NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
+      # Keycloak Variables
       NODE_TLS_REJECT_UNAUTHORIZED: 0
       NEXT_PUBLIC_AUTH_PROVIDER: keycloak
       ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
@@ -467,20 +453,21 @@ services:
       NEXT_PUBLIC_KEYCLOAK_REALM: myrealm
       NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: webclient
       KEYCLOAK_CLIENT_SECRET: ikksyrYaKX07acf4hpGrpKWcUGaFkEdM
-      NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: song
-      # Stage Configs
-      NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Overture Composer Portal
-      NEXT_PUBLIC_ADMIN_EMAIL: contact@overture.bio
-      NEXT_PUBLIC_DEBUG: true
-      NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
+      NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: dataManagementServices
+      # Score Variables
+      NEXT_PUBLIC_SCORE_API_URL: http://score:8087
+      # Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: analysis
+      NEXT_PUBLIC_ARRANGER_INDEX: analysis-composer-index
+      NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id, study_id
     networks:
-      - db-network
-      - index-network
+      - backend-network
+      - frontend-network
 
 # ==========================
 # Networks
 # ==========================
 networks:
-  db-network:
-  index-network:
+  backend-network:
+  frontend-network:

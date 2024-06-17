@@ -1,0 +1,158 @@
+{
+  "studyId": "BRCA-US",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP692311",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": "SP692301",
+      "specimen": {
+        "submitterSpecimenId": "SP692311",
+        "specimenType": "Primary tumour",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO6923",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP692311.indel.vcf.gz",
+      "fileSize": 17317,
+      "fileMd5sum": "d94cf2fa5cda2c16626afde99a7e8eea",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP692311.indel.vcf.gz.tbi",
+      "fileSize": 158,
+      "fileMd5sum": "f3a48ce89b8ed21c9d0e340da2de8f97",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD692301",
+    "submitterSpecimenId": "SP692301",
+    "specimenAnatomicLocation": "C46",
+    "tumourGradingSystem": "Nuclear grading system for DCIS",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO6923",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1824,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD692301",
+        "ageAtDiagnosis": 52,
+        "cancerTypeCode": "C34.9",
+        "clinicalTumourStagingSystem": "Binet staging system",
+        "clinicalStageGroup": "Stage B",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR692301",
+            "treatmentType": [
+              "Chemotherapy",
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 66,
+            "treatmentDuration": 76,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Tamoxifen"
+                ]
+              }
+            ],
+            "radiation": [
+              {
+                "radiationTherapyModality": "Electron",
+                "anatomicalSiteIrradiated": "Brain"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO692301",
+            "submitterTreatmentId": "TR692301",
+            "intervalOfFollowUp": 93,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD692302",
+        "ageAtDiagnosis": 60,
+        "cancerTypeCode": "C34.8",
+        "clinicalTumourStagingSystem": "Ann Arbor staging system",
+        "clinicalStageGroup": "Stage IIAES",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR692302",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO692302",
+            "submitterTreatmentId": "TR692302",
+            "intervalOfFollowUp": 84,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WXS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000006923",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000006923"
+      }
+    ],
+    "runId": "RI6923",
+    "sessionId": "SI6923"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "studyId": "BRCA-US",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP864512",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": "SP864502",
+      "specimen": {
+        "submitterSpecimenId": "SP864512",
+        "specimenType": "Primary tumour - adjacent to normal",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO8645",
+        "gender": "Other"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP864512.cram",
+      "fileSize": 115995,
+      "fileMd5sum": "bbccf315d4918a7c69a4ada49e5299ea",
+      "fileAccess": "controlled",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP864512.cram.crai",
+      "fileSize": 52,
+      "fileMd5sum": "7d162261c5223c81bd8db6b3e1dde3af",
+      "fileAccess": "controlled",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD864501",
+    "submitterSpecimenId": "SP864502",
+    "specimenAnatomicLocation": "C74",
+    "tumourGradingSystem": "WHO grading system for CNS tumours",
+    "tumourGrade": "Grade IV"
+  },
+  "donor": {
+    "submitterDonorId": "DO8645",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1452,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD864501",
+        "ageAtDiagnosis": 30,
+        "cancerTypeCode": "C88.2",
+        "clinicalTumourStagingSystem": "Durie-Salmon staging system",
+        "clinicalStageGroup": "Stage IIIA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR864501",
+            "treatmentType": [
+              "Chemotherapy",
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 69,
+            "treatmentDuration": 32,
+            "responseToTreatment": "Stable disease",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Tamoxifen"
+                ]
+              }
+            ],
+            "radiation": [
+              {
+                "radiationTherapyModality": "Photon",
+                "anatomicalSiteIrradiated": "Abdomen"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO864501",
+            "submitterTreatmentId": "TR864501",
+            "intervalOfFollowUp": 67,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WGS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000008645"
+      }
+    ],
+    "runId": "RI8645",
+    "sessionId": "SI8645"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

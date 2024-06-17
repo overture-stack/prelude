@@ -1,0 +1,141 @@
+{
+  "studyId": "SECA-CA",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP217511",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": "SP217501",
+      "specimen": {
+        "submitterSpecimenId": "SP217511",
+        "specimenType": "Primary tumour - additional new primary",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived"
+      },
+      "donor": {
+        "submitterDonorId": "DO2175",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP217511.snv.vcf.gz",
+      "fileSize": 17246,
+      "fileMd5sum": "4cf37578e8b641df17647bd8de50ba72",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP217511.snv.vcf.gz.tbi",
+      "fileSize": 141,
+      "fileMd5sum": "f5cca6ace25d076d1f76cebf4ce3defd",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD217501",
+    "submitterSpecimenId": "SP217501",
+    "specimenAnatomicLocation": "C71",
+    "tumourGradingSystem": "Two-tier grading system",
+    "tumourGrade": "High grade"
+  },
+  "donor": {
+    "submitterDonorId": "DO2175",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 25,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD217501",
+        "ageAtDiagnosis": 6,
+        "cancerTypeCode": "C71.1",
+        "clinicalTumourStagingSystem": "AJCC 8th edition",
+        "clinicalStageGroup": "Stage IIIA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR217501",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO217501",
+            "submitterTreatmentId": "TR217501",
+            "intervalOfFollowUp": 79,
+            "diseaseStatusAtFollowUp": "Loco-regional progression",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD217502",
+        "ageAtDiagnosis": 57,
+        "cancerTypeCode": "C71.7",
+        "clinicalTumourStagingSystem": "AJCC 7th edition",
+        "clinicalStageGroup": "Stage 1",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR217502",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO217502",
+            "submitterTreatmentId": "TR217502",
+            "intervalOfFollowUp": 51,
+            "diseaseStatusAtFollowUp": "Relapse or recurrence",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000002175",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000002175"
+      }
+    ],
+    "runId": "RI2175",
+    "sessionId": "SI2175"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

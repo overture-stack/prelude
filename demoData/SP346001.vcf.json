@@ -1,0 +1,168 @@
+{
+  "studyId": "BRCA-US",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP346001",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP346001",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Plasma"
+      },
+      "donor": {
+        "submitterDonorId": "DO3460",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP346001.indel.vcf.gz",
+      "fileSize": 17276,
+      "fileMd5sum": "2d191ecb1f8486d2d59938c3a9e7e802",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP346001.indel.vcf.gz.tbi",
+      "fileSize": 149,
+      "fileMd5sum": "654c88443ca6727a8a98ad914c985a09",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD346001",
+    "submitterSpecimenId": "SP346001",
+    "specimenAnatomicLocation": "C48",
+    "tumourGradingSystem": "Three-tier grading system",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO3460",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD346001",
+        "ageAtDiagnosis": 54,
+        "cancerTypeCode": "C71.4",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR346001",
+            "treatmentType": [
+              "Chemotherapy",
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 74,
+            "treatmentDuration": 79,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Azacitidine"
+                ]
+              }
+            ],
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Anastrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO346001",
+            "submitterTreatmentId": "TR346001",
+            "intervalOfFollowUp": 96,
+            "diseaseStatusAtFollowUp": "Complete remission",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD346002",
+        "ageAtDiagnosis": 44,
+        "cancerTypeCode": "C71.9",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage II",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR346002",
+            "treatmentType": [
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 53,
+            "treatmentDuration": 2,
+            "responseToTreatment": "Disease progression",
+            "radiation": [
+              {
+                "radiationTherapyModality": "Proton",
+                "anatomicalSiteIrradiated": "Brain"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO346002",
+            "submitterTreatmentId": "TR346002",
+            "intervalOfFollowUp": 34,
+            "diseaseStatusAtFollowUp": "Loco-regional progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WGS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000003460",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000003460"
+      }
+    ],
+    "runId": "RI3460",
+    "sessionId": "SI3460"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

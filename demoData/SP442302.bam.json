@@ -1,0 +1,150 @@
+{
+  "studyId": "BRCA-US",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP442302",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP442302",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Plasma"
+      },
+      "donor": {
+        "submitterDonorId": "DO4423",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP442302.bam",
+      "fileSize": 125605,
+      "fileMd5sum": "3e64ac8975e1e76cd4b6e7c957c60348",
+      "fileAccess": "controlled",
+      "fileType": "BAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP442302.bam.bai",
+      "fileSize": 27256,
+      "fileMd5sum": "7094319a99f46346f4abb592339ca320",
+      "fileAccess": "controlled",
+      "fileType": "BAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD442301",
+    "submitterSpecimenId": "SP442302",
+    "specimenAnatomicLocation": "C73",
+    "tumourGradingSystem": "Two-tier grading system",
+    "tumourGrade": "High grade"
+  },
+  "donor": {
+    "submitterDonorId": "DO4423",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 900,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD442301",
+        "ageAtDiagnosis": 50,
+        "cancerTypeCode": "C88.0",
+        "clinicalTumourStagingSystem": "FIGO staging system",
+        "clinicalStageGroup": "Stage IIA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR442301",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 81,
+            "treatmentDuration": 11,
+            "responseToTreatment": "Stable disease",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Paclitaxel"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO442301",
+            "submitterTreatmentId": "TR442301",
+            "intervalOfFollowUp": 78,
+            "diseaseStatusAtFollowUp": "Relapse or recurrence",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD442302",
+        "ageAtDiagnosis": 25,
+        "cancerTypeCode": "C88.0",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR442302",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO442302",
+            "submitterTreatmentId": "TR442302",
+            "intervalOfFollowUp": 5,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WGS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Bowtie2 Alignment",
+    "workflowShortName": "Bowtie2Aln",
+    "workflowVersion": "0.1.0",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000004423"
+      }
+    ],
+    "runId": "RI4423",
+    "sessionId": "SI4423"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

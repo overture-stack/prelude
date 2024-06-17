@@ -1,0 +1,157 @@
+{
+  "studyId": "BRCA-MX",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP042711",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": "SP042701",
+      "specimen": {
+        "submitterSpecimenId": "SP042711",
+        "specimenType": "Metastatic tumour",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Solid tissue"
+      },
+      "donor": {
+        "submitterDonorId": "DO0427",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP042711.cram",
+      "fileSize": 116051,
+      "fileMd5sum": "7551669b421718f5e9d8b32349c899b4",
+      "fileAccess": "open",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP042711.cram.crai",
+      "fileSize": 52,
+      "fileMd5sum": "068971084f3f865fa5fdb91636f312f0",
+      "fileAccess": "open",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD042701",
+    "submitterSpecimenId": "SP042701",
+    "specimenAnatomicLocation": "C66",
+    "tumourGradingSystem": "Three-tier grading system",
+    "tumourGrade": "G2"
+  },
+  "donor": {
+    "submitterDonorId": "DO0427",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1945,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD042701",
+        "ageAtDiagnosis": 64,
+        "cancerTypeCode": "C34.8",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR042701",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO042701",
+            "submitterTreatmentId": "TR042701",
+            "intervalOfFollowUp": 65,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD042702",
+        "ageAtDiagnosis": 52,
+        "cancerTypeCode": "C34.0",
+        "clinicalTumourStagingSystem": "AJCC 8th edition",
+        "clinicalStageGroup": "Stage IIIC1",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR042702",
+            "treatmentType": [
+              "Chemotherapy",
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 9,
+            "treatmentDuration": 43,
+            "responseToTreatment": "Partial response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Azacitidine"
+                ]
+              }
+            ],
+            "radiation": [
+              {
+                "radiationTherapyModality": "Photon",
+                "anatomicalSiteIrradiated": "Spine"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO042702",
+            "submitterTreatmentId": "TR042702",
+            "intervalOfFollowUp": 72,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WGS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000000427"
+      }
+    ],
+    "runId": "RI0427",
+    "sessionId": "SI0427"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

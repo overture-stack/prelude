@@ -1,0 +1,126 @@
+{
+  "studyId": "BRCA-US",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP230901",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP230901",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO2309",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP230901.cram",
+      "fileSize": 116058,
+      "fileMd5sum": "1aefd1dbcecf50be1edf3391d2d7c672",
+      "fileAccess": "open",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP230901.cram.crai",
+      "fileSize": 51,
+      "fileMd5sum": "7c5fbd641e75c911a8addd7347a9a1f7",
+      "fileAccess": "open",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD230901",
+    "submitterSpecimenId": "SP230901",
+    "specimenAnatomicLocation": "C07",
+    "tumourGradingSystem": "Two-tier grading system",
+    "tumourGrade": "Low grade"
+  },
+  "donor": {
+    "submitterDonorId": "DO2309",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1962,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD230901",
+        "ageAtDiagnosis": 2,
+        "cancerTypeCode": "C71.4",
+        "clinicalTumourStagingSystem": "FIGO staging system",
+        "clinicalStageGroup": "Stage IVB",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR230901",
+            "treatmentType": [
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 51,
+            "treatmentDuration": 96,
+            "responseToTreatment": "Complete response",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Exemestane"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO230901",
+            "submitterTreatmentId": "TR230901",
+            "intervalOfFollowUp": 26,
+            "diseaseStatusAtFollowUp": "Stable",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WXS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Bowtie2 Alignment",
+    "workflowShortName": "Bowtie2Aln",
+    "workflowVersion": "0.1.0",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000002309"
+      }
+    ],
+    "runId": "RI2309",
+    "sessionId": "SI2309"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}

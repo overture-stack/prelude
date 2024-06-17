@@ -1,0 +1,116 @@
+{
+  "studyId": "CESC-US",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP906711",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": "SP906701",
+      "specimen": {
+        "submitterSpecimenId": "SP906711",
+        "specimenType": "Primary tumour",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Lymph node"
+      },
+      "donor": {
+        "submitterDonorId": "DO9067",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP906711.bam",
+      "fileSize": 125531,
+      "fileMd5sum": "dc5c7619a3cd062cb680a4898d239326",
+      "fileAccess": "controlled",
+      "fileType": "BAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP906711.bam.bai",
+      "fileSize": 27160,
+      "fileMd5sum": "e66a72a67018cc365233ed70014891b6",
+      "fileAccess": "controlled",
+      "fileType": "BAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD906701",
+    "submitterSpecimenId": "SP906701",
+    "specimenAnatomicLocation": "C20",
+    "tumourGradingSystem": "ISUP grading system",
+    "tumourGrade": "G2"
+  },
+  "donor": {
+    "submitterDonorId": "DO9067",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1378,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD906701",
+        "ageAtDiagnosis": 57,
+        "cancerTypeCode": "C71.9",
+        "clinicalTumourStagingSystem": "St Jude staging system",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR906701",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO906701",
+            "submitterTreatmentId": "TR906701",
+            "intervalOfFollowUp": 31,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Bowtie2 Alignment",
+    "workflowShortName": "Bowtie2Aln",
+    "workflowVersion": "0.1.0",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000009067"
+      }
+    ],
+    "runId": "RI9067",
+    "sessionId": "SI9067"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

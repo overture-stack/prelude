@@ -1,0 +1,127 @@
+{
+  "studyId": "PACA-AU",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP104311",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": "SP104301",
+      "specimen": {
+        "submitterSpecimenId": "SP104311",
+        "specimenType": "Metastatic tumour - metastasis local to lymph node",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Blood derived - peripheral blood"
+      },
+      "donor": {
+        "submitterDonorId": "DO1043",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP104311.indel.vcf.gz",
+      "fileSize": 17346,
+      "fileMd5sum": "5e05ecaf0ae259981633742fb6a41f48",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP104311.indel.vcf.gz.tbi",
+      "fileSize": 140,
+      "fileMd5sum": "8f275cdb86c664f813a83b58d47ba77c",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD104301",
+    "submitterSpecimenId": "SP104301",
+    "specimenAnatomicLocation": "C50",
+    "tumourGradingSystem": "ISUP grading system",
+    "tumourGrade": "G2"
+  },
+  "donor": {
+    "submitterDonorId": "DO1043",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1133,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD104301",
+        "ageAtDiagnosis": 84,
+        "cancerTypeCode": "C34.0",
+        "clinicalTumourStagingSystem": "AJCC 7th edition",
+        "clinicalStageGroup": "Stage IA1",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR104301",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 76,
+            "treatmentDuration": 70,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Paclitaxel"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO104301",
+            "submitterTreatmentId": "TR104301",
+            "intervalOfFollowUp": 23,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WXS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000001043",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000001043"
+      }
+    ],
+    "runId": "RI1043",
+    "sessionId": "SI1043"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}
