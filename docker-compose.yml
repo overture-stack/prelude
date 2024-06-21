@@ -154,18 +154,15 @@ services:
       - "8080:8080"
     environment:
       # Spring Variables
-      SPRING_PROFILES_ACTIVE: prod,secure,score-client-cred,kafka
+      SPRING_PROFILES_ACTIVE: prod,secure,kafka
       # Flyway variables
       SPRING_FLYWAY_ENABLED: true
       # Song Variables
       ID_USELOCAL: true
       SCHEMAS_ENFORCELATEST: true
       # Score Variables
-      SCORE_URL: http://localhost:8087
-      SCORE_CLIENTCREDENTIALS_ID: score
-      SCORE_CLIENTCREDENTIALS_SECRET: scoresecret
-      SCORE_CLIENTCREDENTIALS_TOKENURL: http://score:8087/oauth/token
-      SCORE_CLIENTCREDENTIALS_SYSTEMSCOPE: score.WRITE
+      SCORE_URL: http://score:8087
+      SCORE_ACCESSTOKEN: 1909ecc4-94fe-46be-8c04-4095db200b40
       # Keycloak Variables
       AUTH_SERVER_PROVIDER: keycloak
       AUTH_SERVER_CLIENTID: dms
@@ -183,7 +180,7 @@ services:
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
       # Kafka Variables
-      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAPSERVERS: http://kafka:9092
       SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
       # Swagger Variable
       SWAGGER_ALTERNATEURL: /swagger-api
@@ -309,12 +306,12 @@ services:
       MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
       # Song Variables
       MAESTRO_REPOSITORIES_0_CODE: song.overture
-      MAESTRO_REPOSITORIES_0_URL: song:8080
-      MAESTRO_REPOSITORIES_0_NAME: "Overture"
+      MAESTRO_REPOSITORIES_0_URL: http://song:8080
+      MAESTRO_REPOSITORIES_0_NAME: Overture
       MAESTRO_REPOSITORIES_0_ORGANIZATION: Overture
       MAESTRO_REPOSITORIES_0_COUNTRY: CA
       # Elasticsearch Variables
-      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
       MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
@@ -323,8 +320,7 @@ services:
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: true
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: false
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
-      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
-      MANAGEMENT_SECURITY_ENABLED: false
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
       # Spring Variables
       SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
       SPRINGDOC_SWAGGERUI_PATH: /swagger-api
@@ -339,7 +335,7 @@ services:
   # Elasticsearch
   # ==========================
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
     container_name: elasticsearch
     ports:
       - "9200:9200"
@@ -378,15 +374,13 @@ services:
       - "9201:9201"
     volumes:
       - ./configurationFiles/elasticsearchConfigs/composer_index_template.json:/usr/share/elasticsearch/config/composer_index_template.json
-      - ./configurationFiles/elasticsearchConfigs/composer_component_template.json:/usr/share/elasticsearch/config/composer_component_template.json
+    # add in scripting to check if a template already exists this will reduce the need to rerun when restarting
     command: >
       sh -c "
       apk --no-cache add curl && 
       sleep 60 && 
-      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_component_template/component_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/composer_component_template.json && 
-      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_index_template/index_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/composer_index_template.json && 
-      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/analysis-composer-index' -H 'Content-Type: application/json' -d '{\"aliases\": {\"analysis_centric\": {\"is_write_index\": true}}}' && 
-      echo 'Templates and index created successfully.'
+      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_template/index_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/composer_index_template.json && 
+      curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/analysis-composer-index' -H 'Content-Type: application/json' -d '{\"aliases\": {\"analysis_centric\": {\"is_write_index\": true}}}'
       " 
     networks:
       - frontend-network
@@ -461,7 +455,7 @@ services:
       NEXT_PUBLIC_SCORE_API_URL: http://score:8087
       # Arranger Variables
       NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: analysis
-      NEXT_PUBLIC_ARRANGER_INDEX: analysis-composer-index
+      NEXT_PUBLIC_ARRANGER_INDEX: analysis_centric
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id, study_id
     networks:

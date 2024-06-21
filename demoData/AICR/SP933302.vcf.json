@@ -1,0 +1,135 @@
+{
+  "studyId": "AICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP933302",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP933302",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived"
+      },
+      "donor": {
+        "submitterDonorId": "DO9333",
+        "gender": "Other"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP933302.indel.vcf.gz",
+      "fileSize": 17322,
+      "fileMd5sum": "51b47fe36f87185ab15fe84cfb4fcb81",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP933302.indel.vcf.gz.tbi",
+      "fileSize": 144,
+      "fileMd5sum": "d5ad09fbcf9405daffbbf0d9ff38e2e6",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD933301",
+    "submitterSpecimenId": "SP933302",
+    "specimenAnatomicLocation": "C52",
+    "tumourGradingSystem": "Scarff-Bloom-Richardson grading system",
+    "tumourGrade": "GX"
+  },
+  "donor": {
+    "submitterDonorId": "DO9333",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD933301",
+        "ageAtDiagnosis": 30,
+        "cancerTypeCode": "C71.6",
+        "clinicalTumourStagingSystem": "Rai staging system",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR933301",
+            "treatmentType": [
+              "Chemotherapy",
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 57,
+            "treatmentDuration": 59,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Azacitidine"
+                ]
+              }
+            ],
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Exemestane"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO933301",
+            "submitterTreatmentId": "TR933301",
+            "intervalOfFollowUp": 5,
+            "diseaseStatusAtFollowUp": "Stable",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000009333",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000009333"
+      }
+    ],
+    "runId": "RI9333",
+    "sessionId": "SI9333"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

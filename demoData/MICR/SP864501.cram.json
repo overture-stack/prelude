@@ -1,0 +1,133 @@
+{
+  "studyId": "MICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP864501",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP864501",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO8645",
+        "gender": "Other"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP864501.cram",
+      "fileSize": 115973,
+      "fileMd5sum": "c852b26260bb6e80918e5b35f4a7c101",
+      "fileAccess": "controlled",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP864501.cram.crai",
+      "fileSize": 52,
+      "fileMd5sum": "8566392f47fcc703008a950393967efa",
+      "fileAccess": "controlled",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD864501",
+    "submitterSpecimenId": "SP864501",
+    "specimenAnatomicLocation": "C38",
+    "tumourGradingSystem": "Gleason grade group system",
+    "tumourGrade": "Grade Group 1"
+  },
+  "donor": {
+    "submitterDonorId": "DO8645",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1452,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD864501",
+        "ageAtDiagnosis": 30,
+        "cancerTypeCode": "C88.2",
+        "clinicalTumourStagingSystem": "Durie-Salmon staging system",
+        "clinicalStageGroup": "Stage IIIA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR864501",
+            "treatmentType": [
+              "Chemotherapy",
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 69,
+            "treatmentDuration": 32,
+            "responseToTreatment": "Stable disease",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Tamoxifen"
+                ]
+              }
+            ],
+            "radiation": [
+              {
+                "radiationTherapyModality": "Photon",
+                "anatomicalSiteIrradiated": "Abdomen"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO864501",
+            "submitterTreatmentId": "TR864501",
+            "intervalOfFollowUp": 67,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Bowtie2 Alignment",
+    "workflowShortName": "Bowtie2Aln",
+    "workflowVersion": "0.1.0",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000008645"
+      }
+    ],
+    "runId": "RI8645",
+    "sessionId": "SI8645"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

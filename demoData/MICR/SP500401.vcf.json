@@ -1,0 +1,168 @@
+{
+  "studyId": "MICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP500401",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP500401",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO5004",
+        "gender": "Other"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP500401.indel.vcf.gz",
+      "fileSize": 17299,
+      "fileMd5sum": "13b6a1a56418c476a0663e5fa55eb3d8",
+      "fileAccess": "controlled",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP500401.indel.vcf.gz.tbi",
+      "fileSize": 149,
+      "fileMd5sum": "dd5913d238e308db0c870d65e3d30c7e",
+      "fileAccess": "controlled",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD500401",
+    "submitterSpecimenId": "SP500401",
+    "specimenAnatomicLocation": "C70",
+    "tumourGradingSystem": "ISUP grading system",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO5004",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 437,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD500401",
+        "ageAtDiagnosis": 24,
+        "cancerTypeCode": "C34.8",
+        "clinicalTumourStagingSystem": "AJCC 8th edition",
+        "clinicalStageGroup": "Stage 0is",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR500401",
+            "treatmentType": [
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 93,
+            "treatmentDuration": 56,
+            "responseToTreatment": "Partial response",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Exemestane"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO500401",
+            "submitterTreatmentId": "TR500401",
+            "intervalOfFollowUp": 97,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD500402",
+        "ageAtDiagnosis": 35,
+        "cancerTypeCode": "C34.0",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage III",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR500402",
+            "treatmentType": [
+              "Chemotherapy",
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 27,
+            "treatmentDuration": 72,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Tamoxifen"
+                ]
+              }
+            ],
+            "radiation": [
+              {
+                "radiationTherapyModality": "Photon",
+                "anatomicalSiteIrradiated": "Brain"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO500402",
+            "submitterTreatmentId": "TR500402",
+            "intervalOfFollowUp": 35,
+            "diseaseStatusAtFollowUp": "Stable",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000005004",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000005004"
+      }
+    ],
+    "runId": "RI5004",
+    "sessionId": "SI5004"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

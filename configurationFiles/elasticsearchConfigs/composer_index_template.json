@@ -1,8 +1,7 @@
 {
   "index_patterns": ["analysis-*"],
-  "template": {
-    "settings": {
-      "number_of_shards": 3
+  "aliases": {
+      "analysis_centric": {}
     },
     "mappings": {
       "date_detection": false,
@@ -562,11 +561,32 @@
         }
       }
     },
-    "aliases": {
-      "analysis_centric": {}
+    "settings": {
+      "analysis": {
+        "analyzer": {
+          "autocompleteAnalyzed": {
+            "filter": ["lowercase", "edgeNgram"],
+            "tokenizer": "standard"
+          },
+          "autocompletePrefix": {
+            "filter": ["lowercase", "edgeNgram"],
+            "tokenizer": "keyword"
+          },
+          "lowercaseKeyword": {
+            "filter": ["lowercase"],
+            "tokenizer": "keyword"
+          }
+        },
+        "filter": {
+          "edgeNgram": {
+            "maxGram": "20",
+            "minGram": "1",
+            "side": "front",
+            "type": "edge_ngram"
+          }
+        }
+    },
+      "index.max_result_window": 300000,
+      "index.number_of_shards": 3
     }
-  },
-  "composed_of": ["component_template"],
-  "priority": 1,
-  "version": 1
-}
+  }

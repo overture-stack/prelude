@@ -1,0 +1,127 @@
+{
+  "studyId": "OICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP308001",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP308001",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Plasma"
+      },
+      "donor": {
+        "submitterDonorId": "DO3080",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP308001.indel.vcf.gz",
+      "fileSize": 17286,
+      "fileMd5sum": "75be7b5dea4f5c213ca1fbef8a2eb99a",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw InDel Calls",
+      "fileName": "SP308001.indel.vcf.gz.tbi",
+      "fileSize": 142,
+      "fileMd5sum": "c6878036c9a6362942cab95b9b7297e8",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD308001",
+    "submitterSpecimenId": "SP308001",
+    "specimenAnatomicLocation": "C30",
+    "tumourGradingSystem": "Three-tier grading system",
+    "tumourGrade": "G1"
+  },
+  "donor": {
+    "submitterDonorId": "DO3080",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD308001",
+        "ageAtDiagnosis": 41,
+        "cancerTypeCode": "C88.3",
+        "clinicalTumourStagingSystem": "AJCC 6th edition",
+        "clinicalStageGroup": "Stage IVB",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR308001",
+            "treatmentType": [
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 48,
+            "treatmentDuration": 6,
+            "responseToTreatment": "Complete response",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Anastrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO308001",
+            "submitterTreatmentId": "TR308001",
+            "intervalOfFollowUp": 87,
+            "diseaseStatusAtFollowUp": "No evidence of disease",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WXS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000003080",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000003080"
+      }
+    ],
+    "runId": "RI3080",
+    "sessionId": "SI3080"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}

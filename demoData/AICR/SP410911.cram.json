@@ -1,0 +1,167 @@
+{
+  "studyId": "AICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP410911",
+      "sampleType": "Amplified DNA",
+      "matchedNormalSubmitterSampleId": "SP410901",
+      "specimen": {
+        "submitterSpecimenId": "SP410911",
+        "specimenType": "Primary tumour - additional new primary",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Lymph node"
+      },
+      "donor": {
+        "submitterDonorId": "DO4109",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP410911.cram",
+      "fileSize": 115958,
+      "fileMd5sum": "7ecf7ab47df62450fedc0d365b33b76a",
+      "fileAccess": "open",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP410911.cram.crai",
+      "fileSize": 53,
+      "fileMd5sum": "3066b32d06be4ac1c5238346e8ad4270",
+      "fileAccess": "open",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD410901",
+    "submitterSpecimenId": "SP410901",
+    "specimenAnatomicLocation": "C71",
+    "tumourGradingSystem": "Nuclear grading system for DCIS",
+    "tumourGrade": "GX"
+  },
+  "donor": {
+    "submitterDonorId": "DO4109",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1139,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD410901",
+        "ageAtDiagnosis": 77,
+        "cancerTypeCode": "C34.2",
+        "clinicalTumourStagingSystem": "FIGO staging system",
+        "clinicalStageGroup": "Stage IA1",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR410901",
+            "treatmentType": [
+              "Hormonal therapy",
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 2,
+            "treatmentDuration": 75,
+            "responseToTreatment": "Disease progression",
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Anastrozole"
+                ]
+              }
+            ],
+            "radiation": [
+              {
+                "radiationTherapyModality": "Photon",
+                "anatomicalSiteIrradiated": "Thorax"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO410901",
+            "submitterTreatmentId": "TR410901",
+            "intervalOfFollowUp": 86,
+            "diseaseStatusAtFollowUp": "Stable",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD410902",
+        "ageAtDiagnosis": 43,
+        "cancerTypeCode": "C34.8",
+        "clinicalTumourStagingSystem": "Rai staging system",
+        "clinicalStageGroup": "Stage 0",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR410902",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 97,
+            "treatmentDuration": 65,
+            "responseToTreatment": "Disease progression",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Paclitaxel"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO410902",
+            "submitterTreatmentId": "TR410902",
+            "intervalOfFollowUp": 17,
+            "diseaseStatusAtFollowUp": "Relapse or recurrence",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000004109"
+      }
+    ],
+    "runId": "RI4109",
+    "sessionId": "SI4109"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

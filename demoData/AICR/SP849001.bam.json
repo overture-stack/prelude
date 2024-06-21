@@ -1,0 +1,134 @@
+{
+  "studyId": "AICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP849001",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP849001",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Intestine"
+      },
+      "donor": {
+        "submitterDonorId": "DO8490",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP849001.bam",
+      "fileSize": 125266,
+      "fileMd5sum": "c1b6423c50b84e87453d5eb49c31c524",
+      "fileAccess": "controlled",
+      "fileType": "BAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP849001.bam.bai",
+      "fileSize": 27280,
+      "fileMd5sum": "98bcf6ebd70311cb260e8555ce80466c",
+      "fileAccess": "controlled",
+      "fileType": "BAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD849001",
+    "submitterSpecimenId": "SP849001",
+    "specimenAnatomicLocation": "C42",
+    "tumourGradingSystem": "WHO grading system for CNS tumours",
+    "tumourGrade": "Grade III"
+  },
+  "donor": {
+    "submitterDonorId": "DO8490",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD849001",
+        "ageAtDiagnosis": 78,
+        "cancerTypeCode": "C88.3",
+        "clinicalTumourStagingSystem": "Binet staging system",
+        "clinicalStageGroup": "Stage C",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR849001",
+            "treatmentType": [
+              "Chemotherapy",
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 9,
+            "treatmentDuration": 72,
+            "responseToTreatment": "Partial response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Tamoxifen"
+                ]
+              }
+            ],
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Letrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO849001",
+            "submitterTreatmentId": "TR849001",
+            "intervalOfFollowUp": 90,
+            "diseaseStatusAtFollowUp": "Loco-regional progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000008490"
+      }
+    ],
+    "runId": "RI8490",
+    "sessionId": "SI8490"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

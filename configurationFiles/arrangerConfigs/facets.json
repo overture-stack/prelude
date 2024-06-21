@@ -1,76 +1,51 @@
 {
-	"facets": {
-		"aggregations": [
-			{
-				"active": true,
-				"fieldName": "donors__specimens__samples__sample_type",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "donors__specimens__tumour_normal_designation",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "donor__primarySite",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "donor__primaryDiagnosis__clinicalTumourStagingSystem",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "donors__specimens__specimen_tissue_source",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "donors__specimens__specimen_type",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "donors__gender",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "files__dataCategory",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "files__size",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "files__file_type",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "files__file_access",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "files__data_type",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "experiment__experimentalStrategy",
-				"show": true
-			},
-			{
-				"active": true,
-				"fieldName": "experiment__platform",
-				"show": true
-			}
-		]
+		"facets": {
+			"aggregations": [
+				{
+					"active": true,
+					"fieldName": "donor__primarySite",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "donor__primaryDiagnosis__clinicalTumourStagingSystem",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "files__dataCategory",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "files__size",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "files__file_type",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "files__file_access",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "files__data_type",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "experiment__experimentalStrategy",
+					"show": true
+				},
+				{
+					"active": true,
+					"fieldName": "experiment__platform",
+					"show": true
+				}
+			]
+		}
 	}
-}

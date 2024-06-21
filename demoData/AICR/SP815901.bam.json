@@ -1,0 +1,116 @@
+{
+  "studyId": "AICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP815901",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP815901",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Plasma"
+      },
+      "donor": {
+        "submitterDonorId": "DO8159",
+        "gender": "Other"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP815901.bam",
+      "fileSize": 125315,
+      "fileMd5sum": "bd7010d4f10b3d69552d62f031ae4b2e",
+      "fileAccess": "controlled",
+      "fileType": "BAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP815901.bam.bai",
+      "fileSize": 27136,
+      "fileMd5sum": "05fb4c119164fcbcb8cad7661a263d1b",
+      "fileAccess": "controlled",
+      "fileType": "BAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD815901",
+    "submitterSpecimenId": "SP815901",
+    "specimenAnatomicLocation": "C28",
+    "tumourGradingSystem": "Four-tier grading system",
+    "tumourGrade": "GX"
+  },
+  "donor": {
+    "submitterDonorId": "DO8159",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1070,
+    "causeOfDeath": "Died of other reasons",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD815901",
+        "ageAtDiagnosis": 79,
+        "cancerTypeCode": "C71.5",
+        "clinicalTumourStagingSystem": "Durie-Salmon staging system",
+        "clinicalStageGroup": "Stage 1",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR815901",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO815901",
+            "submitterTreatmentId": "TR815901",
+            "intervalOfFollowUp": 50,
+            "diseaseStatusAtFollowUp": "Progression NOS",
+            "relapseType": "Local recurrence"
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Bowtie2 Alignment",
+    "workflowShortName": "Bowtie2Aln",
+    "workflowVersion": "0.1.0",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000008159"
+      }
+    ],
+    "runId": "RI8159",
+    "sessionId": "SI8159"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "studyId": "OICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP449212",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": "SP449202",
+      "specimen": {
+        "submitterSpecimenId": "SP449212",
+        "specimenType": "Metastatic tumour - additional metastatic",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Plasma"
+      },
+      "donor": {
+        "submitterDonorId": "DO4492",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP449212.cram",
+      "fileSize": 116063,
+      "fileMd5sum": "3af839ffdce50aadf972224a96436b4a",
+      "fileAccess": "controlled",
+      "fileType": "CRAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP449212.cram.crai",
+      "fileSize": 53,
+      "fileMd5sum": "235838146037dc64b5dc347302983aab",
+      "fileAccess": "controlled",
+      "fileType": "CRAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD449201",
+    "submitterSpecimenId": "SP449202",
+    "specimenAnatomicLocation": "C45",
+    "tumourGradingSystem": "Nuclear grading system for DCIS",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO4492",
+    "primarySite": [
+      "Brain"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 1537,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD449201",
+        "ageAtDiagnosis": 3,
+        "cancerTypeCode": "C71.0",
+        "clinicalTumourStagingSystem": "AJCC 7th edition",
+        "clinicalStageGroup": "Stage III",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR449201",
+            "treatmentType": [
+              "Radiation therapy"
+            ],
+            "treatmentStartInterval": 1,
+            "treatmentDuration": 46,
+            "responseToTreatment": "Disease progression",
+            "radiation": [
+              {
+                "radiationTherapyModality": "Proton",
+                "anatomicalSiteIrradiated": "Head"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO449201",
+            "submitterTreatmentId": "TR449201",
+            "intervalOfFollowUp": 71,
+            "diseaseStatusAtFollowUp": "Stable",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WXS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Bowtie2 Alignment",
+    "workflowShortName": "Bowtie2Aln",
+    "workflowVersion": "0.1.0",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000004492"
+      }
+    ],
+    "runId": "RI4492",
+    "sessionId": "SI4492"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}

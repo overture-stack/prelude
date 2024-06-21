@@ -1,0 +1,150 @@
+{
+  "studyId": "OICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP442301",
+      "sampleType": "ctDNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP442301",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived"
+      },
+      "donor": {
+        "submitterDonorId": "DO4423",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP442301.bam",
+      "fileSize": 125446,
+      "fileMd5sum": "c9f1ccf4e9b70a4a744ef7f61efef435",
+      "fileAccess": "controlled",
+      "fileType": "BAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP442301.bam.bai",
+      "fileSize": 27160,
+      "fileMd5sum": "bfffe5e7f1b732643aecdc86d516e500",
+      "fileAccess": "controlled",
+      "fileType": "BAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD442301",
+    "submitterSpecimenId": "SP442301",
+    "specimenAnatomicLocation": "C80",
+    "tumourGradingSystem": "Grading system for GNETs",
+    "tumourGrade": "G3"
+  },
+  "donor": {
+    "submitterDonorId": "DO4423",
+    "primarySite": [
+      "Hematopoietic and reticuloendothelial systems"
+    ],
+    "vitalStatus": "Deceased",
+    "survivalTime": 900,
+    "causeOfDeath": "Died of cancer",
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD442301",
+        "ageAtDiagnosis": 50,
+        "cancerTypeCode": "C88.0",
+        "clinicalTumourStagingSystem": "FIGO staging system",
+        "clinicalStageGroup": "Stage IIA",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR442301",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 81,
+            "treatmentDuration": 11,
+            "responseToTreatment": "Stable disease",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Paclitaxel"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO442301",
+            "submitterTreatmentId": "TR442301",
+            "intervalOfFollowUp": 78,
+            "diseaseStatusAtFollowUp": "Relapse or recurrence",
+            "relapseType": null
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD442302",
+        "ageAtDiagnosis": 25,
+        "cancerTypeCode": "C88.0",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR442302",
+            "treatmentType": [
+              "No treatment"
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO442302",
+            "submitterTreatmentId": "TR442302",
+            "intervalOfFollowUp": 5,
+            "diseaseStatusAtFollowUp": "Distant progression",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ONT",
+    "experimentalStrategy": "WXS",
+    "model": "PromethION",
+    "sequencingCenter": "GATC",
+    "sequencingDate": "2022-12-12T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000004423"
+      }
+    ],
+    "runId": "RI4423",
+    "sessionId": "SI4423"
+  },
+  "publication": {
+    "publication": "Nature",
+    "doi": "10.1038/s41591-023-02650-10"
+  }
+}

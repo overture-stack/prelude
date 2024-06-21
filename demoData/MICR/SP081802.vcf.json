@@ -1,0 +1,169 @@
+{
+  "studyId": "MICR",
+  "analysisType": {
+    "name": "composerSchema"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SP081802",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP081802",
+        "specimenType": "Normal",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO0818",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP081802.snv.vcf.gz",
+      "fileSize": 17246,
+      "fileMd5sum": "666b3acbca968fce451b07f38ca9654a",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP081802.snv.vcf.gz.tbi",
+      "fileSize": 142,
+      "fileMd5sum": "289fd402212e03e22a1dfeb6f65dc44f",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD081801",
+    "submitterSpecimenId": "SP081802",
+    "specimenAnatomicLocation": "C37",
+    "tumourGradingSystem": "Four-tier grading system",
+    "tumourGrade": "G1"
+  },
+  "donor": {
+    "submitterDonorId": "DO0818",
+    "primarySite": [
+      "Bronchus and lung"
+    ],
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD081801",
+        "ageAtDiagnosis": 32,
+        "cancerTypeCode": "C34.0",
+        "clinicalTumourStagingSystem": "Revised International staging system (RISS)",
+        "clinicalStageGroup": "Stage III",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR081801",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 39,
+            "treatmentDuration": 93,
+            "responseToTreatment": "Minor response",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Paclitaxel"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO081801",
+            "submitterTreatmentId": "TR081801",
+            "intervalOfFollowUp": 98,
+            "diseaseStatusAtFollowUp": "Progression NOS",
+            "relapseType": "Local recurrence"
+          }
+        ]
+      },
+      {
+        "submitterPrimaryDiagnosisId": "PD081802",
+        "ageAtDiagnosis": 1,
+        "cancerTypeCode": "C34.1",
+        "clinicalTumourStagingSystem": "AJCC 8th edition",
+        "clinicalStageGroup": "Stage IVA2",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR081802",
+            "treatmentType": [
+              "Chemotherapy",
+              "Hormonal therapy"
+            ],
+            "treatmentStartInterval": 34,
+            "treatmentDuration": 95,
+            "responseToTreatment": "Stable disease",
+            "chemotherapy": [
+              {
+                "drugName": [
+                  "Paclitaxel"
+                ]
+              }
+            ],
+            "hormoneTherapy": [
+              {
+                "drugName": [
+                  "Anastrozole"
+                ]
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO081802",
+            "submitterTreatmentId": "TR081802",
+            "intervalOfFollowUp": 11,
+            "diseaseStatusAtFollowUp": "Progression NOS",
+            "relapseType": "Distant recurrence/metastasis"
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WGS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Sanger Variant Calling",
+    "workflowShortName": "SangerVariant",
+    "workflowVersion": "0.9.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000000818",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000000818"
+      }
+    ],
+    "runId": "RI0818",
+    "sessionId": "SI0818"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

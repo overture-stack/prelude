@@ -11,7 +11,7 @@
     "lastName" : "example",
     "email" : "admin@example.com",
     "attributes" : {
-      "api-keys" : [ "{\"name\":\"F4C094A60BA88FB3F42BB9D20D75931286549D7F3C2E448F62D81CE20237B9BC\",\"scope\":[\"score.READ\",\"score.WRITE\",\"song.READ\",\"song.WRITE\"],\"expiryDate\":1830297599000,\"issueDate\":1701960265122,\"isRevoked\":false,\"description\":\"System wide ApiKey\"}", "{\"name\":\"7A8656C05B83E960BBFDA9AB4B99C6BCFD47A2B0F7BE6BCCCCC9B388FBB8C3E4\",\"scope\":[\"SECA.READ\",\"song.READ\",\"score.WRITE\",\"SECA.WRITE\",\"score.READ\",\"song.WRITE\"],\"expiryDate\":1750216102001,\"issueDate\":1718680102000,\"isRevoked\":false,\"description\":null}", "{\"name\":\"E4A67E5061456C22DB6D3F8F41C8D75B8FB355D82474E87A9770710A0E099229\",\"scope\":[\"SECA.READ\",\"song.READ\",\"score.WRITE\",\"SECA.WRITE\",\"score.READ\",\"song.WRITE\"],\"expiryDate\":1750216112446,\"issueDate\":1718680112446,\"isRevoked\":false,\"description\":null}" ]
+      "api-keys" : [ "{\"name\":\"F4C094A60BA88FB3F42BB9D20D75931286549D7F3C2E448F62D81CE20237B9BC\",\"scope\":[\"score.READ\",\"score.WRITE\",\"song.READ\",\"song.WRITE\"],\"expiryDate\":1830297599000,\"issueDate\":1701960265122,\"isRevoked\":false,\"description\":\"System wide ApiKey\"}" ]
     },
     "credentials" : [ {
       "id" : "0c249566-bd35-42dd-8e13-fa8b94d432e7",

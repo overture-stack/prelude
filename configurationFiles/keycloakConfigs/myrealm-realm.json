@@ -643,9 +643,9 @@
         } ],
         "icon_uri" : ""
       }, {
-        "name" : "SECA",
+        "name" : "OICR",
         "ownerManagedAccess" : false,
-        "displayName" : "SECA",
+        "displayName" : "OICR",
         "attributes" : { },
         "_id" : "a1910cc5-92ae-4550-82bd-a2a8c6df6423",
         "uris" : [ ],
@@ -675,7 +675,7 @@
         "logic" : "POSITIVE",
         "decisionStrategy" : "AFFIRMATIVE",
         "config" : {
-          "resources" : "[\"SECA\",\"score\",\"song\"]",
+          "resources" : "[\"OICR\",\"score\",\"song\"]",
           "applyPolicies" : "[\"POLICY_ADMINGROUP\"]"
         }
       } ],

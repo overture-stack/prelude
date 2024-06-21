@@ -1,93 +1,261 @@
 {
-	"table": {
-		"columns": [
-			{
-				"canChangeShow": true,
-				"fieldName": "donor.submitterDonorId",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "donors.specimens.samples.sample_type",
-				"jsonPath": "$.donors.hits.edges[*].node.specimens.hits.edges[*].node.samples.hits.edges[*].node.sample_type",
-				"query": "donors {\n hits {\n edges {\n node {\n specimens {\n hits {\n edges {\n node {\n samples {\n hits {\n edges {\n node {\n sample_type\n }\n }\n }\n }\n }\n }\n }\n }\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "donors.specimens.tumour_normal_designation",
-				"jsonPath": "$.donors.hits.edges[*].node.specimens.hits.edges[*].node.tumour_normal_designation",
-				"query": "donors {\n hits {\n edges {\n node {\n specimens {\n hits {\n edges {\n node {\n tumour_normal_designation\n }\n }\n }\n }\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "donor.primaryDiagnosis.clinicalStageGroup",
-				"jsonPath": "$.donor.primaryDiagnosis.hits.edges[*].node.clinicalStageGroup",
-				"query": "donor {\n primaryDiagnosis {\n hits {\n edges {\n node {\n clinicalStageGroup\n }\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "donors.specimens.specimen_tissue_source",
-				"jsonPath": "$.donors.hits.edges[*].node.specimens.hits.edges[*].node.specimen_tissue_source",
-				"query": "donors {\n hits {\n edges {\n node {\n specimens {\n hits {\n edges {\n node {\n specimen_tissue_source\n }\n }\n }\n }\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"displayType": "list",
-				"fieldName": "donors.specimens.specimen_type",
-				"jsonPath": "$.donors.hits.edges[*].node.specimens.hits.edges[*].node.specimen_type",
-				"query": "donors {\n hits {\n edges {\n node {\n specimens {\n hits {\n edges {\n node {\n specimen_type\n }\n }\n }\n }\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "donors.gender",
-				"jsonPath": "$.donors.hits.edges[*].node.gender",
-				"query": "donors {\n hits {\n edges {\n node {\n gender }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "files.file_type",
-				"jsonPath": "$.files.hits.edges[*].node.file_type",
-				"query": "files {\n hits {\n edges {\n node {\n file_type\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "files.file_access",
-				"jsonPath": "$.files.hits.edges[*].node.file_access",
-				"query": "files {\n hits {\n edges {\n node {\n file_access\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "files.data_type",
-				"jsonPath": "$.files.hits.edges[*].node.data_type",
-				"query": "files {\n hits {\n edges {\n node {\n data_type\n }\n }\n }\n }",
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "donor.primarySite",
-				"isArray": true,
-				"show": true
-			},
-			{
-				"canChangeShow": true,
-				"fieldName": "donor.vitalStatus",
-				"show": true
-			}
-		],
-		"defaultSorting": [
-			{
-				"fieldName": "donor.submitterDonorId"
-			}
-		],
-		"maxResultsWindow": 10000,
-		"rowIdFieldName": "id"
+		"table": {
+			"columns": [
+				{
+					"canChangeShow": true,
+					"fieldName": "donor.submitterDonorId",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "study_id",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"displayFormat": "none",
+					"fieldName": "files.data_type",
+					"jsonPath": "$.files.hits.edges[*].node.data_type",
+					"query": "files { hits { edges { node { data_type } } } }",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "experiment.experimentalStrategy",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "files.file_type",
+					"jsonPath": "$.files.hits.edges[*].node.file_type",
+					"query": "files { hits { edges { node { file_type } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "files.size",
+					"jsonPath": "$.files.hits.edges[*].node.size",
+					"query": "files { hits { edges { node { size } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "files.file_access",
+					"jsonPath": "$.files.hits.edges[*].node.file_access",
+					"query": "files { hits { edges { node { file_access } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "publication.publication",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "publication.doi",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.sessionId",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.runId",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.inputs.normalAnalysisId",
+					"jsonPath": "$.workflow.inputs.hits.edges[*].node.normalAnalysisId",
+					"query": "workflow { inputs { hits { edges { node { normalAnalysisId } } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.inputs.tumourAnalysisId",
+					"jsonPath": "$.workflow.inputs.hits.edges[*].node.tumourAnalysisId",
+					"query": "workflow { inputs { hits { edges { node { tumourAnalysisId } } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.inputs.analysisType",
+					"jsonPath": "$.workflow.inputs.hits.edges[*].node.analysisType",
+					"query": "workflow { inputs { hits { edges { node { analysisType } } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.genomeBuild",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.workflowVersion",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.workflowShortName",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "workflow.workflowName",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "experiment.sequencingCenter",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "experiment.sequencingDate",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "experiment.model",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "experiment.platform",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "files.dataCategory",
+					"jsonPath": "$.files.hits.edges[*].node.dataCategory",
+					"query": "files { hits { edges { node { dataCategory } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "files.md5_sum",
+					"jsonPath": "$.files.hits.edges[*].node.md5_sum",
+					"query": "files { hits { edges { node { md5_sum } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "specimen.specimenAnatomicLocation",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "specimen.tumourGrade",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "specimen.tumourGradingSystem",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "specimen.submitterSpecimenId",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "specimen.submitterPrimaryDiagnosisId",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"displayFormat": "none",
+					"fieldName": "files.name",
+					"jsonPath": "$.files.hits.edges[*].node.name",
+					"query": "files { hits { edges { node { name } } } }",
+					"show": true,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"displayFormat": "none",
+					"fieldName": "donor.primaryDiagnosis.followUp.submitterTreatmentId",
+					"jsonPath": "$.donor.primaryDiagnosis.hits.edges[*].node.followUp.hits.edges[*].node.submitterTreatmentId",
+					"query": "donor { primaryDiagnosis { hits { edges { node { followUp { hits { edges { node { submitterTreatmentId } } } } } } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "donor.primaryDiagnosis.followUp.relapseType",
+					"jsonPath": "$.donor.primaryDiagnosis.hits.edges[*].node.followUp.hits.edges[*].node.relapseType",
+					"query": "donor { primaryDiagnosis { hits { edges { node { followUp { hits { edges { node { relapseType } } } } } } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "donor.primaryDiagnosis.followUp.diseaseStatusAtFollowUp",
+					"jsonPath": "$.donor.primaryDiagnosis.hits.edges[*].node.followUp.hits.edges[*].node.diseaseStatusAtFollowUp",
+					"query": "donor { primaryDiagnosis { hits { edges { node { followUp { hits { edges { node { diseaseStatusAtFollowUp } } } } } } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"fieldName": "donor.primaryDiagnosis.followUp.intervalOfFollowUp",
+					"jsonPath": "$.donor.primaryDiagnosis.hits.edges[*].node.followUp.hits.edges[*].node.intervalOfFollowUp",
+					"query": "donor { primaryDiagnosis { hits { edges { node { followUp { hits { edges { node { intervalOfFollowUp } } } } } } } } }",
+					"show": false,
+					"sortable": true
+				},
+				{
+					"canChangeShow": true,
+					"displayFormat": "none",
+					"fieldName": "donor.primaryDiagnosis.followUp.submitterFollowUpId",
+					"jsonPath": "$.donor.primaryDiagnosis.hits.edges[*].node.followUp.hits.edges[*].node.submitterFollowUpId",
+					"query": "donor { primaryDiagnosis { hits { edges { node { followUp { hits { edges { node { submitterFollowUpId } } } } } } } } }",
+					"show": false,
+					"sortable": true
+				}
+			],
+			"defaultSorting": [
+				{
+					"desc": true,
+					"fieldName": "files.size"
+				},
+				{
+					"fieldName": "files.name"
+				}
+			],
+			"maxResultsWindow": 10000,
+			"rowIdFieldName": "id"
+		}
 	}
-}
