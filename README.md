@@ -1,9 +1,6 @@
-# Overture Composer
+# Overture QuickStart
 
-The Overture Composer project aims to provide those interested in gaining hands-on experience using an Overture platform a fast and frictionless local installation option. 
-
-> [!NOTE]
-> **This repository is under development** 
+The Overture QuickStart provides those interested in gaining hands-on experience using an Overture platform a fast and frictionless local installation.
 
 ## Rational
 
@@ -15,50 +12,59 @@ With Overture we want to provide new users the following:
 | **A way to try it**| Overture Composer |
 | **A way to own it**| [Product Documentation](https://www.overture.bio/documentation/) *and* [Platform Guides](https://github.com/overture-stack/website/pull/385)|
 
-## Requirements
+## Getting Started
 
-Have one github repository containing a docker compose that spins up a standard Overture platform
+**1. Download and configure Docker Desktop**
+
+- In Docker Desktop click the cog icon, then resources. Set CPU to `8`, memory to `12GB`, swap to `4GB`, and virtual disk to `128GB`
+
+**2. Clone the QuickStart Repository**
 
 ```bash
-git clone https://github.com/overture-stack/overtureComposer \
-docker compose up -d 
+git clone https://github.com/overture-stack/composer.git && cd composer
 ```
 
-As a general rule if it's in the demo environment, it should be in the quickstart and vice versa. 
+**3. Run the Docker Compose**
 
-- The Composer **will not include**:
-    - **Visualization tools:** Further development required
-    - **Single Sign on identity providers**: We cannot automate SSI integration (e.g., Google). It must be done through the Google Cloud Console. 
+```bash
+docker compose up -d
+```
+Your portal will be accessible from your `localhost:3000`
 
-- The Composer **will include**:
-    - **An option to seed mock data from the demo portal**: The option to seed one standard data model and data set greatly reduces installation burden. 
+## Remaining Tasks 
 
-Implementation is split into six segments:
+### QuickStart
 
-| Requirement | Notes |
-|---|---|
-| A. Database Setup (Postgres)         | Spin up dependent postgres databases with optional PgAdmin4. |                                                                                      
-| B. Object Storage (MinIO)   | Set up the object storage provider with a state and object bucket. A minio-data folder will be included in the root directory to store file data locally.  |                                                                                      
-| C. OAuth (KeyCloak)  |  To minimize required configuration, import a pre-configured Realm.json and the API Key Provider.  |                                                                                      
-| D. File Management (Song, Score, Kafka, ZooKeeper)   | Scores data will be already stored within the minio-data folder, the matching metadata will need to be seeded into Songs Db. |                                                                                      
-| E. Search (Elasticsearch, Maestro & Arranger-server) | Start Elasticsearch first, create index with mapping, then start arranger with matching configs |
-| F. Discovery (Stage, Arranger Components) | Replicate Stage image from demo portal. Keep this image specific to the Composer.|               
+- [ ] **Indexing Setup Check**
 
-## Implementation Details
+    - The index setup image should check to see if an index already exists, if yes then it should exit out (enabling arranger-server to run) else it should create the index as is
 
-- Commits for the first implementation will be pushed to the branch linked here
-- While progress will be reviewed and tracked on the pull request linked here.
+- [ ] **File Centric Indexing**
 
+    - Maestro should index the data in a filecentric fashion, need to investigate if any changes to elasticsearch are required 
 
+- [ ] **Arranger Configurations**
 
+    - Reconfigure based on graphQL naming (post maestro manipulation), update search facets and data table
 
+- [ ] **Arranger JSON Import**
+
+    - Export jsons from elasticsearch and have them imported on startup, replicating arrangers make seed init operations
 
 
+### Demo Portal
 
+- [ ] **Entry Modal**
 
+    - Create a model that displays on startup providing information to new users on how to use the resource
 
+### Guides
 
+- [ ] Administration Guide Skeleton
 
+- [ ] Finish Download Guide
 
+- [ ] Finish Submission Guide
 
+- [ ] Complete Deployment Guide
 

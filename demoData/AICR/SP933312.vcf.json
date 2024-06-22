@@ -1,7 +1,7 @@
 {
   "studyId": "AICR",
   "analysisType": {
-    "name": "composerSchema"
+    "name": "quickStartSchema"
   },
   "samples": [
     {

@@ -162,7 +162,7 @@ services:
       SCHEMAS_ENFORCELATEST: true
       # Score Variables
       SCORE_URL: http://score:8087
-      SCORE_ACCESSTOKEN: 1909ecc4-94fe-46be-8c04-4095db200b40
+      SCORE_ACCESSTOKEN: 65893092-8249-43d7-a7ea-077553642534
       # Keycloak Variables
       AUTH_SERVER_PROVIDER: keycloak
       AUTH_SERVER_CLIENTID: dms
@@ -208,25 +208,25 @@ services:
       retries: 3
   
   # ==========================
-  # Minio Client
+  # Minio Client (Not required)
   # ==========================
-  minio-client:
-    image: minio/mc
-    container_name: minio-client
-    depends_on:
-      minio:
-        condition: service_healthy
-    entrypoint: >
-      /bin/sh -c '
-      /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
-      /usr/bin/mc mb myminio/state &&
-      /usr/bin/mc mb myminio/object &&
-      /usr/bin/mc mb myminio/object/data &&
-      echo "" > /tmp/heliograph && 
-      /usr/bin/mc put /tmp/heliograph myminio/object/data/heliograph; 
-      rm /tmp/heliograph; 
-      exit 0;
-      '
+  # minio-client:
+  #   image: minio/mc
+  #   container_name: minio-client
+  #   depends_on:
+  #     minio:
+  #       condition: service_healthy
+  #   entrypoint: >
+  #     /bin/sh -c '
+  #     /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
+  #     /usr/bin/mc mb myminio/state &&
+  #     /usr/bin/mc mb myminio/object &&
+  #     /usr/bin/mc mb myminio/object/data &&
+  #     echo "" > /tmp/heliograph && 
+  #     /usr/bin/mc put /tmp/heliograph myminio/object/data/heliograph; 
+  #     rm /tmp/heliograph; 
+  #     exit 0;
+  #     '
     
   # ==========================
   # Score
@@ -317,8 +317,8 @@ services:
       MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_NAME: analysis-composer-index
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ALIAS: analysis_centric
-      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: true
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: false
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
       MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
       # Spring Variables
