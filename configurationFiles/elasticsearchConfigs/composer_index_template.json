@@ -1,7 +1,7 @@
 {
-  "index_patterns": ["analysis-*"],
+  "index_patterns": ["overture-*"],
   "aliases": {
-      "analysis_centric": {}
+      "file_centric": {}
     },
     "mappings": {
       "date_detection": false,
