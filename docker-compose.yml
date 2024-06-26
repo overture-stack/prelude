@@ -17,7 +17,7 @@ services:
     volumes:
       - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     networks:
-      - backend-network
+      - quickstart-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
       interval: 10s
@@ -52,9 +52,7 @@ services:
       - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
       - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
     networks:
-      - backend-network
-      - frontend-network
-    # --import-realm and --hostname-port are required
+      - quickstart-network
     command: >
       start-dev
       --import-realm
@@ -82,7 +80,7 @@ services:
       retries: 10
       start_period: 20s
     networks:
-      - backend-network
+      - quickstart-network
 
   # ==========================
   # Kafka
@@ -111,7 +109,7 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - backend-network
+      - quickstart-network
 
   # ==========================
   # Song Database
@@ -126,7 +124,7 @@ services:
     volumes:
       - ./persistentStorage/data-song-db:/var/lib/postgresql/data
     networks:
-      - backend-network
+      - quickstart-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
       interval: 10s
@@ -185,7 +183,7 @@ services:
       # Swagger Variable
       SWAGGER_ALTERNATEURL: /swagger-api
     networks:
-      - backend-network
+      - quickstart-network
 
   # ==========================
   # Minio
@@ -201,6 +199,8 @@ services:
     command: server /data
     volumes:
       - ./persistentStorage/data-minio:/data
+    networks:
+      - quickstart-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -216,6 +216,8 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    networks:
+      - quickstart-network
     entrypoint: >
       /bin/sh -c '
       /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
@@ -278,7 +280,7 @@ services:
       AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
     networks:
-      - backend-network
+      - quickstart-network
 
   # ==================================================================================
   #  E. Search (Maestro, Elasticsearch, Arranger)
@@ -328,9 +330,8 @@ services:
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
     networks:
-      - backend-network
-      - frontend-network
-
+      - quickstart-network
+      
   # ==========================
   # Elasticsearch
   # ==========================
@@ -359,8 +360,8 @@ services:
       retries: 5
       start_period: 20s
     networks:
-      - frontend-network
-  
+      - quickstart-network
+      
   # ==========================
   # Index Setup
   # ==========================
@@ -374,7 +375,6 @@ services:
       - "9201:9201"
     volumes:
       - ./configurationFiles/elasticsearchConfigs/quickstart_index_template.json:/usr/share/elasticsearch/config/quickstart_index_template.json
-      - ./configurationFiles/elasticsearchConfigs/elasticsearch_data_import.json:/usr/share/elasticsearch/config/elasticsearch_data_import.json
     command: >
       sh -c "
       apk --no-cache add curl && 
@@ -399,8 +399,8 @@ services:
       fi
       " 
     networks:
-      - frontend-network
-
+      - quickstart-network
+      
   # ==========================
   # Arranger-Server
   # ==========================
@@ -427,10 +427,10 @@ services:
       ES_USER: elastic
       ES_PASS: myelasticpassword
       # Stage Variables
-      REACT_APP_BASE_URL: http://localhost:3000
-      REACT_APP_ARRANGER_ADMIN_ROOT: http://localhost:5050/graphql
+      REACT_APP_BASE_URL: http://stage:3000
+      REACT_APP_ARRANGER_ADMIN_ROOT: http://arranger-server:5050/graphql
     networks:
-      - frontend-network
+      - quickstart-network
 
   # ==================================================================================
   #  F. Discovery (Stage)
@@ -472,12 +472,11 @@ services:
       # Arranger Variables
       NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_INDEX: file_centric
-      NEXT_PUBLIC_ARRANGER_API_URL: http://host.docker.internal:5050
+      NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repository.code, analysis.analysis_id, object_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, donors.donor_id, donors.specimens.samples.sample_id
     networks:
-      - backend-network
-      - frontend-network
-
+      - quickstart-network
+      
 # ==========================
 # Song Client (Data Population)
 # ==========================
@@ -492,8 +491,6 @@ services:
       CLIENT_ACCESS_TOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
       CLIENT_STUDY_ID: demo
       CLIENT_SERVER_URL: http://song:8080
-    volumes:
-      - ./demoData:/output
     command: >
       bash -c '
         sleep 30 && 
@@ -529,12 +526,12 @@ services:
         sing publish -a fbe65ccd-f0ae-4fe3-a65c-cdf0aeafe300
         exit 1'
     networks:
-      - backend-network
+      - quickstart-network
 
 
 # ==========================
 # Networks
 # ==========================
 networks:
-  backend-network:
-  frontend-network:
+  quickstart-network:
+      driver: bridge
