@@ -1,3 +1,0 @@
-fbe65ccd-f0ae-4fe3-a65c-cdf0aeafe300		
-5da2a895-623b-5f08-9107-24c03631b243	/output/SP945812.indel.vcf.gz.tbi	51567d8aaa36ec2093f3f7c5293084e0
-2f1fba45-dcaa-52b7-9eb3-fa6468ab589b	/output/SP945812.indel.vcf.gz	ebec6c266ba376c11a97cca3a3180d49
