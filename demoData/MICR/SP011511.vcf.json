@@ -1,5 +1,5 @@
 {
-  "studyId": "MICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO0115",
-    "primarySite": [
-      "Bronchus and lung"
-    ],
+    "primarySite": "Bronchus and lung",
     "vitalStatus": "Deceased",
     "survivalTime": 439,
     "causeOfDeath": "Died of other reasons",
@@ -79,9 +77,7 @@
             "responseToTreatment": "Minor response",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Azacitidine"
-                ]
+                "drugName": "Azacitidine " 
               }
             ]
           }
@@ -114,9 +110,7 @@
             "responseToTreatment": "Complete response",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Paclitaxel"
-                ]
+                "drugName": "Paclitaxel "
               }
             ],
             "radiation": [
@@ -164,5 +158,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "MICR",
+      "contactEmail": "susannorton@micr.ca"
+    }
+  ]
 }

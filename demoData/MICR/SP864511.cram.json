@@ -1,5 +1,5 @@
 {
-  "studyId": "MICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO8645",
-    "primarySite": [
-      "Hematopoietic and reticuloendothelial systems"
-    ],
+    "primarySite": "Hematopoietic and reticuloendothelial systems",
     "vitalStatus": "Deceased",
     "survivalTime": 1452,
     "causeOfDeath": "Died of other reasons",
@@ -80,9 +78,7 @@
             "responseToTreatment": "Stable disease",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Tamoxifen"
-                ]
+                "drugName": "Tamoxifen "
               }
             ],
             "radiation": [
@@ -129,5 +125,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "MICR",
+      "contactEmail": "susannorton@micr.ca"
+    }
+  ]
 }

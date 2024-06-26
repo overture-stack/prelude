@@ -1,5 +1,5 @@
 {
-  "studyId": "AICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO4109",
-    "primarySite": [
-      "Bronchus and lung"
-    ],
+    "primarySite": "Bronchus and lung",
     "vitalStatus": "Deceased",
     "survivalTime": 1139,
     "causeOfDeath": "Died of other reasons",
@@ -80,9 +78,7 @@
             "responseToTreatment": "Disease progression",
             "hormoneTherapy": [
               {
-                "drugName": [
-                  "Anastrozole"
-                ]
+                "drugName": "Anastrozole "
               }
             ],
             "radiation": [
@@ -120,9 +116,7 @@
             "responseToTreatment": "Disease progression",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Paclitaxel"
-                ]
+                "drugName": "Paclitaxel "
               }
             ]
           }
@@ -163,5 +157,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "AICR",
+      "contactEmail": "sturedman@micr.ca"
+    }
+  ]
 }

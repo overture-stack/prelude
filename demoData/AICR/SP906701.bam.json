@@ -1,5 +1,5 @@
 {
-  "studyId": "AICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO9067",
-    "primarySite": [
-      "Brain"
-    ],
+    "primarySite": "Brain",
     "vitalStatus": "Deceased",
     "survivalTime": 1378,
     "causeOfDeath": "Died of cancer",
@@ -71,9 +69,7 @@
         "treatment": [
           {
             "submitterTreatmentId": "TR906701",
-            "treatmentType": [
-              "No treatment"
-            ]
+            "treatmentType": "No treatment "
           }
         ],
         "followUp": [
@@ -112,5 +108,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "AICR",
+      "contactEmail": "raygarraty@aicr.ca"
+    }
+  ]
 }

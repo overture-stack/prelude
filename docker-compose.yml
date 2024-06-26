@@ -79,7 +79,7 @@ services:
       test: ["CMD-SHELL", "echo srvr | nc 127.0.0.1 2181 | grep Mode"]
       interval: 10s
       timeout: 10s
-      retries: 3
+      retries: 10
       start_period: 20s
     networks:
       - backend-network
@@ -108,8 +108,8 @@ services:
       test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       interval: 10s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      retries: 10
+      start_period: 30s
     networks:
       - backend-network
 
@@ -162,7 +162,7 @@ services:
       SCHEMAS_ENFORCELATEST: true
       # Score Variables
       SCORE_URL: http://score:8087
-      SCORE_ACCESSTOKEN: 65893092-8249-43d7-a7ea-077553642534
+      SCORE_ACCESSTOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
       # Keycloak Variables
       AUTH_SERVER_PROVIDER: keycloak
       AUTH_SERVER_CLIENTID: dms
@@ -208,25 +208,25 @@ services:
       retries: 3
   
   # ==========================
-  # Minio Client (Not required)
+  # Minio Client (Only required when starting up without pre-existing minio folder)
   # ==========================
-  # minio-client:
-  #   image: minio/mc
-  #   container_name: minio-client
-  #   depends_on:
-  #     minio:
-  #       condition: service_healthy
-  #   entrypoint: >
-  #     /bin/sh -c '
-  #     /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
-  #     /usr/bin/mc mb myminio/state &&
-  #     /usr/bin/mc mb myminio/object &&
-  #     /usr/bin/mc mb myminio/object/data &&
-  #     echo "" > /tmp/heliograph && 
-  #     /usr/bin/mc put /tmp/heliograph myminio/object/data/heliograph; 
-  #     rm /tmp/heliograph; 
-  #     exit 0;
-  #     '
+  minio-client:
+    image: minio/mc
+    container_name: minio-client
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c '
+      /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
+      /usr/bin/mc mb myminio/state &&
+      /usr/bin/mc mb myminio/object &&
+      /usr/bin/mc mb myminio/object/data &&
+      echo "" > /tmp/heliograph && 
+      /usr/bin/mc put /tmp/heliograph myminio/object/data/heliograph; 
+      rm /tmp/heliograph; 
+      exit 0;
+      '
     
   # ==========================
   # Score
@@ -317,7 +317,7 @@ services:
       MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: overture-composer-index
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: overture-quickstart-index
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: file_centric
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
       MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
@@ -374,6 +374,7 @@ services:
       - "9201:9201"
     volumes:
       - ./configurationFiles/elasticsearchConfigs/quickstart_index_template.json:/usr/share/elasticsearch/config/quickstart_index_template.json
+      - ./configurationFiles/elasticsearchConfigs/elasticsearch_data_import.json:/usr/share/elasticsearch/config/elasticsearch_data_import.json
     command: >
       sh -c "
       apk --no-cache add curl && 
@@ -386,9 +387,11 @@ services:
       fi &&
       if curl -s -o /dev/null -w '%{http_code}' -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/overture-quickstart-index' -H 'Content-Type: application/json' -d '{\"aliases\": {\"file_centric\": {\"is_write_index\": true}}}' | grep -q '200'; then 
         echo 'Alias created successfully.'; 
+        exit 0
       else 
-        if curl -s -o /dev/null -w '%{http_code}' -u elastic:myelasticpassword -X GET 'http://elasticsearch:9200/overture-composer-index' | grep -q '200'; then
+        if curl -s -o /dev/null -w '%{http_code}' -u elastic:myelasticpassword -X GET 'http://elasticsearch:9200/overture-quickstart-index' | grep -q '200'; then
           echo 'Alias already exists, skipping creation.';
+          exit 0
         else
           echo 'Failed to create alias.'; 
           exit 1; 
@@ -402,7 +405,7 @@ services:
   # Arranger-Server
   # ==========================
   arranger-server:
-    image: ghcr.io/overture-stack/arranger-server:0b57cf15
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.33
     container_name: arranger-server
     platform: linux/amd64
     depends_on:
@@ -450,7 +453,7 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Overture Composer Portal
+      NEXT_PUBLIC_LAB_NAME: Overture QuickStart Portal
       NEXT_PUBLIC_ADMIN_EMAIL: contact@overture.bio
       NEXT_PUBLIC_DEBUG: true
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
@@ -474,6 +477,60 @@ services:
     networks:
       - backend-network
       - frontend-network
+
+# ==========================
+# Song Client (Data Population)
+# ==========================
+  song-client:
+    image: ghcr.io/overture-stack/song-client:5.1.1
+    container_name: song-client
+    platform: linux/amd64
+    depends_on:
+      index-setup:
+        condition: service_completed_successfully
+    environment:
+      CLIENT_ACCESS_TOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
+      CLIENT_STUDY_ID: demo
+      CLIENT_SERVER_URL: http://song:8080
+    volumes:
+      - ./demoData:/output
+    command: >
+      bash -c '
+        sleep 30 && 
+        sing publish -a 50b7baf0-b21b-4a41-b7ba-f0b21bba41df
+        sing publish -a 7fc07277-c051-449b-8072-77c051249b6b
+        sing publish -a 61a236ad-a48e-49db-a236-ada48e69dbea
+        sing publish -a 9a7e963a-3a67-4cd5-be96-3a3a675cd553
+        sing publish -a f7ed8371-52fd-4962-ad83-7152fd89625f
+        sing publish -a 94b74841-7380-401c-b748-417380e01c54
+        sing publish -a d95b5238-1464-4132-9b52-381464a1325a
+        sing publish -a 8b7ee0f8-2145-4571-bee0-f82145557148
+        sing publish -a 2d3c77e4-c328-41ad-bc77-e4c32841ad96
+        sing publish -a 9867510e-c0dd-4250-a751-0ec0dd125047
+        sing publish -a 7f70be40-a3e9-4e7c-b0be-40a3e9fe7c91
+        sing publish -a b280e5c2-9b26-4466-80e5-c29b26c466dd
+        sing publish -a 0c294aaa-e495-4acf-a94a-aae4954acf5f
+        sing publish -a cb9b4770-524f-4ffd-9b47-70524feffd12
+        sing publish -a 47421f8c-9c33-4eb2-821f-8c9c335eb2c6
+        sing publish -a 539734f8-003e-45e2-9734-f8003ef5e270
+        sing publish -a b122591a-b06e-4b70-a259-1ab06edb7076
+        sing publish -a f0286f2e-bc2b-43d4-a86f-2ebc2bf3d4dd
+        sing publish -a 1458d0a5-cbb1-4628-98d0-a5cbb146282a
+        sing publish -a 7c1db3a8-ab25-478d-9db3-a8ab25178d7f
+        sing publish -a 8625ffea-a4a0-41f4-a5ff-eaa4a051f4f5
+        sing publish -a 6b920d1e-72a0-4480-920d-1e72a0748098
+        sing publish -a 0f9462dd-a1f5-4748-9462-dda1f577488f
+        sing publish -a 3748f456-d125-4eba-88f4-56d125beba08
+        sing publish -a d3df2da6-c8f5-4737-9f2d-a6c8f53737aa
+        sing publish -a 34e51227-f5b7-4595-a512-27f5b7b5952f
+        sing publish -a 5e941dcc-3b92-46f1-941d-cc3b9206f19b
+        sing publish -a 605a1d28-6ea4-4f66-9a1d-286ea44f6607
+        sing publish -a 2c013cf7-76bf-4e72-813c-f776bfbe72ea
+        sing publish -a fbe65ccd-f0ae-4fe3-a65c-cdf0aeafe300
+        exit 1'
+    networks:
+      - backend-network
+
 
 # ==========================
 # Networks

@@ -1,5 +1,5 @@
 {
-  "studyId": "MICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO8525",
-    "primarySite": [
-      "Brain"
-    ],
+    "primarySite": "Brain",
     "vitalStatus": "Deceased",
     "survivalTime": 216,
     "causeOfDeath": "Died of other reasons",
@@ -81,16 +79,12 @@
             "responseToTreatment": "Minor response",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Paclitaxel"
-                ]
+                "drugName": "Paclitaxel "
               }
             ],
             "hormoneTherapy": [
               {
-                "drugName": [
-                  "Anastrozole"
-                ]
+                "drugName": "Anastrozole "
               }
             ],
             "radiation": [
@@ -129,16 +123,12 @@
             "responseToTreatment": "Complete response",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Tamoxifen"
-                ]
+                "drugName": "Tamoxifen "
               }
             ],
             "hormoneTherapy": [
               {
-                "drugName": [
-                  "Anastrozole"
-                ]
+                "drugName": "Anastrozole "
               }
             ]
           }
@@ -180,5 +170,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "MICR",
+      "contactEmail": "susannorton@micr.ca"
+    }
+  ]
 }

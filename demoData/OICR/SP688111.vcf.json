@@ -1,5 +1,5 @@
 {
-  "studyId": "OICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO6881",
-    "primarySite": [
-      "Hematopoietic and reticuloendothelial systems"
-    ],
+    "primarySite": "Hematopoietic and reticuloendothelial systems",
     "vitalStatus": "Deceased",
     "survivalTime": 1057,
     "causeOfDeath": "Died of cancer",
@@ -155,5 +153,11 @@
   "publication": {
     "publication": "Nature",
     "doi": "10.1038/s41591-023-02650-10"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "OICR",
+      "contactEmail": "sturedman@micr.ca"
+    }
+  ]
 }

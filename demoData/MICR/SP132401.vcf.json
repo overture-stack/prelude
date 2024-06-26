@@ -1,5 +1,5 @@
 {
-  "studyId": "MICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -157,5 +157,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "MICR",
+      "contactEmail": "sturedman@micr.ca"
+    }
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "studyId": "OICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO9234",
-    "primarySite": [
-      "Brain"
-    ],
+    "primarySite": "Brain",
     "vitalStatus": "Deceased",
     "survivalTime": 1092,
     "causeOfDeath": "Died of cancer",
@@ -80,9 +78,7 @@
             "responseToTreatment": "Partial response",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Azacitidine"
-                ]
+                "drugName": "Azacitidine"
               }
             ],
             "radiation": [
@@ -120,9 +116,7 @@
             "responseToTreatment": "Complete response",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Tamoxifen"
-                ]
+                "drugName": "Tamoxifen"
               }
             ]
           }
@@ -163,5 +157,11 @@
   "publication": {
     "publication": "Nature",
     "doi": "10.1038/s41591-023-02650-10"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "OICR",
+      "contactEmail": "sturedman@micr.ca"
+    }
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "studyId": "OICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -123,5 +123,11 @@
   "publication": {
     "publication": "Nature",
     "doi": "10.1038/s41591-023-02650-10"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "OICR",
+      "contactEmail": "sturedman@micr.ca"
+    }
+  ]
 }

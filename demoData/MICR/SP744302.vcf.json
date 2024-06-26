@@ -1,5 +1,5 @@
 {
-  "studyId": "MICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO7443",
-    "primarySite": [
-      "Hematopoietic and reticuloendothelial systems"
-    ],
+    "primarySite": "Hematopoietic and reticuloendothelial systems",
     "vitalStatus": "Alive",
     "survivalTime": null,
     "causeOfDeath": null,
@@ -79,9 +77,7 @@
             "responseToTreatment": "Disease progression",
             "chemotherapy": [
               {
-                "drugName": [
-                  "Azacitidine"
-                ]
+                "drugName": "Azacitidine "
               }
             ]
           }
@@ -123,5 +119,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },  
+  "collaborator": [
+    {
+      "name": "MICR",
+      "contactEmail": "susannorton@micr.ca"
+    }
+  ]
 }

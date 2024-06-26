@@ -1,5 +1,5 @@
 {
-  "studyId": "AICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -55,9 +55,7 @@
   },
   "donor": {
     "submitterDonorId": "DO7877",
-    "primarySite": [
-      "Bronchus and lung"
-    ],
+    "primarySite": "Bronchus and lung",
     "vitalStatus": "Alive",
     "survivalTime": null,
     "causeOfDeath": null,
@@ -80,9 +78,7 @@
             "responseToTreatment": "Disease progression",
             "hormoneTherapy": [
               {
-                "drugName": [
-                  "Exemestane"
-                ]
+                "drugName": "Exemestane "
               }
             ],
             "radiation": [
@@ -129,5 +125,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "AICR",
+      "contactEmail": "sturedman@micr.ca"
+    }
+  ]
 }

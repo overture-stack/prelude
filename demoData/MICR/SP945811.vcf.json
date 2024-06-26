@@ -1,5 +1,5 @@
 {
-  "studyId": "MICR",
+  "studyId": "demo",
   "analysisType": {
     "name": "quickStartSchema"
   },
@@ -103,9 +103,7 @@
             "responseToTreatment": "Complete response",
             "hormoneTherapy": [
               {
-                "drugName": [
-                  "Exemestane"
-                ]
+                "drugName": "Exemestane "
               }
             ]
           }
@@ -147,5 +145,11 @@
   "publication": {
     "publication": "NAR",
     "doi": "10.1093/nar/gkae188"
-  }
+  },
+  "collaborator": [
+    {
+      "name": "MICR",
+      "contactEmail": "AnnieWilkes@micr.ca"
+    }
+  ]
 }
