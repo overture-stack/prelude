@@ -16,8 +16,6 @@ services:
       POSTGRES_DB: keycloakDb
     volumes:
       - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
-    networks:
-      - quickstart-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
       interval: 10s
@@ -51,8 +49,6 @@ services:
       - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
       - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
       - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
-    networks:
-      - quickstart-network
     command: >
       start-dev
       --import-realm
@@ -66,7 +62,7 @@ services:
   # Zookeeper
   # ==========================
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.6.1
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -79,8 +75,6 @@ services:
       timeout: 10s
       retries: 10
       start_period: 20s
-    networks:
-      - quickstart-network
 
   # ==========================
   # Kafka
@@ -88,6 +82,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:5.4.0
     container_name: kafka
+    platform: linux/amd64
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -108,8 +103,6 @@ services:
       timeout: 10s
       retries: 10
       start_period: 30s
-    networks:
-      - quickstart-network
 
   # ==========================
   # Song Database
@@ -123,8 +116,6 @@ services:
       POSTGRES_DB: songDb
     volumes:
       - ./persistentStorage/data-song-db:/var/lib/postgresql/data
-    networks:
-      - quickstart-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
       interval: 10s
@@ -182,8 +173,6 @@ services:
       SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
       # Swagger Variable
       SWAGGER_ALTERNATEURL: /swagger-api
-    networks:
-      - quickstart-network
 
   # ==========================
   # Minio
@@ -191,6 +180,7 @@ services:
   minio:
     image: minio/minio:RELEASE.2018-05-11T00-29-24Z
     container_name: minio
+    platform: linux/amd64
     ports:
       - 9000:9000
     environment:
@@ -199,8 +189,6 @@ services:
     command: server /data
     volumes:
       - ./persistentStorage/data-minio:/data
-    networks:
-      - quickstart-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -208,7 +196,7 @@ services:
       retries: 3
   
   # ==========================
-  # Minio Client (Only required when starting up without pre-existing minio folder)
+  # Minio Client (Required for starting up without a pre-existing minio folder)
   # ==========================
   minio-client:
     image: minio/mc
@@ -216,8 +204,6 @@ services:
     depends_on:
       minio:
         condition: service_healthy
-    networks:
-      - quickstart-network
     entrypoint: >
       /bin/sh -c '
       /usr/bin/mc alias set myminio http://host.docker.internal:9000 admin admin123 &&
@@ -279,9 +265,7 @@ services:
       AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/      
       AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
-    networks:
-      - quickstart-network
-
+ 
   # ==================================================================================
   #  E. Search (Maestro, Elasticsearch, Arranger)
   # ==================================================================================
@@ -329,9 +313,7 @@ services:
       # Kafka Variables
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
-    networks:
-      - quickstart-network
-      
+  
   # ==========================
   # Elasticsearch
   # ==========================
@@ -359,9 +341,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 20s
-    networks:
-      - quickstart-network
-      
+
   # ==========================
   # Index Setup
   # ==========================
@@ -398,8 +378,6 @@ services:
         fi
       fi
       " 
-    networks:
-      - quickstart-network
       
   # ==========================
   # Arranger-Server
@@ -429,8 +407,6 @@ services:
       # Stage Variables
       REACT_APP_BASE_URL: http://stage:3000
       REACT_APP_ARRANGER_ADMIN_ROOT: http://arranger-server:5050/graphql
-    networks:
-      - quickstart-network
 
   # ==================================================================================
   #  F. Discovery (Stage)
@@ -474,9 +450,7 @@ services:
       NEXT_PUBLIC_ARRANGER_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repository.code, analysis.analysis_id, object_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, donors.donor_id, donors.specimens.samples.sample_id
-    networks:
-      - quickstart-network
-      
+
 # ==========================
 # Song Client (Data Population)
 # ==========================
@@ -525,13 +499,3 @@ services:
         sing publish -a 2c013cf7-76bf-4e72-813c-f776bfbe72ea
         sing publish -a fbe65ccd-f0ae-4fe3-a65c-cdf0aeafe300
         exit 1'
-    networks:
-      - quickstart-network
-
-
-# ==========================
-# Networks
-# ==========================
-networks:
-  quickstart-network:
-      driver: bridge
