@@ -238,13 +238,12 @@ services:
       METADATA_URL: http://song:8080
       # Score Variables
       SERVER_SSL_ENABLED: "false"
-      # Minio Variables
+      # Object Storage Variables
       S3_ENDPOINT: http://host.docker.internal:9000
       S3_ACCESSKEY: admin
       S3_SECRETKEY: admin123
       S3_SIGV4ENABLED: true
       S3_SECURED: false
-      # Test object for pinging
       OBJECT_SENTINEL: heliograph
       BUCKET_NAME_OBJECT: object
       BUCKET_NAME_STATE: state
@@ -434,7 +433,6 @@ services:
       NEXT_PUBLIC_DEBUG: true
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       # Keycloak Variables
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
       NEXT_PUBLIC_AUTH_PROVIDER: keycloak
       ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
       SESSION_ENCRYPTION_SECRET: this_is_a_super_secret_secret
