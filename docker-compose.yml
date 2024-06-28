@@ -415,7 +415,7 @@ services:
   # Stage
   # ==========================
   stage:
-    image: ghcr.io/overture-stack/stage:3ede4e2
+    image: ghcr.io/overture-stack/stage:e5b1ef6
     container_name: stage
     platform: linux/amd64
     depends_on:
@@ -447,7 +447,7 @@ services:
       NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
-      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repository.code, analysis.analysis_id, object_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, donors.donor_id, donors.specimens.samples.sample_id
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: analysis.analysis_id, object_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, donors.donor_id, donors.specimens.samples.sample_id
 
 # ==========================
 # Song Client (Data Population)
