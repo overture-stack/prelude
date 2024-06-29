@@ -5,11 +5,30 @@
   },
   "mappings": {
     "properties": {
-      "object_id": { "type": "keyword" },
+      "object_id": { "type": "keyword", "copy_to": ["file_autocomplete"] },
       "study_id": { "type": "keyword" },
       "data_type": { "type": "keyword" },
       "file_type": { "type": "keyword" },
       "file_access": { "type": "keyword" },
+      "file_autocomplete": {
+				"type": "keyword",
+				"fields": {
+					"analyzed": {
+						"type": "text",
+						"analyzer": "autocomplete_analyzed",
+						"search_analyzer": "lowercase_keyword"
+					},
+					"lowercase": {
+						"type": "text",
+						"analyzer": "lowercase_keyword"
+					},
+					"prefix": {
+						"type": "text",
+						"analyzer": "autocomplete_prefix",
+						"search_analyzer": "lowercase_keyword"
+					}
+				}
+			},
       "analysis": {
         "properties": {
           "analysis_id": { "type": "keyword" },

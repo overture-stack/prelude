@@ -585,6 +585,14 @@
 				"fieldName": "jbrowseCoordinates",
 				"show": false,
 				"sortable": true
+			  },
+			  {
+				"canChangeShow": false,
+				"fieldName": "repositories.code",
+				"jsonPath": "$.repositories.hits.edges[*].node.code",
+				"query": "repositories { hits { edges { node { code } } } }",
+				"show": false,
+				"sortable": true
 			  }
 		]
 	}
