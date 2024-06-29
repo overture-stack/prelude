@@ -315,6 +315,10 @@
 	  {
 		"displayName": "JBrowse Coordinates",
 		"fieldName": "jbrowseCoordinates"
+	  },
+	  {
+		"displayName": "Repository Code",
+		"fieldName": "repositories.code"
 	  }
 	]
   }

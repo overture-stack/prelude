@@ -232,7 +232,7 @@ services:
       - "8087:8087"
     environment:
       # Spring Variables
-      SPRING_PROFILES_ACTIVE: default,collaboratory,prod,secure,jwt
+      SPRING_PROFILES_ACTIVE: collaboratory,prod,secure,jwt
       SERVER_PORT: 8087
       # Song Variable
       METADATA_URL: http://song:8080
@@ -447,8 +447,7 @@ services:
       NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
-      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: analysis.analysis_id, object_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, file.index_file.file_type, file.index_file.name, file.index_file.size, file.index_file.md5sum, donors.donor_id, donors.specimens.samples.sample_id
-
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: study_id, analysis.analysis_id, file.name, file.size, file_type, file.md5sum, file_access, data_type, repositories.code, object_id, file.index_file.object_id
 # ==========================
 # Song Client (Data Population)
 # ==========================
