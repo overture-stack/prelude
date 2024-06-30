@@ -210,12 +210,12 @@ services:
       /usr/bin/mc mb myminio/state &&
       /usr/bin/mc mb myminio/object &&
       /usr/bin/mc mb myminio/object/data &&
-      echo "" > /tmp/heliograph && 
+      echo "This heliograph file is used by Score to test that the server can successfully communicate with the storage provider and that your client can successfully retrieve files from it." > /tmp/heliograph && 
       /usr/bin/mc put /tmp/heliograph myminio/object/data/heliograph; 
       rm /tmp/heliograph; 
       exit 0;
       '
-    
+
   # ==========================
   # Score
   # ==========================
@@ -232,7 +232,7 @@ services:
       - "8087:8087"
     environment:
       # Spring Variables
-      SPRING_PROFILES_ACTIVE: collaboratory,prod,secure,jwt
+      SPRING_PROFILES_ACTIVE: default,collaboratory,prod,secure,jwt
       SERVER_PORT: 8087
       # Song Variable
       METADATA_URL: http://song:8080
@@ -447,61 +447,62 @@ services:
       NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
-      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: study_id, analysis.analysis_id, file.name, file.size, file_type, file.md5sum, file_access, data_type, repositories.code, object_id, file.index_file.object_id
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, study_id, analysis.analysis_id, file.name, file.size, file_type, file.md5sum, file_access, data_type, object_id, file.index_file.object_id
+
 # ==========================
 # Song Client (Data Population)
 # ==========================
-  song-client:
-    image: ghcr.io/overture-stack/song-client:5.1.1
-    container_name: song-client
-    platform: linux/amd64
-    depends_on:
-      index-setup:
-        condition: service_completed_successfully
-    environment:
-      CLIENT_ACCESS_TOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
-      CLIENT_STUDY_ID: demo
-      CLIENT_SERVER_URL: http://song:8080
-    command: >
-      bash -c '
-        while true; do
-            if sing ping | grep -q "true"; then
-                echo "Network is reachable. Proceeding with publish."
-                sing publish -a 50b7baf0-b21b-4a41-b7ba-f0b21bba41df
-                sing publish -a 7fc07277-c051-449b-8072-77c051249b6b
-                sing publish -a 61a236ad-a48e-49db-a236-ada48e69dbea
-                sing publish -a 9a7e963a-3a67-4cd5-be96-3a3a675cd553
-                sing publish -a f7ed8371-52fd-4962-ad83-7152fd89625f
-                sing publish -a 94b74841-7380-401c-b748-417380e01c54
-                sing publish -a d95b5238-1464-4132-9b52-381464a1325a
-                sing publish -a 8b7ee0f8-2145-4571-bee0-f82145557148
-                sing publish -a 2d3c77e4-c328-41ad-bc77-e4c32841ad96
-                sing publish -a 9867510e-c0dd-4250-a751-0ec0dd125047
-                sing publish -a 7f70be40-a3e9-4e7c-b0be-40a3e9fe7c91
-                sing publish -a b280e5c2-9b26-4466-80e5-c29b26c466dd
-                sing publish -a 0c294aaa-e495-4acf-a94a-aae4954acf5f
-                sing publish -a cb9b4770-524f-4ffd-9b47-70524feffd12
-                sing publish -a 47421f8c-9c33-4eb2-821f-8c9c335eb2c6
-                sing publish -a 539734f8-003e-45e2-9734-f8003ef5e270
-                sing publish -a b122591a-b06e-4b70-a259-1ab06edb7076
-                sing publish -a f0286f2e-bc2b-43d4-a86f-2ebc2bf3d4dd
-                sing publish -a 1458d0a5-cbb1-4628-98d0-a5cbb146282a
-                sing publish -a 7c1db3a8-ab25-478d-9db3-a8ab25178d7f
-                sing publish -a 8625ffea-a4a0-41f4-a5ff-eaa4a051f4f5
-                sing publish -a 6b920d1e-72a0-4480-920d-1e72a0748098
-                sing publish -a 0f9462dd-a1f5-4748-9462-dda1f577488f
-                sing publish -a 3748f456-d125-4eba-88f4-56d125beba08
-                sing publish -a d3df2da6-c8f5-4737-9f2d-a6c8f53737aa
-                sing publish -a 34e51227-f5b7-4595-a512-27f5b7b5952f
-                sing publish -a 5e941dcc-3b92-46f1-941d-cc3b9206f19b
-                sing publish -a 605a1d28-6ea4-4f66-9a1d-286ea44f6607
-                sing publish -a 2c013cf7-76bf-4e72-813c-f776bfbe72ea
-                sing publish -a fbe65ccd-f0ae-4fe3-a65c-cdf0aeafe300
-                echo "Data published successfully. Exiting."
-                break
-            else
-                echo "Network is not yet reachable. Waiting for 10 seconds before retrying..." &&
-                sleep 10
-            fi
-        done
-      '
+  # song-client:
+  #   image: ghcr.io/overture-stack/song-client:5.1.1
+  #   container_name: dataPopulator
+  #   platform: linux/amd64
+  #   depends_on:
+  #     index-setup:
+  #       condition: service_completed_successfully
+  #   environment:
+  #     CLIENT_ACCESS_TOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
+  #     CLIENT_STUDY_ID: demo
+  #     CLIENT_SERVER_URL: http://song:8080
+  #   command: >
+  #     bash -c '
+  #       while true; do
+  #           if sing ping | grep -q "true"; then
+  #               echo "Network is reachable. Proceeding with publish."
+  #               sing publish -a 50b7baf0-b21b-4a41-b7ba-f0b21bba41df
+  #               sing publish -a 7fc07277-c051-449b-8072-77c051249b6b
+  #               sing publish -a 61a236ad-a48e-49db-a236-ada48e69dbea
+  #               sing publish -a 9a7e963a-3a67-4cd5-be96-3a3a675cd553
+  #               sing publish -a f7ed8371-52fd-4962-ad83-7152fd89625f
+  #               sing publish -a 94b74841-7380-401c-b748-417380e01c54
+  #               sing publish -a d95b5238-1464-4132-9b52-381464a1325a
+  #               sing publish -a 8b7ee0f8-2145-4571-bee0-f82145557148
+  #               sing publish -a 2d3c77e4-c328-41ad-bc77-e4c32841ad96
+  #               sing publish -a 9867510e-c0dd-4250-a751-0ec0dd125047
+  #               sing publish -a 7f70be40-a3e9-4e7c-b0be-40a3e9fe7c91
+  #               sing publish -a b280e5c2-9b26-4466-80e5-c29b26c466dd
+  #               sing publish -a 0c294aaa-e495-4acf-a94a-aae4954acf5f
+  #               sing publish -a cb9b4770-524f-4ffd-9b47-70524feffd12
+  #               sing publish -a 47421f8c-9c33-4eb2-821f-8c9c335eb2c6
+  #               sing publish -a 539734f8-003e-45e2-9734-f8003ef5e270
+  #               sing publish -a b122591a-b06e-4b70-a259-1ab06edb7076
+  #               sing publish -a f0286f2e-bc2b-43d4-a86f-2ebc2bf3d4dd
+  #               sing publish -a 1458d0a5-cbb1-4628-98d0-a5cbb146282a
+  #               sing publish -a 7c1db3a8-ab25-478d-9db3-a8ab25178d7f
+  #               sing publish -a 8625ffea-a4a0-41f4-a5ff-eaa4a051f4f5
+  #               sing publish -a 6b920d1e-72a0-4480-920d-1e72a0748098
+  #               sing publish -a 0f9462dd-a1f5-4748-9462-dda1f577488f
+  #               sing publish -a 3748f456-d125-4eba-88f4-56d125beba08
+  #               sing publish -a d3df2da6-c8f5-4737-9f2d-a6c8f53737aa
+  #               sing publish -a 34e51227-f5b7-4595-a512-27f5b7b5952f
+  #               sing publish -a 5e941dcc-3b92-46f1-941d-cc3b9206f19b
+  #               sing publish -a 605a1d28-6ea4-4f66-9a1d-286ea44f6607
+  #               sing publish -a 2c013cf7-76bf-4e72-813c-f776bfbe72ea
+  #               sing publish -a fbe65ccd-f0ae-4fe3-a65c-cdf0aeafe300
+  #               echo "Data published successfully. Exiting."
+  #               break
+  #           else
+  #               echo "Network is not yet reachable. Waiting for 10 seconds before retrying..." &&
+  #               sleep 10
+  #           fi
+  #       done
+  #     '
