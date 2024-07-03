@@ -22,6 +22,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
+   
 
   # ==========================
   # Keycloak 
@@ -53,6 +54,7 @@ services:
       start-dev
       --import-realm
       --hostname-port=8180
+   
 
   # ==================================================================================
   # File Management (Song, Score, Kafka, Zookeeper, Minio)
@@ -75,6 +77,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 20s
+   
 
   # ==========================
   # Kafka
@@ -103,6 +106,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 30s
+   
 
   # ==========================
   # Song Database
@@ -122,6 +126,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
+   
 
   # ==========================
   # Song
@@ -173,7 +178,7 @@ services:
       SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
       # Swagger Variable
       SWAGGER_ALTERNATEURL: /swagger-api
-
+   
   # ==========================
   # Minio
   # ==========================
@@ -194,7 +199,7 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
-  
+   
   # ==========================
   # Minio Client (Required for starting up without a pre-existing minio folder)
   # ==========================
@@ -215,6 +220,7 @@ services:
       rm /tmp/heliograph; 
       exit 0;
       '
+   
 
   # ==========================
   # Score
@@ -264,7 +270,8 @@ services:
       AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/      
       AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
- 
+   
+
   # ==================================================================================
   #  E. Search (Maestro, Elasticsearch, Arranger)
   # ==================================================================================
@@ -312,7 +319,8 @@ services:
       # Kafka Variables
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
-  
+   
+
   # ==========================
   # Elasticsearch
   # ==========================
@@ -340,7 +348,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 20s
-
+ 
   # ==========================
   # Index Setup
   # ==========================
@@ -360,19 +368,19 @@ services:
       sleep 60 && 
       if ! curl -s -u elastic:myelasticpassword 'http://elasticsearch:9200/_template/index_template' | grep -q '\"index_patterns\"'; then 
         curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_template/index_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/quickstart_index_template.json &&
-        echo 'Template created successfully.'; 
+        echo 'Index template created successfully.'; 
       else 
-        echo 'Template already exists, skipping creation.'; 
+        echo 'Index template already exists, skipping creation.'; 
       fi &&
       if curl -s -o /dev/null -w '%{http_code}' -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/overture-quickstart-index' -H 'Content-Type: application/json' -d '{\"aliases\": {\"file_centric\": {\"is_write_index\": true}}}' | grep -q '200'; then 
-        echo 'Alias created successfully.'; 
+        echo 'Elasticsearch Alias created successfully.'; 
         exit 0
       else 
         if curl -s -o /dev/null -w '%{http_code}' -u elastic:myelasticpassword -X GET 'http://elasticsearch:9200/overture-quickstart-index' | grep -q '200'; then
-          echo 'Alias already exists, skipping creation.';
+          echo 'Elasticsearch Alias already exists, skipping creation.';
           exit 0
         else
-          echo 'Failed to create alias.'; 
+          echo 'Failed to create Elasticsearch alias.'; 
           exit 1; 
         fi
       fi
@@ -406,6 +414,7 @@ services:
       # Stage Variables
       REACT_APP_BASE_URL: http://stage:3000
       REACT_APP_ARRANGER_ADMIN_ROOT: http://arranger-server:5050/graphql
+    
 
   # ==================================================================================
   #  F. Discovery (Stage)
@@ -415,7 +424,7 @@ services:
   # Stage
   # ==========================
   stage:
-    image: ghcr.io/overture-stack/stage:e5b1ef6
+    image: ghcr.io/overture-stack/stage:77267d9
     container_name: stage
     platform: linux/amd64
     depends_on:
@@ -449,60 +458,43 @@ services:
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id
 
-# ==========================
-# Song Client (Data Population)
-# ==========================
-  song-client:
-    image: ghcr.io/overture-stack/song-client:5.1.1
-    container_name: dataPopulator
-    platform: linux/amd64
+  # ==========================
+  # Composer (Logs Health Checks + Populates Data)
+  # ==========================
+  composer:
+    image: alpine:latest
+    container_name: composer
     depends_on:
-      index-setup:
-        condition: service_completed_successfully
-    environment:
-      CLIENT_ACCESS_TOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
-      CLIENT_STUDY_ID: demo
-      CLIENT_SERVER_URL: http://song:8080
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "9204:9204"
     command: >
-      bash -c '
-        while true; do
-            if sing ping | grep -q "true"; then
-                echo "Network is reachable. Proceeding with publish."
-                sing publish -a b5543647-f97a-491e-9436-47f97ac91e69
-                sing publish -a 70d78670-618f-4257-9786-70618fb2578b
-                sing publish -a a36ca76a-bd08-49a3-aca7-6abd0849a3ad
-                sing publish -a d099e459-f7f9-4d21-99e4-59f7f99d2138
-                sing publish -a 918e0117-f734-4a7c-8e01-17f7347a7cf9
-                sing publish -a 7e78530e-bc3b-44e0-b853-0ebc3bd4e047
-                sing publish -a c94927cb-65c7-440d-8927-cb65c7c40dff
-                sing publish -a 904ff46c-aaf0-425d-8ff4-6caaf0725d7c
-                sing publish -a 5b3d6d5f-1475-4b77-bd6d-5f14759b7703
-                sing publish -a 63d66681-38c5-4609-9666-8138c5f609a1
-                sing publish -a 93fc8364-1ce0-44ff-bc83-641ce094ff31
-                sing publish -a 6417f822-1207-4be0-97f8-2212078be06c
-                sing publish -a 8a4bc6dc-0173-45d9-8bc6-dc017385d965
-                sing publish -a 1ce9ec58-128f-44c7-a9ec-58128f44c7fb
-                sing publish -a 897bb32b-1eff-4286-bbb3-2b1effd28637
-                sing publish -a 04f17fb8-d54d-48a7-b17f-b8d54d98a72f
-                sing publish -a 8ac75a6e-ff8d-449e-875a-6eff8d049ea7
-                sing publish -a 6323237a-0622-4623-a323-7a0622b6236e
-                sing publish -a e0ceaa49-3729-4098-8eaa-49372900983d
-                sing publish -a 6fdb1da7-7248-46fe-9b1d-a7724876fe47
-                sing publish -a a8e7236b-75f8-4b7f-a723-6b75f86b7fc9
-                sing publish -a 431e5376-88a4-4bc5-9e53-7688a49bc562
-                sing publish -a 542ad121-f87a-42da-aad1-21f87a92da8d
-                sing publish -a d02fbaa9-0a13-48d4-afba-a90a1338d4e3
-                sing publish -a f421926b-9ef7-439b-a192-6b9ef7139be4
-                sing publish -a 1e7535bc-8682-41be-b535-bc8682b1be30
-                sing publish -a 6e7ab6f8-c111-439c-bab6-f8c111739c7a
-                sing publish -a 47d6ac6d-7223-43ad-96ac-6d722313ad4b
-                sing publish -a abe3ee0a-fdb1-4d41-a3ee-0afdb16d41ce
-                sing publish -a f406a00e-4c9b-4b5d-86a0-0e4c9b5b5dec
-                echo "Data published successfully. Exiting."
-                break
-            else
-                echo "Network is not yet reachable. Waiting for 10 seconds before retrying..." &&
-                sleep 10
-            fi
-        done
+      sh -c '
+          echo "Welcome to the Overture QuickStart"
+          echo "Please wait while our services spin up"
+          apk --no-cache add curl > /dev/null 2>&1
+          echo "Checking if Song is reachable..."
+          
+          while true; do
+              if [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; then
+                  echo "Success Song is now reachable, checking if Maestro is reachable..."
+          
+                  while true; do
+                      if curl -X POST "http://maestro:11235/index/repository/song.overture/study/demo" -H "accept: */*" -d "{}" | grep -q "true"; then 
+                          echo "Success! Your front-end portal should now be accessible at: localhost:3000"
+                          break 2 
+                      else
+                          echo "Maestro spinning up, please wait..."
+                          sleep 30
+                      fi
+                  done
+              else
+                  echo "Song spinning up, please wait..."
+                  sleep 20
+              fi
+          done
       '
+
+
+
