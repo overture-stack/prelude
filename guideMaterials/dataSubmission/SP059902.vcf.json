@@ -5,7 +5,6 @@
   },
   "collaborator": [
     {
-      "name": "IICR",
       "contactEmail": "dataSubmitter@example.com"
     }
   ],
@@ -61,7 +60,7 @@
   },
   "donor": {
     "submitterDonorId": "DO0599",
-    "primarySite": "Trachea",
+    "primarySite": "Windpipe",
     "vitalStatus": "Alive",
     "survivalTime": null,
     "causeOfDeath": null,
