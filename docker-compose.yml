@@ -361,7 +361,6 @@ services:
   index-setup:
     image: alpine:latest
     container_name: index-setup
-    platform: linux/amd64
     depends_on:
       elasticsearch:
         condition: service_healthy
