@@ -24,6 +24,11 @@ services:
           mkdir -p song/db-folder-init/pg_tblspc
           mkdir -p song/db-folder-init/pg_stat
           mkdir -p song/db-folder-init/pg_replslot
+          mkdir -p song/db-folder-init/pg_twophase
+          mkdir -p song/db-folder-init/pg_snapshots
+          mkdir -p song/db-folder-init/pg_commit_ts
+          mkdir -p song/db-folder-init/pg_logical/snapshots
+          mkdir -p song/db-folder-init/pg_logical/mappings
           apk --no-cache add curl > /dev/null 2>&1
           echo "Checking if Song is reachable..."
           
