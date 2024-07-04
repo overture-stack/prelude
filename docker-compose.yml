@@ -23,6 +23,7 @@ services:
           mkdir -p keycloak/db-folder-init/pg_stat
           mkdir -p song/db-folder-init/pg_tblspc
           mkdir -p song/db-folder-init/pg_stat
+          mkdir -p song/db-folder-init/pg_replslot
           apk --no-cache add curl > /dev/null 2>&1
           echo "Checking if Song is reachable..."
           
