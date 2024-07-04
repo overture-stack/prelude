@@ -1,5 +1,51 @@
 version: "3"
 services:
+
+  # ==========================
+  # Composer (Logs Health Checks + Data Population)
+  # ==========================
+  composer:
+    image: alpine:latest
+    container_name: composer
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "9204:9204"
+    volumes:
+      - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
+      - ./persistentStorage/data-song-db:/song/db-folder-init
+    command: >
+      sh -c '
+          echo "Welcome to the Overture QuickStart"
+          echo "Setting up prepopulated Databases..."
+          mkdir -p keycloak/db-folder-init/pg_tblspc
+          mkdir -p keycloak/db-folder-init/pg_stat
+          mkdir -p song/db-folder-init/pg_tblspc
+          mkdir -p song/db-folder-init/pg_stat
+          apk --no-cache add curl > /dev/null 2>&1
+          echo "Checking if Song is reachable..."
+          
+          while true; do
+              if [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; then
+                  echo "Success Song is now reachable, checking if Maestro is reachable..."
+          
+                  while true; do
+                      if curl -X POST "http://maestro:11235/index/repository/song.overture/study/demo" -H "accept: */*" -d "{}" | grep -q "true"; then 
+                          echo "Success! Your front-end portal should now be accessible at: localhost:3000"
+                          break 2 
+                      else
+                          echo "Maestro spinning up, checking again in 30 seconds..."
+                          sleep 30
+                      fi
+                  done
+              else
+                  echo "Song spinning up, please wait..."
+                  sleep 20
+              fi
+          done
+      '
+
   # ==================================================================================
   # OAuth (KeyCloak)
   # ==================================================================================
@@ -8,6 +54,8 @@ services:
   # Keycloak Database
   # ==========================
   keycloak-db:
+    depends_on:
+      - composer
     image: postgres:14
     container_name: keycloak-db
     platform: linux/amd64
@@ -24,7 +72,6 @@ services:
       retries: 5
       start_period: 10s
    
-
   # ==========================
   # Keycloak 
   # ==========================
@@ -463,44 +510,3 @@ services:
       NEXT_PUBLIC_ARRANGER_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id
-
-  # ==========================
-  # Composer (Logs Health Checks + Populates Data)
-  # ==========================
-  composer:
-    image: alpine:latest
-    container_name: composer
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    ports:
-      - "9204:9204"
-    command: >
-      sh -c '
-          echo "Welcome to the Overture QuickStart"
-          echo "Please wait while our services spin up"
-          apk --no-cache add curl > /dev/null 2>&1
-          echo "Checking if Song is reachable..."
-          
-          while true; do
-              if [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; then
-                  echo "Success Song is now reachable, checking if Maestro is reachable..."
-          
-                  while true; do
-                      if curl -X POST "http://maestro:11235/index/repository/song.overture/study/demo" -H "accept: */*" -d "{}" | grep -q "true"; then 
-                          echo "Success! Your front-end portal should now be accessible at: localhost:3000"
-                          break 2 
-                      else
-                          echo "Maestro spinning up, please wait..."
-                          sleep 30
-                      fi
-                  done
-              else
-                  echo "Song spinning up, please wait..."
-                  sleep 20
-              fi
-          done
-      '
-
-
-
