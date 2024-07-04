@@ -10,6 +10,7 @@ services:
   keycloak-db:
     image: postgres:14
     container_name: keycloak-db
+    platform: linux/amd64
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
@@ -30,6 +31,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:22.0
     container_name: keycloak
+    platform: linux/amd64
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -66,6 +68,7 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.1
     container_name: zookeeper
+    platform: linux/amd64
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -114,6 +117,7 @@ services:
   song-db:
     image: postgres:11.1
     container_name: song-db
+    platform: linux/amd64
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
@@ -206,6 +210,7 @@ services:
   minio-client:
     image: minio/mc
     container_name: minio-client
+    platform: linux/amd64
     depends_on:
       minio:
         condition: service_healthy
@@ -327,6 +332,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
     container_name: elasticsearch
+    platform: linux/amd64
     ports:
       - "9200:9200"
     environment:
@@ -355,6 +361,7 @@ services:
   index-setup:
     image: alpine:latest
     container_name: index-setup
+    platform: linux/amd64
     depends_on:
       elasticsearch:
         condition: service_healthy
