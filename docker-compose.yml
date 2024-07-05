@@ -1,4 +1,3 @@
-version: "3"
 services:
 
   # ==========================
@@ -134,7 +133,6 @@ services:
       retries: 10
       start_period: 20s
    
-
   # ==========================
   # Kafka
   # ==========================
@@ -162,7 +160,6 @@ services:
       timeout: 10s
       retries: 10
       start_period: 30s
-   
 
   # ==========================
   # Song Database
@@ -186,7 +183,6 @@ services:
       retries: 5
       start_period: 10s
    
-
   # ==========================
   # Song
   # ==========================
@@ -200,8 +196,6 @@ services:
       song-db:
         condition: service_healthy
       kafka:
-        condition: service_healthy
-      zookeeper:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -408,7 +402,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-      start_period: 20s
+      start_period: 25s
  
   # ==========================
   # Index Setup
