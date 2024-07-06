@@ -114,52 +114,79 @@ services:
   # File Management (Song, Score, Kafka, Zookeeper, Minio)
   # ==================================================================================
   
-  # ==========================
-  # Zookeeper
-  # ==========================
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.1
-    container_name: zookeeper
-    platform: linux/amd64
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-    healthcheck:
-      test: ["CMD-SHELL", "echo srvr | nc 127.0.0.1 2181 | grep Mode"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-      start_period: 20s
+  # # ==========================
+  # # Zookeeper
+  # # ==========================
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:7.6.1
+  #   container_name: zookeeper
+  #   platform: linux/amd64
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   ports:
+  #     - "2181:2181"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "echo srvr | nc 127.0.0.1 2181 | grep Mode"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 10
+  #     start_period: 20s
    
-  # ==========================
-  # Kafka
-  # ==========================
+  # # ==========================
+  # # Kafka
+  # # ==========================
+  # kafka:
+  #   image: confluentinc/cp-kafka:5.4.0
+  #   container_name: kafka
+  #   platform: linux/amd64
+  #   depends_on:
+  #     zookeeper:
+  #       condition: service_healthy
+  #   ports:
+  #     - "29092:29092"
+  #     - "9092:9092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:9092
+  #     CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+  #   healthcheck:
+  #     test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 10
+  #     start_period: 30s
+
   kafka:
-    image: confluentinc/cp-kafka:5.4.0
+    image: confluentinc/cp-kafka:7.6.1
     container_name: kafka
     platform: linux/amd64
-    depends_on:
-      zookeeper:
-        condition: service_healthy
     ports:
-      - "29092:29092"
       - "9092:9092"
+      - "29092:29092"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:9092
-      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+      KAFKA_NUM_PARTITIONS: 1
+      CLUSTER_ID: "q1Sh-9_ISia_zwGINzRvyQ"
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
-      interval: 10s
+      test: ["CMD", "sh", "-c", "echo stats | nc localhost 9092"]
+      interval: 30s
       timeout: 10s
-      retries: 10
-      start_period: 30s
+      retries: 5
 
   # ==========================
   # Song Database
@@ -193,9 +220,9 @@ services:
     depends_on:
       keycloak:
         condition: service_started
-      song-db:
-        condition: service_healthy
       kafka:
+        condition: service_started
+      song-db:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -275,7 +302,6 @@ services:
       exit 0;
       '
    
-
   # ==========================
   # Score
   # ==========================
@@ -342,6 +368,8 @@ services:
         condition: service_started
       index-setup:
         condition: service_completed_successfully
+      kafka:
+        condition: service_started
     ports:
       - "11235:11235"
     environment:
