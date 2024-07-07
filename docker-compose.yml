@@ -22,7 +22,7 @@ services:
         echo -e "\033[1;36m║    Welcome to the Overture QuickStart    ║\033[0m"
         echo -e "\033[1;36m╚══════════════════════════════════════════╝\033[0m"
         # Create missing empty directories not tracked by git and needed by postgres
-        echo -e "\033[1;35m[1/7]\033[0m  Setting up pre-populated databases"
+        echo -e "\033[1;35m[1/7]\033[0m Setting up empty directories for postgres"
         mkdir -p keycloak/db-folder-init/pg_tblspc
         mkdir -p keycloak/db-folder-init/pg_stat
         mkdir -p keycloak/db-folder-init/pg_replslot
@@ -49,10 +49,10 @@ services:
         apk --no-cache add curl > /dev/null 2>&1 || { echo "Failed to install curl"; exit 1; }
 
         # Wait for Elasticsearch
-        echo -e "\033[1;35m[2/7]\033[0m Waiting for Elasticsearch to be ready (this may take a few minutes)"
+        echo -e "\033[1;35m[2/7]\033[0m Waiting for Elasticsearch (this may take a few minutes)"
         sleep 20
         until curl -s -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/_cluster/health" > /dev/null; do
-          echo -e "\033[1;36mElasticsearch:\033[0m Not yet accessible, checking again in 30 seconds"
+          echo -e "\033[1;36mElasticsearch:\033[0m Not yet reachable, checking again in 30 seconds"
           sleep 30
         done
         echo -e "\033[1;32mSuccess:\033[0m Elasticsearch is reachable"
@@ -82,7 +82,7 @@ services:
         # Check for Song
         echo -e "\033[1;35m[5/7]\033[0m Checking if Song is ready" 
         until [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; do
-          echo -e "\033[1;36mSong:\033[0m Not yet accessible, checking again in 2 seconds"
+          echo -e "\033[1;36mSong:\033[0m Not yet reachable, checking again in 2 seconds"
           sleep 20
         done
         echo -e "\033[1;32mSuccess:\033[0m Song is now reachable"
@@ -90,28 +90,28 @@ services:
         # Updating health status of the conductor image
         # This health file signals container readiness, fulfilling dependencies for search & discovery components, Maestro, Arranger & Stage
         echo "healthy" > /health/conductor_health
-        echo -e  "\033[1;36mconductor:\033[0m Updating Container Status. Health check file created"
+        echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
         # Check Maestro
-        echo -e "\033[1;35m[6/8]\033[0m Checking if Maestro is accessible (this may take a few minutes)" 
+        echo -e "\033[1;35m[6/8]\033[0m Checking if Maestro is reachable (this may take a few minutes)" 
         until curl -s -X POST "http://maestro:11235/index/repository/song.overture/study/demo" -H "accept: */*" -d "{}" | grep -q "true"; do
-          echo -e "\033[1;36mMaestro:\033[0m Not yet accessible, checking again in 30 seconds"
+          echo -e "\033[1;36mMaestro:\033[0m Not yet reachable, checking again in 30 seconds"
           sleep 30
         done
         echo -e "\033[1;32mSuccess:\033[0m Maestro is now reachable"
 
         # Check Arranger
-        echo -e "\033[1;35m[7/8]\033[0m Checking if Arranger is accessible"
+        echo -e "\033[1;35m[7/8]\033[0m Checking if Arranger is reachable"
         until curl -s -o /dev/null -w "%{http_code}" "http://arranger-server:5050/graphql" | grep -q "200"; do
-          echo -e "\033[361mArranger:\033[0m Not yet accessible, checking again in 10 seconds"
+          echo -e "\033[1;36mArranger:\033[0m Not yet reachable, checking again in 10 seconds"
           sleep 10
         done
         echo -e "\033[1;32mSuccess:\033[0m Arranger is now reachable"
 
         # Check Stage
-        echo -e "\033[1;35m[8/8]\033[0m Checking if Stage is accessible"
+        echo -e "\033[1;35m[8/8]\033[0m Checking if Stage is reachable"
         until curl -s -o /dev/null -w "%{http_code}" "http://stage:3000" | grep -q "200"; do
-          echo -e "\033[1;36mStage:\033[0m Not yet accessible, checking again in 10 seconds"
+          echo -e "\033[1;36mStage:\033[0m Not yet reachable, checking again in 10 seconds"
           sleep 10
         done
         echo -e "\033[1;32mSuccess:\033[0m Stage is now reachable"
@@ -123,8 +123,8 @@ services:
         echo -e "\033[1m📚 Overture Platform Guides:\033[0m"
         echo -e "   \033[1;32mhttps://www.overture.bio/documentation/guides/\033[0m\n"
         echo -e "\033[1m🛠️  QuickStart Information:\033[0m"
-        echo -e "   Check the \033[1;33mdocker-compose.yml\033[0m file for details on how"
-        echo -e "   this QuickStart works, including links to the relevant sections of our deployment guide\n"
+        echo -e "   Check the \033[1;33mdocker-compose.yml\033[0m file for details on this QuickStart,"
+        echo -e "   including links to relevant sections of our deployment guide.\n"
         rm /health/conductor_health
         exit 0
       '
