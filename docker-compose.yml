@@ -1,55 +1,128 @@
 services:
 
   # ==========================
-  # Composer (Logs Health Checks + Data Population)
+  # Composer 
   # ==========================
   composer:
     image: alpine:latest
     container_name: composer
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
     ports:
-      - "9204:9204"
+      - "9204:9204" 
     volumes:
       - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
       - ./persistentStorage/data-song-db:/song/db-folder-init
+      - ./configurationFiles/elasticsearchConfigs/quickstart_index_template.json:/usr/share/elasticsearch/config/quickstart_index_template.json
+      - ./health:/health
     command: >
       sh -c '
-          echo "Welcome to the Overture QuickStart"
-          echo "Setting up prepopulated Databases..."
-          mkdir -p keycloak/db-folder-init/pg_tblspc
-          mkdir -p keycloak/db-folder-init/pg_stat
-          mkdir -p song/db-folder-init/pg_tblspc
-          mkdir -p song/db-folder-init/pg_stat
-          mkdir -p song/db-folder-init/pg_replslot
-          mkdir -p song/db-folder-init/pg_twophase
-          mkdir -p song/db-folder-init/pg_snapshots
-          mkdir -p song/db-folder-init/pg_commit_ts
-          mkdir -p song/db-folder-init/pg_logical/snapshots
-          mkdir -p song/db-folder-init/pg_logical/mappings
-          apk --no-cache add curl > /dev/null 2>&1
-          echo "Checking if Song is reachable..."
+        set -e
+
+        echo -e "\033[1;36mWelcome to the Overture QuickStart\033[0m"  
+
+        # Create necessary directories
+        echo -e "\033[1;35m[1/7]\033[0m  Setting up pre-populated databases"
+        mkdir -p keycloak/db-folder-init/pg_tblspc
+        mkdir -p keycloak/db-folder-init/pg_stat
+        mkdir -p song/db-folder-init/pg_tblspc
+        mkdir -p song/db-folder-init/pg_stat
+        mkdir -p song/db-folder-init/pg_replslot
+        mkdir -p song/db-folder-init/pg_twophase
+        mkdir -p song/db-folder-init/pg_snapshots
+        mkdir -p song/db-folder-init/pg_commit_ts
+        mkdir -p song/db-folder-init/pg_logical/snapshots
+        mkdir -p song/db-folder-init/pg_logical/mappings
+        echo -e "\033[1;32mSuccess:\033[0m Databases ready"
+
+        # Install curl
+        apk --no-cache add curl > /dev/null 2>&1 || { echo "Failed to install curl"; exit 1; }
+
+        # Wait for Elasticsearch
+        echo -e "\033[1;35m[2/7]\033[0m Waiting for Elasticsearch to be ready (this may take a few minutes)"
+        sleep 20
+        until curl -s -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/_cluster/health" > /dev/null; do
+          echo -e "\033[1;36mElasticsearch:\033[0m Not yet accessible, checking again in 30 seconds"
+          sleep 30
+        done
+
+        echo -e "\033[1;32mSuccess:\033[0m Elasticsearch is reachable"
+
+        # Set up Elasticsearch index template
+        echo -e "\033[1;35m[3/7]\033[0m  Setting up Elasticsearch index template"
+        if ! curl -s -u elastic:myelasticpassword "http://elasticsearch:9200/_template/index_template" | grep -q "\"index_patterns\"" > /dev/null; then 
+          curl -s -u elastic:myelasticpassword -X PUT "http://elasticsearch:9200/_template/index_template" -H "Content-Type: application/json" -d @/usr/share/elasticsearch/config/quickstart_index_template.json > /dev/null &&
+          echo -e "\033[1;32mSuccess:\033[0m Elasticsearch index template created successfully."
+        else
+          echo -e "\033[1;36mElasticsearch:\033[0m Index template already exists, skipping creation"
+        fi
+
+        # Set up Elasticsearch index and alias (needs failure check)
+        echo -e "\033[1;35m[4/7]\033[0m Setting up Elasticsearch index and alias"
+        echo -e "\033[1;36mElasticsearch:\033[0m Checking if Elasticsearch index exists."
+        if ! curl -s -f -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/overture-quickstart-index" > /dev/null 2>&1; then
+          echo -e "\033[1;32mElasticsearch:\033[0m Creating Elasticsearch index and alias."
+          response=$$(curl -s -w "\n%{http_code}" -u elastic:myelasticpassword -X PUT "http://elasticsearch:9200/overture-quickstart-index" -H "Content-Type: application/json" -d "{\"aliases\": {\"file_centric\": {\"is_write_index\": true}}}")
+          http_code=$$(echo "$$response" | tail -n1)
+          body=$$(echo "$$response" | sed "$$d")
+          echo -e "\033[1;32mSuccess:\033[0m Index and alias created successfully, Elasticsearch setup complete."
+        else
+          echo -e "\033[1;36mElasticsearch:\033[0m Index already exists, skipping creation."
+        fi
+
+        echo -e "\033[1;35m[5/7]\033[0m Checking if Song is ready" 
+
+        # Check for Song
+        until [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; do
+          echo -e "\033[1;36mSong:\033[0m Not yet accessible, checking again in 2 seconds"
+          sleep 20
+        done
+
+        echo -e "\033[1;32mSuccess:\033[0m Song is now reachable"
+        
+        # This file updates the container to a healthy status allowing discovery components to start
+        echo "healthy" > /health/composer_health
+        echo -e  "\033[1;36mComposer:\033[0m Updating Container Status. Health check file created."
+
+        echo -e "\033[1;35m[6/8]\033[0m Checking if Maestro is accessible (this may take a few minutes)" 
+
+        # Check Maestro
+        until curl -s -X POST "http://maestro:11235/index/repository/song.overture/study/demo" -H "accept: */*" -d "{}" | grep -q "true"; do
           
-          while true; do
-              if [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; then
-                  echo "Success Song is now reachable, checking if Maestro is reachable..."
-          
-                  while true; do
-                      if curl -X POST "http://maestro:11235/index/repository/song.overture/study/demo" -H "accept: */*" -d "{}" | grep -q "true"; then 
-                          echo "Success! Your front-end portal should now be accessible at: localhost:3000"
-                          break 2 
-                      else
-                          echo "Maestro spinning up, checking again in 30 seconds..."
-                          sleep 30
-                      fi
-                  done
-              else
-                  echo "Song spinning up, please wait..."
-                  sleep 20
-              fi
-          done
+          echo -e "\033[1;36mMaestro:\033[0m Not yet accessible, checking again in 30 seconds"
+
+          sleep 30
+        done
+
+        echo -e "\033[1;32mSuccess:\033[0m  Maestro is now reachable."
+
+        echo -e "\033[1;35m[7/8]\033[0m Checking if Arranger is accessible"
+
+        # Check Arranger
+        until curl -s -o /dev/null -w "%{http_code}" "http://arranger-server:5050/graphql" | grep -q "200"; do
+          echo -e "\033[1;Arranger:\033[0m Not yet accessible, checking again in 10 seconds"
+          sleep 10
+        done
+
+        echo -e "\033[1;32mSuccess:\033[0m Arranger is now reachable."
+
+        echo -e "\033[1;35m[8/8]\033[0m Checking if Stage is accessible"
+
+        # Check Stage
+        until curl -s -o /dev/null -w "%{http_code}" "http://stage:3000" | grep -q "200"; do
+          echo -e "\033[1;36mStage:\033[0m Not yet accessible, checking again in 10 seconds"
+          sleep 10
+        done
+        echo -e "\033[1;32mSuccess:\033[0m Stage is now reachable."
+        echo -e "\033[1;36mQuickStart setup complete\033[0m"
+        echo -e "\033[1mThe front-end portal is now accessible at:\033[0m \033[1;32m[ http://localhost:3000 ]\033[0m"
+        echo -e "\033[1mDetails on how to use the Overture Platform, can be found at:\033[0m \033[1;32m[ https://www.overture.bio/getting-started ]\033[0m"
+        rm /health/composer_health
+        exit 0
       '
+    healthcheck:
+      test: ["CMD", "test", "-f", "/health/composer_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # ==================================================================================
   # OAuth (KeyCloak)
@@ -109,58 +182,10 @@ services:
       --import-realm
       --hostname-port=8180
    
-
   # ==================================================================================
-  # File Management (Song, Score, Kafka, Zookeeper, Minio)
+  # File Management (Song, Score, Kafka, Minio)
   # ==================================================================================
-  
-  # # ==========================
-  # # Zookeeper
-  # # ==========================
-  # zookeeper:
-  #   image: confluentinc/cp-zookeeper:7.6.1
-  #   container_name: zookeeper
-  #   platform: linux/amd64
-  #   environment:
-  #     ZOOKEEPER_CLIENT_PORT: 2181
-  #     ZOOKEEPER_TICK_TIME: 2000
-  #   ports:
-  #     - "2181:2181"
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "echo srvr | nc 127.0.0.1 2181 | grep Mode"]
-  #     interval: 10s
-  #     timeout: 10s
-  #     retries: 10
-  #     start_period: 20s
-   
-  # # ==========================
-  # # Kafka
-  # # ==========================
-  # kafka:
-  #   image: confluentinc/cp-kafka:5.4.0
-  #   container_name: kafka
-  #   platform: linux/amd64
-  #   depends_on:
-  #     zookeeper:
-  #       condition: service_healthy
-  #   ports:
-  #     - "29092:29092"
-  #     - "9092:9092"
-  #   environment:
-  #     KAFKA_BROKER_ID: 1
-  #     KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  #     CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:9092
-  #     CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
-  #   healthcheck:
-  #     test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
-  #     interval: 10s
-  #     timeout: 10s
-  #     retries: 10
-  #     start_period: 30s
-
+ 
   kafka:
     image: confluentinc/cp-kafka:7.6.1
     container_name: kafka
@@ -214,7 +239,7 @@ services:
   # Song
   # ==========================
   song:
-    image: ghcr.io/overture-stack/song-server:438c2c42
+    image: ghcr.io/overture-stack/song-server:5.2.0
     container_name: song
     platform: linux/amd64
     depends_on:
@@ -299,14 +324,14 @@ services:
       echo "This heliograph file is used by Score to test that the server can successfully communicate with the storage provider and that your client can successfully retrieve files from it." > /tmp/heliograph && 
       /usr/bin/mc put /tmp/heliograph myminio/object/data/heliograph; 
       rm /tmp/heliograph; 
-      exit 0;
+      tail -f /dev/null
       '
    
   # ==========================
   # Score
   # ==========================
   score:
-    image: ghcr.io/overture-stack/score-server:47f006ce
+    image: ghcr.io/overture-stack/score-server:5.11.0
     container_name: score
     platform: linux/amd64
     depends_on:
@@ -351,7 +376,6 @@ services:
       AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
    
-
   # ==================================================================================
   #  E. Search (Maestro, Elasticsearch, Arranger)
   # ==================================================================================
@@ -366,10 +390,10 @@ services:
     depends_on:
       song:
         condition: service_started
-      index-setup:
-        condition: service_completed_successfully
       kafka:
         condition: service_started
+      composer:
+        condition: service_healthy
     ports:
       - "11235:11235"
     environment:
@@ -402,7 +426,6 @@ services:
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
    
-
   # ==========================
   # Elasticsearch
   # ==========================
@@ -433,43 +456,6 @@ services:
       start_period: 25s
  
   # ==========================
-  # Index Setup
-  # ==========================
-  index-setup:
-    image: alpine:latest
-    container_name: index-setup
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    ports:
-      - "9201:9201"
-    volumes:
-      - ./configurationFiles/elasticsearchConfigs/quickstart_index_template.json:/usr/share/elasticsearch/config/quickstart_index_template.json
-    command: >
-      sh -c "
-      apk --no-cache add curl && 
-      sleep 60 && 
-      if ! curl -s -u elastic:myelasticpassword 'http://elasticsearch:9200/_template/index_template' | grep -q '\"index_patterns\"'; then 
-        curl -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/_template/index_template' -H 'Content-Type: application/json' -d @/usr/share/elasticsearch/config/quickstart_index_template.json &&
-        echo 'Index template created successfully.'; 
-      else 
-        echo 'Index template already exists, skipping creation.'; 
-      fi &&
-      if curl -s -o /dev/null -w '%{http_code}' -u elastic:myelasticpassword -X PUT 'http://elasticsearch:9200/overture-quickstart-index' -H 'Content-Type: application/json' -d '{\"aliases\": {\"file_centric\": {\"is_write_index\": true}}}' | grep -q '200'; then 
-        echo 'Elasticsearch Alias created successfully.'; 
-        exit 0
-      else 
-        if curl -s -o /dev/null -w '%{http_code}' -u elastic:myelasticpassword -X GET 'http://elasticsearch:9200/overture-quickstart-index' | grep -q '200'; then
-          echo 'Elasticsearch Alias already exists, skipping creation.';
-          exit 0
-        else
-          echo 'Failed to create Elasticsearch alias.'; 
-          exit 1; 
-        fi
-      fi
-      " 
-      
-  # ==========================
   # Arranger-Server
   # ==========================
   arranger-server:
@@ -477,8 +463,8 @@ services:
     container_name: arranger-server
     platform: linux/amd64
     depends_on:
-      index-setup:
-        condition: service_completed_successfully
+      composer:
+        condition: service_healthy
     ports:
       - "5050:5050"
     volumes:
@@ -511,9 +497,9 @@ services:
     container_name: stage
     platform: linux/amd64
     depends_on:
+      composer:
+        condition: service_healthy
       arranger-server:
-        condition: service_started
-      keycloak:
         condition: service_started
     ports:
       - "3000:3000"
