@@ -5,7 +5,7 @@ services:
   # Orchestrates setup with health checks, data population and logging
   # --------------------------------------
   conductor:
-    image: alpine:latest
+    image: alpine/curl:8.8.0
     container_name: conductor
     ports:
       - "9204:9204" 
@@ -44,9 +44,6 @@ services:
         mkdir -p song/db-folder-init/pg_logical/snapshots
         mkdir -p song/db-folder-init/pg_logical/mappings
         echo -e "\033[1;32mSuccess:\033[0m Databases ready"
-
-        # Install curl
-        apk --no-cache add curl > /dev/null 2>&1 || { echo "Failed to install curl"; exit 1; }
 
         # Wait for Elasticsearch
         echo -e "\033[1;35m[2/7]\033[0m Waiting for Elasticsearch (this may take a few minutes)"
@@ -122,7 +119,7 @@ services:
         echo -e "   \033[1;32mhttp://localhost:3000\033[0m\n"
         echo -e "\033[1m📚 Overture Platform Guides:\033[0m"
         echo -e "   \033[1;32mhttps://www.overture.bio/documentation/guides/\033[0m\n"
-        echo -e "\033[1m🛠️  QuickStart Information:\033[0m"
+        echo -e "\033[1m🛠️ QuickStart Information:\033[0m"
         echo -e "   Check the \033[1;33mdocker-compose.yml\033[0m file for details on this QuickStart,"
         echo -e "   including links to relevant sections of our deployment guide.\n"
         rm /health/conductor_health
