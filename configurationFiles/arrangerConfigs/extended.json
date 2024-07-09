@@ -233,7 +233,7 @@
 		"fieldName": "file.md5sum"
 	  },
 	  {
-		"displayName": "Size (MB)",
+		"displayName": "Size",
 		"fieldName": "file.size"
 	  },
 	  {

@@ -434,6 +434,7 @@
 			  },
 			  {
 				"canChangeShow": true,
+				"displayType": "bytes",
 				"fieldName": "file.size",
 				"show": true,
 				"sortable": true
