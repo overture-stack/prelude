@@ -1,0 +1,238 @@
+{
+  "index_patterns": ["overture-*"],
+  "aliases": {
+    "file_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "object_id": { "type": "keyword", "copy_to": ["file_autocomplete"] },
+      "study_id": { "type": "keyword" },
+      "data_type": { "type": "keyword" },
+      "file_type": { "type": "keyword" },
+      "file_access": { "type": "keyword" },
+      "file_autocomplete": {
+				"type": "keyword",
+				"fields": {
+					"analyzed": {
+						"type": "text",
+						"analyzer": "autocomplete_analyzed",
+						"search_analyzer": "lowercase_keyword"
+					},
+					"lowercase": {
+						"type": "text",
+						"analyzer": "lowercase_keyword"
+					},
+					"prefix": {
+						"type": "text",
+						"analyzer": "autocomplete_prefix",
+						"search_analyzer": "lowercase_keyword"
+					}
+				}
+			},
+      "analysis": {
+        "properties": {
+          "analysis_id": { "type": "keyword" },
+          "analysis_type": { "type": "keyword" },
+          "analysis_version": { "type": "integer" },
+          "analysis_state": { "type": "keyword" },
+          "updated_at": { "type": "date" },
+          "first_published_at": { "type": "date" },
+          "published_at": { "type": "date" },
+          "experiment": {
+            "properties": {
+              "experimentalStrategy": { "type": "keyword" },
+              "model": { "type": "keyword" },
+              "platform": { "type": "keyword" },
+              "sequencingCenter": { "type": "keyword" },
+              "sequencingDate": { "type": "date" }
+            }
+          },
+          "analysisStateHistory": {
+            "type": "nested",
+            "properties": {
+              "initialState": { "type": "keyword" },
+              "updatedState": { "type": "keyword" },
+              "updatedAt": { "type": "date" }
+            }
+          },
+          "collaborator": {
+            "type": "nested",
+            "properties": {
+              "contactEmail": { "type": "keyword" },
+              "name": { "type": "keyword" }
+            }
+          },
+          "createdAt": { "type": "date" },
+          "donor": {
+            "properties": {
+              "causeOfDeath": { "type": "keyword" },
+              "primaryDiagnosis": {
+                "type": "nested",
+                "properties": {
+                  "ageAtDiagnosis": { "type": "integer" },
+                  "cancerTypeCode": { "type": "keyword" },
+                  "clinicalStageGroup": { "type": "keyword" },
+                  "clinicalTumourStagingSystem": { "type": "keyword" },
+                  "followUp": {
+                    "type": "nested",
+                    "properties": {
+                      "diseaseStatusAtFollowUp": { "type": "keyword" },
+                      "intervalOfFollowUp": { "type": "integer" },
+                      "relapseType": { "type": "keyword" },
+                      "submitterFollowUpId": { "type": "keyword" },
+                      "submitterTreatmentId": { "type": "keyword" }
+                    }
+                  },
+                  "submitterPrimaryDiagnosisId": { "type": "keyword" },
+                  "treatment": {
+                    "type": "nested",
+                    "properties": {
+                      "chemotherapy": {
+                        "type": "nested",
+                        "properties": {
+                          "drugName": { "type": "keyword" }
+                        }
+                      },
+                      "responseToTreatment": { "type": "keyword" },
+                      "submitterTreatmentId": { "type": "keyword" },
+                      "treatmentDuration": { "type": "integer" },
+                      "treatmentStartInterval": { "type": "integer" },
+                      "treatmentType": { "type": "keyword" }
+                    }
+                  }
+                }
+              },
+              "primarySite": { "type": "keyword" },
+              "submitterDonorId": { "type": "keyword" },
+              "survivalTime": { "type": "integer" },
+              "vitalStatus": { "type": "keyword" }
+            }
+          },
+          "publication": {
+            "properties": {
+              "doi": { "type": "keyword" },
+              "publication": { "type": "keyword" }
+            }
+          },
+          "specimen": {
+            "properties": {
+              "specimenAnatomicLocation": { "type": "keyword" },
+              "submitterPrimaryDiagnosisId": { "type": "keyword" },
+              "submitterSpecimenId": { "type": "keyword" },
+              "tumourGrade": { "type": "keyword" },
+              "tumourGradingSystem": { "type": "keyword" }
+            }
+          },
+          "workflow": {
+            "properties": {
+              "genomeBuild": { "type": "keyword" },
+              "inputs": {
+                "type": "nested",
+                "properties": {
+                  "analysisType": { "type": "keyword" },
+                  "normalAnalysisId": { "type": "keyword" },
+                  "tumourAnalysisId": { "type": "keyword" }
+                }
+              },
+              "runId": { "type": "keyword" },
+              "sessionId": { "type": "keyword" },
+              "workflowName": { "type": "keyword" },
+              "workflowShortName": { "type": "keyword" },
+              "workflowVersion": { "type": "keyword" }
+            }
+          }
+        }
+      },
+      "file": {
+        "properties": {
+          "name": { "type": "keyword" },
+          "md5sum": { "type": "keyword" },
+          "size": { "type": "integer" },
+          "data_type": { "type": "keyword" },
+          "index_file": {
+            "properties": {
+              "object_id": { "type": "keyword" },
+              "name": { "type": "keyword" },
+              "file_type": { "type": "keyword" },
+              "md5sum": { "type": "keyword" },
+              "data_type": { "type": "keyword" },
+              "size": { "type": "integer" },
+              "dataCategory": { "type": "keyword" },
+              "jbrowseCoordinates": { "type": "keyword" }
+            }
+          },
+          "dataCategory": { "type": "keyword" },
+          "jbrowseCoordinates": { "type": "keyword" }
+        }
+      },
+      "repositories": {
+        "type": "nested",
+        "properties": {
+          "code": { "type": "keyword" },
+          "organization": { "type": "keyword" },
+          "name": { "type": "keyword" },
+          "type": { "type": "keyword" },
+          "country": { "type": "keyword" },
+          "url": { "type": "keyword" }
+        }
+      },
+      "donors": {
+        "type": "nested",
+        "properties": {
+          "donor_id": { "type": "keyword" },
+          "submitter_donor_id": { "type": "keyword" },
+          "gender": { "type": "keyword" },
+          "specimens": {
+            "type": "nested",
+            "properties": {
+              "specimen_id": { "type": "keyword" },
+              "specimen_type": { "type": "keyword" },
+              "submitter_specimen_id": { "type": "keyword" },
+              "samples": {
+                "type": "nested",
+                "properties": {
+                  "sample_id": { "type": "keyword" },
+                  "submitter_sample_id": { "type": "keyword" },
+                  "sample_type": { "type": "keyword" },
+                  "matched_normal_submitter_sample_id": { "type": "keyword" }
+                }
+              },
+              "tumour_normal_designation": { "type": "keyword" },
+              "specimen_tissue_source": { "type": "keyword" }
+            }
+          }
+        }
+      },
+      "dataCategory": { "type": "keyword" },
+      "jbrowseCoordinates": { "type": "keyword" }
+    }
+  },
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "autocomplete_analyzed": {
+          "filter": ["lowercase", "edge_ngram"],
+          "tokenizer": "standard"
+        },
+        "autocomplete_prefix": {
+          "filter": ["lowercase", "edge_ngram"],
+          "tokenizer": "keyword"
+        },
+        "lowercase_keyword": {
+          "filter": ["lowercase"],
+          "tokenizer": "keyword"
+        }
+      },
+      "filter": {
+        "edge_ngram": {
+          "max_gram": "20",
+          "min_gram": "1",
+          "side": "front",
+          "type": "edge_ngram"
+        }
+      }
+    },
+    "index.max_result_window": 300000,
+    "index.number_of_shards": 3
+  }
+}

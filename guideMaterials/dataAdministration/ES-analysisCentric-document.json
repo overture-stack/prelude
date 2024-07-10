@@ -1,0 +1,226 @@
+
+{
+    "analysis_id": "70d78670-618f-4257-9786-70618fb2578b",
+    "analysis_type": "quickStartSchema",
+    "analysis_version": 1,
+    "analysis_state": "PUBLISHED",
+    "updated_at": 1719708298753,
+    "published_at": 1719789481510,
+    "first_published_at": 1719708298744,
+    "study_id": "demo",
+    "donors": [
+      {
+        "donor_id": "1a0cc916-465c-5b06-8eb7-c4fa438e496f",
+        "submitter_donor_id": "DO0115",
+        "gender": "Female",
+        "specimens": [
+          {
+            "specimen_id": "89e3e128-6d1a-55cc-aae3-e62f5e2d4bdc",
+            "specimen_type": "Primary tumour - adjacent to normal",
+            "submitter_specimen_id": "SP011511",
+            "samples": [
+              {
+                "sample_id": "89e3e128-6d1a-55cc-aae3-e62f5e2d4bdc",
+                "submitter_sample_id": "SP011511",
+                "sample_type": "Total DNA",
+                "matched_normal_submitter_sample_id": "SP011501"
+              }
+            ],
+            "tumour_normal_designation": "Tumour",
+            "specimen_tissue_source": "Blood derived - bone marrow"
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "object_id": "b78e0e71-8177-5e49-9b2b-025dd58f7f7b",
+        "name": "SP011511.indel.vcf.gz",
+        "size": 17328,
+        "file_type": "VCF",
+        "md5_sum": "c445d6cd5e1aa1d7dec13096feae788c",
+        "file_access": "open",
+        "data_type": "Raw InDel Calls",
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      },
+      {
+        "object_id": "b9582e12-03ed-57c1-a29b-40291fc64dc7",
+        "name": "SP011511.indel.vcf.gz.tbi",
+        "size": 148,
+        "file_type": "TBI",
+        "md5_sum": "ae025b596b2fb562d33073338eb23a7d",
+        "file_access": "open",
+        "data_type": "Raw InDel Calls",
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    ],
+    "repositories": [
+      {
+        "code": "song.overture",
+        "organization": "Overture",
+        "name": "Overture",
+        "type": "S3",
+        "country": "CA",
+        "url": "http://song:8080"
+      }
+    ],
+    "experiment": {
+      "experimentalStrategy": "WXS",
+      "model": "SEQUEL IIe",
+      "platform": "PacBio",
+      "sequencingCenter": "CGTA",
+      "sequencingDate": "2021-03-08T19:00:00.000Z"
+    },
+    "analysisStateHistory": [
+      {
+        "initialState": "UNPUBLISHED",
+        "updatedState": "PUBLISHED",
+        "updatedAt": "2024-06-30T00:44:58.744865"
+      },
+      {
+        "initialState": "PUBLISHED",
+        "updatedState": "PUBLISHED",
+        "updatedAt": "2024-06-30T01:47:36.807659"
+      },
+      {
+        "initialState": "PUBLISHED",
+        "updatedState": "PUBLISHED",
+        "updatedAt": "2024-06-30T02:20:10.703175"
+      },
+      {
+        "initialState": "PUBLISHED",
+        "updatedState": "PUBLISHED",
+        "updatedAt": "2024-06-30T22:12:42.925452"
+      },
+      {
+        "initialState": "PUBLISHED",
+        "updatedState": "PUBLISHED",
+        "updatedAt": "2024-06-30T23:03:31.126799"
+      },
+      {
+        "initialState": "PUBLISHED",
+        "updatedState": "PUBLISHED",
+        "updatedAt": "2024-06-30T23:11:28.179691"
+      },
+      {
+        "initialState": "PUBLISHED",
+        "updatedState": "PUBLISHED",
+        "updatedAt": "2024-06-30T23:18:01.510626"
+      }
+    ],
+    "collaborator": [
+      {
+        "contactEmail": "susannorton@micr.ca",
+        "name": "MICR"
+      }
+    ],
+    "createdAt": "2024-06-30T00:40:08.565416",
+    "donor": {
+      "causeOfDeath": "Died of other reasons",
+      "primaryDiagnosis": [
+        {
+          "ageAtDiagnosis": 36,
+          "cancerTypeCode": "C34.3",
+          "clinicalStageGroup": "Stage III",
+          "clinicalTumourStagingSystem": "AJCC 6th edition",
+          "followUp": [
+            {
+              "diseaseStatusAtFollowUp": "Partial remission",
+              "intervalOfFollowUp": 50,
+              "relapseType": null,
+              "submitterFollowUpId": "FO011501",
+              "submitterTreatmentId": "TR011501"
+            }
+          ],
+          "submitterPrimaryDiagnosisId": "PD011501",
+          "treatment": [
+            {
+              "chemotherapy": [
+                {
+                  "drugName": "Azacitidine "
+                }
+              ],
+              "responseToTreatment": "Minor response",
+              "submitterTreatmentId": "TR011501",
+              "treatmentDuration": 34,
+              "treatmentStartInterval": 79,
+              "treatmentType": [
+                "Chemotherapy"
+              ]
+            }
+          ]
+        },
+        {
+          "ageAtDiagnosis": 1,
+          "cancerTypeCode": "C34.2",
+          "clinicalStageGroup": "Stage IB",
+          "clinicalTumourStagingSystem": "FIGO staging system",
+          "followUp": [
+            {
+              "diseaseStatusAtFollowUp": "Relapse or recurrence",
+              "intervalOfFollowUp": 33,
+              "relapseType": null,
+              "submitterFollowUpId": "FO011502",
+              "submitterTreatmentId": "TR011502"
+            }
+          ],
+          "submitterPrimaryDiagnosisId": "PD011502",
+          "treatment": [
+            {
+              "chemotherapy": [
+                {
+                  "drugName": "Paclitaxel "
+                }
+              ],
+              "radiation": [
+                {
+                  "anatomicalSiteIrradiated": "Body",
+                  "radiationTherapyModality": "Photon"
+                }
+              ],
+              "responseToTreatment": "Complete response",
+              "submitterTreatmentId": "TR011502",
+              "treatmentDuration": 56,
+              "treatmentStartInterval": 70,
+              "treatmentType": [
+                "Chemotherapy",
+                "Radiation therapy"
+              ]
+            }
+          ]
+        }
+      ],
+      "primarySite": "Bronchus and lung",
+      "submitterDonorId": "DO0115",
+      "survivalTime": 439,
+      "vitalStatus": "Deceased"
+    },
+    "publication": {
+      "doi": "10.1093/nar/gkae188",
+      "publication": "NAR"
+    },
+    "specimen": {
+      "specimenAnatomicLocation": "C14",
+      "submitterPrimaryDiagnosisId": "PD011501",
+      "submitterSpecimenId": "SP011501",
+      "tumourGrade": "G3",
+      "tumourGradingSystem": "Three-tier grading system"
+    },
+    "workflow": {
+      "genomeBuild": "GRCh38_hla_decoy_ebv",
+      "inputs": [
+        {
+          "analysisType": "sequencing_alignment",
+          "normalAnalysisId": "00000000-0000-0000-0000-0000000000115",
+          "tumourAnalysisId": "00000000-0000-0000-0000-0000000000115"
+        }
+      ],
+      "runId": "RI0115",
+      "sessionId": "SI0115",
+      "workflowName": "Sanger Variant Calling",
+      "workflowShortName": "SangerVariant",
+      "workflowVersion": "0.9.8"
+    }
+  }

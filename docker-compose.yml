@@ -1,0 +1,551 @@
+services:
+  # ======================================
+  # Conductor 
+  # --------------------------------------
+  # Orchestrates setup with health checks, data population and logging
+  # --------------------------------------
+  conductor:
+    image: alpine/curl:8.8.0
+    container_name: conductor
+    ports:
+      - "9204:9204" 
+    volumes:
+      - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
+      - ./persistentStorage/data-song-db:/song/db-folder-init
+      - ./configurationFiles/elasticsearchConfigs/quickstart_index_template.json:/usr/share/elasticsearch/config/quickstart_index_template.json
+      - ./health:/health
+    command: >
+      sh -c '
+        set -e
+
+        echo -e "\033[1;36m╔══════════════════════════════════════════╗\033[0m"
+        echo -e "\033[1;36m║    Welcome to the Overture QuickStart    ║\033[0m"
+        echo -e "\033[1;36m╚══════════════════════════════════════════╝\033[0m"
+        # Create missing empty directories not tracked by git and needed by postgres
+        echo -e "\033[1;35m[1/7]\033[0m Setting up empty directories for postgres"
+        mkdir -p keycloak/db-folder-init/pg_tblspc
+        mkdir -p keycloak/db-folder-init/pg_stat
+        mkdir -p keycloak/db-folder-init/pg_replslot
+        mkdir -p keycloak/db-folder-init/pg_dynshmem
+        mkdir -p keycloak/db-folder-init/pg_twophase
+        mkdir -p keycloak/db-folder-init/pg_notify
+        mkdir -p keycloak/db-folder-init/pg_serial
+        mkdir -p keycloak/db-folder-init/pg_snapshots
+        mkdir -p keycloak/db-folder-init/pg_commit_ts
+        mkdir -p keycloak/db-folder-init/pg_wal/archive_status
+        mkdir -p keycloak/db-folder-init/pg_logical/snapshots
+        mkdir -p keycloak/db-folder-init/pg_logical/mappings
+        mkdir -p song/db-folder-init/pg_tblspc
+        mkdir -p song/db-folder-init/pg_stat
+        mkdir -p song/db-folder-init/pg_replslot
+        mkdir -p song/db-folder-init/pg_twophase
+        mkdir -p song/db-folder-init/pg_snapshots
+        mkdir -p song/db-folder-init/pg_commit_ts
+        mkdir -p song/db-folder-init/pg_logical/snapshots
+        mkdir -p song/db-folder-init/pg_logical/mappings
+        echo -e "\033[1;32mSuccess:\033[0m Databases ready"
+
+        # Wait for Elasticsearch
+        echo -e "\033[1;35m[2/7]\033[0m Waiting for Elasticsearch (this may take a few minutes)"
+        sleep 20
+        until curl -s -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/_cluster/health" > /dev/null; do
+          echo -e "\033[1;36mElasticsearch:\033[0m Not yet reachable, checking again in 30 seconds"
+          sleep 30
+        done
+        echo -e "\033[1;32mSuccess:\033[0m Elasticsearch is reachable"
+
+        # Set up Elasticsearch index template
+        echo -e "\033[1;35m[3/7]\033[0m Setting up Elasticsearch index template"
+        if ! curl -s -u elastic:myelasticpassword "http://elasticsearch:9200/_template/index_template" | grep -q "\"index_patterns\"" > /dev/null; then 
+          curl -s -u elastic:myelasticpassword -X PUT "http://elasticsearch:9200/_template/index_template" -H "Content-Type: application/json" -d @/usr/share/elasticsearch/config/quickstart_index_template.json > /dev/null &&
+          echo -e "\033[1;32mSuccess:\033[0m Elasticsearch index template created successfully"
+        else
+          echo -e "\033[1;36mElasticsearch:\033[0m Index template already exists, skipping creation"
+        fi
+
+        # Set up Elasticsearch index and alias (needs failure check)
+        echo -e "\033[1;35m[4/7]\033[0m Setting up Elasticsearch index and alias"
+        echo -e "\033[1;36mElasticsearch:\033[0m Checking if Elasticsearch index exists"
+        if ! curl -s -f -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/overture-quickstart-index" > /dev/null 2>&1; then
+          echo -e "\033[1;32mElasticsearch:\033[0m Creating Elasticsearch index and alias"
+          response=$$(curl -s -w "\n%{http_code}" -u elastic:myelasticpassword -X PUT "http://elasticsearch:9200/overture-quickstart-index" -H "Content-Type: application/json" -d "{\"aliases\": {\"file_centric\": {\"is_write_index\": true}}}")
+          http_code=$$(echo "$$response" | tail -n1)
+          body=$$(echo "$$response" | sed "$$d")
+          echo -e "\033[1;32mSuccess:\033[0m Index and alias created successfully, Elasticsearch setup complete"
+        else
+          echo -e "\033[1;36mElasticsearch:\033[0m Index already exists, skipping creation"
+        fi
+
+        # Check for Song
+        echo -e "\033[1;35m[5/7]\033[0m Checking if Song is ready" 
+        until [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; do
+          echo -e "\033[1;36mSong:\033[0m Not yet reachable, checking again in 2 seconds"
+          sleep 20
+        done
+        echo -e "\033[1;32mSuccess:\033[0m Song is now reachable"
+        
+        # Updating health status of the conductor image
+        # This health file signals container readiness, fulfilling dependencies for search & discovery components, Maestro, Arranger & Stage
+        echo "healthy" > /health/conductor_health
+        echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
+
+        # Check Maestro
+        echo -e "\033[1;35m[6/8]\033[0m Checking if Maestro is reachable (this may take a few minutes)" 
+        until curl -s -X POST "http://maestro:11235/index/repository/song.overture/study/demo" -H "accept: */*" -d "{}" | grep -q "true"; do
+          echo -e "\033[1;36mMaestro:\033[0m Not yet reachable, checking again in 30 seconds"
+          sleep 30
+        done
+        echo -e "\033[1;32mSuccess:\033[0m Maestro is now reachable"
+
+        # Check Arranger
+        echo -e "\033[1;35m[7/8]\033[0m Checking if Arranger is reachable"
+        until curl -s -o /dev/null -w "%{http_code}" "http://arranger-server:5050/graphql" | grep -q "200"; do
+          echo -e "\033[1;36mArranger:\033[0m Not yet reachable, checking again in 10 seconds"
+          sleep 10
+        done
+        echo -e "\033[1;32mSuccess:\033[0m Arranger is now reachable"
+
+        # Check Stage
+        echo -e "\033[1;35m[8/8]\033[0m Checking if Stage is reachable"
+        until curl -s -o /dev/null -w "%{http_code}" "http://stage:3000" | grep -q "200"; do
+          echo -e "\033[1;36mStage:\033[0m Not yet reachable, checking again in 10 seconds"
+          sleep 10
+        done
+        echo -e "\033[1;32mSuccess:\033[0m Stage is now reachable"
+        echo -e "\033[1;36m╔══════════════════════════════════════════╗\033[0m"
+        echo -e "\033[1;36m║    Overture QuickStart Setup Complete    ║\033[0m"
+        echo -e "\033[1;36m╚══════════════════════════════════════════╝\033[0m"
+        echo -e "\033[1m🌐 Front-end Portal:\033[0m"
+        echo -e "   \033[1;32mhttp://localhost:3000\033[0m\n"
+        echo -e "\033[1m📚 Overture Platform Guides:\033[0m"
+        echo -e "   \033[1;32mhttps://www.overture.bio/documentation/guides/\033[0m\n"
+        echo -e "\033[1m🛠️ QuickStart Information:\033[0m"
+        echo -e "   Check the \033[1;33mdocker-compose.yml\033[0m file for details on this QuickStart,"
+        echo -e "   including links to relevant sections of our deployment guide.\n"
+        rm /health/conductor_health
+        exit 0
+      '
+    healthcheck:
+      test: ["CMD", "test", "-f", "/health/conductor_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 100
+      start_period: 45s
+
+  # ==================================================================================
+  # OAuth (KeyCloak)
+  # ==================================================================================
+  
+  # ======================================
+  # Keycloak Database
+  # --------------------------------------
+  # Pre-populated with a system side API key: 68fb42b4-f1ed-4e8c-beab-3724b99fe528, required for Songs SCORE_ACCESSTOKEN env variable
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
+  # --------------------------------------
+  keycloak-db:
+    depends_on:
+      - conductor
+    image: postgres:14
+    container_name: keycloak-db
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: keycloakDb
+    volumes:
+      - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+   
+  # ==========================
+  # Keycloak 
+  # ==========================
+  # Authorization and authentication service 
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
+  # --------------------------------------
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0
+    container_name: keycloak
+    platform: linux/amd64
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    ports:
+      - "8180:8080"
+    environment:
+      # Postgres Variables
+      KC_DB: postgres
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin123
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloakDb
+      # Keycloak Variables
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KC_HOSTNAME: localhost
+      KC_HEALTH_ENABLED: true 
+    volumes:
+      - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
+      - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
+      - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
+    command: >
+      start-dev
+      --import-realm
+      --hostname-port=8180
+   
+  # ==================================================================================
+  # File Management (Song, Score, Kafka, Minio)
+  # ==================================================================================
+ 
+  # ======================================
+  # Kafka 
+  # ======================================
+  # Messaging system for Song and Maestro, used to orchestrate asynchronous communication, job execution, queuing, and processing.
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-kafka
+  # --------------------------------------
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    platform: linux/amd64
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+      KAFKA_NUM_PARTITIONS: 1
+      CLUSTER_ID: "q1Sh-9_ISia_zwGINzRvyQ"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "echo stats | nc localhost 9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ======================================
+  # Song Database
+  # ======================================
+  # Postgres database populated with 30 pre-published analyses (metadata files)
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
+  # --------------------------------------
+  song-db:
+    image: postgres:11.1
+    container_name: song-db
+    platform: linux/amd64
+    depends_on:
+      - conductor
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: songDb
+    volumes:
+      - ./persistentStorage/data-song-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+   
+  # ======================================
+  # Song
+  # ======================================
+  # Metadata management service with a customizable and automated submission validation system
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
+  # --------------------------------------
+  song:
+    image: ghcr.io/overture-stack/song-server:5.2.0
+    container_name: song
+    platform: linux/amd64
+    depends_on:
+      keycloak:
+        condition: service_started
+      kafka:
+        condition: service_started
+      song-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring Variables
+      SPRING_PROFILES_ACTIVE: prod,secure,kafka
+      # Flyway variables
+      SPRING_FLYWAY_ENABLED: true
+      # Song Variables
+      ID_USELOCAL: true
+      SCHEMAS_ENFORCELATEST: true
+      # Score Variables
+      SCORE_URL: http://score:8087
+      SCORE_ACCESSTOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
+      # Keycloak Variables
+      AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_CLIENTID: dms
+      AUTH_SERVER_CLIENTSECRET: t016kqXfI648ORoIP5gepqCzqtsRjlcc
+      AUTH_SERVER_TOKENNAME: apiKey
+      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
+      AUTH_SERVER_KEYCLOAK_REALM: myrealm
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.
+      AUTH_SERVER_SCOPE_STUDY_SUFFIX: .WRITE
+      AUTH_SERVER_SCOPE_SYSTEM: song.WRITE
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
+      AUTH_SERVER_INTROSPECTIONURI: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
+      # Postgres Variables
+      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb?stringtype=unspecified
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      # Kafka Variables
+      SPRING_KAFKA_BOOTSTRAPSERVERS: http://kafka:9092
+      SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
+      # Swagger Variable
+      SWAGGER_ALTERNATEURL: /swagger-api
+   
+  # ======================================
+  # Minio
+  # ======================================
+  # High-performance open-source object storage provider 
+  # Used here for local object storage found at persistentStorage/data-minio 
+  # data-minio contains 60 data files linked to the pre-populated analyses in the song-db. This folder is passed into the image on startup
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#setting-up-object-storage
+  # --------------------------------------
+  minio:
+    image: minio/minio:RELEASE.2018-05-11T00-29-24Z
+    container_name: minio
+    platform: linux/amd64
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: admin123
+    command: server /data
+    volumes:
+      - ./persistentStorage/data-minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+   
+  # ======================================
+  # Score
+  # ======================================
+  # File transfer microservice
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-score
+  # --------------------------------------
+  score:
+    image: ghcr.io/overture-stack/score-server:5.11.0
+    container_name: score
+    platform: linux/amd64
+    depends_on:
+      keycloak:
+        condition: service_started
+      song:
+        condition: service_started
+    ports:
+      - "8087:8087"
+    environment:
+      # Spring Variables
+      SPRING_PROFILES_ACTIVE: default,collaboratory,prod,secure,jwt
+      SERVER_PORT: 8087
+      # Song Variable
+      METADATA_URL: http://song:8080
+      # Score Variables
+      SERVER_SSL_ENABLED: "false"
+      # Object Storage Variables
+      S3_ENDPOINT: http://host.docker.internal:9000
+      S3_ACCESSKEY: admin
+      S3_SECRETKEY: admin123
+      S3_SIGV4ENABLED: true
+      S3_SECURED: false
+      OBJECT_SENTINEL: heliograph
+      BUCKET_NAME_OBJECT: object
+      BUCKET_NAME_STATE: state
+      UPLOAD_PARTSIZE: 1073741824
+      UPLOAD_CONNECTION_TIMEOUT: 1200000
+      # Keycloak Variables
+      AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_CLIENTID: dms
+      AUTH_SERVER_CLIENTSECRET: t016kqXfI648ORoIP5gepqCzqtsRjlcc
+      AUTH_SERVER_TOKENNAME: apiKey
+      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
+      AUTH_SERVER_KEYCLOAK_REALM: myrealm
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.            
+      AUTH_SERVER_SCOPE_DOWNLOAD_SUFFIX: .READ
+      AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.READ
+      AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.WRITE
+      AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
+      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/      
+      AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
+   
+  # ==================================================================================
+  #  E. Search (Elasticsearch, Maestro, Arranger)
+  # ==================================================================================
+  
+  # ======================================
+  # Elasticsearch
+  # ======================================
+  # Search and analytics engine used to help query massive datasets flexibly and efficiently.
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-elasticsearch
+  # --------------------------------------
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
+    container_name: elasticsearch
+    platform: linux/amd64
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      cluster.name: workflow.elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx2048m
+      ELASTIC_PASSWORD: myelasticpassword
+      xpack.security.enabled: "true"
+      MANAGE_INDEX_TEMPLATES: "true"
+      NETWORK_HOST: http://localhost:9200
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    healthcheck:
+      test: "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 25s
+
+  # ======================================
+  # Maestro
+  # ======================================
+  # Indexing service that transforms metadata in Song into Elasticsearch documents
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-maestro
+  # --------------------------------------
+  maestro:
+    image: ghcr.io/overture-stack/maestro:4.3.0
+    container_name: maestro
+    platform: linux/amd64
+    depends_on:
+      song:
+        condition: service_started
+      kafka:
+        condition: service_started
+      conductor:
+        condition: service_healthy
+    ports:
+      - "11235:11235"
+    environment:
+      # Maestro Variables
+      MAESTRO_FAILURELOG_ENABLED: true
+      MAESTRO_FAILURELOG_DIR: app/logs/maestro
+      MAESTRO_LOGGING_LEVEL_ROOT: INFO
+      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
+      # Song Variables
+      MAESTRO_REPOSITORIES_0_CODE: song.overture
+      MAESTRO_REPOSITORIES_0_URL: http://song:8080
+      MAESTRO_REPOSITORIES_0_NAME: Overture
+      MAESTRO_REPOSITORIES_0_ORGANIZATION: Overture
+      MAESTRO_REPOSITORIES_0_COUNTRY: CA
+      # Elasticsearch Variables
+      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: overture-quickstart-index
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: file_centric
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
+      # Spring Variables
+      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
+      SPRINGDOC_SWAGGERUI_PATH: /swagger-api
+      # Kafka Variables
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
+    
+  # ======================================
+  # Arranger-Server
+  # ======================================
+  # Search API generation with compatible search UI components
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
+  # --------------------------------------
+  arranger-server:
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.33
+    container_name: arranger-server
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - "5050:5050"
+    volumes:
+     - ./configurationFiles/arrangerConfigs/base.json:/app/modules/server/configs/base.json
+     - ./configurationFiles/arrangerConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./configurationFiles/arrangerConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./configurationFiles/arrangerConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./configurationFiles/arrangerConfigs/table.json:/app/modules/server/configs/table.json
+    environment:
+      # Arranger Variables
+      ENABLE_LOGS: false
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      # Stage Variables
+      REACT_APP_BASE_URL: http://stage:3000
+      REACT_APP_ARRANGER_ADMIN_ROOT: http://arranger-server:5050/graphql
+    
+  # ==================================================================================
+  #  F. Discovery (Stage)
+  # ==================================================================================
+
+  # ======================================
+  # Stage
+  # ======================================
+  # The react-based, front end portal UI for Overture
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
+  # --------------------------------------
+  stage:
+    image: ghcr.io/overture-stack/stage:77267d9
+    container_name: stage
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+      arranger-server:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    environment:
+      # Stage Variables
+      NEXTAUTH_URL: http://localhost:3000/api/auth
+      NEXT_PUBLIC_LAB_NAME: Overture QuickStart Portal
+      NEXT_PUBLIC_ADMIN_EMAIL: contact@overture.bio
+      NEXT_PUBLIC_DEBUG: true
+      NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
+      # Keycloak Variables
+      NEXT_PUBLIC_AUTH_PROVIDER: keycloak
+      ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
+      SESSION_ENCRYPTION_SECRET: this_is_a_super_secret_secret
+      NEXT_PUBLIC_KEYCLOAK_HOST: http://keycloak:8080
+      NEXT_PUBLIC_KEYCLOAK_REALM: myrealm
+      NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: webclient
+      KEYCLOAK_CLIENT_SECRET: ikksyrYaKX07acf4hpGrpKWcUGaFkEdM
+      NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: dms
+      # Score Variables
+      NEXT_PUBLIC_SCORE_API_URL: http://score:8087
+      # Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_INDEX: file_centric
+      NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id

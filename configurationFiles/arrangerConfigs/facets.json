@@ -1,0 +1,56 @@
+{
+	"facets": {
+		"aggregations": [
+			{
+				"active": true,
+				"fieldName": "analysis__collaborator__name",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "file_access",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "analysis__donor__primarySite",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "donors__gender",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "analysis__donor__primaryDiagnosis__ageAtDiagnosis",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "donors__specimens__specimen_tissue_source",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "file_type",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "data_type",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "analysis__workflow__workflowName",
+				"show": true
+			},
+			{
+				"active": true,
+				"fieldName": "analysis__publication__publication",
+				"show": true
+			}
+		]
+	}
+}
