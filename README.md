@@ -17,7 +17,7 @@ git clone https://github.com/overture-stack/composer.git && cd composer
 **3. Run the Docker Compose with attach mode enabled**
 
 ```bash
-docker compose up --attache conductor
+docker compose up --attach conductor
 ```
 
 Your portal will be accessible from your `localhost:3000`
