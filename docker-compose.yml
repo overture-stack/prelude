@@ -516,7 +516,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
   # --------------------------------------
   stage:
-    image: ghcr.io/overture-stack/stage:fc2f5ff
+    image: ghcr.io/overture-stack/stage:a211593
     container_name: stage
     platform: linux/amd64
     depends_on:
