@@ -77,7 +77,8 @@ services:
         echo -e "   \033[1;32mgit clone https://github.com/overture-stack/stage.git\033[0m\n"
         echo -e "\033[1m2️⃣  Then install the dependencies by running:\033[0m\n"
         echo -e "   \033[1;32mnpm ci\033[0m\n"
-        echo -e "\033[1m3️⃣  Once completed run the development server with:\033[0m\n"
+        echo -e "\033[1m3️⃣  Rename \033[1;32m.env.stageDev\033[0m to \033[1;32m.env:\033[0m\n"
+        echo -e "\033[1m4️⃣  Run the development server:\033[0m\n"
         echo -e "   \033[1;32mnpm run dev\033[0m\n"
         rm /health/conductor_health
         exit 0
@@ -155,4 +156,4 @@ services:
       ES_PASS: myelasticpassword
       # Stage Variables
       REACT_APP_BASE_URL: http://localhost:3000
-      REACT_APP_ARRANGER_ADMIN_ROOT: http://arranger-server:5050/graphql
+      REACT_APP_ARRANGER_ADMIN_ROOT: http://localhost:5050/graphql
