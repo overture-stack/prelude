@@ -76,6 +76,13 @@ services:
           echo -e "\033[1;36mElasticsearch:\033[0m Index already exists, skipping creation"
         fi
 
+        # Elasticsearch document import
+        echo -e "\033[1;35m[4/5]\033[0m Importing Elasticsearch documents"
+        jq -c ".hits.hits[]._source" /es-docs.json | while IFS= read -r document; do
+          curl s -f -u elastic:myelasticpassword -X POST "http://elasticsearch:9200/overture-quickstart-index/_doc" -H "Content-Type: application/json" -d "$$document" >/dev/null 2>&1
+        done
+        echo -e "\033[1;32mSuccess:\033[0m Document import complete"
+
         # Check for Song
         echo -e "\033[1;35m[5/7]\033[0m Checking if Song is ready" 
         until [ "$(curl -s -o /dev/null -w "%{http_code}" "http://song:8080/isAlive" -H "accept: */*")" = "200" ]; do
