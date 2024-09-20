@@ -1,10 +1,6 @@
 services:
-  # ======================================
-  # Conductor 
-  # --------------------------------------
-  # Orchestrates setup with health checks, data population and logging
-  # --------------------------------------
   conductor:
+    profiles: ["platform", "stageDev"]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
@@ -16,10 +12,28 @@ services:
       - ./configurationFiles/elasticsearchConfigs/es-docs:/es-docs
       - ./conductorScripts/:/scripts
       - ./health:/health
+    environment:
+      - PROFILE=${PROFILE:-platform}
     command: >
       sh -c '
         set -e
-        chmod +x scripts/deployments/overtureQuickstart.sh && scripts/deployments/overtureQuickstart.sh
+          echo "Profile is set to: $PROFILE"
+          case "$PROFILE" in
+            platform)
+              echo "Running platform deployment..."
+              chmod +x scripts/deployments/platform.sh
+              scripts/deployments/platform.sh
+              ;;
+            stageDev)
+              echo "Running stage development environment..."
+              scripts/deployments/stageDev.sh
+              ;;
+            *)
+              echo "Invalid profile: $PROFILE. Available options are 'platform' or 'stageDev'."
+              exit 1
+              ;;
+          esac
+      
         exit 0
       '
     healthcheck:
@@ -40,6 +54,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
   # --------------------------------------
   keycloak-db:
+    profiles: ["platform"]
     depends_on:
       - conductor
     image: postgres:14
@@ -65,6 +80,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
   # --------------------------------------
   keycloak:
+    profiles: ["platform"]
     image: quay.io/keycloak/keycloak:22.0
     container_name: keycloak
     platform: linux/amd64
@@ -104,6 +120,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-kafka
   # --------------------------------------
   kafka:
+    profiles: ["platform"]
     image: confluentinc/cp-kafka:7.6.1
     container_name: kafka
     platform: linux/amd64
@@ -137,6 +154,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song-db:
+    profiles: ["platform"]
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
@@ -162,6 +180,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song:
+    profiles: ["platform"]
     image: ghcr.io/overture-stack/song-server:5.2.0
     container_name: song
     platform: linux/amd64
@@ -216,6 +235,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#setting-up-object-storage
   # --------------------------------------
   minio:
+    profiles: ["platform"]
     image: minio/minio:RELEASE.2018-05-11T00-29-24Z
     container_name: minio
     platform: linux/amd64
@@ -240,6 +260,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-score
   # --------------------------------------
   score:
+    profiles: ["platform"]
     image: ghcr.io/overture-stack/score-server:5.11.0
     container_name: score
     platform: linux/amd64
@@ -296,6 +317,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-elasticsearch
   # --------------------------------------
   elasticsearch:
+    profiles: ["platform", "stageDev"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
     container_name: elasticsearch
     platform: linux/amd64
@@ -328,6 +350,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-maestro
   # --------------------------------------
   maestro:
+    profiles: ["platform"]
     image: ghcr.io/overture-stack/maestro:4.3.0
     container_name: maestro
     platform: linux/amd64
@@ -377,6 +400,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
   # --------------------------------------
   arranger-server:
+    profiles: ["platform", stageDev]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.33
     container_name: arranger-server
     platform: linux/amd64
@@ -413,6 +437,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
   # --------------------------------------
   stage:
+    profiles: ["platform"]
     image: ghcr.io/overture-stack/stage:a211593
     container_name: stage
     platform: linux/amd64
@@ -446,4 +471,3 @@ services:
       NEXT_PUBLIC_ARRANGER_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_API_URL: http://arranger-server:5050
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file_type, file.name, file.size, file.md5sum, file.index_file.object_id, donors.donor_id, donors.specimens.samples.sample_id
-      

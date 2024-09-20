@@ -33,9 +33,6 @@ rs /scripts/serviceScripts/arrangerSetup.sh
 # Check Stage
 rs /scripts/serviceScripts/stageSetup.sh
 
-# Success & Next Steps
-rs /scripts/serviceScripts/successQuickStart.sh
-
 # Remove Health Check File 
 rm /health/conductor_health
 
