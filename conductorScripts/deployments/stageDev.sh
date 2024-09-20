@@ -11,14 +11,14 @@ rs() {
     }
 
 # Elasticsearch Setup
-rs /scripts/serviceScripts/elasticSearchSetup.sh
+rs /scripts/services/elasticSearchSetup.sh
 
 # Update Conductor to Healthy Status
 echo "healthy" > /health/conductor_health
 echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Arranger
-rs /scripts/serviceScripts/arrangerSetup.sh
+rs /scripts/services/arrangerSetup.sh
 
 # Remove Health Check File 
 rm /health/conductor_health

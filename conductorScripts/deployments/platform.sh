@@ -11,27 +11,27 @@ rs() {
     }
 
 # Database Setups
-rs /scripts/serviceScripts/songDbSetup.sh
-rs /scripts/serviceScripts/keycloakDbSetup.sh
+rs /scripts/services/songDbSetup.sh
+rs /scripts/services/keycloakDbSetup.sh
 
 # Elasticsearch Setup
-rs /scripts/serviceScripts/elasticSearchSetup.sh
+rs /scripts/services/elasticSearchSetup.sh
 
 # Song Setup
-rs /scripts/serviceScripts/songSetup.sh
+rs /scripts/services/songSetup.sh
 
 # Update Conductor to Healthy Status
 echo "healthy" > /health/conductor_health
 echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Maestro
-rs /scripts/serviceScripts/maestroSetup.sh
+rs /scripts/services/maestroSetup.sh
 
 # Check Arranger
-rs /scripts/serviceScripts/arrangerSetup.sh
+rs /scripts/services/arrangerSetup.sh
 
 # Check Stage
-rs /scripts/serviceScripts/stageSetup.sh
+rs /scripts/services/stageSetup.sh
 
 # Remove Health Check File 
 rm /health/conductor_health

@@ -11,16 +11,16 @@ rs() {
     }
 
 # KeycloakDb Setup
-rs /scripts/serviceScripts/keycloakDbSetup.sh
+rs /scripts/services/keycloakDbSetup.sh
 
 # SongDb Setup
-rs /scripts/serviceScripts/songDbSetup.sh
+rs /scripts/services/songDbSetup.sh
 
 # Song Setup
-rs /scripts/serviceScripts/songSetup.sh
+rs /scripts/services/songSetup.sh
 
 # Elasticsearch Setup
-rs /scripts/serviceScripts/elasticSearchSetup.sh
+rs /scripts/services/elasticSearchSetup.sh
 
 # Success and Next Steps
 echo -e "\033[1;32mSuccess:\033[0m Arranger is now reachable"

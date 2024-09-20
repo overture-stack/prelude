@@ -21,23 +21,23 @@ services:
           case "$PROFILE" in
             platform)
               echo "Running platform deployment..."
-              chmod +x scripts/deploymentScripts/platform.sh
-              scripts/deploymentScripts/platform.sh
+              chmod +x scripts/deployments/platform.sh
+              scripts/deployments/platform.sh
               ;;
             stageDev)
               echo "Running Stage development environment..."
-              chmod +x scripts/deploymentScripts/stageDev.sh
-              scripts/deploymentScripts/stageDev.sh
+              chmod +x scripts/deployments/stageDev.sh
+              scripts/deployments/stageDev.sh
               ;;
             arrangerDev)
               echo "Running Arranger development environment..."
-              chmod +x scripts/deploymentScripts/arrangerDev.sh
-              scripts/deploymentScripts/arrangerDev.sh
+              chmod +x scripts/deployments/arrangerDev.sh
+              scripts/deployments/arrangerDev.sh
               ;;
             maestroDev)
               echo "Running Maestro development environment..."
-              chmod +x scripts/deploymentScripts/maestroDev.sh
-              scripts/deploymentScripts/maestroDev.sh
+              chmod +x scripts/deployments/maestroDev.sh
+              scripts/deployments/maestroDev.sh
               ;;
             *)
               echo "Invalid profile: $PROFILE. Available options are [platform, songDev, scoreDev, maestroDev, arrangerDev, stageDev]."
