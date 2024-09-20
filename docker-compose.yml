@@ -40,9 +40,14 @@ services:
               scripts/deployments/maestroDev.sh
               ;;
             songDev)
-              echo "Running Maestro development environment..."
+              echo "Running Song development environment..."
               chmod +x scripts/deployments/songDev.sh
               scripts/deployments/songDev.sh
+              ;;
+            scoreDev)
+              echo "Running Score development environment..."
+              chmod +x scripts/deployments/scoreDev.sh
+              scripts/deployments/scoreDev.sh
               ;;
             *)
               echo "Invalid profile: $PROFILE. Available options are [platform, songDev, scoreDev, maestroDev, arrangerDev, stageDev]."
@@ -69,7 +74,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
   # --------------------------------------
   keycloak-db:
-    profiles: ["platform", "songDev" ,"maestroDev"]
+    profiles: ["platform", "songDev" , "scoreDev" ,"maestroDev"]
     depends_on:
       - conductor
     image: postgres:14
@@ -95,7 +100,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
   # --------------------------------------
   keycloak:
-    profiles: ["platform", "songDev" ,"maestroDev"]
+    profiles: ["platform", "songDev", "scoreDev", "maestroDev"]
     image: quay.io/keycloak/keycloak:22.0
     container_name: keycloak
     platform: linux/amd64
@@ -169,7 +174,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song-db:
-    profiles: ["platform", "maestroDev", "songDev"]
+    profiles: ["platform", "songDev", "scoreDev", "maestroDev"]
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
@@ -195,14 +200,12 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song:
-    profiles: ["platform", "maestroDev"]
+    profiles: ["platform", "scoreDev", "maestroDev"]
     image: ghcr.io/overture-stack/song-server:5.2.0
     container_name: song
     platform: linux/amd64
     depends_on:
       keycloak:
-        condition: service_started
-      kafka:
         condition: service_started
       song-db:
         condition: service_healthy
@@ -250,7 +253,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#setting-up-object-storage
   # --------------------------------------
   minio:
-    profiles: ["platform", "songDev"]
+    profiles: ["platform", "scoreDev", "songDev"]
     image: minio/minio:RELEASE.2018-05-11T00-29-24Z
     container_name: minio
     platform: linux/amd64
