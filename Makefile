@@ -10,5 +10,8 @@ arrangerDev:
 maestroDev:
 	PROFILE=maestroDev docker compose --profile maestroDev up --attach conductor
 
+songDev:
+	PROFILE=songDev docker compose --profile songDev up --attach conductor
+
 down:
 	docker compose down
