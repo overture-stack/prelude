@@ -34,6 +34,11 @@ services:
               chmod +x scripts/deploymentScripts/arrangerDev.sh
               scripts/deploymentScripts/arrangerDev.sh
               ;;
+            maestroDev)
+              echo "Running Maestro development environment..."
+              chmod +x scripts/deploymentScripts/maestroDev.sh
+              scripts/deploymentScripts/maestroDev.sh
+              ;;
             *)
               echo "Invalid profile: $PROFILE. Available options are [platform, songDev, scoreDev, maestroDev, arrangerDev, stageDev]."
               exit 1
@@ -60,7 +65,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
   # --------------------------------------
   keycloak-db:
-    profiles: ["platform"]
+    profiles: ["platform", "maestroDev"]
     depends_on:
       - conductor
     image: postgres:14
@@ -86,7 +91,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
   # --------------------------------------
   keycloak:
-    profiles: ["platform"]
+    profiles: ["platform", "maestroDev"]
     image: quay.io/keycloak/keycloak:22.0
     container_name: keycloak
     platform: linux/amd64
@@ -126,7 +131,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-kafka
   # --------------------------------------
   kafka:
-    profiles: ["platform"]
+    profiles: ["platform", maestroDev]
     image: confluentinc/cp-kafka:7.6.1
     container_name: kafka
     platform: linux/amd64
@@ -160,7 +165,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song-db:
-    profiles: ["platform"]
+    profiles: ["platform", "maestroDev"]
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
@@ -186,7 +191,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song:
-    profiles: ["platform"]
+    profiles: ["platform", "maestroDev"]
     image: ghcr.io/overture-stack/song-server:5.2.0
     container_name: song
     platform: linux/amd64
@@ -323,7 +328,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-elasticsearch
   # --------------------------------------
   elasticsearch:
-    profiles: ["platform", "stageDev", "arrangerDev"]
+    profiles: ["platform", "stageDev", "arrangerDev", "maestroDev"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
     container_name: elasticsearch
     platform: linux/amd64
@@ -406,7 +411,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
   # --------------------------------------
   arranger-server:
-    profiles: ["platform", stageDev]
+    profiles: ["platform", "stageDev"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.33
     container_name: arranger-server
     platform: linux/amd64

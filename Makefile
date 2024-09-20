@@ -7,5 +7,8 @@ stageDev:
 arrangerDev:
 	PROFILE=arrangerDev docker compose --profile arrangerDev up --attach conductor
 
+maestroDev:
+	PROFILE=maestroDev docker compose --profile maestroDev up --attach conductor
+
 down:
 	docker compose down

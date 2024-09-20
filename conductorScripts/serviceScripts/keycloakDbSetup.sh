@@ -15,4 +15,3 @@ mkdir -p keycloak/db-folder-init/pg_wal/archive_status
 mkdir -p keycloak/db-folder-init/pg_logical/snapshots
 mkdir -p keycloak/db-folder-init/pg_logical/mappings
 echo -e "\033[1;32mSuccess:\033[0m Keycloak Databases ready"
-

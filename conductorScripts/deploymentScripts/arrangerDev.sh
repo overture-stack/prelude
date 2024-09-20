@@ -17,7 +17,7 @@ rs /scripts/serviceScripts/elasticSearchSetup.sh
 echo "healthy" > /health/conductor_health
 echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
-# Check Stack
+# Check Stage
 rs /scripts/serviceScripts/stageSetup.sh
 
 # Remove Health Check File 
