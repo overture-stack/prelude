@@ -21,12 +21,13 @@ services:
           case "$PROFILE" in
             platform)
               echo "Running platform deployment..."
-              chmod +x scripts/deployments/platform.sh
-              scripts/deployments/platform.sh
+              chmod +x scripts/deploymentScripts/platform.sh
+              scripts/deploymentScripts/platform.sh
               ;;
             stageDev)
               echo "Running stage development environment..."
-              scripts/deployments/stageDev.sh
+              chmod +x scripts/deploymentScripts/stageDev.sh
+              scripts/deploymentScripts/stageDev.sh
               ;;
             *)
               echo "Invalid profile: $PROFILE. Available options are 'platform' or 'stageDev'."
