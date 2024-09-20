@@ -13,5 +13,8 @@ maestroDev:
 songDev:
 	PROFILE=songDev docker compose --profile songDev up --attach conductor
 
+scoreDev:
+	PROFILE=scoreDev docker compose --profile scoreDev up --attach conductor
+
 down:
-	docker compose down
+	PROFILE=platform docker compose --profile platform down
