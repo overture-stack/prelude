@@ -1,6 +1,6 @@
 services:
   conductor:
-    profiles: ["platform", "stageDev"]
+    profiles: ["platform", "songDev", "scoreDev", "maestroDev", "arrangerDev", "stageDev"]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
@@ -25,12 +25,17 @@ services:
               scripts/deploymentScripts/platform.sh
               ;;
             stageDev)
-              echo "Running stage development environment..."
+              echo "Running Stage development environment..."
               chmod +x scripts/deploymentScripts/stageDev.sh
               scripts/deploymentScripts/stageDev.sh
               ;;
+            arrangerDev)
+              echo "Running Arranger development environment..."
+              chmod +x scripts/deploymentScripts/arrangerDev.sh
+              scripts/deploymentScripts/arrangerDev.sh
+              ;;
             *)
-              echo "Invalid profile: $PROFILE. Available options are 'platform' or 'stageDev'."
+              echo "Invalid profile: $PROFILE. Available options are [platform, songDev, scoreDev, maestroDev, arrangerDev, stageDev]."
               exit 1
               ;;
           esac
@@ -318,7 +323,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-elasticsearch
   # --------------------------------------
   elasticsearch:
-    profiles: ["platform", "stageDev"]
+    profiles: ["platform", "stageDev", "arrangerDev"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
     container_name: elasticsearch
     platform: linux/amd64
@@ -438,15 +443,13 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
   # --------------------------------------
   stage:
-    profiles: ["platform"]
+    profiles: ["platform", "arrangerDev"]
     image: ghcr.io/overture-stack/stage:a211593
     container_name: stage
     platform: linux/amd64
     depends_on:
       conductor:
         condition: service_healthy
-      arranger-server:
-        condition: service_started
     ports:
       - "3000:3000"
     environment:

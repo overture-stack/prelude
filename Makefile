@@ -4,5 +4,8 @@ platform:
 stageDev:
 	PROFILE=stageDev docker compose --profile stageDev up --attach conductor
 
+arrangerDev:
+	PROFILE=arrangerDev docker compose --profile arrangerDev up --attach conductor
+
 down:
 	docker compose down
