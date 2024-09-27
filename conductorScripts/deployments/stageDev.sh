@@ -11,6 +11,7 @@ rs() {
     }
 
 # Elasticsearch Setup
+echo -e "\033[1;35m[1/2]\033[0m Setting up Elasticsearch"
 rs /scripts/services/elasticSearchSetup.sh
 
 # Update Conductor to Healthy Status
@@ -18,16 +19,16 @@ echo "healthy" > /health/conductor_health
 echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Arranger
+echo -e "\033[1;35m[2/2]\033[0m Setting up Arranger"
 rs /scripts/services/arrangerSetup.sh
 
 # Remove Health Check File 
 rm /health/conductor_health
 
 # Success and Next Steps
-echo -e "\033[1;32mSuccess:\033[0m Arranger is now reachable"
 echo -e "\033[1;36m╔═══════════════════════════════════════╗\033[0m"
 echo -e "\033[1;36m║   Stage Dev Service Setup Complete    ║\033[0m"
-echo -e "\033[1;36m╚═══════════════════════════════════════╝\033[0m"
+echo -e "\033[1;36m╚═══════════════════════════════════════╝\033[0m\n"
 echo -e "\033[1m1️⃣  To run Stage locally, start by cloning the repo:\033[0m\n"
 echo -e "   \033[1;32mgit clone https://github.com/overture-stack/stage.git\033[0m\n"
 echo -e "\033[1m2️⃣  Then install the dependencies by running:\033[0m\n"
