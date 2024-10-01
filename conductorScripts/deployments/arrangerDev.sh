@@ -11,6 +11,7 @@ rs() {
     }
 
 # Elasticsearch Setup
+echo -e "\033[1;35m[1/2]\033[0m Setting up Elasticsearch"
 rs /scripts/services/elasticSearchSetup.sh
 
 # Update Conductor to Healthy Status
@@ -18,13 +19,13 @@ echo "healthy" > /health/conductor_health
 echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Stage
-rs /scripts/services/stageSetup.sh
+echo -e "\033[1;35m[2/2]\033[0m Checking Stage"
+rs /scripts/services/stageCheck.sh
 
 # Remove Health Check File 
 rm /health/conductor_health
 
 # Success and Next Steps
-echo -e "\033[1;32mSuccess:\033[0m Arranger is now reachable\n"
 echo -e "\033[1;36m╔════════════════════════════════════════╗\033[0m"
 echo -e "\033[1;36m║  Arranger Dev Service Setup Complete   ║\033[0m"
 echo -e "\033[1;36m╚════════════════════════════════════════╝\033[0m\n"

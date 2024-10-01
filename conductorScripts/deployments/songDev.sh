@@ -10,21 +10,21 @@ rs() {
         chmod +x "$1" && "$1"
     }
 
-# KeycloakDb Setup
+# Keycloak and Song Db Setup
+echo -e "\033[1;35m[1/4]\033[0m Setting up Song and Keycloak databases"
 rs /scripts/services/keycloakDbSetup.sh
-
-# SongDb Setup
 rs /scripts/services/songDbSetup.sh
 
+# Minio Check
+echo -e "\033[1;35m[2/4]\033[0m Checking Minio Object Storage"
+rs /scripts/services/minioCheck.sh
+
+# Score Setup
+echo -e "\033[1;35m[3/4]\033[0m Checking Score"
+rs /scripts/services/scoreCheck.sh
+
+# Keycloak Check
+echo -e "\033[1;35m[4/4]\033[0m Checking Keycloak"
+rs /scripts/services/keycloakCheck.sh
+
 # Success and Next Steps
-echo -e "\033[1;32mSuccess:\033[0m Arranger is now reachable"
-echo -e "\033[1;36m╔═══════════════════════════════════╗\033[0m"
-echo -e "\033[1;36m║  Song Dev Service Setup Complete  ║\033[0m"
-echo -e "\033[1;36m╚═══════════════════════════════════╝\033[0m"
-echo -e "\033[1m1️⃣  To run Song locally, start by cloning the repo:\033[0m\n"
-echo -e "   \033[1;32mgit clone https://github.com/overture-stack/song.git\033[0m\n"
-echo -e "\033[1m2️⃣  Then install the dependencies by running:\033[0m\n"
-echo -e "   \033[1;32mnpm ci\033[0m\n"
-echo -e "\033[1m3️⃣  Rename \033[1;32m.env.songDev\033[0m to \033[1;32m.env:\033[0m\n"
-echo -e "\033[1m4️⃣  Run the development server:\033[0m\n"
-echo -e "   \033[1;32mnpm run dev\033[0m\n"

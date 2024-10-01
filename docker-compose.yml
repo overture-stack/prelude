@@ -10,7 +10,7 @@ services:
       - ./persistentStorage/data-song-db:/song/db-folder-init
       - ./configurationFiles/elasticsearchConfigs/quickstart_index_template.json:/usr/share/elasticsearch/config/quickstart_index_template.json
       - ./configurationFiles/elasticsearchConfigs/es-docs:/es-docs
-      - ./conductorScripts/:/scripts
+      - ./conductorScripts:/scripts
       - ./health:/health
     environment:
       - PROFILE=${PROFILE:-platform}
@@ -58,10 +58,10 @@ services:
       '
     healthcheck:
       test: ["CMD", "test", "-f", "/health/conductor_health"]
-      interval: 30s
-      timeout: 10s
+      interval: 5s
+      timeout: 40s
       retries: 100
-      start_period: 45s
+      start_period: 30s
 
   # ==================================================================================
   # OAuth (KeyCloak)
@@ -74,7 +74,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
   # --------------------------------------
   keycloak-db:
-    profiles: ["platform", "songDev" , "scoreDev" ,"maestroDev"]
+    profiles: ["platform", "songDev" , "scoreDev" ,"maestroDev", "stageDev"]
     depends_on:
       - conductor
     image: postgres:14
@@ -100,7 +100,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
   # --------------------------------------
   keycloak:
-    profiles: ["platform", "songDev", "scoreDev", "maestroDev"]
+    profiles: ["platform", "songDev", "scoreDev", "maestroDev", "stageDev"]
     image: quay.io/keycloak/keycloak:22.0
     container_name: keycloak
     platform: linux/amd64
