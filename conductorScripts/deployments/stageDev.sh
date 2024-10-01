@@ -45,7 +45,7 @@ echo -e "\033[1m2️⃣  Navigate to the cloned directory:\033[0m\n"
 echo -e "   \033[1;32mcd stage\033[0m\n"
 
 echo -e "\033[1m3️⃣  Copy the example environment file:\033[0m\n"
-echo -e "   \033[1;32mcp .env.arrangerDev .env\033[0m\n"
+echo -e "   \033[1;32mcp .env.stageDev .env\033[0m\n"
 
 echo -e "\033[1m4️⃣  Install the dependencies:\033[0m\n"
 echo -e "   \033[1;32mnpm ci\033[0m\n"
