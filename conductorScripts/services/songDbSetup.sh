@@ -10,3 +10,5 @@ mkdir -p song/db-folder-init/pg_snapshots
 mkdir -p song/db-folder-init/pg_commit_ts
 mkdir -p song/db-folder-init/pg_logical/snapshotss
 mkdir -p song/db-folder-init/pg_logical/mappings
+mkdir -p song/db-folder-init/pg_replslot
+mkdir -p song/db-folder-init/pg_logical/snapshots
