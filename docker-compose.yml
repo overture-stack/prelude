@@ -180,8 +180,6 @@ services:
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
-    ports:
-      - "5434" 
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
