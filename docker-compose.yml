@@ -78,8 +78,8 @@ services:
     depends_on:
       - conductor
     image: postgres:14
-    container_name: keycloak-db
     platform: linux/amd64
+    container_name: keycloak-db
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
@@ -175,11 +175,13 @@ services:
   # --------------------------------------
   song-db:
     profiles: ["platform", "songDev", "scoreDev", "maestroDev"]
+    depends_on:
+      - conductor
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
-    depends_on:
-      - conductor
+    ports:
+      - "5434" 
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123

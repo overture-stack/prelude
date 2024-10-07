@@ -38,19 +38,12 @@ echo -e "   \033[1;32mgit clone https://github.com/overture-stack/song.git\033[0
 echo -e "\033[1m2️⃣  Navigate to the cloned directory:\033[0m\n"
 echo -e "   \033[1;32mcd song\033[0m\n"
 
-echo -e "\033[1m3️⃣  Build the application:\033[0m\n"
+echo -e "\033[1m3️⃣  Build the application \033[1;34m(requires JDK11 & Maven3)\033[0m:\033[0m\n"
 echo -e "   \033[1;32m./mvnw clean install -DskipTests\033[0m\n"
-
-echo -e "\033[1mThis will require:\033[0m"
-echo -e "\033[1;34m      - JDK11\033[0m"
-echo -e "\033[1;34m      - Maven3\033[0m\n"
 
 echo -e "\033[1m4️⃣ Start the development server:\033[0m\n"
 echo -e "   \033[1;32mcd song-server/\033[0m\n"
-echo -e "   \033[1;32mmvn spring-boot:run -Dspring-boot.run.profiles=noSecurityDev,default,score-client-cred\033[0m\n"
-
-echo -e "\033[1mYour development server will be accessible at:\n"
-echo -e "   \033[1;32mhttp://localhost:8080\033[0m\n"
+echo -e "   \033[1;32mmvn spring-boot:run -Dspring-boot.run.profiles=default,dev,secure\033[0m\n"
 
 echo -e "\033[1mSongs Swagger UI can be accessed from:\n"
 echo -e "   \033[1;32mhttp://localhost:8080/swagger-ui.html\033[0m\n"
