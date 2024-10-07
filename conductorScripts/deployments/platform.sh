@@ -10,6 +10,9 @@ rs() {
         chmod +x "$1" && "$1"
     }
 
+# Cleanup any existing healthcheck file
+rs scripts/services/healthcheckCleanup.sh
+
 # Database Setups
 echo -e "\033[1;35m[1/9]\033[0m Setting up Song & Keycloak databases"
 rs /scripts/services/songDbSetup.sh
