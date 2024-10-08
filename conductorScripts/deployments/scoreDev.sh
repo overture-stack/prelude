@@ -42,8 +42,7 @@ echo -e "\033[1m3️⃣  Build the application \033[1;34m(requires JDK11 & Maven
 echo -e "   \033[1;32m./mvnw clean install -DskipTests\033[0m\n"
 
 echo -e "\033[1m4️⃣ Start the development server:\033[0m\n"
-echo -e "   \033[1;32mcd score-server/\033[0m\n"
-echo -e "   \033[1;32mmvn spring-boot:run -Dspring-boot.run.profiles=default,s3,secure,dev\033[0m\n"
+echo -e "   \033[1;32m./mvnw spring-boot:run -Dspring-boot.run.profiles=default,s3,secure,dev -pl score-server\033[0m\n"
 
 echo -e "\033[1mScores Swagger UI can be accessed from:\n"
 echo -e "   \033[1;32mhttp://localhost:8087/swagger-ui.html\033[0m\n"

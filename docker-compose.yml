@@ -70,7 +70,7 @@ services:
   # ======================================
   # Keycloak Database
   # --------------------------------------
-  # Pre-populated with a system side API key: 68fb42b4-f1ed-4e8c-beab-3724b99fe528, required for Songs SCORE_ACCESSTOKEN env variable
+  # Pre-populated with a system wide API key: 68fb42b4-f1ed-4e8c-beab-3724b99fe528, required for Songs SCORE_ACCESSTOKEN env variable
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
   # --------------------------------------
   keycloak-db:
@@ -391,7 +391,7 @@ services:
       MAESTRO_REPOSITORIES_0_CODE: song.overture
       MAESTRO_REPOSITORIES_0_URL: http://song:8080
       MAESTRO_REPOSITORIES_0_NAME: Overture
-      MAESTRO_REPOSITORIES_0_ORGANIZATION: Overture
+      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
       MAESTRO_REPOSITORIES_0_COUNTRY: CA
       # Elasticsearch Variables
       MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
@@ -403,7 +403,7 @@ services:
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: overture-quickstart-index
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: file_centric
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
-      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
       # Spring Variables
       SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
       SPRINGDOC_SWAGGERUI_PATH: /swagger-api
