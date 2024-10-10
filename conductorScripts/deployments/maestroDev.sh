@@ -36,7 +36,7 @@ echo -e "\033[1m1️⃣  To run Score locally, start by cloning the repo:\033[0m
 echo -e "   \033[1;32mgit clone https://github.com/overture-stack/maestro.git\033[0m\n"
 
 echo -e "\033[1m2️⃣  Navigate to the cloned directory:\033[0m\n"
-echo -e "   \033[1;32mcd score\033[0m\n"
+echo -e "   \033[1;32mcd maestro\033[0m\n"
 
 echo -e "\033[1m3️⃣  Build the application \033[1;34m(requires JDK11 & Maven3)\033[0m:\033[0m\n"
 echo -e "   \033[1;32m./mvnw clean install -DskipTests\033[0m\n"
