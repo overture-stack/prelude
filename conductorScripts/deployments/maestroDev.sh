@@ -11,20 +11,28 @@ rs() {
     }
 
 # Keycloak and Song Db Setup
-echo -e "\033[1;35m[1/4]\033[0m Setting up Song & Keycloak databases"
+echo -e "\033[1;35m[1/6]\033[0m Setting up Song & Keycloak databases"
 rs /scripts/services/keycloakDbSetup.sh
 rs /scripts/services/songDbSetup.sh
 
+# Minio Check
+echo -e "\033[1;35m[2/6]\033[0m Checking Minio Object Storage"
+rs /scripts/services/minioCheck.sh
+
+# Score Setup
+echo -e "\033[1;35m[3/6]\033[0m Checking on Score"
+rs /scripts/services/scoreCheck.sh
+
 # Song Check
-echo -e "\033[1;35m[2/4]\033[0m Checking Song"
+echo -e "\033[1;35m[4/6]\033[0m Checking Song"
 rs /scripts/services/songCheck.sh
 
 # Elasticsearch Setup
-echo -e "\033[1;35m[3/4]\033[0m Setting up Elasticsearch"
+echo -e "\033[1;35m[5/6]\033[0m Setting up Elasticsearch"
 rs /scripts/services/elasticsearchSetup.sh
 
 # Check Keycloak
-echo -e "\033[1;35m[4/4]\033[0m Checking Keycloak"
+echo -e "\033[1;35m[6/6]\033[0m Checking Keycloak"
 rs /scripts/services/keycloakCheck.sh
 
 # Success and Next Steps
@@ -45,4 +53,4 @@ echo -e "\033[1m4️⃣ Start the development server:\033[0m\n"
 echo -e "   \033[1;32m./mvnw spring-boot:run -pl maestro-app\033[0m\n"
 
 echo -e "\033[1mMaestro's Swagger UI can be accessed from:\n"
-echo -e "   \033[1;32mhttp://localhost:11235/api-docsl\033[0m\n"
+echo -e "   \033[1;32mhttp://localhost:11235/api-docs\033[0m\n"
