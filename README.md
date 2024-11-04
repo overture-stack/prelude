@@ -64,6 +64,6 @@ Each command spins up complementary services for the specified development envir
     - `data-minio/`: Persistent local storage for MinIO object storage.
     - `data-song-db/`: Persistent local storage for the Song database.
 
-- **`Makefile`** Contains make commands for Unix-based systems (macOS, Linux) to streamline Docker operations.
+- **`Makefile`** Contains [`make` commands](https://www.gnu.org/software/make/manual/make.html#Overview-of-make) for Unix-based systems (macOS, Linux) to streamline Docker operations.
 
 - **`make.bat`** Windows equivalent of the Makefile, featuring batch commands tailored for Windows systems.
