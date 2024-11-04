@@ -9,7 +9,7 @@ Conductor is a flexible Docker Compose setup that simplifies the process of spin
 
 ## Getting Started
 
-**1. Clone the repo branch**
+**1. Clone the repo's `main` branch**
 
 ```
 git clone -b concerto https://github.com/overture-stack/composer.git && cd composer
