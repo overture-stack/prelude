@@ -1,69 +1,229 @@
-# Conductor 
+# Drug Discovery Project
 
-Conductor is a flexible Docker Compose setup that simplifies the process of spinning up Overture development and deployment configurations using Docker profiles and extensible scripting events.
+This repository contains the data and infrastructure for the Overture-Drug Discovery Data Portal.
 
-## Key Features
+## Running the portal
 
-- **Profile-based Deployments**: Uses Docker profiles to manage different environment setups.
-- **Conductor-driven Execution**: The Conductor service executes ordered scripts based on the `PROFILE` environment variable.
+1. **Set Up Docker:** Install or update to Docker Desktop version 4.32.0 or higher. Visit [Docker's website](https://www.docker.com/products/docker-desktop/) for installation details.
 
-## Getting Started
+> [!important]
+> Allocate sufficient resources to Docker:
+>   - Minimum CPU: `8 cores`
+>   - Memory: `8 GB`
+>   - Swap: `2 GB`
+>   - Virtual disk: `64 GB`
+>
+> Adjust these in Docker Desktop settings under "Resources".
 
-**1. Clone the repo's `main` branch**
+**2. Clone the repo branch**
 
 ```
-git clone -b concerto https://github.com/overture-stack/composer.git && cd composer
+git clone https://github.com/oicr-softeng/drug_discovery-ui.git
 ```
 
-**2. Run one of the following commands to spin up different environments:**
+**3. Build a Stage image from its dockerfile**
+
+```
+cd stage
+docker build -t multi-arranger-stage:2.0 .
+```
+
+**4. Run one of the following commands from the root of the repository:**
 
 | Environment | Unix/macOS | Windows |
 |-------------|------------|---------|
-| Overture Platform | `make platform` | `make.bat platform` |
-| Stage Dev | `make stageDev` | `make.bat stageDev` |
-| Arranger Dev | `make arrangerDev` | `make.bat arrangerDev` |
-| Maestro Dev | `make maestroDev` | `make.bat maestroDev` |
-| Song Dev | `make songDev` | `make.bat songDev` |
-| Score Dev | `make scoreDev` | `make.bat scoreDev` |
+| Overture Platform | `make platform` | `./make.bat platform` |
 
-Each command spins up complementary services for the specified development environment.
+Following startup front end portal will be available at your `localhost:3000`
 
-## Repository Structure
+**3. You can also run any of the following helper commands:**
+
+| Description | Unix/macOS | Windows | 
+|-------------|------------|---------|
+| Shuts down all containers | `make down` | `./make.bat down` | 
+| Removes all persistent Elasticsearch volumes | `make clean` | `./make.bat clean` | 
+
+# CSV to Elasticsearch Processor
+
+A Node.js command-line tool for efficiently processing and indexing CSV files into Elasticsearch. This tool features progress tracking, batched processing, and detailed error reporting.
+
+## Features
+
+- 📊 Efficient CSV parsing with support for various delimiters
+- 🚀 Batch processing for optimal performance
+- 📈 Real-time progress tracking with ETA
+- 🔄 Configurable batch sizes
+- ⚠️ Detailed error reporting
+- 🔐 Elasticsearch authentication support
+- 🔍 Target index validation
+- 🧐 CSV Header Validation
+  - Checks for duplicate headers
+  - Validates header structure
+  - Verifies headers match Elasticsearch index mapping
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+- Access to an Elasticsearch instance
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd csv-processor
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Build the TypeScript code:
+```bash
+npm run build
+```
+
+## Required Dependencies
+
+```json
+{
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.17.14",
+    "@types/chalk": "^0.4.31",
+    "@types/node": "^22.9.3",
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "csv-parse": "^5.6.0",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
+```
+
+## Usage
+
+The basic command structure is:
+
+```bash
+node csv-processor.js -f <file-path> [options]
+```
+
+### Command Line Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-f, --file <path>` | CSV file path (required) | - |
+| `--url <url>` | Elasticsearch URL | http://localhost:9200 |
+| `-i, --index <name>` | Elasticsearch index name | correlation-index |
+| `-u, --user <username>` | Elasticsearch username | elastic |
+| `-p, --password <password>` | Elasticsearch password | myelasticpassword |
+| `-b, --batch-size <size>` | Batch size for processing | 1000 |
+| `-d, --delimiter <char>` | CSV delimiter | , |
+
+### Examples
+
+Basic usage with default settings:
+```bash
+node csv-processor.js -f data.csv
+```
+
+Custom Elasticsearch configuration:
+```bash
+node csv-processor.js -f data.csv --url http://localhost:9200 -i my-index -u elastic -p mypassword
+```
+
+Process a semicolon-delimited CSV with custom batch size:
+```bash
+node csv-processor.js -f data.csv -d ";" -b 100
+```
+
+## Repo Structure
 
 ```
-.
-├── conductorScripts/
-│   ├── deployments
-│   └── services
-├── configurationFiles/
-│   ├── arrangerConfigs
-│   ├── elasticsearchConfigs
-│   └── keycloakConfigs
-├── guideMaterials
-├── persistentStorage/
-│   ├── data-keycloak-db
-│   ├── data-minio
-│   └── data-song-db
-├── Makefile
-└── make.bat
+src/
+├── types/
+│   └── index.ts           # Type definitions (Record, SubmissionMetadata interfaces)
+├── utils/
+│   ├── cli.ts            # CLI setup and configuration
+│   ├── elasticsearch.ts   # Elasticsearch client and operations
+│   ├── formatting.ts      # Progress bar, duration formatting, etc.
+│   └── csv.ts            # CSV parsing and processing utilities
+├── services/
+│   ├── processor.ts      # Main CSV to Doc processing logic
+│   └── validator.ts      # Config, index and data validation and checking
+└── main.ts               # Entry point, brings everything together
 ```
 
-- **`conductorScripts/`** Contains scripts for orchestrating the deployment process.
-    - `deployments/`: Scripts that execute service scripts sequentially based on the deployment configuration. These also include custom post-deployment logs with essential next steps for the deployment scenario.
-    - `services/`: Modular scripts for individual service setup tasks. Each file is named according to its purpose, with inline comments documenting the code.
+## Processing Flow
 
-- **`configurationFiles/`** Stores all required configuration files, including:
-    - `arrangerConfigs/`: Configuration files specific to Arranger.
-    - `elasticsearchConfigs/`: Configuration files for Elasticsearch, encompassing indexing mappings and documents for seeding data.
-    - `keycloakConfigs/`: Configuration files for Keycloak, including preconfigured realm files and Overture API key provider details.
+1. The tool first counts total records in the CSV file
+2. Confirms headers with the user
+3. Processes records in configured batch sizes
+4. Sends batches to Elasticsearch using the bulk API
+5. Displays real-time progress with:
+   - Visual progress bar
+   - Completion percentage
+   - Records processed
+   - Elapsed time
+   - Estimated time remaining
+   - Processing rate
 
-- **`guideMaterials/`** Supplementary folders and files for use with the [Overture guides](https://www.overture.bio/documentation/guides/).
+## Error Handling
 
-- **`persistentStorage/`** Directory for storing persistent data during container startups and restarts. These folders come pre-loaded with mock data.
-    - `data-keycloak-db/`: Persistent local storage for the Keycloak database.
-    - `data-minio/`: Persistent local storage for MinIO object storage.
-    - `data-song-db/`: Persistent local storage for the Song database.
+- Failed records are tracked and reported
+- Detailed error logging for debugging
+- Bulk processing continues even if individual records fail
+- Summary of failed records provided at completion
 
-- **`Makefile`** Contains [`make` commands](https://www.gnu.org/software/make/manual/make.html#Overview-of-make) for Unix-based systems (macOS, Linux) to streamline Docker operations.
+## Output Format
 
-- **`make.bat`** Windows equivalent of the Makefile, featuring batch commands tailored for Windows systems.
+The tool provides colorized console output including:
+
+```
+Total records to process: 1000
+
+📋 Processing Configuration:
+├─ 📁 File: data.csv
+├─ 🔍 Index: my-index
+└─ 📝 Delimiter: ,
+
+📑 Headers: id, name, value
+
+🚀 Starting data processing and indexing...
+
+[████████████░░░░░░░░░░] 50% | 500/1000 | ⏱ 0h 1m 30s | 🏁 1m 30s | ⚡1000 rows/sec
+```
+
+## Performance Considerations
+
+- Adjust batch size based on record size and Elasticsearch performance
+- Larger batch sizes generally improve throughput but use more memory
+- Monitor Elasticsearch CPU and memory usage
+- Consider network latency when setting batch sizes
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. **Connection Errors**
+   - Verify Elasticsearch is running
+   - Check URL and port
+   - Confirm network connectivity
+
+2. **Authentication Failures**
+   - Verify username and password
+   - Check user permissions
+
+3. **Parse Errors**
+   - Verify CSV format
+   - Check delimiter setting
+   - Inspect file encoding
+
+4. **Memory Issues**
+   - Reduce batch size
+   - Ensure sufficient system resources
+   - Monitor Node.js memory usage

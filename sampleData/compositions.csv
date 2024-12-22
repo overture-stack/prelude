@@ -1,0 +1,101 @@
+piece_id,piece_title,duration_minutes,audience_rating,is_mainstream,year_composed,annual_streams,historical_context
+A001-1,Symphony No. 5 - Beethoven,45,4.92,true,1808-12-22,1249999.50,First performed at a marathon concert
+B102-1,Moonlight Sonata - Beethoven,22,4.85,true,1801-03-15,879654.25,Dedicated to Countess Giulietta Guicciardi
+C203-1,Ride of the Valkyries - Wagner,12,4.75,true,1851-01-10,623451.33,Part of the opera Die Walküre
+D304-1,Canon in D - Pachelbel,8,4.61,true,1680-06-05,1523678.99,
+E405-1,Toccata and Fugue - Bach,18,4.88,false,1704-09-12,456789.12,Composed for organ
+F506-1,Hungarian Rhapsody No. 2 - Liszt,15,4.72,true,1847-11-20,234567.45,Inspired by Hungarian folk music
+G607-1,The Nutcracker - Tchaikovsky,65,4.93,true,1892-12-18,987654.23,Premiered at the Mariinsky Theatre
+H708-1,Eine Kleine Nachtmusik - Mozart,14,4.82,true,1787-08-03,765432.10,
+I809-1,Clair de Lune - Debussy,7,4.95,true,1890-01-15,654321.89,Part of Suite Bergamasque
+J910-1,Spring - Vivaldi,11,4.79,false,1725-04-08,345678.56,First of The Four Seasons
+K011-1,Raindrop Prelude - Chopin,6,4.87,true,1839-02-14,512345.67,
+L012-1,Für Elise - Beethoven,3,4.79,true,1810-05-27,976543.21,
+M013-1,Peer Gynt Suite - Grieg,22,4.68,true,1875-11-19,423567.89,Composed for Ibsen's play
+N014-1,Flight of the Bumblebee - Rimsky-Korsakov,4,4.73,true,1899-12-01,789012.34,
+O015-1,Ode to Joy - Beethoven,25,4.94,true,1824-05-07,1345678.90,Final movement of Symphony No. 9
+P016-1,Swan Lake - Tchaikovsky,55,4.91,true,1876-03-04,876543.21,First performed at the Bolshoi Theatre
+Q017-1,Brandenburg Concerto No. 3 - Bach,15,4.86,false,1721-03-15,234876.54,
+R018-1,Pavane - Fauré,7,4.65,false,1887-01-22,345981.23,Originally composed for piano
+S019-1,The Blue Danube - Strauss II,10,4.77,true,1866-02-15,567234.56,Became popular at Vienna's balls
+T020-1,In the Hall of the Mountain King - Grieg,3,4.81,true,1875-11-19,412345.67,Part of Peer Gynt Suite
+A001-2,November - Max Richter,11,4.88,true,2004-09-14,754321.45,From The Blue Notebooks album
+B102-2,On the Nature of Daylight - Max Richter,7,4.92,true,2004-09-14,986543.21,Featured in Arrival film soundtrack
+C203-2,Short Ride in a Fast Machine - John Adams,5,4.68,true,1986-03-15,789012.56,Energetic orchestral fanfare
+D304-2,Different Trains - Steve Reich,27,4.85,false,1988-01-22,456789.34,Groundbreaking minimalist composition
+E405-2,The Little Match Girl Passion - David Lang,35,4.79,false,2007-02-15,345678.90,Pulitzer Prize-winning work
+F506-2,Harmonium - John Adams,25,4.72,false,1981-04-10,623451.33,Choral symphony inspired by Emily Dickinson
+G607-2,In C - Terry Riley,45,4.86,false,1964-11-05,512345.67,Pioneering minimalist landmark
+H708-2,Einstein on the Beach - Philip Glass,240,4.93,false,1976-11-21,876543.21,Revolutionary avant-garde opera
+I809-2,Fratres - Arvo Pärt,10,4.95,true,1977-06-30,765432.10,Iconic minimalist composition
+J910-2,Become Ocean - John Luther Adams,42,4.91,true,2013-08-15,654321.89,Pulitzer Prize-winning orchestral work
+K011-2,The Desert Music - Steve Reich,35,4.75,false,1984-03-22,567234.56,Minimalist choral work
+L012-2,Tehillim - Steve Reich,25,4.80,false,1981-06-15,234876.54,Hebrew psalm-inspired composition
+M013-2,Nixon in China - John Adams,180,4.81,false,1987-10-22,987654.23,Minimalist opera about Nixon's visit
+N014-2,Vespertine - Björk,50,4.87,true,2001-08-27,1249999.50,Innovative electronic-classical fusion
+O015-2,Tabula Rasa - Arvo Pärt,25,4.94,true,1977-01-15,879654.25,Influential sacred minimalist work
+P016-2,Distant Light - Pēteris Vasks,30,4.76,false,2001-09-12,456789.12,Emotional Baltic minimalist symphony
+Q017-2,The Protecting Veil - John Tavener,45,4.89,false,1987-05-20,623451.78,Spiritual orthodox-inspired work
+R018-2,Different Trains 1947 - Steve Reich,10,4.83,false,1988-01-22,512345.90,Holocaust-themed companion piece
+S019-2,Music for 18 Musicians - Steve Reich,64,4.92,false,1976-02-15,745321.45,Landmark minimalist composition
+T020-2,The Flooding - Caroline Shaw,15,4.77,true,2012-03-10,567234.12,Innovative vocal-instrumental work
+U021-1,Duende - John Luther Adams,20,4.81,false,1999-06-22,412345.67,Atmospheric environmental composition
+V022-1,Stringsongs - Kaija Saariaho,25,4.75,false,2011-09-15,345678.23,Contemporary chamber music
+W023-1,In the Light of Air - Anna Thorvaldsdottir,30,4.86,false,2014-11-05,456789.34,Immersive Icelandic soundscape
+X024-1,The Ascent of Everest - Nico Muhly,40,4.72,false,2010-05-18,623451.90,Minimalist orchestral work
+Y025-1,Violin Concerto - John Adams,35,4.86,true,1993-09-22,876543.45,Acclaimed contemporary concerto
+Z026-1,Memory Pieces - Julia Wolfe,22,4.79,false,1997-03-15,512345.78,Innovative chamber composition
+AA027-1,The B-Sides - Mason Bates,25,4.73,true,2009-02-20,765432.56,Electronic-classical crossover
+BB028-1,Dark Wave - Missy Mazzoli,18,4.81,true,2012-05-10,654321.90,Contemporary chamber opera style
+CC029-1,Deep Field - Anna Thorvaldsdottir,40,4.84,false,2019-03-22,543210.67,Expansive orchestral soundscape
+DD030-1,Threnody to the Victims of Hiroshima - Krzysztof Penderecki,10,4.90,true,1960-05-15,987654.23,Avant-garde memorial piece
+EE031-1,Different Fields - David Lang,15,4.76,false,2001-09-11,456789.34,Innovative minimalist work
+FF032-1,Lemon Glow - Caroline Shaw,12,4.82,true,2019-08-30,623451.45,Contemporary vocal composition
+A001-3,Time - Hans Zimmer,4,4.91,true,2010-07-16,1345678.90,From Inception soundtrack
+B102-3,Mountains - Hans Zimmer,6,4.88,true,2014-11-07,986543.21,From Interstellar soundtrack
+C203-3,Now We Are Free - Hans Zimmer & Lisa Gerrard,5,4.95,true,2000-05-05,754321.45,From Gladiator soundtrack
+D304-3,Earth - Hans Zimmer,12,4.86,true,2014-11-07,623451.33,From Interstellar soundtrack
+E405-3,He's a Pirate - Hans Zimmer,4,4.82,true,2003-06-28,879654.25,From Pirates of the Caribbean
+F506-3,Circle of Life - Hans Zimmer,5,4.93,true,1994-06-24,765432.10,From The Lion King
+G607-3,Journey to the Line - Hans Zimmer,7,4.89,true,1998-06-12,512345.67,From The Thin Red Line
+H708-3,Is She With You? - Hans Zimmer & Junkie XL,4,4.75,true,2016-03-25,456789.34,From Batman v Superman
+I809-3,Rain Dance - Ramin Djawadi,6,4.81,true,2011-04-17,623451.78,From Game of Thrones soundtrack
+J910-3,Main Title - Ramin Djawadi,5,4.87,true,2016-04-24,876543.21,From Westworld soundtrack
+K011-3,Light of the Seven - Ramin Djawadi,10,4.95,true,2017-07-16,654321.89,From Game of Thrones Season 6
+L012-3,Pacific Rim Theme - Ramin Djawadi,4,4.79,true,2013-07-12,567234.56,From Pacific Rim soundtrack
+M013-3,Path to Solitude - Bear McCreary,8,4.83,true,2005-09-23,345678.90,From Battlestar Galactica
+N014-3,The Walking Dead Theme - Bear McCreary,2,4.76,true,2010-10-15,512345.90,From The Walking Dead
+O015-3,Outlander Theme - Bear McCreary,4,4.88,true,2014-08-09,456789.12,From Outlander
+P016-3,Journey - Nicholas Britell,6,4.86,true,2016-11-25,987654.23,From Moonlight soundtrack
+Q017-3,Succession Theme - Nicholas Britell,2,4.90,true,2018-06-03,765432.56,From Succession TV series
+R018-3,The Middle - Nicholas Britell,5,4.82,true,2018-10-19,623451.45,From If Beale Street Could Talk
+S019-3,Crimson Tide - Hans Zimmer,7,4.84,true,1995-05-12,567234.12,Pioneering media composition
+T020-3,The Last of Us Theme - Gustavo Santaolalla,4,4.93,true,2013-06-14,876543.45,From The Last of Us video game
+U021-2,The Social Network - Trent Reznor & Atticus Ross,6,4.87,true,2010-09-22,654321.90,Groundbreaking digital score
+V022-2,Gone Girl - Trent Reznor & Atticus Ross,8,4.85,true,2014-10-03,512345.78,Innovative film score
+W023-2,Bird Box - Trent Reznor & Atticus Ross,10,4.80,true,2018-12-13,456789.34,Experimental film soundtrack
+X024-2,Old Gods of Asgard - Perturbator,5,4.75,false,2019-03-05,345678.23,From Control video game soundtrack
+Y025-2,Signals - Hildur Guðnadóttir,7,4.89,true,2019-09-20,623451.90,From Chernobyl miniseries
+Z026-2,Joker - Hildur Guðnadóttir,9,4.91,true,2019-10-04,987654.23,Oscar-winning film score
+AA027-2,Journey - Austin Wintory,6,4.86,false,2012-08-06,456789.34,From Journey video game
+BB028-2,Everything at the End of Time - The Caretaker,45,4.92,false,2016-02-20,234876.54,Experimental ambient composition
+CC029-2,On the Nature of Daylight (Entropy) - Max Richter,8,4.95,true,2004-09-14,765432.10,Emotional minimalist piece
+DD030-2,Arrival - Jóhann Jóhannsson,12,4.88,true,2016-11-11,512345.67,Innovative film score
+EE031-2,The Theory of Everything - Jóhann Jóhannsson,7,4.86,true,2014-09-26,623451.33,Oscar-nominated score
+FF032-2,Prisoners - Jóhann Jóhannsson,6,4.84,true,2013-09-20,456789.12,Dark atmospheric soundtrack
+GG033-1,The Hours - Philip Glass,6,4.86,true,2002-10-15,543210.90,Soundtrack for the film The Hours
+HH034-1,Metamorphosis - Philip Glass,15,4.79,false,1988-06-22,456789.45,Minimalist piano composition
+II035-1,Black Angels - George Crumb,13,4.88,false,1970-03-15,345678.23,Electro-acoustic string quartet
+JJ036-1,Different Worlds - Tycho,7,4.75,true,2011-07-12,765432.56,Ambient electronic composition
+KK037-1,Growth - Ólafur Arnalds,5,4.92,true,2018-09-28,654321.89,From re:member album
+LL038-1,Aphex Twin Selected Ambient Works,45,4.90,false,1992-02-12,876543.21,Groundbreaking electronic album
+MM039-1,Black Noise - Nils Frahm,12,4.85,false,2010-03-22,567234.45,Experimental piano and electronics
+NN040-1,From Sleep - Max Richter,24,4.93,true,2015-11-06,987654.23,Extended minimalist composition
+OO041-1,Godspeed You! Black Emperor - The Dead Flag Blues,16,4.87,false,1997-05-20,512345.67,Post-rock epic
+PP042-1,Futuro - Dustin O'Halloran,8,4.80,true,2006-11-15,623451.78,Contemporary classical piano
+QQ043-1,Xtal - Aphex Twin,6,4.82,false,1992-02-12,456789.34,Ambient electronic track
+RR044-1,Quartetto per archi - Luigi Nono,22,4.75,false,1980-06-30,345678.90,Avant-garde string quartet
+SS045-1,Strobe - Deadmau5,6,4.89,true,2009-12-04,765432.10,Electronic progressive house
+TT046-1,Helios - Boards of Canada,5,4.86,false,2013-06-20,567234.56,Ambient electronic composition
+UU047-1,The Heart Asks Pleasure First - Michael Nyman,4,4.91,true,1993-09-15,876543.45,From The Piano soundtrack
+VV048-1,Comptine d'un Autre Été - Yann Tiersen,3,4.95,true,2001-04-23,1234567.89,From Amélie film soundtrack

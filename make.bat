@@ -1,51 +1,49 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableDelayedExpansion
 
-if "%1"=="" goto help
+if "%1"=="platform" goto platform
+if "%1"=="down" goto down
+if "%1"=="clean" goto clean
+goto usage
 
-if "%1"=="platform" (
-    set PROFILE=platform
-    goto run
-)
-if "%1"=="stageDev" (
-    set PROFILE=stageDev
-    goto run
-)
-if "%1"=="arrangerDev" (
-    set PROFILE=arrangerDev
-    goto run
-)
-if "%1"=="maestroDev" (
-    set PROFILE=maestroDev
-    goto run
-)
-if "%1"=="songDev" (
-    set PROFILE=songDev
-    goto run
-)
-if "%1"=="scoreDev" (
-    set PROFILE=scoreDev
-    goto run
-)
-if "%1"=="down" (
-    set PROFILE=platfrom
-    docker compose down
-    goto :eof
-)
+:platform
+echo Starting platform services...
+set PROFILE=platform
+docker compose --profile platform up --attach conductor
+goto end
 
-goto help
+:down
+echo Stopping platform services...
+set PROFILE=platform
+docker compose --profile platform down
+goto end
 
-:run
-docker compose --profile %PROFILE% up --attach conductor
-goto :eof
+:clean
+echo [91mWARNING: This will remove all data within Elasticsearch.[0m
+set /p confirm="Are you sure you want to proceed? [y/N] "
+if /i "!confirm!"=="y" (
+    echo Stopping related containers...
+    docker compose --profile platform down
+    
+    echo Cleaning up Elasticsearch volumes...
+    if exist "./volumes/es-data/nodes" rmdir /s /q "./volumes/es-data/nodes"
+    
+    for /f "delims=" %%i in ('dir /b /s "./volumes/es-logs" ^| findstr /v "logs.txt"') do del "%%i"
+    
+    docker volume rm deployment_elasticsearch-data 2>nul
+    docker volume rm deployment_elasticsearch-logs 2>nul
+    
+    echo Cleanup completed!
+) else (
+    echo Cleanup cancelled.
+)
+goto end
 
-:help
-echo Usage: build.bat [target]
-echo Available targets:
-echo   platform
-echo   stageDev
-echo   arrangerDev
-echo   maestroDev
-echo   songDev
-echo   scoreDev
-echo   down
+:usage
+echo Usage:
+echo   %0 platform    - Start platform services
+echo   %0 down        - Stop platform services
+echo   %0 clean       - Clean Elasticsearch data and volumes
+
+:end
+endlocal

@@ -1,0 +1,106 @@
+{
+	"facets": {
+	  "aggregations": [
+		{
+		  "active": true,
+		  "fieldName": "Hugo_Symbol_A",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "Hugo_Symbol_B",
+		  "show": true
+		},
+		{
+		  "active": false,
+		  "fieldName": "neighborhood",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "neighborhood_transferred",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "fusion",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "cooccurence",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "homology",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "coexpression",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "coexpression_transferred",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "experiments",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "experiments_transferred",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "database",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "database_transferred",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "textmining",
+		  "show": false
+		},
+		{
+		  "active": false,
+		  "fieldName": "textmining_transferred",
+		  "show": false
+		},
+		{
+		  "active": true,
+		  "fieldName": "combined_score",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "dataset_name",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "Is_Oncogene",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "Is_Tumor_Suppressor_Gene",
+		  "show": true
+		},
+		{
+			"active": true,
+			"fieldName": "Is_WDR",
+			"show": true
+		}
+	  ]
+	}
+  }

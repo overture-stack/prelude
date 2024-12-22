@@ -1,0 +1,76 @@
+{
+	"extended": [
+	  {
+		"displayName": "Cancer Type",
+		"fieldName": "Cancer_Type"
+	  },
+	  {
+		"displayName": "Hugo Symbol",
+		"fieldName": "Hugo_Symbol"
+	  },
+	  {
+		"displayName": "Gene Id (Entrez)",
+		"fieldName": "Entrez_Gene_Id"
+	  },
+	  {
+		"displayName": "Hotspot",
+		"fieldName": "Hotspot"
+	  },
+	  {
+		"displayName": "Number of Mutated Samples",
+		"fieldName": "number_of_mutated_samples"
+	  },
+	  {
+		"displayName": "Total Number of Samples",
+		"fieldName": "total_number_of_samples"
+	  },
+	  {
+		"displayName": "Overall Mutation Frequency",
+		"fieldName": "overall_mutation_frequency"
+	  },
+	  {
+		"displayName": "Dataset Name",
+		"fieldName": "Dataset_Name"
+	  },
+	  {
+		"displayName": "Is Oncogene",
+		"fieldName": "Is_Oncogene"
+	  },
+	  {
+		"displayName": "Is Tumour Suppressor Gene",
+		"fieldName": "Is_Tumor_Suppressor_Gene"
+	  },
+	  {
+		"displayName": "Is WDR",
+		"fieldName": "Is_WDR"
+	  },
+	  {
+		"displayName": "Submission ID",
+		"fieldName": "submission_metadata.submitter_id"
+	  },
+	  {
+		"displayName": "Processing Started",
+		"fieldName": "submission_metadata.processing_started"
+	  },
+	  {
+		"displayName": "Processed At",
+		"fieldName": "submission_metadata.processed_at"
+	  },
+	  {
+		"displayName": "Source File",
+		"fieldName": "submission_metadata.source_file"
+	  },
+	  {
+		"displayName": "Record Number",
+		"fieldName": "submission_metadata.record_number"
+	  },
+	  {
+		"displayName": "Hostname",
+		"fieldName": "submission_metadata.hostname"
+	  },
+	  {
+		"displayName": "Username",
+		"fieldName": "submission_metadata.username"
+	  }
+	]
+  }

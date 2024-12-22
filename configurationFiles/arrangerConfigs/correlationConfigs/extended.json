@@ -1,0 +1,96 @@
+{
+	"extended": [
+	  {
+		"displayName": "Cancer Type",
+		"fieldName": "Cancer_Type"
+	  },
+	  {
+		"displayName": "N (number of data points)",
+		"fieldName": "N"
+	  },
+	  {
+		"displayName": "Hugo Symbol A",
+		"fieldName": "Hugo_Symbol_A"
+	  },
+	  {
+		"displayName": "Gene Id (Entrez) A",
+		"fieldName": "Entrez_Gene_Id_A"
+	  },
+	  {
+		"displayName": "Hugo Symbol B",
+		"fieldName": "Hugo_Symbol_B"
+	  },
+	  {
+		"displayName": "Gene Id (Entrez) B",
+		"fieldName": "Entrez_Gene_Id_B"
+	  },
+	  {
+		"displayName": "Spearman Correlation",
+		"fieldName": "SpearmanCorr"
+	  },
+	  {
+		"displayName": "Spearman P Value",
+		"fieldName": "SpearmanP"
+	  },
+	  {
+		"displayName": "Pearson Correlation",
+		"fieldName": "PearsonCorr"
+	  },
+	  {
+		"displayName": "Pearson P Value",
+		"fieldName": "PearsonP"
+	  },
+	  {
+		"displayName": "Spearman Correlation Square",
+		"fieldName": "SpearmanCorrSquare"
+	  },
+	  {
+		"displayName": "Pearson Correlation Square",
+		"fieldName": "PearsonCorrSquare"
+	  },
+	  {
+		"displayName": "Dataset Name",
+		"fieldName": "Dataset_Name"
+	  },
+	  {
+		"displayName": "Is Oncogene",
+		"fieldName": "Is_Oncogene"
+	  },
+	  {
+		"displayName": "Is Tumour Suppressor Gene",
+		"fieldName": "Is_Tumor_Suppressor_Gene"
+	  },
+	  {
+		"displayName": "Is WDR",
+		"fieldName": "Is_WDR"
+	  },
+	  {
+		"displayName": "Submission ID",
+		"fieldName": "submission_metadata.submitter_id"
+	  },
+	  {
+		"displayName": "Processing Started",
+		"fieldName": "submission_metadata.processing_started"
+	  },
+	  {
+		"displayName": "Processed At",
+		"fieldName": "submission_metadata.processed_at"
+	  },
+	  {
+		"displayName": "Source File",
+		"fieldName": "submission_metadata.source_file"
+	  },
+	  {
+		"displayName": "Record Number",
+		"fieldName": "submission_metadata.record_number"
+	  },
+	  {
+		"displayName": "Hostname",
+		"fieldName": "submission_metadata.hostname"
+	  },
+	  {
+		"displayName": "Username",
+		"fieldName": "submission_metadata.username"
+	  }
+	]
+  }

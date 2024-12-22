@@ -1,0 +1,47 @@
+{
+  "index_patterns": ["instrument-*"],
+  "aliases": {
+    "instrument_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "instrument_id": { "type": "keyword" },
+      "instrument_name": { "type": "text" },
+      "origin_country": { "type": "keyword" },
+      "instrument_type": { "type": "keyword" },
+      "historical_significance": { "type": "text" },
+      "average_price": { "type": "float" },
+      "primary_materials": { "type": "text" },
+      "complexity_rating": { "type": "float" },
+      "famous_musicians": { "type": "text" },
+      "unique_characteristics": { "type": "text" },
+      "submission_metadata": {
+        "properties": {
+          "submitter_id": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          },
+          "processing_started": { "type": "date" },
+          "processed_at": { "type": "date" },
+          "source_file": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          },
+          "record_number": { "type": "integer" },
+          "hostname": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          },
+          "username": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          }
+        }
+      },
+      "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+      }
+    }
+  }
+}

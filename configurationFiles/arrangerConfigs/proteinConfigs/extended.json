@@ -1,0 +1,112 @@
+{
+	"extended": [
+	  {
+		"displayName": "Hugo Symbol A",
+		"fieldName": "Hugo_Symbol_A"
+	  },
+	  {
+		"displayName": "Hugo Symbol B",
+		"fieldName": "Hugo_Symbol_B"
+	  },
+	  {
+		"displayName": "Neighborhood",
+		"fieldName": "neighborhood"
+	  },
+	  {
+		"displayName": "Neighborhood Transferred",
+		"fieldName": "neighborhood_transferred"
+	  },
+	  {
+		"displayName": "Fusion",
+		"fieldName": "fusion"
+	  },
+	  {
+		"displayName": "Cooccurence",
+		"fieldName": "cooccurence"
+	  },
+	  {
+		"displayName": "Homology",
+		"fieldName": "homology"
+	  },
+	  {
+		"displayName": "Coexpression",
+		"fieldName": "coexpression"
+	  },
+	  {
+		"displayName": "Coexpression Transferred",
+		"fieldName": "coexpression_transferred"
+	  },
+	  {
+		"displayName": "Experiments",
+		"fieldName": "experiments"
+	  },
+	  {
+		"displayName": "Experiments Transferred",
+		"fieldName": "experiments_transferred"
+	  },
+	  {
+		"displayName": "Database",
+		"fieldName": "database"
+	  },
+	  {
+		"displayName": "Database Transferred",
+		"fieldName": "database_transferred"
+	  },
+	  {
+		"displayName": "Textmining",
+		"fieldName": "textmining"
+	  },
+	  {
+		"displayName": "Textmining Transferred",
+		"fieldName": "textmining_transferred"
+	  },
+	  {
+		"displayName": "Combined Score",
+		"fieldName": "combined_score"
+	  },
+	  {
+		"displayName": "Dataset Name",
+		"fieldName": "dataset_name"
+	  },
+	  {
+		"displayName": "Is Oncogene",
+		"fieldName": "Is_Oncogene"
+	  },
+	  {
+		"displayName": "Is Tumor Suppressor Gene",
+		"fieldName": "Is_Tumor_Suppressor_Gene"
+	  },
+	  {
+		"displayName": "Is WDR",
+		"fieldName": "Is_WDR"
+	  },
+	  {
+		"displayName": "Submission ID",
+		"fieldName": "submission_metadata.submitter_id"
+	  },
+	  {
+		"displayName": "Processing Started",
+		"fieldName": "submission_metadata.processing_started"
+	  },
+	  {
+		"displayName": "Processed At",
+		"fieldName": "submission_metadata.processed_at"
+	  },
+	  {
+		"displayName": "Source File",
+		"fieldName": "submission_metadata.source_file"
+	  },
+	  {
+		"displayName": "Record Number",
+		"fieldName": "submission_metadata.record_number"
+	  },
+	  {
+		"displayName": "Hostname",
+		"fieldName": "submission_metadata.hostname"
+	  },
+	  {
+		"displayName": "Username",
+		"fieldName": "submission_metadata.username"
+	  }
+	]
+  }

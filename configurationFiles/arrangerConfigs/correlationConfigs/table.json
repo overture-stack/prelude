@@ -1,0 +1,103 @@
+{
+	"table": {
+		"rowIdFieldName": "id",
+		"columns": [
+		{
+		  "canChangeShow": true,
+		  "fieldName": "submission_metadata.submitter_id",
+		  "show": true,
+	  	  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Cancer_Type",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "N",
+		  "show": false,
+		  "sortable": false
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Hugo_Symbol_A",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Entrez_Gene_Id_A",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Hugo_Symbol_B",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Entrez_Gene_Id_B",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "SpearmanCorr",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "SpearmanP",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "PearsonCorr",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "PearsonP",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "SpearmanCorrSquare",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Dataset_Name",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Is_Oncogene",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Is_Tumor_Suppressor_Gene",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "Is_WDR",
+		  "show": true,
+		  "sortable": true
+		}
+	  ]
+	}
+  }

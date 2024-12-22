@@ -1,0 +1,86 @@
+{
+	"facets": {
+	  "aggregations": [
+		{
+		  "active": true,
+		  "fieldName": "Cancer_Type",
+		  "show": true
+		},
+		{
+		  "active": false,
+		  "fieldName": "N",
+		  "show": false
+		},
+		{
+		  "active": true,
+		  "fieldName": "Hugo_Symbol_A",
+		  "show": true
+		},
+		{
+		  "active": false,
+		  "fieldName": "Entrez_Gene_Id_A",
+		  "show": false
+		},
+		{
+		  "active": true,
+		  "fieldName": "Hugo_Symbol_B",
+		  "show": true
+		},
+		{
+		  "active": false,
+		  "fieldName": "Entrez_Gene_Id_B",
+		  "show": false
+		},
+		{
+		  "active": true,
+		  "fieldName": "SpearmanCorr",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "SpearmanP",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "PearsonCorr",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "PearsonP",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "SpearmanCorrSquare",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "PearsonCorrSquare",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "Dataset_Name",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "Is_Oncogene",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "Is_Tumor_Suppressor_Gene",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "Is_WDR",
+		  "show": true
+		}
+	  ]
+	}
+  }

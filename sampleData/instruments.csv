@@ -1,0 +1,101 @@
+instrument_id,instrument_name,origin_country,instrument_type,historical_significance,average_price,primary_materials,complexity_rating,famous_musicians,unique_characteristics
+A001,Stradivarius Violin,Italy,String,Pinnacle of classical instrument craftsmanship,5250000,Spruce and maple,9.8,Itzhak Perlman; Joshua Bell,Unparalleled acoustic properties; each instrument has unique sound
+B002,Steinway Grand Piano,Germany,Keyboard,Benchmark of concert piano manufacturing,175000,Spruce wood; cast iron; steel wire,9.5,Vladimir Horowitz; Martha Argerich,Handcrafted with precision; known for exceptional tonal quality
+C003,Didgeridoo,Australia,Wind,Indigenous Aboriginal musical tradition,1100,Eucalyptus wood,6.5,Xavier Rudd; Charlie McMahon,Produces complex harmonic sounds through circular breathing
+D004,Sitar,India,String,Central to Hindustani classical music,2750,Gourd and teak wood,8.7,Ravi Shankar; Anoushka Shankar,Distinctive buzzing sound; intricate sympathetic strings
+E005,Hang Drum,Switzerland,Percussion,Modern invented instrument,2250,Nitrided steel,7.9,Manu Delago; Hang Massive,Unique UFO-like shape; creates ethereal resonant sounds
+F006,Theremin,Russia,Electronic,First electronic musical instrument,2750,Electronic components; metal,8.3,Clara Rockmore; Jean-Michel Jarre,Played without physical contact; uses electromagnetic fields
+G007,Guqin,China,String,Over 3000 years old; philosophical instrument,26000,Paulownia wood,9.2,Wu Zhaoji; Wei Zhongle,Minimalist design; each note has spiritual significance
+H008,Kora,West Africa,String,Traditional West African griot instrument,1900,Calabash gourd and cowhide,7.6,Toumani Diabaté; Ballaké Sissoko,Combines characteristics of harp and lute
+I009,Hurdy-Gurdy,France,String,Medieval European instrument,5750,Wood and leather,8.1,Blackmore's Night; Jean Chaine,Mechanical instrument played by turning a wheel
+J010,Glass Armonica,United States,Keyboard,Invented by Benjamin Franklin,12500,Glass and metal,7.4,Dennis James; Bruno Hoffmann,Produces sounds by friction on rotating glass bowls
+K011,Duduk,Armenia,Wind,Ancient Armenian double-reed woodwind,1750,Apricot wood,8.5,Djivan Gasparyan; Aram Khachaturian,Produces hauntingly beautiful melancholic tones
+L012,Waterphone,United States,Percussion,Modern experimental sound sculpture,3000,Stainless steel and bronze,7.7,Richard Waters; experimental musicians,Produces eerie sounds by bowing or striking
+M013,Hardanger Fiddle,Norway,String,Traditional Norwegian folk instrument,6000,Wood and metal,8.2,Håkon Høgemo; Annbjørg Lien,Decorated with intricate inlay; additional sympathetic strings
+N014,Ondes Martenot,France,Electronic,Early electronic musical instrument,12500,Electronic components,8.6,Olivier Messiaen; Radiohead,Unique wavering electronic sound
+O015,Oud,Middle East,String,Predecessor to the European lute,2750,Wood and animal skin,8.4,Naseer Shamma; Simon Shaheen,Fretless design; deep resonant body
+P016,Erhu,China,String,Traditional Chinese two-stringed instrument,1100,Bamboo and snake skin,7.5,Yu Hong; Yu Hongmei,Capable of extremely expressive sounds
+Q017,Gamelan,Indonesia,Percussion,Integral to Javanese and Balinese culture,27500,Bronze; iron; wood,9.0,Various traditional ensembles,Complex interlocking musical structure
+R018,Chapman Stick,United States,String,Innovative tapping instrument,3500,Wood and steel,8.8,Tony Levin; Greg Howard,Allows simultaneous bass and melody playing
+S019,Nyckelharpa,Sweden,String,Traditional Swedish key fiddle,3250,Wood and metal,7.8,Eric Sahlström; Torbjörn Näsbom,Unique key mechanism for changing pitch
+T020,Crystal Singing Bowls,Tibet/USA,Percussion,Used in sound healing,1100,Quartz crystal,6.9,Sound healing practitioners,Produces pure resonant tones when struck or rubbed
+U021,Harmonium,India,Keyboard,Essential in Hindustani classical music,1750,Wood and metal reeds,7.3,Various classical musicians,Portable reed organ with hand-pumped bellows
+V022,Mbira,Zimbabwe,Percussion,Central to Shona spiritual practices,600,Metal keys and wood,7.2,Thomas Mapfumo; Stella Chiweshe,Thumb piano with deep cultural significance
+W023,Bagpipes,Scotland,Wind,Symbol of Scottish cultural identity,3000,Sheepskin; wood; metal,8.9,Various pipe bands; Carlos Núñez,Complex multiple-reed instrument with distinctive sound
+X024,Sarangi,India,String,Classical North Indian instrument,1750,Wood and horsehair,9.1,Ram Narayan; Ustad Sultan Khan,Considered closest instrument to human voice
+Y025,Roland TR-808,Japan,Electronic,Revolutionary drum machine,3500,Electronic components,8.0,Marvin Gaye; Kanye West,Defined sound of hip-hop and electronic music
+Z026,Guzheng,China,String,Traditional Chinese zither,2750,Paulownia wood; steel,8.3,Wu Fei; Liang Tsai-ping,Plucked with special finger picks
+AA027,Kalimba,Africa,Percussion,Thumb piano with widespread roots,275,Wood and metal,6.7,Maurice White; Imogen Heap,Simple yet melodically rich instrument
+BB028,Aeolian Harp,Greece,String,Instrument played by wind,1750,Wood and metal,7.1,Experimental musicians,Produces sounds through natural wind interaction
+CC029,Synthesizer (Moog),United States,Electronic,Revolutionized electronic music,6000,Electronic components,9.3,Keith Emerson; Rick Wakeman,Allows complex sound manipulation
+DD030,Bass Saz,Turkey,String,Traditional Turkish long-necked lute,1150,Mulberry wood; metal,7.9,Erkan Oğur; Aşık Veysel,Deeper tone than standard saz
+EE031,Balalaika,Russia,String,Traditional Russian folk instrument,750,Wood and steel strings,7.6,Various folk musicians,Triangular-shaped body with three strings
+FF032,Berimbau,Brazil,Percussion,Central to Capoeira martial art,250,Wood and steel wire,7.3,Caetano Veloso; Naná Vasconcelos,Single-stringed percussion instrument
+GG033,Santur,Iran,String,Classical Persian hammered dulcimer,2500,Wood and metal strings,8.6,Ardavan Kamkar; Faramarz Payvar,Played with special mallets
+HH034,Marimba,Guatemala,Percussion,Originated in Central America,4000,Rosewood and metal,8.7,Keiko Abe; Joby Burgess,Largest pitched percussion instrument
+II035,Celtic Harp,Ireland,String,Symbol of Irish musical heritage,3500,Wood and metal strings,8.4,Turlough O'Carolan; Máire Ní Chathasaigh,Associated with bardic tradition
+JJ036,Steel Drums,Trinidad and Tobago,Percussion,Developed in Caribbean,1200,Steel,7.8,Len Boogsie Sharpe; Robbie Greenidge,Unique sound from hammered oil drums
+KK037,Shakuhachi,Japan,Wind,Zen Buddhist meditation instrument,1500,Bamboo,8.2,Ronnie Nyogetsu Seldin; Riley Lee,Produces meditative breathy tones
+LL038,Mandolin,Italy,String,Popular in folk and bluegrass,1250,Wood and metal strings,7.7,Bill Monroe; Chris Thile,Small stringed instrument with distinctive sound
+MM039,Tar,Azerbaijan,String,Traditional Middle Eastern lute,900,Wood and animal skin,8.1,Alim Qasimov; Rafael Anwar,Used in mugham classical music
+NN040,Marimba de Chonta,Colombia,Percussion,Indigenous Colombian instrument,600,Chonta wood,7.5,Traditional Andean musicians,Large wooden xylophone-like instrument
+OO041,Cimbalom,Hungary,Percussion,Central European hammered dulcimer,3000,Wood and metal strings,8.5,Kálmán Balogh; Miklós Lukács,Played with special mallets
+PP042,Shamisen,Japan,String,Traditional Japanese three-stringed lute,1500,Wood and animal skin,8.0,Ryuichi Sakamoto; Edo-period musicians,Distinctive plucking technique
+QQ043,Bouzouki,Greece,String,Central to Greek folk music,1000,Wood and metal strings,7.9,Vassilis Tsitsanis; Manolis Chiotis,Long-necked plucked instrument
+RR044,Harmonicas,Germany,Wind,Portable free-reed instrument,200,Metal reeds and wood,7.4,Stevie Wonder; Little Walter,Compact breath-powered instrument
+SS045,Zurna,Turkey,Wind,Traditional double-reed instrument,300,Wood and metal,7.6,Folk musicians,Loud piercing sound used in celebrations
+TT046,Kaval,Bulgaria,Wind,Traditional shepherd's flute,250,Wood,7.3,Bulgarian folk musicians,Open-ended wooden flute
+UU047,Oud Elektriki,Lebanon,String,Electrified version of traditional oud,2000,Wood and electronic pickups,8.2,Marcel Khalife; Rabih Abou-Khalil,Modernized traditional instrument
+VV048,Djembe,West Africa,Percussion,Traditional West African drum,400,Wood and goatskin,7.7,Mamady Keïta; Bolokada Condé,Hand drum with distinctive sound
+WW049,Tibetan Singing Bowl,Tibet,Percussion,Used in meditation practices,500,Bronze alloy,6.8,Meditation practitioners,Produces resonant tones when struck
+XX050,Bandoneon,Argentina,Keyboard,Essential to tango music,2500,Wood and metal reeds,8.6,Astor Piazzolla; Juan José Mosalini,Unique accordion-like instrument
+YY051,Quena,Peru,Wind,Traditional Andean flute,300,Bamboo or cane,7.5,Los Jaivas; Bolivian folk musicians,Open-ended vertical flute
+ZZ052,Arpegione,Italy,String,Historical predecessor to cello,5000,Wood,8.3,Experimental musicians,Rare bowed string instrument
+AAA053,Electric Sitar,India,String,Modern adaptation of traditional sitar,1500,Wood and electronic pickups,8.0,George Harrison; Anoushka Shankar,Electrified version of classical instrument
+BBB054,Hang,Switzerland,Percussion,Modern sound sculpture,3000,Nitrided steel,7.9,Manu Delago; David Kuckhermann,Hand-hammered resonant instrument
+CCC055,Concert Harp,France,String,Pinnacle of orchestral string instruments,25000,Wood and metal strings,9.5,Joanna Newsom; Xavier de Maistre,Largest orchestral string instrument
+DDD056,Koto,Japan,String,Traditional Japanese zither,2000,Paulownia wood,8.4,Michio Miyagi; Nanae Yoshimura,Thirteen-stringed plucked instrument
+EEE057,Bansuri,India,Wind,Classical North Indian bamboo flute,500,Bamboo,7.6,Hariprasad Chaurasia; Rakesh Chaurasia,Key instrument in Hindustani classical music
+FFF058,Hurdy-Gurdy,France,String,Medieval European instrument,4000,Wood and mechanical components,8.1,Blackmore's Night; Medieval musicians,Mechanical instrument with rotating wheel
+GGG059,Chapman Stick,United States,String,Innovative tapping instrument,3000,Wood and steel strings,8.8,Tony Levin; Greg Howard,Allows simultaneous bass and melody playing
+HHH060,Mandola,Italy,String,Larger cousin of the mandolin,1500,Wood and metal strings,7.8,Folk and bluegrass musicians,Deeper-toned stringed instrument
+III061,Charango,Bolivia,String,Traditional Andean small guitar,600,Wood; armadillo shell,7.5,Jaime Torres; Los Kjarkas,Tiny guitar with unique body
+JJJ062,Duduk,Armenia,Wind,Ancient double-reed woodwind,1500,Apricot wood,8.5,Djivan Gasparyan; Aram Khachaturian,Produces haunting melancholic tones
+KKK063,Electric Harp,United States,String,Modern amplified harp,5000,Wood and electronic pickups,8.6,Deborah Henson-Conant; Philippe Prud'homme,Electrified version of classical harp
+LLL064,Bougarabou,Senegal,Percussion,Traditional West African drum,300,Wood and goatskin,7.6,Senegalese traditional musicians,Slim conical drum played with hands
+MMM065,Gandharva Vina,India,String,Ancient classical Indian instrument,3000,Gourd and wood,8.9,Classical Indian musicians,Rare stringed instrument with deep cultural significance
+NNN066,Melodica,Italy,Wind,Keyboard-blown instrument,200,Plastic and metal reeds,7.2,Experimental musicians,Breath-powered keyboard instrument
+OOO067,Ronroco,Bolivia,String,Small Andean lute,800,Wood,7.7,Jaime Torres; Los Kjarkas,Smaller version of charango
+PPP068,Dizi,China,Wind,Traditional Chinese transverse flute,500,Bamboo,7.6,Traditional Chinese musicians,Bamboo flute with distinct membrane
+QQQ069,Saz,Turkey,String,Traditional long-necked lute,1000,Mulberry wood,7.9,Aşık Veysel; Turkish folk musicians,Long-necked stringed instrument
+RRR070,Bell Harp,Medieval Europe,String,Historical plucked string instrument,2500,Wood and metal strings,8.0,Early music ensemble musicians,Rare medieval stringed instrument
+SSS071,Ney,Middle East,Wind,Ancient Middle Eastern reed flute,600,Reed or bamboo,8.3,Sufi musicians; traditional performers,Key instrument in Sufi spiritual music
+TTT072,Rebab,Indonesia,String,Traditional Southeast Asian instrument,700,Wood and animal skin,7.5,Gamelan ensemble musicians,Bowed string instrument
+UUU073,Electric Zither,Germany,String,Modern electronic adaptation,2000,Wood and electronic pickups,8.2,Experimental musicians,Electrified version of traditional zither
+VVV074,Berimbolo,Brazil,Percussion,Variant of Berimbau,250,Wood and steel wire,7.4,Capoeira musicians,Slight variation of traditional instrument
+WWW075,Ocarina,Italy,Wind,Ancient vessel flute,150,Clay or ceramic,7.0,Experimental musicians,Small egg-shaped wind instrument
+XXX076,Psaltery,Ancient Greece,String,Early plucked string instrument,1500,Wood,7.6,Early music ensemble musicians,Flat stringed instrument played by plucking
+YYY077,Rubab,Afghanistan,String,Traditional Central Asian instrument,900,Wood and animal skin,8.0,Afghan traditional musicians,Lute-like instrument with deep resonant sound
+ZZZ078,Sho,Japan,Wind,Traditional Japanese court instrument,2000,Bamboo pipes,8.4,Gagaku ensemble musicians,Ancient mouth organ used in imperial court music
+AAAA079,Jaw Harp,Various,Percussion,Found in multiple global cultures,100,Metal and wood,7.1,Jew's harp players,Small instrument played by mouth with twanging sound
+BBBB080,Huruk,Indonesia,Percussion,Traditional Indonesian instrument,250,Wood and metal,7.3,Traditional Javanese musicians,Unique percussive instrument from Southeast Asia
+CCCC081,Pipa,China,String,Classical Chinese lute,1800,Wood and silk strings,8.5,Liu Dehai; Wu Man,Pear-shaped lute with four strings
+DDDD082,Setar,Iran,String,Persian classical instrument,1200,Mulberry wood,8.2,Mohammad-Reza Lotfi; Kayhan Kalhor,Long-necked lute with four strings
+EEEE083,Kemençe,Turkey,String,Traditional Black Sea instrument,800,Wood and horsehair strings,7.8,Ömer Erdoğan; Ulaş Özdemir,Bowed string instrument with unique timbre
+FFFF084,Nai,Romania,Wind,Traditional Romanian pan flute,300,Bamboo,7.5,Gheorghe Zamfir; traditional folk musicians,Multiple bamboo pipes of different lengths
+GGGG085,Marimba de Chonta,Colombia,Percussion,Indigenous Colombian instrument,600,Chonta wood,7.7,Traditional Andean musicians,Large wooden percussion instrument
+HHHH086,Yayli Tambur,Turkey,String,Classical Ottoman instrument,2500,Wood and metal strings,8.6,Necati Çelik; Münir Nurettin Beken,Long-necked bowed string instrument
+IIII087,Sansula,Germany,Percussion,Modern kalimba variation,250,Wood and metal tines,7.2,Experimental musicians,Mounted kalimba with unique resonance
+JJJJ088,Bass Kaval,Bulgaria,Wind,Low-pitched folk flute,400,Wood,7.6,Bulgarian folk musicians,Larger version of traditional kaval
+KKKK089,Electric Oud,Middle East,String,Modern amplified oud,2500,Wood and electronic pickups,8.3,Marcel Khalife; contemporary musicians,Electrified traditional Middle Eastern lute
+LLLL090,Tibetan Dungchen,Tibet,Wind,Ceremonial long horn,1500,Copper and brass,8.0,Buddhist monastery musicians,Extremely long ceremonial horn
+MMMM091,Morin Khuur,Mongolia,String,Traditional Mongolian horse-head fiddle,1000,Wood and horsehair,8.4,Batzorig Vaanchig; traditional musicians,Unique two-stringed instrument with horse-head carving
+NNNN092,Zither,Germany,String,Traditional plucked string instrument,1500,Wood and metal strings,7.9,Traditional folk musicians,Flat stringed instrument with multiple strings
+OOOO093,Duduk,Armenia,Wind,Ancient double-reed woodwind,1700,Apricot wood,8.5,Djivan Gasparyan; contemporary musicians,Produces hauntingly beautiful melancholic tones
+PPPP094,Kantele,Finland,String,Traditional Finnish folk instrument,800,Wood,7.7,Ulla Katajavuori; folk musicians,Plucked string instrument with distinctive sound
+QQQQ095,Steel Tongue Drum,Various,Percussion,Modern meditative instrument,300,Steel,7.4,Sound healing practitioners,Melodic percussion instrument
+RRRR096,Accordion,Italy,Keyboard,Popular in multiple musical traditions,2000,Wood and metal reeds,8.0,Astor Piazzolla; Richard Galliano,Portable reed instrument with keyboard
+SSSS097,Gusli,Russia,String,Ancient Slavic instrument,1200,Wood,7.6,Traditional Russian musicians,Oldest East Slavic multi-string instrument
+TTTT098,Tar,Azerbaijan,String,Traditional Middle Eastern lute,1000,Wood and animal skin,8.1,Alim Qasimov; traditional musicians,Used in mugham classical music
+UUUU099,Electric Saz,Turkey,String,Modern amplified version,1800,Wood and electronic pickups,8.2,Contemporary Turkish musicians,Electrified version of traditional long-necked lute
+VVVV100,Hang Drum,Switzerland,Percussion,Modern sound sculpture,3000,Nitrided steel,7.9,Manu Delago; contemporary musicians,Unique UFO-shaped resonant instrument
