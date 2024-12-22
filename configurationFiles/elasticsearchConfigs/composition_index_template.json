@@ -1,18 +1,17 @@
 {
   "index_patterns": ["composition-*"],
   "aliases": {
-    "composition": {}
+    "composition_centric": {}
   },
     "mappings": {
       "properties": {
-        "piece_id": { "type": "keyword" },
-        "piece_title": { "type": "text" },
-        "duration_minutes": { "type": "float" },
+        "piece_title": { "type": "keyword" },
+        "duration_minutes": { "type": "integer" },
         "audience_rating": { "type": "float" },
-        "is_mainstream": { "type": "boolean" },
-        "year_composed": { "type": "date", "format": "yyyy-MM-dd" },
+        "is_mainstream": { "type": "keyword" },
+        "year_composed": { "type": "date" },
         "annual_streams": { "type": "float" },
-        "historical_context": { "type": "text" },
+        "historical_context": { "type": "keyword" },
         "submission_metadata": {
           "properties": {
             "submitter_id": { 

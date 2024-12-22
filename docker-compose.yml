@@ -22,10 +22,8 @@ services:
     ports:
       - "9204:9204"
     volumes:
-      - ./configurationFiles/elasticsearchConfigs/correlation_index_template.json:/usr/share/elasticsearch/config/correlation_index_template.json
-      - ./configurationFiles/elasticsearchConfigs/mutation_index_template.json:/usr/share/elasticsearch/config/mutation_index_template.json
-      - ./configurationFiles/elasticsearchConfigs/mrna_index_template.json:/usr/share/elasticsearch/config/mrna_index_template.json
-      - ./configurationFiles/elasticsearchConfigs/protein_index_template.json:/usr/share/elasticsearch/config/protein_index_template.json
+      - ./configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
+      - ./configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
       - ./conductorScripts:/scripts
       - ./health:/health
     environment:
@@ -41,7 +39,7 @@ services:
               scripts/deployments/platform.sh
               ;;
             *)
-              echo "Invalid profile: $PROFILE. Available options are [platform, correlation, mutation]."
+              echo "Invalid profile: $PROFILE. Available options are [platform, composition, instrument]."
               exit 1
               ;;
           esac
@@ -113,15 +111,15 @@ services:
       - conductor-network
 
   # ======================================
-  # Arranger-Server Correlations
+  # Arranger-Server compositions
   # ======================================
   # Search API generation with compatible search UI components
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
   # --------------------------------------
-  arranger-correlation:
+  arranger-composition:
     profiles: ["platform"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.35
-    container_name: arranger-correlation
+    container_name: arranger-composition
     platform: linux/amd64
     depends_on:
       conductor:
@@ -129,11 +127,11 @@ services:
     ports:
       - "5050:5050"
     volumes:
-     - ./configurationFiles/arrangerConfigs/correlationConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/correlationConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/correlationConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/correlationConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/correlationConfigs/table.json:/app/modules/server/configs/table.json
+     - ./configurationFiles/arrangerConfigs/compositionConfigs/base.json:/app/modules/server/configs/base.json
+     - ./configurationFiles/arrangerConfigs/compositionConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./configurationFiles/arrangerConfigs/compositionConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./configurationFiles/arrangerConfigs/compositionConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./configurationFiles/arrangerConfigs/compositionConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5050
@@ -142,22 +140,22 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: correlation_arranger_set
+      ES_ARRANGER_SET_INDEX: composition_arranger_set
       DEBUG: true
     networks:
       - conductor-network
 
   # ======================================
-  # Arranger-Server Mutations
+  # Arranger-Server instruments
   # ======================================
   # Search API generation with compatible search UI components
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
   # Check logs on arranger server for manifest columns
   # --------------------------------------
-  arranger-mutation:
+  arranger-instrument:
     profiles: ["platform"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.35
-    container_name: arranger-mutation
+    container_name: arranger-instrument
     platform: linux/amd64
     depends_on:
       conductor:
@@ -165,11 +163,11 @@ services:
     ports:
       - "5051:5051"
     volumes:
-     - ./configurationFiles/arrangerConfigs/mutationConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/mutationConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/mutationConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/mutationConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/mutationConfigs/table.json:/app/modules/server/configs/table.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5051
@@ -178,77 +176,7 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: mutation_arranger_set
-      DEBUG: true
-    networks:
-      - conductor-network
-
-  # ======================================
-  # Arranger-Server MRNA
-  # ======================================
-  # Search API generation with compatible search UI components
-  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
-  # --------------------------------------
-  arranger-mrna:
-    profiles: ["platform"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.35
-    container_name: arranger-mrna
-    platform: linux/amd64
-    depends_on:
-      conductor:
-        condition: service_healthy
-    ports:
-      - "5052:5052"
-    volumes:
-     - ./configurationFiles/arrangerConfigs/mrnaConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/mrnaConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/mrnaConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/mrnaConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/mrnaConfigs/table.json:/app/modules/server/configs/table.json
-    environment:
-      # Arranger Variables
-      PORT: 5052
-      ENABLE_LOGS: false
-      # Elasticsearch Variables
-      ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: mrna_arranger_set
-      DEBUG: true
-    networks:
-      - conductor-network
-
-  # ======================================
-  # Arranger-Server protein
-  # ======================================
-  # Search API generation with compatible search UI components
-  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
-  # --------------------------------------
-  arranger-protein:
-    profiles: ["platform"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.35
-    container_name: arranger-protein
-    platform: linux/amd64
-    depends_on:
-      conductor:
-        condition: service_healthy
-    ports:
-      - "5053:5053"
-    volumes:
-     - ./configurationFiles/arrangerConfigs/proteinConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/proteinConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/proteinConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/proteinConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/proteinConfigs/table.json:/app/modules/server/configs/table.json
-    environment:
-      # Arranger Variables
-      PORT: 5053
-      ENABLE_LOGS: false
-      # Elasticsearch Variables
-      ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: protein_arranger_set
+      ES_ARRANGER_SET_INDEX: instrument_arranger_set
       DEBUG: true
     networks:
       - conductor-network
@@ -273,27 +201,19 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Drug Discovery POC
+      NEXT_PUBLIC_LAB_NAME: Prelude Portal
       NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
       NEXT_PUBLIC_DEBUG: true
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
-      # Correlation Arranger Variables
-      NEXT_PUBLIC_ARRANGER_CORRELATION_API: http://localhost:5050/graphql # Updated inline with nginx reverse proxy
-      NEXT_PUBLIC_ARRANGER_CORRELATION_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_CORRELATION_INDEX: correlation_centric
-      # Mutation Arranger Variables
-      NEXT_PUBLIC_ARRANGER_MUTATION_API: http://localhost:5051/graphql # Updated inline with nginx reverse proxy
-      NEXT_PUBLIC_ARRANGER_MUTATION_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_MUTATION_INDEX: mutation_centric
-      # MRNA Arranger Variables
-      NEXT_PUBLIC_ARRANGER_MRNA_API: http://localhost:5052/graphql # Updated inline with nginx reverse proxy
-      NEXT_PUBLIC_ARRANGER_MRNA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_MRNA_INDEX: mrna_centric
-      # protein Arranger Variables
-      NEXT_PUBLIC_ARRANGER_PROTEIN_API: http://localhost:5053/graphql # Updated inline with nginx reverse proxy
-      NEXT_PUBLIC_ARRANGER_PROTEIN_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_PROTEIN_INDEX: protein_centric
+      # Composition Arranger Variables
+      NEXT_PUBLIC_ARRANGER_COMPOSITION_API: http://localhost:5050/graphql # Updated inline with nginx reverse proxy
+      NEXT_PUBLIC_ARRANGER_COMPOSITION_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_COMPOSITION_INDEX: composition_centric
+      # Instrument Arranger Variables
+      NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: http://localhost:5051/graphql # Updated inline with nginx reverse proxy
+      NEXT_PUBLIC_ARRANGER_INSTRUMENT_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: instrument_centric
     networks:
       - conductor-network
 

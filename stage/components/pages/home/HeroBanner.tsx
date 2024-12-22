@@ -88,7 +88,7 @@ const HeroBanner = (): ReactElement => {
 						}
 					`}
 				>
-					Drug Discovery Data Portal
+					Prelude Data Portal
 					<p
 						css={css`
 							font-size: 18px;
@@ -101,7 +101,7 @@ const HeroBanner = (): ReactElement => {
 							}
 						`}
 					>
-						A comprehensive hub for drug discovery research data.
+						A comprehensive hub for Prelude research data.
 					</p>
 				</h2>
 			</section>

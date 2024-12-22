@@ -48,23 +48,13 @@ const categories: Record<string, Category> = {
 const products: Product[] = [
 	// Data Category
 	{
-		title: 'Correlation Data',
-		link: '/correlation',
+		title: 'Composition Data',
+		link: '/composition',
 		category: 'data',
 	},
 	{
-		title: 'Mutation Data',
-		link: '/mutation',
-		category: 'data',
-	},
-	{
-		title: 'mRNA Data',
-		link: '/mrna',
-		category: 'data',
-	},
-	{
-		title: 'Protein Interations Data',
-		link: '/protein',
+		title: 'Instrument Data',
+		link: '/instruments',
 		category: 'data',
 	},
 	// Documentation Category

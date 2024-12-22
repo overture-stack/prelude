@@ -1,13 +1,13 @@
-import Home from '../../components/pages/home';
+import Instrument from '../../components/pages/instrument';
 import { createPage } from '../../global/utils/pages';
 
-const HomePage = createPage({
+const InstrumentPage = createPage({
 	getInitialProps: async ({ query, egoJwt }) => {
 		return { query, egoJwt };
 	},
 	isPublic: true,
 })(() => {
-	return <Home />;
+	return <Instrument />;
 });
 
-export default HomePage;
+export default InstrumentPage;

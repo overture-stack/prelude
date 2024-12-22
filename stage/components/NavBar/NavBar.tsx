@@ -24,7 +24,7 @@ import { css, useTheme } from '@emotion/react';
 import { useRouter } from 'next/router';
 import cx from 'classnames';
 
-import { INTERNAL_PATHS, ROOT_PATH } from '../../global/utils/constants';
+import { INTERNAL_PATHS } from '../../global/utils/constants';
 import { InternalLink } from '../Link';
 import defaultTheme from '../theme';
 
@@ -79,12 +79,12 @@ const NavBar = (): ReactElement => {
 					>
 						<img
 							src={labIcon.src}
-							alt="Drug Discovery Logo"
+							alt="Prelude Logo"
 							css={css`
 								width: ${theme.dimensions.labIcon.width}px;
 								height: auto;
 								margin-left: 30px;
-								@media (max-width: 675px) {
+								@media (max-width: 425px) {
 									display: none;
 								}
 							`}
@@ -99,7 +99,7 @@ const NavBar = (): ReactElement => {
 								}
 							`}
 						>
-							Drug Discovery Portal
+							Prelude Development Portal
 						</span>
 					</a>
 				</InternalLink>
@@ -126,24 +126,14 @@ const NavBar = (): ReactElement => {
 					<Dropdown
 						css={linkStyles}
 						data={[
-							<InternalLink path={INTERNAL_PATHS.CORRELATION}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.CORRELATION) })}>
-									Correlation Data
+							<InternalLink path={INTERNAL_PATHS.COMPOSITION}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.COMPOSITION) })}>
+									Composition Data
 								</StyledListLink>
 							</InternalLink>,
-							<InternalLink path={INTERNAL_PATHS.MUTATION}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.MUTATION) })}>
-									Mutation Data
-								</StyledListLink>
-							</InternalLink>,
-							<InternalLink path={INTERNAL_PATHS.MRNA}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.MRNA) })}>
-									MRNA Data
-								</StyledListLink>
-							</InternalLink>,
-							<InternalLink path={INTERNAL_PATHS.PROTEIN}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.PROTEIN) })}>
-									Protein Data
+							<InternalLink path={INTERNAL_PATHS.INSTRUMENT}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.INSTRUMENT) })}>
+									Instrument Data
 								</StyledListLink>
 							</InternalLink>,
 						]}

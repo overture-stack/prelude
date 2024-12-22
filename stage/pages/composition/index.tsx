@@ -1,13 +1,13 @@
-import Home from '../../components/pages/home';
+import Correllation from '../../components/pages/composition';
 import { createPage } from '../../global/utils/pages';
 
-const HomePage = createPage({
+const CompositionPage = createPage({
 	getInitialProps: async ({ query, egoJwt }) => {
 		return { query, egoJwt };
 	},
 	isPublic: true,
 })(() => {
-	return <Home />;
+	return <Correllation />;
 });
 
-export default HomePage;
+export default CompositionPage;

@@ -1,0 +1,60 @@
+{
+	"extended": [
+	  {
+		"displayName": "Piece Title",
+		"fieldName": "piece_title"
+	  },
+	  {
+		"displayName": "Duration (minutes)",
+		"fieldName": "duration_minutes"
+	  },
+	  {
+		"displayName": "Audience Rating",
+		"fieldName": "audience_rating"
+	  },
+	  {
+		"displayName": "Is Mainstream",
+		"fieldName": "is_mainstream"
+	  },
+	  {
+		"displayName": "Year Composed",
+		"fieldName": "year_composed"
+	  },
+	  {
+		"displayName": "Annual Streams",
+		"fieldName": "annual_streams"
+	  },
+	  {
+		"displayName": "Historical Context",
+		"fieldName": "historical_context"
+	  },
+	  {
+		"displayName": "Submission ID",
+		"fieldName": "submission_metadata.submitter_id"
+	  },
+	  {
+		"displayName": "Processing Started",
+		"fieldName": "submission_metadata.processing_started"
+	  },
+	  {
+		"displayName": "Processed At",
+		"fieldName": "submission_metadata.processed_at"
+	  },
+	  {
+		"displayName": "Source File",
+		"fieldName": "submission_metadata.source_file"
+	  },
+	  {
+		"displayName": "Record Number",
+		"fieldName": "submission_metadata.record_number"
+	  },
+	  {
+		"displayName": "Hostname",
+		"fieldName": "submission_metadata.hostname"
+	  },
+	  {
+		"displayName": "Username",
+		"fieldName": "submission_metadata.username"
+	  }
+	]
+  }

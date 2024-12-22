@@ -15,7 +15,7 @@ const documentationSections: Section[] = [
 
 # Overview
 
-The platform's four-component architecture enables researchers to process and analyze large-scale drug discovery data through a unified portal. The backend ingests multi-gigabyte TSV files containing tabular data, while the frontend provides a highly available interface for querying, filtering, and exporting the aggregated data.
+The platform's four-component architecture enables researchers to process and analyze large-scale Prelude data through a unified portal. The backend ingests multi-gigabyte TSV files containing tabular data, while the frontend provides a highly available interface for querying, filtering, and exporting the aggregated data.
 
 <img src="/images/submissionsystem-Drug-Discovery.png" alt="System Architecture Diagram" title="System Architecture Diagram" />
 

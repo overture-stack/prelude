@@ -1,0 +1,55 @@
+{
+	"table": {
+	  "rowIdFieldName": "submission_metadata.submitter_id",
+	  "columns": [
+		{
+		  "canChangeShow": true,
+		  "fieldName": "submission_metadata.submitter_id",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "piece_title",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "duration_minutes",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "audience_rating",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "is_mainstream",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "year_composed",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "annual_streams",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "historical_context",
+		  "show": true,
+		  "sortable": false
+		}
+	  ]
+	}
+  }
