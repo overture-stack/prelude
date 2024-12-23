@@ -1,8 +1,6 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import { css } from '@emotion/react';
 import { marked } from 'marked';
-import defaultTheme from '../../theme';
-
 interface Section {
 	title: string;
 	content: string;
@@ -10,7 +8,7 @@ interface Section {
 
 const documentationSections: Section[] = [
 	{
-		title: 'Portal Overview',
+		title: 'Prelude Overview',
 		content: `
 
 # Overview
@@ -35,46 +33,113 @@ The platform's four-component architecture enables researchers to process and an
     `,
 	},
 	{
-		title: 'Submitting Data',
+		title: 'CSV to Elasticsearch Processor',
 		content: `
+# CSV-processor
 
-# Data Submission
+This is a command-line tool for efficiently processing and indexing CSV files into Elasticsearch. It allows you to quickly input flat files (csv files) into elasticsearch with progress tracking, batched processing, and detailed error reporting.
 
-To run the csv-processor, use this path until it's installed globally:
+## Features
 
-	/data/softeng/deployment/csv-processor/dist/main.js
+- 📊 Efficient CSV parsing with support for various delimiters
+- 🚀 Batch processing for optimal performance
+- 📈 Real-time progress tracking with ETA
+- 🔄 Configurable batch sizes
+- ⚠️ Detailed error reporting
+- 🔐 Elasticsearch authentication support
+- 🔍 Target index validation
+- 🧐 CSV Header Validation
+  - Checks for duplicate headers
+  - Validates header structure
+  - Verifies headers match the Elasticsearch index mapping
 
-### Basic Usage:
+## Prerequisites
 
-	csv-processor -f ./csv-processor/mrna.tsv -i mrna-index
+- Node.js (v14 or higher)
+- npm or yarn
+- Access to an Elasticsearch instance
 
-### Required Parameters:
+## Getting Started
 
-- <code>-f, --file</code>: Path to your TSV (tab-separated values) file
+Build the TypeScript code:
 
-### Optional Parameters:
+\`\`\`bash
+npm run build
+\`\`\`
 
-- <code>--url</code>: Elasticsearch URL (default: http://localhost:9200)
-- <code>-i, --index</code>: Name for the Elasticsearch index (default: correlation-index)
-- <code>-u, --user</code>: Elasticsearch username (default: elastic)
-- <code>-p, --password</code>: Elasticsearch password (default: myelasticpassword)
-- <code>-b, --batch-size</code>: Number of records to process in each batch (default: 10000)
+## Command Line Options
 
-### Example:
 
-	csv-processor -f ./data.tsv -i my-index -b 1000 -u elastic -p myelasticpassword
+| Option | Description | Default |
+|--------|-------------|---------|
+| \`-f, --file <path>\` | CSV file path (required) | - |
+| \`--url <url>\` | Elasticsearch URL | http://localhost:9200 |
+| \`-i, --index <name>\` | Elasticsearch index name | correlation-index |
+| \`-u, --user <username>\` | Elasticsearch username | elastic |
+| \`-p, --password <password>\` | Elasticsearch password | myelasticpassword |
+| \`-b, --batch-size <size>\` | Batch size for processing | 1000 |
+| \`-d, --delimiter <char>\` | CSV delimiter | , |
 
-## Features:
+## Processing Flow
 
-- Counts total records in your file
-- Displays and asks for header confirmation
-- Shows progress bar during processing
-- Provides real-time statistics:
-   - Processing speed
+1. The tool first counts total records in the CSV file
+2. Confirms headers with the user
+3. Processes records in configured batch sizes
+4. Sends batches to Elasticsearch using the bulk API
+5. Displays real-time progress with:
+   - Visual progress bar
+   - Completion percentage
+   - Records processed
+   - Elapsed time
    - Estimated time remaining
-- Displays completion summary with any failed records
+   - Processing rate
 
-**Note**: Your TSV file must have headers in the first row and be properly tab-separated.
+## Example Usage
+
+Basic usage with default settings:
+\`\`\`bash
+node csv-processor.js -f data.csv
+\`\`\`
+
+Custom Elasticsearch configuration:
+\`\`\`bash
+node csv-processor.js -f data.csv --url http://localhost:9200 -i my-index -u elastic -p mypassword
+\`\`\`
+
+Process a semicolon-delimited CSV with custom batch size:
+\`\`\`bash
+node csv-processor.js -f data.csv -d ";" -b 100
+\`\`\`
+
+## Performance Considerations
+
+- Adjust batch size based on record size and Elasticsearch performance
+- Larger batch sizes generally improve throughput but use more memory
+- Monitor Elasticsearch CPU and memory usage
+- Consider network latency when setting batch sizes
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. **Connection Errors**
+   - Verify Elasticsearch is running
+   - Check URL and port
+   - Confirm network connectivity
+
+2. **Authentication Failures**
+   - Verify username and password
+   - Check user permissions
+
+3. **Parse Errors**
+   - Verify CSV format
+   - Check delimiter setting
+   - Inspect file encoding
+
+4. **Memory Issues**
+   - Reduce batch size
+   - Ensure sufficient system resources
+   - Monitor Node.js memory usage
     `,
 	},
 	{
@@ -169,195 +234,333 @@ If you have any questions please don't hesitate to reach out through our <a href
 	},
 ];
 
+// Theme configuration
+const theme = {
+	colors: {
+		sidebar: '#f5f6f7',
+		primary: '#0B75A2',
+		text: '#1c1e21',
+		textSecondary: '#606770',
+		border: '#dadde1',
+		white: '#ffffff',
+		hover: 'rgba(0, 0, 0, 0.05)',
+	},
+	fonts: {
+		base: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif',
+		mono: 'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+	},
+};
+
 const styles = {
 	container: css`
-		padding: 2rem;
-		margin: 0 auto; // Centers the container
-		background-color: ${defaultTheme.colors.main};
-		max-width: 1200px;
 		width: 100%;
-
-		@media (max-width: 768px) {
-			padding: 2rem 1rem; // Reduce padding on smaller screens
-		}
+		background: ${theme.colors.white};
+		position: relative;
+		padding-bottom: 50px;
 	`,
 
 	contentWrapper: css`
-		width: 100%;
 		display: flex;
-		gap: 2rem;
-		max-width: 100%; // Ensure content doesn't overflow
+		width: 100%;
+		position: relative;
+		gap: 0;
 
 		@media (max-width: 768px) {
 			flex-direction: column;
 		}
 	`,
-	mainContent: css`
-		flex: 1;
-		min-width: 0;
-	`,
-	navWrapper: css`
-		width: 250px;
-		flex-shrink: 0;
-		height: fit-content;
+	sidebar: css`
+		width: 300px;
+		background: ${theme.colors.sidebar};
+		border-right: 1px solid ${theme.colors.border};
 		position: sticky;
-		top: 2rem;
+		top: 0;
+		height: calc(110vh - 70px);
+		overflow-y: auto;
+		z-index: 1;
+
+		.sidebar-title {
+			padding: 1.5rem 2rem;
+			margin: 0;
+			font-size: 1rem;
+			font-weight: 600;
+			color: ${theme.colors.primary};
+			border-bottom: 1px solid ${theme.colors.border};
+		}
 
 		@media (max-width: 768px) {
-			width: 100%;
 			position: relative;
-			top: 0;
+			width: 100%;
+			height: auto;
+			border-right: none;
+			border-bottom: 1px solid ${theme.colors.border};
+			padding: 0;
+
+			.sidebar-title {
+				padding: 1rem;
+			}
 		}
 	`,
-	navigation: css`
-		background-color: ${defaultTheme.colors.white};
-		padding: 1rem 2rem;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		border-radius: 0;
+
+	nav: css`
+		padding: 1rem 0;
 
 		ul {
 			list-style: none;
-			padding: 0;
+			padding: 0 1rem;
 			margin: 0;
+		}
 
-			@media (max-width: 768px) {
-				display: flex;
-				gap: 2rem;
+		li {
+			margin: 0.25rem 0;
+		}
+
+		a {
+			display: block;
+			padding: 0.5rem 1rem;
+			color: ${theme.colors.textSecondary};
+			text-decoration: none;
+			font-size: 0.875rem;
+			line-height: 1.4;
+			border-left: 2px solid transparent;
+			transition: all 0.2s;
+
+			&:hover {
+				color: ${theme.colors.primary};
+				background: ${theme.colors.hover};
 			}
 
-			@media (max-width: 600px) {
-				flex-direction: column;
-				gap: 1rem;
+			&.active {
+				color: ${theme.colors.primary};
+				border-left-color: ${theme.colors.primary};
+				background: ${theme.colors.hover};
+				font-weight: 500;
 			}
 		}
 
-		li a {
-			color: ${defaultTheme.colors.button};
-			text-decoration: none;
-			transition: 0.3s ease;
-			font-weight: 600;
-			display: block;
-			padding: 0.5rem 0;
+		@media (max-width: 768px) {
+			padding: 0.5rem;
 
-			&:hover {
-				text-decoration: none;
-				color: ${defaultTheme.colors.accent};
-				transition: 0.3s ease;
+			ul {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				padding: 0;
+			}
+
+			li {
+				margin: 0;
+				width: auto;
+			}
+
+			a {
+				padding: 0.5rem 1rem;
+				border: 1px solid ${theme.colors.border};
+				border-radius: 2rem;
+				white-space: nowrap;
+				border-left-width: 1px;
+
+				&.active {
+					border-color: ${theme.colors.primary};
+					background: ${theme.colors.hover};
+				}
 			}
 		}
 	`,
 
-	section: css`
-		background-color: ${defaultTheme.colors.white};
-		padding: 2rem;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		margin-bottom: 2rem;
+	main: css`
+		flex: 1;
+		padding: 2rem 3rem;
+		box-sizing: border-box;
 
-		h1 {
-			color: ${defaultTheme.colors.button};
-			font-size: 1.5rem;
-			font-weight: 900;
-			margin-bottom: 1.5rem;
+		@media (max-width: 1024px) {
+			padding: 2rem;
 		}
 
-		strong,
-		b {
-			font-weight: 900;
-			color: ${defaultTheme.colors.highlight};
+		@media (max-width: 768px) {
+			padding: 1rem;
+		}
+	`,
+
+	content: css`
+		max-width: 100%;
+
+		h1 {
+			font-size: 2rem;
+			font-weight: 700;
+			margin: 0 0 2rem;
+			padding-bottom: 1rem;
+			border-bottom: 1px solid ${theme.colors.border};
+
+			@media (max-width: 768px) {
+				font-size: 1.75rem;
+				margin: 0 0 1.5rem;
+			}
 		}
 
 		h2 {
-			font-size: 1.2rem;
-			font-weight: 900;
+			font-size: 1.5rem;
+			font-weight: 600;
+			margin: 2rem 0 1rem;
+
+			@media (max-width: 768px) {
+				font-size: 1.25rem;
+			}
+		}
+
+		h3 {
+			font-size: 1.25rem;
+			font-weight: 600;
 			margin: 1.5rem 0 1rem;
-			padding-bottom: 0.5rem;
-			border-bottom: 1px solid ${defaultTheme.colors.main}20;
 		}
 
 		p {
 			font-size: 1rem;
+			line-height: 1.7;
 			margin: 1rem 0;
-			line-height: 1.6;
-			color: ${defaultTheme.colors.black};
 		}
 
-		ul,
-		ol {
-			padding-left: 1.5rem;
-
-			li {
-				margin: 0.5rem 0;
-			}
-		}
-
-		code {
-			background: ${defaultTheme.colors.main};
-			padding: 0.2rem 0.4rem;
-			border-radius: 3px;
-			font-size: 0.9em;
-			color: ${defaultTheme.colors.button};
-			font-family: monospace;
+		li {
+			line-height: 1.7;
 		}
 
 		a {
-			color: ${defaultTheme.colors.hero};
 			font-weight: 900;
+			color: ${theme.colors.primary};
 			text-decoration: none;
-			transition: 0.3s ease;
 
-			&:hover {
-				color: ${defaultTheme.colors.accent};
-				transition: 0.3s ease;
+			&.hover {
+				color: ${theme.colors.textSecondary};
+			}
+		}
+
+		b {
+			font-weight: 900;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 1rem 0;
+			font-size: 0.875rem;
+			display: block;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+
+			th {
+				background: ${theme.colors.sidebar};
+				font-weight: 600;
+				text-align: left;
+				white-space: nowrap;
+			}
+
+			th,
+			td {
+				padding: 0.75rem;
+				border: 1px solid ${theme.colors.border};
+			}
+
+			@media (max-width: 768px) {
+				font-size: 0.8125rem;
+
+				th,
+				td {
+					padding: 0.5rem;
+				}
 			}
 		}
 
 		img {
-			width: 90%;
-			max-width: 800px;
+			max-width: 100%;
 			height: auto;
-			margin: 2rem auto;
-			border-radius: 6px;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			display: block;
-
-			@media (max-width: 1024px) {
-				width: 95%;
-				padding: 0.75rem;
-			}
+			margin: 1.5rem 0;
+			border-radius: 0.5rem;
+			border: 1px solid ${theme.colors.border};
 
 			@media (max-width: 768px) {
-				width: 100%;
-				padding: 0.5rem;
+				margin: 1rem 0;
 			}
+		}
+
+		pre {
+			margin: 1rem -1rem;
+			padding: 1rem;
+			background: ${theme.colors.sidebar};
+			border-radius: 0.5rem;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+
+			@media (max-width: 768px) {
+				border-radius: 0;
+			}
+
+			code {
+				background: none;
+				padding: 0;
+				font-size: 0.875rem;
+				color: ${theme.colors.text};
+			}
+		}
+
+		code {
+			background: ${theme.colors.sidebar};
+			padding: 0.2rem 0.4rem;
+			border-radius: 0.3rem;
+			font-size: 0.875em;
+			font-family: ${theme.fonts.mono};
+			color: ${theme.colors.text};
 		}
 	`,
 };
 
 const Documentation = (): ReactElement => {
+	const [activeHash, setActiveHash] = useState<string>('');
+	const [isClient, setIsClient] = useState(false);
+
+	useEffect(() => {
+		setIsClient(true);
+		setActiveHash(window.location.hash);
+
+		const handleHashChange = () => {
+			setActiveHash(window.location.hash);
+		};
+
+		window.addEventListener('hashchange', handleHashChange);
+		return () => {
+			window.removeEventListener('hashchange', handleHashChange);
+		};
+	}, []);
+
 	return (
-		<section css={styles.container}>
+		<div css={styles.container}>
 			<div css={styles.contentWrapper}>
-				<div css={styles.navWrapper}>
-					<nav css={styles.navigation}>
+				<aside css={styles.sidebar}>
+					<h2 className="sidebar-title">Documentation</h2>
+					<nav css={styles.nav}>
 						<ul>
-							{documentationSections.map((section, index) => (
-								<li key={index}>
-									<a href={`#${section.title.toLowerCase().replace(/\s+/g, '-')}`}>{section.title}</a>
-								</li>
-							))}
+							{documentationSections.map((section, index) => {
+								const sectionId = section.title.toLowerCase().replace(/\s+/g, '-');
+								return (
+									<li key={index}>
+										<a href={`#${sectionId}`} className={isClient && activeHash === `#${sectionId}` ? 'active' : ''}>
+											{section.title}
+										</a>
+									</li>
+								);
+							})}
 						</ul>
 					</nav>
-				</div>
+				</aside>
 
-				<div css={styles.mainContent}>
+				<main css={styles.main}>
 					{documentationSections.map((section, index) => (
-						<section key={index} css={styles.section} id={section.title.toLowerCase().replace(/\s+/g, '-')}>
+						<article key={index} css={styles.content} id={section.title.toLowerCase().replace(/\s+/g, '-')}>
 							<div dangerouslySetInnerHTML={{ __html: marked(section.content) }} />
-						</section>
+						</article>
 					))}
-				</div>
+				</main>
 			</div>
-		</section>
+		</div>
 	);
 };
 

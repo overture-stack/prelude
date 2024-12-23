@@ -1,6 +1,6 @@
-# Drug Discovery Project
+# Prelude - Early Release
 
-This repository contains the data and infrastructure for the Overture-Drug Discovery Data Portal.
+Rapid development and deployment of proof-of-concept portals.
 
 ## Running the portal
 
@@ -18,14 +18,14 @@ This repository contains the data and infrastructure for the Overture-Drug Disco
 **2. Clone the repo branch**
 
 ```
-git clone https://github.com/oicr-softeng/drug_discovery-ui.git
+git clone -b prelude https://github.com/overture-stack/conductor.git
 ```
 
 **3. Build a Stage image from its dockerfile**
 
 ```
 cd stage
-docker build -t multi-arranger-stage:2.0 .
+docker build -t multi-stage:3.0 .
 ```
 
 **4. Run one of the following commands from the root of the repository:**
@@ -36,12 +36,12 @@ docker build -t multi-arranger-stage:2.0 .
 
 Following startup front end portal will be available at your `localhost:3000`
 
-**3. You can also run any of the following helper commands:**
+**You can also run any of the following helper commands:**
 
 | Description | Unix/macOS | Windows | 
 |-------------|------------|---------|
 | Shuts down all containers | `make down` | `./make.bat down` | 
-| Removes all persistent Elasticsearch volumes | `make clean` | `./make.bat clean` | 
+| Shuts down all containers & removes all persistent Elasticsearch volumes | `make clean` | `./make.bat clean` | 
 
 # CSV to Elasticsearch Processor
 
@@ -69,42 +69,47 @@ A Node.js command-line tool for efficiently processing and indexing CSV files in
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone [repository-url]
-cd csv-processor
-```
+1. Navigate to the CSV-processor directory and install the dependencies:
 
-2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Build the TypeScript code:
+2. Build the TypeScript code:
+
 ```bash
 npm run build
 ```
 
-## Required Dependencies
+3. Optionally, you can install the utility globally
 
-```json
-{
-  "dependencies": {
-    "@elastic/elasticsearch": "^7.17.14",
-    "@types/chalk": "^0.4.31",
-    "@types/node": "^22.9.3",
-    "chalk": "^4.1.2",
-    "commander": "^12.1.0",
-    "csv-parse": "^5.6.0",
-    "ts-node": "^10.9.2"
-  },
-  "devDependencies": {
-    "typescript": "^5.7.2"
-  }
-}
+```bash
+npm install -g .
 ```
 
-## Usage
+## Uploading our mock data set
+
+The `sampleData` folder contains various sample data files for testing purposes. To upload the pre-configured mock datasets run the following commands.
+
+```
+csv-processor -f ./sampleData/compositions.csv -i composition-index -b 100
+```
+
+```
+csv-processor -f ./sampleData/instruments.csv -i instrument-index -b 100
+```
+
+If not installed globally run the following from the `dist` directory within the `csv-processor` folder following the build.
+
+```
+ ./main.js -f ../../sampleData/compositions.csv -i composition-index -b
+```
+
+```
+ ./main.js -f ../../sampleData/instruments.csv -i instrument-index -b
+```
+
+## General Usage
 
 The basic command structure is:
 
@@ -141,45 +146,7 @@ Process a semicolon-delimited CSV with custom batch size:
 node csv-processor.js -f data.csv -d ";" -b 100
 ```
 
-## Repo Structure
-
-```
-src/
-├── types/
-│   └── index.ts           # Type definitions (Record, SubmissionMetadata interfaces)
-├── utils/
-│   ├── cli.ts            # CLI setup and configuration
-│   ├── elasticsearch.ts   # Elasticsearch client and operations
-│   ├── formatting.ts      # Progress bar, duration formatting, etc.
-│   └── csv.ts            # CSV parsing and processing utilities
-├── services/
-│   ├── processor.ts      # Main CSV to Doc processing logic
-│   └── validator.ts      # Config, index and data validation and checking
-└── main.ts               # Entry point, brings everything together
-```
-
-## Processing Flow
-
-1. The tool first counts total records in the CSV file
-2. Confirms headers with the user
-3. Processes records in configured batch sizes
-4. Sends batches to Elasticsearch using the bulk API
-5. Displays real-time progress with:
-   - Visual progress bar
-   - Completion percentage
-   - Records processed
-   - Elapsed time
-   - Estimated time remaining
-   - Processing rate
-
-## Error Handling
-
-- Failed records are tracked and reported
-- Detailed error logging for debugging
-- Bulk processing continues even if individual records fail
-- Summary of failed records provided at completion
-
-## Output Format
+## Expected Output
 
 The tool provides colorized console output including:
 
@@ -197,33 +164,3 @@ Total records to process: 1000
 
 [████████████░░░░░░░░░░] 50% | 500/1000 | ⏱ 0h 1m 30s | 🏁 1m 30s | ⚡1000 rows/sec
 ```
-
-## Performance Considerations
-
-- Adjust batch size based on record size and Elasticsearch performance
-- Larger batch sizes generally improve throughput but use more memory
-- Monitor Elasticsearch CPU and memory usage
-- Consider network latency when setting batch sizes
-
-## Troubleshooting
-
-Common issues and solutions:
-
-1. **Connection Errors**
-   - Verify Elasticsearch is running
-   - Check URL and port
-   - Confirm network connectivity
-
-2. **Authentication Failures**
-   - Verify username and password
-   - Check user permissions
-
-3. **Parse Errors**
-   - Verify CSV format
-   - Check delimiter setting
-   - Inspect file encoding
-
-4. **Memory Issues**
-   - Reduce batch size
-   - Ensure sufficient system resources
-   - Monitor Node.js memory usage

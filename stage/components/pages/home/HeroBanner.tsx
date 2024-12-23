@@ -88,22 +88,22 @@ const HeroBanner = (): ReactElement => {
 						}
 					`}
 				>
-					Prelude Data Portal
-					<p
-						css={css`
-							font-size: 18px;
-							line-height: 1.5;
-							max-width: 800px;
-							margin-top: 10px; /* Add specific margin here */
-
-							@media (min-width: 1345px) {
-								font-size: 20px;
-							}
-						`}
-					>
-						A comprehensive hub for Prelude research data.
-					</p>
+					The Prelude Development Portal
 				</h2>
+				<p
+					css={css`
+						font-size: 14px;
+						line-height: 1.5;
+						max-width: 800px;
+						margin-top: 10px; /* Add specific margin here */
+
+						@media (min-width: 1345px) {
+							font-size: 20px;
+						}
+					`}
+				>
+					Rapid development and deployment of proof-of-concept portals.
+				</p>
 			</section>
 		</article>
 	);

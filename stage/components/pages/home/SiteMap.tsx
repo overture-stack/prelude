@@ -37,34 +37,35 @@ interface Category {
 const categories: Record<string, Category> = {
 	data: {
 		title: 'Explore The Data',
-		description: 'The central place to filter, download & share our data.',
+		description: 'Two data table examples populated with mock data.',
 	},
 	documentation: {
 		title: 'Documentation',
-		description: 'Documentation covering basic platform usage.',
+		description:
+			'Documentation covering basic platform usage, configuration and customization, this will be expanded on in the near future.',
 	},
 };
 
 const products: Product[] = [
 	// Data Category
 	{
-		title: 'Composition Data',
+		title: 'Example Composition Data',
 		link: '/composition',
 		category: 'data',
 	},
 	{
-		title: 'Instrument Data',
+		title: 'Example Instrument Data',
 		link: '/instruments',
 		category: 'data',
 	},
 	// Documentation Category
 	{
-		title: 'Data Submission',
+		title: 'Data submission',
 		link: '/documentation',
 		category: 'documentation',
 	},
 	{
-		title: 'Portal Customization',
+		title: 'Configuring the data explorer',
 		link: 'https://docs.overture.bio/guides/administration-guides/customizing-the-data-portal',
 		category: 'documentation',
 	},

@@ -20,10 +20,10 @@
  */
 
 const home = {
-	hero: '#50852a',
-	main: '#f0f1f3',
-	button: '#50852a',
-	highlight: '#D65D0E',
+	hero: '#0B75A2',
+	main: '#F2F5F8',
+	button: '#0B75A2',
+	highlight: '#04518C',
 }
 
 const base = {
@@ -49,7 +49,7 @@ const base = {
   };
   
   const accent = {
-	accent: '#65bc45',
+	accent: '#0B75A2',
 	accent_light: '#afd9ef',
 	accent_dark: '#151c3d',
 	accent_light_rgb: '175, 217, 239',
