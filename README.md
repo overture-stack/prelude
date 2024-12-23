@@ -6,9 +6,9 @@ Rapid development and deployment of proof-of-concept portals.
 
 Prelude serves as a lightweight proof-of-concept platform, designed to streamline early-stage portal development before committing to full infrastructure deployment. While maintaining essential functionality for data exploration, it minimizes deployment complexity. This approach allows teams to validate their portal requirements and user workflows before transitioning to a more robust production architecture with complete database integration, object storage, and comprehensive API services.
 
-![Complete Arch](./complete-architecture.png)
+Prelude's architecture serves as a foundation for future expansion, offering a clearer path to scale into the full production system outlined below while preserving your initial development work.
 
-Prelude's architecture serves as a foundation for future expansion, offering a clearer path to scale into the full production system outlined above while preserving your initial development work.
+![Complete Arch](./complete-architecture.png)
 
 ## Repository Structure
 
