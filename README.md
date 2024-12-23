@@ -2,6 +2,44 @@
 
 Rapid development and deployment of proof-of-concept portals.
 
+![Prelude Arch](./prelude.png)
+
+Prelude serves as a lightweight proof-of-concept platform, designed to streamline early-stage portal development before committing to full infrastructure deployment. While maintaining essential functionality for data exploration, it minimizes deployment complexity. This approach allows teams to validate their portal requirements and user workflows before transitioning to a more robust production architecture with complete database integration, object storage, and comprehensive API services.
+
+![Complete Arch](./complete-architecture.png)
+
+Prelude's architecture serves as a foundation for future expansion, offering a clearer path to scale into the full production system outlined above while preserving your initial development work.
+
+## Repository Structure
+
+```
+.
+├── Makefile
+├── make.bat
+├── README.md
+├── conductorScripts/ # Scripts that run on startup with the docker compose
+├── configurationFiles/ # Elasticsearch mappings, Arranger configs, and nginx configs for server deployments
+├── csv-processor/ # Data processing module for CSV ingestion and transformation
+├── docker-compose.yml
+├── sampleData/ # Sample and test data for development and testing
+├── stage/ # Front-end UI Scaffolding and React components
+└── volumes/ # Local persistent volumes for elasticsearch and data storage
+```
+
+Each directory serves a specific purpose:
+
+- `conductorScripts/` contains initialization and startup scripts that execute when the Docker containers are launched, handling necessary setup and configuration tasks.
+   - Note: Service scripts in this directory require updates when modifying index template names to maintain system functionality
+- `configurationFiles/` houses essential configuration files for Elasticsearch mappings, Arranger configs, and optional nginx server configurations for production deployments
+   - For more information on these configuration files see our docs on [index mappings](https://docs.overture.bio/guides/administration-guides/index-mappings) and [customizing the data portal](https://docs.overture.bio/guides/administration-guides/customizing-the-data-portal) 
+- `csv-processor/` A relatively ligthwieght command-line tool for processing and uploading CSV files into Elasticsearch. It has basic data validation, error handling and submitter metadata automation to help facilitate data submission for this proof of concept setup.
+- `sampleData/` provides test datasets and example files for development, testing, and demonstration purposes
+- `stage/` contains the front-end application code, including React components, styles, and UI logic
+   - Note working on this has highlighted a gap in our docs on editing and customizing stage (the front-end UI), it is essentially just a react based single page app however I will work in the new year on updating our docs with clarifications and guides on the repo structure and how to configure and work with it. 
+- `volumes/` maintains persistent storage for Elasticsearch data, ensuring data persistence between container restarts
+- `Makefile` and `make.bat` provide build and deployment automation for Unix and Windows systems respectively
+- `docker-compose.yml` defines the multi-container Docker application configuration
+
 ## Running the portal
 
 1. **Set Up Docker:** Install or update to Docker Desktop version 4.32.0 or higher. Visit [Docker's website](https://www.docker.com/products/docker-desktop/) for installation details.
@@ -28,6 +66,8 @@ cd stage
 docker build -t multi-stage:3.0 .
 ```
 
+Any edits made to the stage folder can be built and deployed locally using this docker compose setup.
+
 **4. Run one of the following commands from the root of the repository:**
 
 | Environment | Unix/macOS | Windows |
@@ -45,7 +85,7 @@ Following startup front end portal will be available at your `localhost:3000`
 
 # CSV to Elasticsearch Processor
 
-A Node.js command-line tool for efficiently processing and indexing CSV files into Elasticsearch. This tool features progress tracking, batched processing, and detailed error reporting.
+A Node.js command-line tool made for the prelude architecture as a simple utility for processing and uploading CSV files into Elasticsearch.
 
 ## Features
 
@@ -148,19 +188,76 @@ node csv-processor.js -f data.csv -d ";" -b 100
 
 ## Expected Output
 
-The tool provides colorized console output including:
+```
+➜ csv-processor -f ./sampleData/instruments.csv -i instrument-index -b 50
+
+=============================================
+      CSV Processor Starting... 🚀
+=============================================
+
+✓ File './sampleData/instruments.csv' is valid and readable.
+
+✓ Connection to Elasticsearch successful.
+
+✓ 'instrument-index' exists and is valid.
+
+✓ CSV header structure is valid.
+
+✓ All headers validated against the index mapping
+
+🧮 Calculating records to upload
+
+📊 Total records to process: 100
+
+🚀 Starting transfer to elasticsearch...
+
+██████████████████████████████ 100.0% 100.00% | 100/100 | ⏱ 0h 0m 0s | 🏁 0h 0m 0s | ⚡211 rows/sec
+
+✓ Processing complete!
+
+Total records processed: 100
+Total time: 0h 0m 0s
 
 ```
-Total records to process: 1000
 
-📋 Processing Configuration:
-├─ 📁 File: data.csv
-├─ 🔍 Index: my-index
-└─ 📝 Delimiter: ,
+## Error Logging
 
-📑 Headers: id, name, value
+The CSV-Processor has decently robust error handling
 
-🚀 Starting data processing and indexing...
-
-[████████████░░░░░░░░░░] 50% | 500/1000 | ⏱ 0h 1m 30s | 🏁 1m 30s | ⚡1000 rows/sec
 ```
+➜ csv-processor -f ./sampleData/mismatched_headers.csv -i instrument-index -b 50
+
+=============================================
+      CSV Processor Starting... 🚀
+=============================================
+
+✓ File './sampleData/mismatched_headers.csv' is valid and readable.
+
+✓ Connection to Elasticsearch successful.
+
+✓ 'instrument-index' exists and is valid.
+
+✓ CSV header structure is valid.
+
+
+❌ Header/Field Mismatch Detected:
+
+CSV headers:
+
+✗ instrument_id
+✓ instrument_name
+✓ origin_country
+✓ instrument_type
+✓ historical_significance
+✓ average_price
+✓ primary_materials
+✓ complexity_rating
+✗ famous_musicians
+✓ unique_characteristics
+
+Unexpected headers in CSV:
+
+✗ instrument_id
+✗ famous_musicians
+```
+

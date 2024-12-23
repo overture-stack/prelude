@@ -60,13 +60,13 @@ const products: Product[] = [
 	},
 	// Documentation Category
 	{
-		title: 'Data submission',
+		title: 'Prelude Early Release Docs',
 		link: '/documentation',
 		category: 'documentation',
 	},
 	{
-		title: 'Configuring the data explorer',
-		link: 'https://docs.overture.bio/guides/administration-guides/customizing-the-data-portal',
+		title: 'Overture Docs',
+		link: 'https://docs.overture.bio/',
 		category: 'documentation',
 	},
 ];

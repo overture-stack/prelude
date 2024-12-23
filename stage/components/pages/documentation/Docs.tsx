@@ -8,18 +8,18 @@ interface Section {
 
 const documentationSections: Section[] = [
 	{
-		title: 'Prelude Overview',
+		title: 'Prelude Early Release',
 		content: `
 
 # Overview
 
-The platform's four-component architecture enables researchers to process and analyze large-scale Prelude data through a unified portal. The backend ingests multi-gigabyte TSV files containing tabular data, while the frontend provides a highly available interface for querying, filtering, and exporting the aggregated data.
+Prelude serves as a lightweight proof-of-concept platform, designed to streamline early-stage portal development before committing to full infrastructure deployment. While maintaining essential functionality for data exploration, it minimizes deployment complexity. This approach allows teams to validate their portal requirements and user workflows before transitioning to a more robust production architecture with complete database integration, object storage, and comprehensive API services.
 
-<img src="/images/submissionsystem-Drug-Discovery.png" alt="System Architecture Diagram" title="System Architecture Diagram" />
+<img src="/images/prelude.png" alt="System Architecture Diagram" title="System Architecture Diagram" />
 
 ## Key Components
 
-- The **Data Ingestion Utility** is used to submit data in the form of TSVs to any Elasticsearch index through the command-line.
+- The **CSV Processor** is used to submit data in the form of CSVs to any Elasticsearch index through the command-line.
 
 - **Elasticsearch** powers the platform's core search engine functionality.
 
@@ -29,7 +29,6 @@ The platform's four-component architecture enables researchers to process and an
 
 - **Arranger Components** are the react components responsible for our interactive search UIs found on the exploration pages, these components communicate with the Arranger Server to fetch and display data.
 
-<a href="https://github.com/oicr-softeng/drug_discovery-ui/" target="_blank" rel="noopener">The repository for the portal can be found on GitHub here</a>, If you require access to the repository please contact the administrator of the platform.
     `,
 	},
 	{
@@ -74,7 +73,7 @@ npm run build
 |--------|-------------|---------|
 | \`-f, --file <path>\` | CSV file path (required) | - |
 | \`--url <url>\` | Elasticsearch URL | http://localhost:9200 |
-| \`-i, --index <name>\` | Elasticsearch index name | correlation-index |
+| \`-i, --index <name>\` | Elasticsearch index name | - |
 | \`-u, --user <username>\` | Elasticsearch username | elastic |
 | \`-p, --password <password>\` | Elasticsearch password | myelasticpassword |
 | \`-b, --batch-size <size>\` | Batch size for processing | 1000 |
@@ -83,16 +82,82 @@ npm run build
 ## Processing Flow
 
 1. The tool first counts total records in the CSV file
-2. Confirms headers with the user
+2. Validates that the CSV is valid and is compatible with the index mapping in elasticsearch
 3. Processes records in configured batch sizes
 4. Sends batches to Elasticsearch using the bulk API
-5. Displays real-time progress with:
-   - Visual progress bar
-   - Completion percentage
-   - Records processed
-   - Elapsed time
-   - Estimated time remaining
-   - Processing rate
+5. All while displaying real-time progress with a visual progress bar and performance metrics
+
+\`\`\`bash
+➜ csv-processor -f ./sampleData/instruments.csv -i instrument-index -b 50
+
+=============================================
+      CSV Processor Starting... 🚀
+=============================================
+
+✓ File './sampleData/instruments.csv' is valid and readable.
+
+✓ Connection to Elasticsearch successful.
+
+✓ 'instrument-index' exists and is valid.
+
+✓ CSV header structure is valid.
+
+✓ All headers validated against the index mapping
+
+🧮 Calculating records to upload
+
+📊 Total records to process: 100
+
+🚀 Starting transfer to elasticsearch...
+
+██████████████████████████████ 100.0% 100.00% | 100/100 | ⏱ 0h 0m 0s | 🏁 0h 0m 0s | ⚡211 rows/sec
+
+✓ Processing complete!
+
+Total records processed: 100
+Total time: 0h 0m 0s
+
+\`\`\`
+
+## Error Logging
+
+\`\`\`bash
+➜ csv-processor -f ./sampleData/mismatched_headers.csv -i instrument-index -b 50
+
+=============================================
+      CSV Processor Starting... 🚀
+=============================================
+
+✓ File './sampleData/mismatched_headers.csv' is valid and readable.
+
+✓ Connection to Elasticsearch successful.
+
+✓ 'instrument-index' exists and is valid.
+
+✓ CSV header structure is valid.
+
+
+❌ Header/Field Mismatch Detected:
+
+CSV headers:
+
+✗ instrument_id
+✓ instrument_name
+✓ origin_country
+✓ instrument_type
+✓ historical_significance
+✓ average_price
+✓ primary_materials
+✓ complexity_rating
+✗ famous_musicians
+✓ unique_characteristics
+
+Unexpected headers in CSV:
+
+✗ instrument_id
+✗ famous_musicians
+\`\`\`
+
 
 ## Example Usage
 
@@ -143,50 +208,6 @@ Common issues and solutions:
     `,
 	},
 	{
-		title: 'Deployment Folder',
-		content: `
-
-# Deployment Folder
-
-All files used to run the platform are locatd at the following directory: 
-
-	/data/softeng/deployment/
-
-## Directory Structure:
-
-- **conductorScripts/**: Scripts for orchestrating the deployment process.
-    - **deployments/:** Scripts that execute service scripts sequentially based on the deployment configuration. These also include custom post-deployment logs with essential next steps for the deployment scenario.
-    - **services/:** Modular scripts for individual service setup tasks. Each file is named according to its purpose, with inline comments documenting the code.
-
-- **configurationFiles/** Stores all required configuration files, including:
-    - **arrangerConfigs/** Configuration files specific to Arranger.
-    - **elasticsearchConfigs/** indexing mapping configurations for Elasticsearch 
-
-- **Makefile:** A set of simplified commands that run complex Docker operations on Unix systems (macOS, Linux).
-
-- **sampleData:** A directory containing TSV files with 500 sample records each. Each file is named after its corresponding table.
-
-- **csv-processor:** A TypeScript utility that processes TSV files and uploads their data to Elasticsearch.
-
-## Starting up and spinning down the application
-
-Automated deployments are managed through our conductor utility. All make commands need to be run from within the <code>/data/softeng/deployment/</code> folder. 
-
-The following make commands are available to simplify interactions:
-
-**make platform**  
-Spins up the application
-
-**make down**  
-Spins down the application
-
-**make clean**  
-Deletes the persistent Elasticsearch volume *(Warning: this action cannot be undone)*
-
-
-    `,
-	},
-	{
 		title: 'Customizing the Portal',
 		content: `
 
@@ -198,28 +219,23 @@ Review these essential configuration guides for portal customization:
 
 - <a href="https://docs.overture.bio/guides/administration-guides/index-mappings" target="_blank" rel="noopener">Search Portal Customization</a>: Learn how to customize how data is displayed in your front-end data facets and table components
 
+- Note working on this has highlighted a gap in our docs on editing and customizing stage (Everything on the front end with exceptions to Arrangers data exploration components), it is essentially just a react based single page app however I will work in the new year on updating our docs with clarifications and guides on the repo structure and how to configure and work with it. 
+
     `,
 	},
 	{
-		title: 'Next Steps',
+		title: 'Full Architecture',
 		content: `
-		
-# Next Steps
 
-As part of the Pan-Canadian Genome Library project we are currently working on releasing a robust new data submission system, specifically designed to manage tabular data management. For details, see our <a href="https://docs.overture.bio/docs/und" target="_blank" rel="noopener">relevant documentation linked here</a>.
+# Full Architecture
+
+Prelude's architecture serves as a foundation for future expansion, offering a clearer path to scale into the full production system outlined below while preserving your initial development work. 
 
 <img src="/images/submissionsystem-2.png" alt="New Submission System Architecture Diagram" title="New Submission System Architecture Diagram" />
-		`,
-	},
-	{
-		title: 'Developer Note',
-		content: `
 
-# Developer Note
-
-Documentation on the software used and customized for this project can be found from the <a href="https://github.com/oicr-softeng/drug_discovery-ui/" target="_blank" rel="noopener">github repositories readme</a>. All customized utilities and components are outlined and further documented with inline comments.
-
-	`,
+- Information about our complete software suite can be found from out docs site at https://docs.overture.bio/.
+- <a href="https://github.com/overture-stack/conductor/tree/prelude" target="_blank" rel="noopener">The repository for the portal can be found on GitHub here</a>
+    `,
 	},
 	{
 		title: 'Support',
