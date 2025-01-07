@@ -16,7 +16,7 @@ rs scripts/services/healthcheckCleanup.sh
 # Wait a bit for Elasticsearch 
 echo -e "\033[1;36mElasticsearch:\033[0m Starting up (this may take a few minutes)"
 until curl -s -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/_cluster/health" > /dev/null; do
-    echo -e "\033[1;36mElasticsearch:\033[0m Not yewt reachable, checking again in 30 seconds"
+    echo -e "\033[1;36mElasticsearch:\033[0m Not yet reachable, checking again in 30 seconds"
     sleep 30
 done
 echo -e "\033[1;32mSuccess:\033[0m Elasticsearch is reachable"
