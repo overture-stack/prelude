@@ -62,6 +62,10 @@ rs /scripts/services/arrangerCheck.sh
 echo -e "\033[1;35m[8/9]\033[0m Checking Maestro" 
 rs /scripts/services/maestroCheck.sh
 
+# Check Keycloak
+echo -e "\033[1;35m[9/9]\033[0m Checking Keycloak"
+rs /scripts/services/keycloakCheck.sh
+
 # Remove Health Check File 
 rm /health/conductor_health
 

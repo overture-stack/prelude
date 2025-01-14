@@ -10,8 +10,8 @@ clean:
 	@echo "Stopping related containers..."
 	PROFILE=platform docker compose --profile platform down
 	@echo "Cleaning up Elasticsearch volumes..."
-	-rm -rf ./volumes/es-data/nodes 2>/dev/null || true
-	-find ./volumes/es-logs -type f ! -name 'logs.txt' -delete 2>/dev/null || true
-	-docker volume rm -f deployment_elasticsearch-data 2>/dev/null || true
-	-docker volume rm -f deployment_elasticsearch-logs 2>/dev/null || true
+	-rm -rf ./persistentStorage/es-volumes/es-data/nodes 2>/dev/null || true
+	-find ./persistentStorage/es-volumes/es-logs -type f ! -name 'logs.txt' -delete 2>/dev/null || true
+	-docker volume rm -f conductor_elasticsearch-data 2>/dev/null || true
+	-docker volume rm -f conductor_elasticsearch-logs 2>/dev/null || true
 	@echo "Cleanup completed!"
