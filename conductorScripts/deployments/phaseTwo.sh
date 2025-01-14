@@ -14,20 +14,20 @@ rs() {
 rs scripts/services/healthcheckCleanup.sh
 
 # Database Setups
-echo -e "\033[1;35m[1/9]\033[0m Setting up Song & Keycloak databases"
+echo -e "\033[1;35m[2/12]\033[0m Setting up Song & Keycloak databases"
 rs /scripts/services/songDbSetup.sh
 rs /scripts/services/keycloakDbSetup.sh
 
 # Minio Check
-echo -e "\033[1;35m[2/9]\033[0m Checking Minio Object Storage"
+echo -e "\033[1;35m[3/12]\033[0m Checking Minio Object Storage"
 rs /scripts/services/minioCheck.sh
 
 # Score Setup
-echo -e "\033[1;35m[3/9]\033[0m Checking on Score"
+echo -e "\033[1;35m[4/12]\033[0m Checking on Score"
 rs /scripts/services/scoreCheck.sh
 
 # Song Setup
-echo -e "\033[1;35m[4/9]\033[0m Checking on Song"
+echo -e "\033[1;35m[5/12]\033[0m Checking on Song"
 rs /scripts/services/songCheck.sh
 
 # Wait a bit for Elasticsearch 
@@ -39,11 +39,11 @@ done
 echo -e "\033[1;32mSuccess:\033[0m Elasticsearch is reachable"
 
 # Elasticsearch (Comp) Setup
-echo -e "\033[1;35m[1/4]\033[0m Setting up Composition Data in Elasticsearch"
+echo -e "\033[1;35m[6/12]\033[0m Setting up Composition Data in Elasticsearch"
 rs /scripts/services/elasticsearchSetupCompositionData.sh
 
 # Elasticsearch (Instrument) Setup
-echo -e "\033[1;35m[2/4]\033[0m Setting Instrument Data in Elasticsearch"
+echo -e "\033[1;35m[7/12]\033[0m Setting Instrument Data in Elasticsearch"
 rs /scripts/services/elasticsearchSetupInstrumentData.sh
 
 # Update Conductor to Healthy Status, this signals search and exploration services (maestro, arranger, stage) to startup
@@ -51,22 +51,23 @@ echo "healthy" > /health/conductor_health
 echo -e  "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Stage
-echo -e "\033[1;35m[7/9]\033[0m Checking Stage"
+echo -e "\033[1;35m[8/12]\033[0m Checking Stage"
 rs /scripts/services/stageCheck.sh
 
 # Check Arranger
-echo -e "\033[1;35m[6/9]\033[0m Checking Arranger"
+echo -e "\033[1;35m[9/12]\033[0m Checking Arranger"
 rs /scripts/services/arrangerCheck.sh
 
 # Check Maestro
-echo -e "\033[1;35m[8/9]\033[0m Checking Maestro" 
+echo -e "\033[1;35m[10/12]\033[0m Checking Maestro" 
 rs /scripts/services/maestroCheck.sh
 
 # Check Keycloak
-echo -e "\033[1;35m[9/9]\033[0m Checking Keycloak"
+echo -e "\033[1;35m[11/12]\033[0m Checking Keycloak"
 rs /scripts/services/keycloakCheck.sh
 
 # Remove Health Check File 
+echo -e "\033[1;35m[12/12]\033[0m Cleaning up health check file"
 rm /health/conductor_health
 
 # Success and Next Steps

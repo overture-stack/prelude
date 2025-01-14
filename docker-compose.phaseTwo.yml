@@ -16,35 +16,23 @@ services:
   # For more info see the follow documentation: https://main--overturedev.netlify.app/docs/other-software/conductor/
   # --------------------------------------
   conductor:
-    profiles: ["platform"]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
       - "9204:9204"
     volumes:
-      - ./persistentStorage/data-song-db:/song/db-folder-init
-      - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
+      - ./phaseTwo/persistentStorage/data-song-db:/song/db-folder-init
+      - ./phaseTwo/persistentStorage/data-keycloak-db:/keycloak/db-folder-init
       - ./configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
       - ./configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
       - ./conductorScripts:/scripts
       - ./health:/health
-    environment:
-      - PROFILE=${PROFILE:-platform}
     command: >
       sh -c '
         set -e
-          echo "Profile is set to: $PROFILE"
-          case "$PROFILE" in
-            platform)
-              echo "Running platform deployment..."
-              chmod +x scripts/deployments/platform.sh
-              scripts/deployments/platform.sh
-              ;;
-            *)
-              echo "Invalid profile: $PROFILE. Available options are [platform, composition, instrument]."
-              exit 1
-              ;;
-          esac
+            echo "Running phase One platform deployment..."
+            chmod +x scripts/deployments/phaseTwo.sh
+            scripts/deployments/phaseTwo.sh
         exit 0
       '
     healthcheck:
@@ -55,7 +43,6 @@ services:
       start_period: 30s
     networks:
       - conductor-network
-
 
   # ==================================================================================
   # OAuth (KeyCloak)
@@ -68,7 +55,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
   # --------------------------------------
   keycloak-db:
-    profiles: ["platform"]
     depends_on:
       - conductor
     image: postgres:14
@@ -79,7 +65,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: keycloakDb
     volumes:
-      - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
+      - ./phaseTwo/persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
       interval: 20s
@@ -96,7 +82,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
   # --------------------------------------
   keycloak:
-    profiles: ["platform"]
     image: quay.io/keycloak/keycloak:22.0
     container_name: keycloak
     platform: linux/amd64
@@ -138,7 +123,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-kafka
   # --------------------------------------
   kafka:
-      profiles: ["platform"]
       image: confluentinc/cp-kafka:7.6.1
       container_name: kafka
       platform: linux/amd64
@@ -202,7 +186,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song-db:
-    profiles: ["platform"]
     depends_on:
       - conductor
     image: postgres:11.1
@@ -215,7 +198,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: songDb
     volumes:
-      - ./persistentStorage/data-song-db:/var/lib/postgresql/data
+      - ./phaseTwo/persistentStorage/data-song-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
       interval: 20s
@@ -232,7 +215,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
   # --------------------------------------
   song:
-    profiles: ["platform"]
     image: ghcr.io/overture-stack/song-server:5.2.0
     container_name: song
     platform: linux/amd64
@@ -289,7 +271,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#setting-up-object-storage
   # --------------------------------------
   minio:
-    profiles: ["platform"]
     image: minio/minio:RELEASE.2018-05-11T00-29-24Z
     container_name: minio
     platform: linux/amd64
@@ -300,7 +281,7 @@ services:
       MINIO_SECRET_KEY: admin123
     command: server /data
     volumes:
-      - ./persistentStorage/data-minio:/data
+      - ./phaseTwo/persistentStorage/data-minio:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -316,7 +297,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-score
   # --------------------------------------
   score:
-    profiles: ["platform"]
     image: ghcr.io/overture-stack/score-server:5.11.0
     container_name: score
     platform: linux/amd64
@@ -369,7 +349,6 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-elasticsearch
   # --------------------------------------
   elasticsearch:
-    profiles: ["platform"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
     container_name: elasticsearch
     platform: linux/amd64
@@ -380,7 +359,7 @@ services:
       PGID: 100
       discovery.type: single-node
       cluster.name: workflow.elasticsearch
-      ES_JAVA_OPTS: -Xms8g -Xmx8g
+      ES_JAVA_OPTS: -Xms4g -Xmx4g
       ELASTIC_PASSWORD: myelasticpassword
       xpack.security.enabled: "true"
       MANAGE_INDEX_TEMPLATES: "true"
@@ -401,9 +380,6 @@ services:
         reservations:
           cpus: '2'
           memory: 8G
-    volumes:
-      - ./persistentStorage/es-volumes/es-data:/usr/share/elasticsearch/data
-      - ./persistentStorage/es-volumes/es-logs:/usr/share/elasticsearch/logs
     logging:
       driver: "json-file"
       options:
@@ -419,13 +395,63 @@ services:
       - conductor-network
 
   # ======================================
+  # Maestro
+  # ======================================
+  # Indexing service that transforms metadata in Song into Elasticsearch documents
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-maestro
+  # --------------------------------------
+  maestro:
+    image: ghcr.io/overture-stack/maestro:4.3.0
+    container_name: maestro
+    platform: linux/amd64
+    depends_on:
+      song:
+        condition: service_started
+      kafka:
+        condition: service_started
+      conductor:
+        condition: service_healthy
+    ports:
+      - "11235:11235"
+    environment:
+      # Maestro Variables
+      MAESTRO_FAILURELOG_ENABLED: true
+      MAESTRO_FAILURELOG_DIR: app/logs/maestro
+      MAESTRO_LOGGING_LEVEL_ROOT: INFO
+      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
+      # Song Variables
+      MAESTRO_REPOSITORIES_0_CODE: song.overture
+      MAESTRO_REPOSITORIES_0_URL: http://song:8080
+      MAESTRO_REPOSITORIES_0_NAME: Overture
+      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_0_COUNTRY: CA
+      # Elasticsearch Variables
+      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: overture-quickstart-index
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: file_centric
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
+      # Spring Variables
+      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
+      SPRINGDOC_SWAGGERUI_PATH: /swagger-api
+      # Kafka Variables
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
+      SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
+    networks:
+      - conductor-network
+
+  # ======================================
   # Arranger-Server compositions
   # ======================================
   # Search API generation with compatible search UI components
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
   # --------------------------------------
   arranger-composition:
-    profiles: ["platform"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-composition
     platform: linux/amd64
@@ -461,7 +487,6 @@ services:
   # Check logs on arranger server for manifest columns
   # --------------------------------------
   arranger-instrument:
-    profiles: ["platform"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-instrument
     platform: linux/amd64
@@ -495,10 +520,9 @@ services:
   # The react-based, front end portal UI for Overture
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
   # --------------------------------------
-  multi-stage:
-    profiles: ["platform"]
-    image: multi-stage:3.0
-    container_name: multi-stage
+  stage:
+    image: localstageimage:1.0
+    container_name: stage
     pull_policy: never
     platform: linux/arm64/v8
     depends_on:
@@ -524,20 +548,6 @@ services:
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: instrument_centric
     networks:
       - conductor-network
-
-volumes:
-  elasticsearch-data:
-    driver: local
-    driver_opts:
-      device: ./persistentStorage/es-volumes/es-data
-      o: bind
-      type: none
-  elasticsearch-logs:
-    driver: local
-    driver_opts:
-      device: ./persistentStorage/es-volumes/es-logs
-      o: bind
-      type: none
 
 networks:
   conductor-network:

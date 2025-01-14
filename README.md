@@ -12,6 +12,16 @@ Prelude's architecture serves as a foundation for future expansion, offering a c
 
 ## Repository Structure
 
+
+phaseOne
+
+phaseTwo
+
+- No persistent ES volumes as we have a database to handle that now 
+- Need to update nGinX Configs
+- Figure out seperation of stage images
+- makeFile needs some down, particualrly on down and clean commands
+
 ```
 .
 ├── Makefile
@@ -63,7 +73,7 @@ git clone -b prelude https://github.com/overture-stack/conductor.git
 
 ```
 cd stage
-docker build -t multi-stage:3.0 .
+docker build -t stage .
 ```
 
 Any edits made to the stage folder can be built and deployed locally using this docker compose setup.
