@@ -22,6 +22,8 @@ services:
     ports:
       - "9204:9204"
     volumes:
+      - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
+      - ./persistentStorage/data-song-db:/song/db-folder-init
       - ./configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
       - ./configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
       - ./conductorScripts:/scripts
@@ -53,6 +55,298 @@ services:
       start_period: 30s
     networks:
       - conductor-network
+
+  # ==================================================================================
+  # OAuth (KeyCloak)
+  # ==================================================================================
+  
+  # ======================================
+  # Keycloak Database
+  # --------------------------------------
+  # Pre-populated with a system wide API key: 68fb42b4-f1ed-4e8c-beab-3724b99fe528, required for Songs SCORE_ACCESSTOKEN env variable
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
+  # --------------------------------------
+  keycloak-db:
+    profiles: ["platform", "songDev" , "scoreDev" ,"maestroDev", "stageDev"]
+    depends_on:
+      - conductor
+    image: postgres:14
+    platform: linux/amd64
+    container_name: keycloak-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: keycloakDb
+    volumes:
+      - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+   
+  # ==========================
+  # Keycloak 
+  # ==========================
+  # Authorization and authentication service 
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
+  # --------------------------------------
+  keycloak:
+    profiles: ["platform", "songDev", "scoreDev", "maestroDev", "stageDev"]
+    image: quay.io/keycloak/keycloak:22.0
+    container_name: keycloak
+    platform: linux/amd64
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    ports:
+      - "8180:8080"
+    environment:
+      # Postgres Variables
+      KC_DB: postgres
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin123
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloakDb
+      # Keycloak Variables
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KC_HOSTNAME: localhost
+      KC_HEALTH_ENABLED: true 
+    volumes:
+      - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
+      - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
+      - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
+    command: >
+      start-dev
+      --import-realm
+      --hostname-port=8180
+   
+
+  # ==================================================================================
+  # File Management (Song, Score, Kafka, Minio)
+  # ==================================================================================
+ 
+  # ======================================
+  # Kafka 
+  # ======================================
+  # Messaging system for Song and Maestro, used to orchestrate asynchronous communication, job execution, queuing, and processing.
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-kafka
+  # --------------------------------------
+  kafka:
+      profiles: ["platform"]
+      image: confluentinc/cp-kafka:7.6.1
+      container_name: kafka
+      platform: linux/amd64
+      ports:
+        - "9092:9092"
+        - "29092:29092"
+      volumes:
+        - ./conductorScripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
+      environment:
+        # Core Kafka Configuration
+        KAFKA_PROCESS_ROLES: broker,controller
+        KAFKA_NODE_ID: 1
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
+        KAFKA_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://kafka:9093
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+        KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+        KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+        # Storage Configuration
+        KAFKA_LOG_DIRS: /var/lib/kafka/data
+        KAFKA_LOG_RETENTION_HOURS: 168  # 7 days
+        KAFKA_LOG_RETENTION_BYTES: -1   # Unlimited size
+        # Topic Configuration
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+        KAFKA_NUM_PARTITIONS: 1
+        KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+        KAFKA_MIN_INSYNC_REPLICAS: 1
+        # Performance Tuning
+        KAFKA_MESSAGE_MAX_BYTES: 5242880  # 5MB max message size
+        KAFKA_REPLICA_FETCH_MAX_BYTES: 5242880
+        # Logging Configuration
+        KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+        KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+        # Cluster Configuration
+        CLUSTER_ID: "q1Sh-9_ISia_zwGINzRvyQ" 
+      command: >
+        sh -c '
+          echo "Setting up Kafka..."
+          chmod +x /scripts/kafkaSetup.sh
+          /scripts/kafkaSetup.sh &
+          
+          # Start Kafka broker
+          /etc/confluent/docker/run
+        '
+      healthcheck:
+        test: 
+          - "CMD-SHELL"
+          - >
+            /bin/kafka-topics --bootstrap-server kafka:9092 --list
+        interval: 10s
+        timeout: 5s
+        retries: 10
+
+  # ======================================
+  # Song Database
+  # ======================================
+  # Postgres database populated with 30 pre-published analyses (metadata files)
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
+  # --------------------------------------
+  song-db:
+    profiles: ["platform"]
+    depends_on:
+      - conductor
+    image: postgres:11.1
+    container_name: song-db
+    platform: linux/amd64
+    ports: 
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: songDb
+    volumes:
+      - ./persistentStorage/data-song-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+   
+  # ======================================
+  # Song
+  # ======================================
+  # Metadata management service with a customizable and automated submission validation system
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-song
+  # --------------------------------------
+  song:
+    profiles: ["platform"]
+    image: ghcr.io/overture-stack/song-server:5.2.0
+    container_name: song
+    platform: linux/amd64
+    depends_on:
+      keycloak:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      song-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring Variables
+      SPRING_PROFILES_ACTIVE: prod,secure,kafka
+      # Flyway variables
+      SPRING_FLYWAY_ENABLED: true
+      # Song Variables
+      ID_USELOCAL: true
+      SCHEMAS_ENFORCELATEST: true
+      # Score Variables
+      SCORE_URL: http://score:8087
+      SCORE_ACCESSTOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
+      # Keycloak Variables
+      AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_CLIENTID: dms
+      AUTH_SERVER_CLIENTSECRET: t016kqXfI648ORoIP5gepqCzqtsRjlcc
+      AUTH_SERVER_TOKENNAME: apiKey
+      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
+      AUTH_SERVER_KEYCLOAK_REALM: myrealm
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.
+      AUTH_SERVER_SCOPE_STUDY_SUFFIX: .WRITE
+      AUTH_SERVER_SCOPE_SYSTEM: song.WRITE
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
+      AUTH_SERVER_INTROSPECTIONURI: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
+      # Postgres Variables
+      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb?stringtype=unspecified
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      # Kafka Variables
+      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:9092
+      SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
+      # Swagger Variable
+      SWAGGER_ALTERNATEURL: /swagger-api
+   
+  # ======================================
+  # Minio
+  # ======================================
+  # High-performance open-source object storage provider 
+  # Used here for local object storage found at persistentStorage/data-minio 
+  # data-minio contains 60 data files linked to the pre-populated analyses in the song-db. This folder is passed into the image on startup
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#setting-up-object-storage
+  # --------------------------------------
+  minio:
+    profiles: ["platform"]
+    image: minio/minio:RELEASE.2018-05-11T00-29-24Z
+    container_name: minio
+    platform: linux/amd64
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: admin123
+    command: server /data
+    volumes:
+      - ./persistentStorage/data-minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+   
+  # ======================================
+  # Score
+  # ======================================
+  # File transfer microservice
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-score
+  # --------------------------------------
+  score:
+    profiles: ["platform"]
+    image: ghcr.io/overture-stack/score-server:5.11.0
+    container_name: score
+    platform: linux/amd64
+    depends_on:
+      keycloak:
+        condition: service_started
+    ports:
+      - "8087:8087"
+    environment:
+      # Spring Variables
+      SPRING_PROFILES_ACTIVE: default,collaboratory,prod,secure,jwt
+      SERVER_PORT: 8087
+      # Song Variable
+      METADATA_URL: http://song:8080
+      # Score Variables
+      SERVER_SSL_ENABLED: "false"
+      # Object Storage Variables
+      S3_ENDPOINT: http://host.docker.internal:9000
+      S3_ACCESSKEY: admin
+      S3_SECRETKEY: admin123
+      S3_SIGV4ENABLED: true
+      S3_SECURED: false
+      OBJECT_SENTINEL: heliograph
+      BUCKET_NAME_OBJECT: object
+      BUCKET_NAME_STATE: state
+      UPLOAD_PARTSIZE: 1073741824
+      UPLOAD_CONNECTION_TIMEOUT: 1200000
+      # Keycloak Variables
+      AUTH_SERVER_PROVIDER: keycloak
+      AUTH_SERVER_CLIENTID: dms
+      AUTH_SERVER_CLIENTSECRET: t016kqXfI648ORoIP5gepqCzqtsRjlcc
+      AUTH_SERVER_TOKENNAME: apiKey
+      AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
+      AUTH_SERVER_KEYCLOAK_REALM: myrealm
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.            
+      AUTH_SERVER_SCOPE_DOWNLOAD_SUFFIX: .READ
+      AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.READ
+      AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.WRITE
+      AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
+      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/      
+      AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
 
   # ======================================
   # Elasticsearch
@@ -94,8 +388,8 @@ services:
           cpus: '2'
           memory: 8G
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-      - elasticsearch-logs:/usr/share/elasticsearch/logs
+      - ./persistentStorage/es-volumes/es-data:/usr/share/elasticsearch/data
+      - ./persistentStorage/es-volumes/es-logs:/usr/share/elasticsearch/logs
     logging:
       driver: "json-file"
       options:
@@ -118,7 +412,7 @@ services:
   # --------------------------------------
   arranger-composition:
     profiles: ["platform"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.35
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-composition
     platform: linux/amd64
     depends_on:
@@ -154,7 +448,7 @@ services:
   # --------------------------------------
   arranger-instrument:
     profiles: ["platform"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.35
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-instrument
     platform: linux/amd64
     depends_on:
@@ -221,13 +515,13 @@ volumes:
   elasticsearch-data:
     driver: local
     driver_opts:
-      device: ./volumes/es-data
+      device: ./persistentStorage/es-volumes/es-data
       o: bind
       type: none
   elasticsearch-logs:
     driver: local
     driver_opts:
-      device: ./volumes/es-logs
+      device: ./persistentStorage/es-volumes/es-logs
       o: bind
       type: none
 
