@@ -21,8 +21,8 @@ clean:
 	@echo "Stopping related containers..."
 	docker compose -f docker-compose.phaseOne.yml down || true
 	@echo "Cleaning up Elasticsearch volumes..."
-	-rm -rf ./persistentStorage/es-volumes/*/data/nodes 2>/dev/null || true
-	-find ./persistentStorage/es-volumes/*/logs -type f ! -name 'logs.txt' -delete 2>/dev/null || true
+	-rm -rf ./phaseOne/persistentStorage/es-volumes/*/data/nodes 2>/dev/null || true
+	-find ./phaseOne/persistentStorage/es-volumes/*/logs -type f ! -name 'logs.txt' -delete 2>/dev/null || true
 	-docker volume rm -f conductor_elasticsearch-data 2>/dev/null || true
 	-docker volume rm -f conductor_elasticsearch-logs 2>/dev/null || true
 	@echo "Cleanup completed!"

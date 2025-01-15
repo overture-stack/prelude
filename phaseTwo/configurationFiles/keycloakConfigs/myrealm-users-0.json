@@ -1,0 +1,47 @@
+{
+  "realm" : "myrealm",
+  "users" : [ {
+    "id" : "6e0f30a6-e18e-45e9-ad75-8dc8171988b8",
+    "createdTimestamp" : 1718675261866,
+    "username" : "admin",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "admin",
+    "lastName" : "example",
+    "email" : "admin@example.com",
+    "attributes" : {
+      "api-keys" : [ "{\"name\":\"F4C094A60BA88FB3F42BB9D20D75931286549D7F3C2E448F62D81CE20237B9BC\",\"scope\":[\"score.READ\",\"score.WRITE\",\"song.READ\",\"song.WRITE\"],\"expiryDate\":1830297599000,\"issueDate\":1701960265122,\"isRevoked\":false,\"description\":\"System wide ApiKey\"}" ]
+    },
+    "credentials" : [ {
+      "id" : "0c249566-bd35-42dd-8e13-fa8b94d432e7",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1718675312626,
+      "secretData" : "{\"value\":\"bObvXU4FOF8JDDloamU4Th0+weRiJ6A/UEx3NlweKxM=\",\"salt\":\"k8hhIcgGIFLPp+FyxyACmA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-myrealm" ],
+    "notBefore" : 0,
+    "groups" : [ "/ADMIN" ]
+  }, {
+    "id" : "7255599f-7826-458a-aaa7-ced54e8610e0",
+    "createdTimestamp" : 1718674923677,
+    "username" : "service-account-dms",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "serviceAccountClientId" : "dms",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-myrealm" ],
+    "clientRoles" : {
+      "dms" : [ "uma_protection" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}

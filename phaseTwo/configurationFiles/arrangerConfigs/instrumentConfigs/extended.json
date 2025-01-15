@@ -1,0 +1,68 @@
+{
+	"extended": [
+	  {
+		"displayName": "Instrument ID",
+		"fieldName": "instrument_id"
+	  },
+	  {
+		"displayName": "Instrument Name",
+		"fieldName": "instrument_name"
+	  },
+	  {
+		"displayName": "Origin Country",
+		"fieldName": "origin_country"
+	  },
+	  {
+		"displayName": "Instrument Type",
+		"fieldName": "instrument_type"
+	  },
+	  {
+		"displayName": "Historical Significance",
+		"fieldName": "historical_significance"
+	  },
+	  {
+		"displayName": "Average Price",
+		"fieldName": "average_price"
+	  },
+	  {
+		"displayName": "Primary Materials",
+		"fieldName": "primary_materials"
+	  },
+	  {
+		"displayName": "Complexity Rating",
+		"fieldName": "complexity_rating"
+	  },
+	  {
+		"displayName": "Unique Characteristics",
+		"fieldName": "unique_characteristics"
+	  },
+	  {
+		"displayName": "Submission ID",
+		"fieldName": "submission_metadata.submitter_id"
+	  },
+	  {
+		"displayName": "Processing Started",
+		"fieldName": "submission_metadata.processing_started"
+	  },
+	  {
+		"displayName": "Processed At",
+		"fieldName": "submission_metadata.processed_at"
+	  },
+	  {
+		"displayName": "Source File",
+		"fieldName": "submission_metadata.source_file"
+	  },
+	  {
+		"displayName": "Record Number",
+		"fieldName": "submission_metadata.record_number"
+	  },
+	  {
+		"displayName": "Hostname",
+		"fieldName": "submission_metadata.hostname"
+	  },
+	  {
+		"displayName": "Username",
+		"fieldName": "submission_metadata.username"
+	  }
+	]
+  }

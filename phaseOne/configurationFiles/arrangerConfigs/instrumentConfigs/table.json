@@ -1,0 +1,49 @@
+{
+	"table": {
+	  "rowIdFieldName": "submission_metadata.submitter_id",
+	  "columns": [
+		{
+		  "canChangeShow": true,
+		  "fieldName": "submission_metadata.submitter_id",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "instrument_name",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "origin_country",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "instrument_type",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "average_price",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "complexity_rating",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "historical_significance",
+		  "show": true,
+		  "sortable": true
+		}
+	  ]
+	}
+  }

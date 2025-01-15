@@ -21,10 +21,10 @@ services:
     ports:
       - "9204:9204"
     volumes:
-      - ./configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
-      - ./configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
-      - ./conductorScripts:/scripts
-      - ./health:/health
+      - ./phaseOne/configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
+      - ./phaseOne/configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
+      - ./phaseOne/scripts:/scripts
+      - ./phaseOne/health:/health
     command: >
       sh -c '
         set -e
@@ -81,8 +81,8 @@ services:
           cpus: '2'
           memory: 8G
     volumes:
-      - ./phaseOne/es-volumes/es-data:/usr/share/elasticsearch/data
-      - ./phaseOne/es-volumes/es-logs:/usr/share/elasticsearch/logs
+      - ./phaseOne/volumes/es-data:/usr/share/elasticsearch/data
+      - ./phaseOne/volumes/es-logs:/usr/share/elasticsearch/logs
     logging:
       driver: "json-file"
       options:
@@ -113,11 +113,11 @@ services:
     ports:
       - "5050:5050"
     volumes:
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/table.json:/app/modules/server/configs/table.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/base.json:/app/modules/server/configs/base.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5050
@@ -148,11 +148,11 @@ services:
     ports:
       - "5051:5051"
     volumes:
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5051
@@ -205,13 +205,13 @@ volumes:
   elasticsearch-data:
     driver: local
     driver_opts:
-      device: ./es-volumes/es-data
+      device: ./phaseOne/volumes/es-data
       o: bind
       type: none
   elasticsearch-logs:
     driver: local
     driver_opts:
-      device: ./es-volumes/es-logs
+      device: ./phaseOne/volumes/es-logs
       o: bind
       type: none
 
