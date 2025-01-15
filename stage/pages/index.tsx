@@ -27,8 +27,6 @@ import HomePage from './home';
 const LandingPage = createPage({
 	getInitialProps: async () => null,
 	isPublic: true,
-})(() => {
-	return <HomePage />;
-});
+})(HomePage);
 
 export default LandingPage;

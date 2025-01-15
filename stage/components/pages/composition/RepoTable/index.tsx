@@ -19,22 +19,22 @@
  *
  */
 
-import { useMemo } from 'react';
 import { css, useTheme } from '@emotion/react';
 import {
 	Pagination,
 	Table,
 	TableContextProvider,
-	useArrangerTheme,
 	Toolbar,
+	useArrangerTheme,
 } from '@overture-stack/arranger-components';
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
+import { useMemo } from 'react';
 import urlJoin from 'url-join';
 
-import { getConfig } from '@/global/config';
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
+import { getConfig } from '@/global/config';
 
 const getTableConfigs = ({
 	apiHost,
