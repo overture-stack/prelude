@@ -1,16 +1,16 @@
-phaseOne:
-	docker compose -f docker-compose.phaseOne.yml up --attach conductor
+phase1:
+	docker compose -f ./phase1/docker-compose.phase1.yml up --attach conductor
 
-phaseTwo:
-	docker compose -f docker-compose.phaseTwo.yml up --attach conductor
+phase2:
+	docker compose -f ./phase1/docker-compose.phase2.yml up --attach conductor
 
 down:
-	@if [ -n "$$(docker compose -f docker-compose.phaseOne.yml ps -q)" ]; then \
+	@if [ -n "$$(docker compose -f ./phase1/docker-compose.phase1.yml ps -q)" ]; then \
 		echo "Stopping Phase One..."; \
-		docker compose -f docker-compose.phaseOne.yml down -v; \
-	elif [ -n "$$(docker compose -f docker-compose.phaseTwo.yml ps -q)" ]; then \
+		docker compose -f ./phase1/docker-compose.phase1.yml down -v; \
+	elif [ -n "$$(docker compose -f ./phase-2/docker-compose.phase2.yml ps -q)" ]; then \
 		echo "Stopping Phase Two..."; \
-		docker compose -f docker-compose.phaseTwo.yml down -v; \
+		docker compose -f ./phase-2/docker-compose.phase2.yml down -v; \
 	else \
 		echo "No running services found"; \
 	fi
@@ -19,12 +19,10 @@ clean:
 	@echo "\033[31mWARNING: This will remove all data within Elasticsearch.\033[0m"
 	@echo "Are you sure you want to proceed? [y/N] " && read ans && [ $${ans:-N} = y ]
 	@echo "Stopping related containers..."
-	docker compose -f docker-compose.phaseOne.yml down || true
+	docker compose -f docker-compose.phase1.yml down || true
 	@echo "Cleaning up Elasticsearch volumes..."
-	-rm -rf ./phaseOne/persistentStorage/es-volumes/*/data/nodes 2>/dev/null || true
-	-find ./phaseOne/persistentStorage/es-volumes/*/logs -type f ! -name 'logs.txt' -delete 2>/dev/null || true
+	-rm -rf ./phase1/persistentStorage/es-volumes/*/data/nodes 2>/dev/null || true
+	-find ./phase1/persistentStorage/es-volumes/*/logs -type f ! -name 'logs.txt' -delete 2>/dev/null || true
 	-docker volume rm -f conductor_elasticsearch-data 2>/dev/null || true
 	-docker volume rm -f conductor_elasticsearch-logs 2>/dev/null || true
 	@echo "Cleanup completed!"
-
-.PHONY: phaseOne phaseTwo down clean

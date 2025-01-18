@@ -55,7 +55,7 @@ const products: Product[] = [
 	},
 	{
 		title: 'Example Instrument Data',
-		link: '/instrument',
+		link: '/instruments',
 		category: 'data',
 	},
 	// Documentation Category

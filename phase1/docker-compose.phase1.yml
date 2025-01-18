@@ -21,16 +21,16 @@ services:
     ports:
       - "9204:9204"
     volumes:
-      - ./phaseOne/configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
-      - ./phaseOne/configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
-      - ./phaseOne/scripts:/scripts
-      - ./phaseOne/health:/health
+      - ./phase1/configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
+      - ./phase1/configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
+      - ./phase1/scripts:/scripts
+      - ./phase1/health:/health
     command: >
       sh -c '
         set -e
             echo "Running phase One platform deployment..."
-            chmod +x scripts/deployments/phaseOne.sh
-            scripts/deployments/phaseOne.sh
+            chmod +x scripts/deployments/phase1.sh
+            scripts/deployments/phase1.sh
         exit 0
       '
     healthcheck:
@@ -81,8 +81,8 @@ services:
           cpus: '2'
           memory: 8G
     volumes:
-      - ./phaseOne/volumes/es-data:/usr/share/elasticsearch/data
-      - ./phaseOne/volumes/es-logs:/usr/share/elasticsearch/logs
+      - ./phase1/volumes/es-data:/usr/share/elasticsearch/data
+      - ./phase1/volumes/es-logs:/usr/share/elasticsearch/logs
     logging:
       driver: "json-file"
       options:
@@ -113,11 +113,11 @@ services:
     ports:
       - "5050:5050"
     volumes:
-     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/base.json:/app/modules/server/configs/base.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/compositionConfigs/table.json:/app/modules/server/configs/table.json
+     - ./phase1/configurationFiles/arrangerConfigs/compositionConfigs/base.json:/app/modules/server/configs/base.json
+     - ./phase1/configurationFiles/arrangerConfigs/compositionConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./phase1/configurationFiles/arrangerConfigs/compositionConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./phase1/configurationFiles/arrangerConfigs/compositionConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./phase1/configurationFiles/arrangerConfigs/compositionConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5050
@@ -148,11 +148,11 @@ services:
     ports:
       - "5051:5051"
     volumes:
-     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./phaseOne/configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
+     - ./phase1/configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
+     - ./phase1/configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./phase1/configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./phase1/configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./phase1/configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5051
@@ -205,13 +205,13 @@ volumes:
   elasticsearch-data:
     driver: local
     driver_opts:
-      device: ./phaseOne/volumes/es-data
+      device: ./phase1/volumes/es-data
       o: bind
       type: none
   elasticsearch-logs:
     driver: local
     driver_opts:
-      device: ./phaseOne/volumes/es-logs
+      device: ./phase1/volumes/es-logs
       o: bind
       type: none
 

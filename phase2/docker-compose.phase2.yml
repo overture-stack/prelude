@@ -21,18 +21,18 @@ services:
     ports:
       - "9204:9204"
     volumes:
-      - ./phaseTwo/persistentStorage/data-song-db:/song/db-folder-init
-      - ./phaseTwo/persistentStorage/data-keycloak-db:/keycloak/db-folder-init
-      - ./phaseTwo/configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
-      - ./phaseTwo/configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
-      - ./phaseTwo/scripts:/scripts
-      - ./phaseTwo/health:/health
+      - ./phase2/persistentStorage/data-song-db:/song/db-folder-init
+      - ./phase2/persistentStorage/data-keycloak-db:/keycloak/db-folder-init
+      - ./phase2/configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
+      - ./phase2/configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
+      - ./phase2/scripts:/scripts
+      - ./phase2/health:/health
     command: >
       sh -c '
         set -e
             echo "Running phase One platform deployment..."
-            chmod +x scripts/deployments/phaseTwo.sh
-            scripts/deployments/phaseTwo.sh
+            chmod +x scripts/deployments/phase2.sh
+            scripts/deployments/phase2.sh
         exit 0
       '
     healthcheck:
@@ -65,7 +65,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: keycloakDb
     volumes:
-      - ./phaseTwo/persistentStorage/data-keycloak-db:/var/lib/postgresql/data
+      - ./phase2/persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
       interval: 20s
@@ -102,9 +102,9 @@ services:
       KC_HOSTNAME: localhost
       KC_HEALTH_ENABLED: true 
     volumes:
-      - ./phaseTwo/configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
-      - ./phaseTwo/configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
-      - ./phaseTwo/configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
+      - ./phase2/configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
+      - ./phase2/configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
+      - ./phase2/configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
     networks:
       - conductor-network
     command: >
@@ -130,7 +130,7 @@ services:
         - "9092:9092"
         - "29092:29092"
       volumes:
-        - ./phaseTwo/scripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
+        - ./phase2/scripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
       environment:
         # Core Kafka Configuration
         KAFKA_PROCESS_ROLES: broker,controller
@@ -198,7 +198,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: songDb
     volumes:
-      - ./phaseTwo/persistentStorage/data-song-db:/var/lib/postgresql/data
+      - ./phase2/persistentStorage/data-song-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
       interval: 20s
@@ -281,7 +281,7 @@ services:
       MINIO_SECRET_KEY: admin123
     command: server /data
     volumes:
-      - ./phaseTwo/persistentStorage/data-minio:/data
+      - ./phase2/persistentStorage/data-minio:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -496,11 +496,11 @@ services:
     ports:
       - "5051:5051"
     volumes:
-     - ./phaseTwo/configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
-     - ./phaseTwo/configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./phaseTwo/configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./phaseTwo/configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./phaseTwo/configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
+     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
+     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5051
