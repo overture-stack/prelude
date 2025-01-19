@@ -1,16 +1,16 @@
-phase1:
-	docker compose -f ./phase1/docker-compose.phase1.yml up --attach conductor
+phaseOne:
+	docker compose -f ./phamakde se1/docker-compose.phase1.yml up --attach conductor
 
-phase2:
-	docker compose -f ./phase1/docker-compose.phase2.yml up --attach conductor
+phaseTwo:
+	docker compose -f ./phase2/docker-compose.phase2.yml up --attach conductor
 
 down:
 	@if [ -n "$$(docker compose -f ./phase1/docker-compose.phase1.yml ps -q)" ]; then \
 		echo "Stopping Phase One..."; \
 		docker compose -f ./phase1/docker-compose.phase1.yml down -v; \
-	elif [ -n "$$(docker compose -f ./phase-2/docker-compose.phase2.yml ps -q)" ]; then \
+	elif [ -n "$$(docker compose -f ./phase2/docker-compose.phase2.yml ps -q)" ]; then \
 		echo "Stopping Phase Two..."; \
-		docker compose -f ./phase-2/docker-compose.phase2.yml down -v; \
+		docker compose -f ./phase2/docker-compose.phase2.yml down -v; \
 	else \
 		echo "No running services found"; \
 	fi

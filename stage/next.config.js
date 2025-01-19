@@ -4,8 +4,9 @@ const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const withPlugins = require('next-compose-plugins');
 const { patchWebpackConfig: patchForGlobalCSS } = require('next-global-css');
-const withTranspileModules = require('next-transpile-modules')([]);
+const withTranspileModules = require('next-transpile-modules')(['swagger-ui-react', 'swagger-ui-dist']);
 const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
+
 /**
  * @type {import('next').NextConfig}
  **/
@@ -37,7 +38,6 @@ module.exports = withPlugins([withTranspileModules], {
 		return patchForGlobalCSS(config, options);
 	},
 
-	// Not including the QUICKSEARCH ENVs, removed ADMIN UI
 	publicRuntimeConfig: {
 		EGO_PUBLIC_KEY: (process.env.EGO_PUBLIC_KEY || '').replace(/\\n/g, '\n'),
 		NEXT_PUBLIC_ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
@@ -55,7 +55,7 @@ module.exports = withPlugins([withTranspileModules], {
 		NEXT_PUBLIC_ARRANGER_COMPOSITION_MAX_BUCKET_COUNTS:
 			process.env.NEXT_PUBLIC_ARRANGER_COMPOSITION_MAX_BUCKET_COUNTS || 1000,
 
-		// Insturment
+		// Instrument
 		NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_API,
 		NEXT_PUBLIC_ARRANGER_INSTRUMENT_DOCUMENT_TYPE: process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_DOCUMENT_TYPE,
 		NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX,
@@ -65,6 +65,9 @@ module.exports = withPlugins([withTranspileModules], {
 			process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_MANIFEST_COLUMNS || '',
 		NEXT_PUBLIC_ARRANGER_INSTRUMENT_MAX_BUCKET_COUNTS:
 			process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_MAX_BUCKET_COUNTS || 1000,
+
+		// Song
+		NEXT_PUBLIC_SONG_API: process.env.NEXT_PUBLIC_SONG_API || 'http://localhost:8080', 
 
 		// using ASSET_PREFIX for the public runtime BASE_PATH because basePath in the top level config was not working
 		// with the dms reverse proxy setup
@@ -89,4 +92,22 @@ module.exports = withPlugins([withTranspileModules], {
 	experimental: {
 		esmExternals: 'loose',
 	},
+	async rewrites() {
+		return [
+		  // Song API rewrites
+		  {
+			source: '/api/song/:path*',
+			destination: 'http://song:8080/:path*', // or use process.env.NEXT_PUBLIC_SONG_API
+		  },
+		  // Keep your existing rewrites for specific swagger paths
+		  {
+			source: '/api/song/v2/api-docs',
+			destination: 'http://song:8080/v2/api-docs',
+		  },
+		  {
+			source: '/api/song/swagger-ui.html',
+			destination: 'http://song:8080/swagger-ui.html',
+		  },
+		];
+	  },
 });

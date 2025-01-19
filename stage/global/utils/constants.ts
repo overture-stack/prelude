@@ -42,7 +42,9 @@ export enum INTERNAL_PATHS {
 	COMPOSITION = '/composition',
 	INSTRUMENT = '/instrument',
 	HOME = '/home',
-	DOCUMENTATION = '/documentation'
+	DOCUMENTATION = '/documentation',
+	SONG = '/api-docs/song',
+	SCORE = '/api-docs/score'
 }
 
 // external docs links
@@ -69,9 +71,10 @@ const PROXY_PROTECTED_API_PATH = '/api/protected';
 export const INTERNAL_API_PROXY = {
 	COMPOSITION_ARRANGER: urlJoin(PROXY_API_PATH, 'correlation_arranger'),
 	INSTRUMENT_ARRANGER: urlJoin(PROXY_API_PATH, 'instrument_arranger'),
+	SONG: urlJoin(PROXY_API_PATH, 'song'), // Updated to use urlJoin and PROXY_API_PATH
 	PROTECTED_ARRANGER: urlJoin(PROXY_PROTECTED_API_PATH, 'arranger'),
 	PROTECTED_EGO_APIKEY_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'ego/apikey'),
 	PROTECTED_EGO_API_SCOPES_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'ego/scopes'),
 	PROTECTED_KEYCLOAK_APIKEY_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'keycloak/apikey'),
 	PROTECTED_KEYCLOAK_TOKEN_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'keycloak/token'),
-};
+  } as const;

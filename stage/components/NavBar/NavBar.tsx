@@ -144,6 +144,18 @@ const NavBar = (): ReactElement => {
 							Documentation
 						</StyledLink>
 					</InternalLink>
+					
+					<InternalLink path={INTERNAL_PATHS.SONG}>
+						<StyledLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SONG) })}>
+							Song API
+						</StyledLink>
+					</InternalLink>
+
+					<InternalLink path={INTERNAL_PATHS.SCORE}>
+						<StyledLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SCORE) })}>
+							Score API
+						</StyledLink>
+					</InternalLink>
 				</div>
 			</div>
 		</div>

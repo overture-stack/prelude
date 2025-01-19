@@ -29,7 +29,25 @@ export const config = {
 	},
 };
 
+// Add event listener for proxyRes to handle CORS headers
+proxy.on('proxyRes', (proxyRes, req, res) => {
+	const response = res as NextApiResponse;
+	response.setHeader('Access-Control-Allow-Origin', '*');
+	response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+	response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+	response.setHeader('Access-Control-Allow-Credentials', 'true');
+  });
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	 // Handle preflight requests
+	 if (req.method === 'OPTIONS') {
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+		res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+		res.setHeader('Access-Control-Allow-Credentials', 'true');
+		return res.status(200).end();
+	  }
+	
 	let path = req.url;
 	let target = '';
 	if (req.url?.startsWith(INTERNAL_API_PROXY.PROTECTED_ARRANGER)) {
@@ -70,10 +88,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			target,
 			changeOrigin: true,
 			secure: SSLSecured,
+			cors: true,
+			headers: {
+			  'Access-Control-Allow-Origin': '*',
+			},
 		},
 		(err) => {
 			console.error(`Proxy error URL: ${req.url}. Error: ${JSON.stringify(err)}`);
-
 			return res.status(500).json(err);
 		},
 	);

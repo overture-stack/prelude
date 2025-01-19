@@ -21,12 +21,12 @@ services:
     ports:
       - "9204:9204"
     volumes:
-      - ./phase2/persistentStorage/data-song-db:/song/db-folder-init
-      - ./phase2/persistentStorage/data-keycloak-db:/keycloak/db-folder-init
-      - ./phase2/configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
-      - ./phase2/configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
-      - ./phase2/scripts:/scripts
-      - ./phase2/health:/health
+      - ./persistentStorage/data-song-db:/song/db-folder-init
+      - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
+      - ./configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
+      - ./configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
+      - ./scripts:/scripts
+      - ./health:/health
     command: >
       sh -c '
         set -e
@@ -65,7 +65,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: keycloakDb
     volumes:
-      - ./phase2/persistentStorage/data-keycloak-db:/var/lib/postgresql/data
+      - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
       interval: 20s
@@ -102,9 +102,9 @@ services:
       KC_HOSTNAME: localhost
       KC_HEALTH_ENABLED: true 
     volumes:
-      - ./phase2/configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
-      - ./phase2/configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
-      - ./phase2/configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
+      - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
+      - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
+      - ./configurationFiles/keycloakConfigs/myrealm-users-0.json:/opt/keycloak/data/import/myrealm-users-0.json
     networks:
       - conductor-network
     command: >
@@ -130,7 +130,7 @@ services:
         - "9092:9092"
         - "29092:29092"
       volumes:
-        - ./phase2/scripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
+        - ./scripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
       environment:
         # Core Kafka Configuration
         KAFKA_PROCESS_ROLES: broker,controller
@@ -198,7 +198,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: songDb
     volumes:
-      - ./phase2/persistentStorage/data-song-db:/var/lib/postgresql/data
+      - ./persistentStorage/data-song-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
       interval: 20s
@@ -230,6 +230,15 @@ services:
     environment:
       # Spring Variables
       SPRING_PROFILES_ACTIVE: prod,secure,kafka
+      # Swagger/OpenAPI Configuration
+      SPRINGDOC_API_DOCS_PATH: /v2/api-docs
+      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui.html
+      SPRINGDOC_SWAGGER_UI_CONFIGURL: /v2/api-docs/swagger-config
+      SPRINGDOC_SWAGGER_UI_URL: /v2/api-docs
+      SPRING_MVC_CORS_ENABLED: true
+      SPRING_MVC_CORS_ALLOWED-ORIGINS: http://localhost:3000
+      SPRING_MVC_CORS_ALLOWED-METHODS: GET,POST,PUT,DELETE,OPTIONS
+      SPRING_MVC_CORS_ALLOWED-HEADERS: "*"
       # Flyway variables
       SPRING_FLYWAY_ENABLED: true
       # Song Variables
@@ -281,7 +290,7 @@ services:
       MINIO_SECRET_KEY: admin123
     command: server /data
     volumes:
-      - ./phase2/persistentStorage/data-minio:/data
+      - ./persistentStorage/data-minio:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -496,11 +505,11 @@ services:
     ports:
       - "5051:5051"
     volumes:
-     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
-     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./phase2/configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+     - ./configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5051
@@ -546,6 +555,9 @@ services:
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: http://localhost:5051/graphql # Updated inline with nginx reverse proxy
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: instrument_centric
+      # Song and Score Variables (For Swagger Pages)
+      NEXT_PUBLIC_SONG_API: http://song:8080 
+      NEXTAUTH_SECRET: "your-secure-secret-here"
     networks:
       - conductor-network
 
