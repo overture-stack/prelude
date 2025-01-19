@@ -15,8 +15,6 @@ const PageContent = (): ReactElement => {
 				position: relative;
 			`}
 		>
-			<HeroBanner />
-
 			<article
 				css={css`
 					display: flex;

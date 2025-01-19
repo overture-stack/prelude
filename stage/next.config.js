@@ -68,6 +68,8 @@ module.exports = withPlugins([withTranspileModules], {
 
 		// Song
 		NEXT_PUBLIC_SONG_API: process.env.NEXT_PUBLIC_SONG_API || 'http://localhost:8080', 
+		// Score
+		NEXT_PUBLIC_SCORE_API: process.env.NEXT_PUBLIC_SONG_API || 'http://localhost:8080', 
 
 		// using ASSET_PREFIX for the public runtime BASE_PATH because basePath in the top level config was not working
 		// with the dms reverse proxy setup
@@ -108,6 +110,19 @@ module.exports = withPlugins([withTranspileModules], {
 			source: '/api/song/swagger-ui.html',
 			destination: 'http://song:8080/swagger-ui.html',
 		  },
+		  {
+			source: '/api/score/:path*',
+			destination: 'http://score:8087/:path*', // or use process.env.NEXT_PUBLIC_SCORE_API
+		  },
+		  // Keep your existing rewrites for specific swagger paths
+		  {
+			source: '/api/score/v2/api-docs',
+			destination: 'http://score:8087/v2/api-docs',
+		  },
+		  {
+			source: '/api/score/swagger-ui.html',
+			destination: 'http://score:8087/swagger-ui.html',
+		  }
 		];
 	  },
 });
