@@ -4,6 +4,7 @@ node_modules
 __MACOSX
 
 volumes
-persistentStorage
+persistentStorageVolumes
 dist
 node_modules
+ 
