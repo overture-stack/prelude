@@ -557,7 +557,17 @@ services:
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: instrument_centric
       # Song and Score Variables (For Swagger Pages)
       NEXT_PUBLIC_SONG_API: http://song:8080 
+      NEXT_PUBLIC_SCORE_API: http://score:8087
       NEXTAUTH_SECRET: "your-secure-secret-here"
+      # Keycloak Variables
+      NEXT_PUBLIC_AUTH_PROVIDER: keycloak
+      ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
+      SESSION_ENCRYPTION_SECRET: this_is_a_super_secret_secret
+      NEXT_PUBLIC_KEYCLOAK_HOST: http://keycloak:8080
+      NEXT_PUBLIC_KEYCLOAK_REALM: myrealm
+      NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: webclient
+      KEYCLOAK_CLIENT_SECRET: ikksyrYaKX07acf4hpGrpKWcUGaFkEdM
+      NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: dms
     networks:
       - conductor-network
 

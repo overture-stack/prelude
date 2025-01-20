@@ -1,5 +1,5 @@
 phaseOne:
-	docker compose -f ./phamakde se1/docker-compose.phase1.yml up --attach conductor
+	docker compose -f ./phase1/docker-compose.phase1.yml up --attach conductor
 
 phaseTwo:
 	docker compose -f ./phase2/docker-compose.phase2.yml up --attach conductor
