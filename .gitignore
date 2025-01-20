@@ -2,3 +2,8 @@
 .DS_Store
 node_modules
 __MACOSX
+
+volumes
+persistentStorage
+dist
+node_modules
