@@ -19,14 +19,12 @@
  *
  */
 
-import React from 'react';
-
 import { EMAIL_SETTING_URL } from '../../global/utils/constants';
 import providerMap from '../../global/utils/providerTypeMap';
 import StyledLink from '../Link';
 import { ErrorPageLayout } from '../PageLayout';
 import { ProviderType } from '../../global/types/types';
-import DMSAdminContact from '../DMSAdminContact';
+import PlatformAdminContact from '../PlatformAdminContact';
 
 enum EgoLoginError {
 	NO_PRIMARY_EMAIL = 'no_primary_email',
@@ -77,7 +75,7 @@ const Error403 = ({ query }: { query: { error_type: EgoLoginError; provider_type
 			return (
 				<ErrorPageLayout subtitle="Error 403 - Permission required" errorTitle="Permission required">
 					You do not have permission to access the requested page. Please check that you have entered the correct URL.
-					If the problem persists, contact the <DMSAdminContact /> for help.
+					If the problem persists, contact the <PlatformAdminContact /> for help.
 				</ErrorPageLayout>
 			);
 	}

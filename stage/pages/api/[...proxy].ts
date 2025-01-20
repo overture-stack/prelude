@@ -11,7 +11,6 @@ const {
   NEXT_PUBLIC_ARRANGER_COMPOSITION_API,
   NEXT_PUBLIC_ARRANGER_INSTRUMENT_API,
   NEXT_PUBLIC_SONG_API,
-  NEXT_PUBLIC_SCORE_API
 } = getConfig();
 
 export const config = {
@@ -52,9 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (req.url?.startsWith(INTERNAL_API_PROXY.SONG)) {
     path = removeFromPath(req?.url, INTERNAL_API_PROXY.SONG);
     target = NEXT_PUBLIC_SONG_API;
-  } else if (req.url?.startsWith(INTERNAL_API_PROXY.SCORE)) {
-    path = removeFromPath(req?.url, INTERNAL_API_PROXY.SCORE);
-    target = NEXT_PUBLIC_SCORE_API;
   } else {
     return res.status(404).end();
   }

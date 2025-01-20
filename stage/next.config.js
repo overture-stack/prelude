@@ -39,7 +39,6 @@ module.exports = withPlugins([withTranspileModules], {
 	},
 
 	publicRuntimeConfig: {
-		EGO_PUBLIC_KEY: (process.env.EGO_PUBLIC_KEY || '').replace(/\\n/g, '\n'),
 		NEXT_PUBLIC_ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
 		NEXT_PUBLIC_APP_COMMIT: process.env.APP_COMMIT,
 		NEXT_PUBLIC_APP_VERSION: process.env.APP_VERSION,
@@ -54,6 +53,7 @@ module.exports = withPlugins([withTranspileModules], {
 			process.env.NEXT_PUBLIC_ARRANGER_COMPOSITION_MANIFEST_COLUMNS || '',
 		NEXT_PUBLIC_ARRANGER_COMPOSITION_MAX_BUCKET_COUNTS:
 			process.env.NEXT_PUBLIC_ARRANGER_COMPOSITION_MAX_BUCKET_COUNTS || 1000,
+		NEXT_PUBLIC_ENABLE_COMPOSITION_QUICKSEARCH: process.env.NEXT_PUBLIC_ENABLE_COMPOSITION_QUICKSEARCH,
 
 		// Instrument
 		NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_API,
@@ -65,29 +65,28 @@ module.exports = withPlugins([withTranspileModules], {
 			process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_MANIFEST_COLUMNS || '',
 		NEXT_PUBLIC_ARRANGER_INSTRUMENT_MAX_BUCKET_COUNTS:
 			process.env.NEXT_PUBLIC_ARRANGER_INSTRUMENT_MAX_BUCKET_COUNTS || 1000,
+		NEXT_PUBLIC_ENABLE_INSTRUMENT_QUICKSEARCH: process.env.NEXT_PUBLIC_ENABLE_INSTRUMENT_QUICKSEARCH,
 
 		// Song
 		NEXT_PUBLIC_SONG_API: process.env.NEXT_PUBLIC_SONG_API || 'http://localhost:8080', 
-		// Score
-		NEXT_PUBLIC_SCORE_API: process.env.NEXT_PUBLIC_SONG_API || 'http://localhost:8080', 
 
+		// Auth & Keycloak
+		NEXT_PUBLIC_AUTH_PROVIDER: process.env.NEXT_PUBLIC_AUTH_PROVIDER || 'keycloak',
+		NEXT_PUBLIC_KEYCLOAK_HOST: process.env.NEXT_PUBLIC_KEYCLOAK_HOST || 'http://keycloak:8080',
+		NEXT_PUBLIC_KEYCLOAK_REALM: process.env.NEXT_PUBLIC_KEYCLOAK_REALM || 'myrealm',
+		NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || 'webclient',
+		NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: process.env.NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE || 'dms',
+	
 		// using ASSET_PREFIX for the public runtime BASE_PATH because basePath in the top level config was not working
 		// with the dms reverse proxy setup
 		NEXT_PUBLIC_BASE_PATH: process.env.ASSET_PREFIX,
 		NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
-		NEXT_PUBLIC_EGO_API_ROOT: process.env.NEXT_PUBLIC_EGO_API_ROOT,
-		NEXT_PUBLIC_EGO_CLIENT_ID: process.env.NEXT_PUBLIC_EGO_CLIENT_ID,
-		NEXT_PUBLIC_KEYCLOAK_HOST: process.env.NEXT_PUBLIC_KEYCLOAK_HOST,
-		NEXT_PUBLIC_KEYCLOAK_REALM: process.env.NEXT_PUBLIC_KEYCLOAK_REALM,
-		NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
-		NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE: process.env.NEXT_PUBLIC_KEYCLOAK_PERMISSION_AUDIENCE,
 		NEXT_PUBLIC_LAB_NAME: process.env.NEXT_PUBLIC_LAB_NAME,
 		NEXT_PUBLIC_LOGO_FILENAME: process.env.NEXT_PUBLIC_LOGO_FILENAME,
 		NEXT_PUBLIC_SSO_PROVIDERS: process.env.NEXT_PUBLIC_SSO_PROVIDERS,
 		NEXT_PUBLIC_UI_VERSION: process.env.npm_package_version,
-		NEXT_PUBLIC_ENABLE_COMPOSITION_QUICKSEARCH: process.env.NEXT_PUBLIC_ENABLE_COMPOSITION_QUICKSEARCH,
-		NEXT_PUBLIC_ENABLE_INSTRUMENT_QUICKSEARCH: process.env.NEXT_PUBLIC_ENABLE_INSTRUMENT_QUICKSEARCH,
 		NEXT_PUBLIC_ENABLE_REGISTRATION: process.env.NEXT_PUBLIC_ENABLE_REGISTRATION,
+
 	},
 	assetPrefix: process.env.ASSET_PREFIX || '',
 	optimizeFonts: false,
@@ -105,23 +104,6 @@ module.exports = withPlugins([withTranspileModules], {
 		  {
 			source: '/api/song/v2/api-docs',
 			destination: 'http://song:8080/v2/api-docs',
-		  },
-		  {
-			source: '/api/song/swagger-ui.html',
-			destination: 'http://song:8080/swagger-ui.html',
-		  },
-		  {
-			source: '/api/score/:path*',
-			destination: 'http://score:8087/:path*', // or use process.env.NEXT_PUBLIC_SCORE_API
-		  },
-		  // Keep your existing rewrites for specific swagger paths
-		  {
-			source: '/api/score/v2/api-docs',
-			destination: 'http://score:8087/v2/api-docs',
-		  },
-		  {
-			source: '/api/score/swagger-ui.html',
-			destination: 'http://score:8087/swagger-ui.html',
 		  }
 		];
 	  },

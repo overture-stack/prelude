@@ -149,7 +149,8 @@ const NavBar = (): ReactElement => {
               <div
                 css={(theme) => css`
                   width: 195px;
-                  height: 100%;
+                  height: ${theme.dimensions.navbar.height}px;
+                  position: relative;
                   display: flex;
                   ${router.pathname === USER_PATH ? activeLinkStyle : ''}
                   &:hover {

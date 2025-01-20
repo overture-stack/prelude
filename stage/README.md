@@ -4,11 +4,11 @@
 <img align="right" width="120vw" src="productDMS.svg" alt="arranger-logo"/>
 </div>
 
-Stage is a React-based user interface designed to prop up browser-accessible data portals. Although Stage can be used for any web application, it is designed to integrate with Overture's Ego and Arranger microservices.
+Stage is a React-based user interface designed to prop up browser-accessible data portals. 
 
 Stage is a [Next.js](https://nextjs.org/) project bootstrapped with [create-next-app](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-For more information about Stage, including setup and how to integrate Overture microservices Arranger and Ego, see our [official Stage user documentation](https://www.overture.bio/documentation/stage/)
+For more information about Stage, see our [official Stage user documentation](https://www.docs.overture.bio/documentation/stage/)
 
 <!--Blockqoute-->
 
@@ -90,13 +90,11 @@ See the links below for additional information on our other research software to
 
 | Software                                               | Description                                                                                       |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| [Ego](https://github.com/overture-stack/ego)           | An authorization and user management service                                                      |
-| [Ego UI](https://github.com/overture-stack/ego-ui)     | A UI for managing Ego authentication and authorization services                                   |
 | [Score](https://github.com/overture-stack/score)       | Transfer data to and from any cloud-based storage system                                          |
 | [Song](https://github.com/overture-stack/song)         | Catalog and manage metadata associated to file data spread across cloud storage systems           |
 | [Maestro](https://github.com/overture-stack/maestro)   | Organizing your distributed data into a centralized Elasticsearch index                           |
 | [Arranger](https://github.com/overture-stack/arranger) | A search API with reusable UI components that build into configurable and functional data portals |
-| [Stage](https://github.com/overture-stack/stage)       | A simple web browser UI that integrates Ego and Arranger                                          |
+| [Stage](https://github.com/overture-stack/stage)       | A simple web browser UI                                                                           |
 
 ## Acknowledgements
 

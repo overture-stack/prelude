@@ -33,13 +33,12 @@ import { AUTH_PROVIDER, INTERNAL_API_PROXY } from '../../../global/utils/constan
 import Button from '../../Button';
 import StyledLink from '../../Link';
 
-import defaultTheme from '../../theme';
 import { Checkmark } from '../../theme/icons';
 import { AccessLevel, parseScope, ScopeObj } from '../../../global/utils/egoTokenUtils';
 import ErrorNotification from '../../ErrorNotification';
 
 import sleep from '../../utils/sleep';
-import DMSAdminContact, { GenericHelpMessage } from '../../DMSAdminContact';
+import PlatformAdminContact, { GenericHelpMessage } from '../../PlatformAdminContact';
 import { scopesFromPermissions, permissionBodyParams } from '@/global/utils/keycloakUtils';
 import urlJoin from 'url-join';
 
@@ -138,7 +137,7 @@ const getErrorMessage = ({ type, statusCode }: ErrorResponse) => {
 			return (
 				<span>
 					You do not have permissions to generate an API token. Your permissions may have changed
-					recently. Please contact the <DMSAdminContact /> to gain the correct permissions.
+					recently. Please contact the <PlatformAdminContact /> to gain the correct permissions.
 				</span>
 			);
 		default:
@@ -382,7 +381,7 @@ const ApiTokenInfo = () => {
 				{!userHasScopes && (
 					<ErrorNotification title="Invalid Permissions" size="md">
 						You do not have permissions to generate an API token. Please contact the{' '}
-						<DMSAdminContact /> to gain the correct permissions.
+						<PlatformAdminContact /> to gain the correct permissions.
 					</ErrorNotification>
 				)}
 			</div>

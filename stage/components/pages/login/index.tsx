@@ -20,11 +20,9 @@
  */
 
 import { css } from '@emotion/react';
-import urlJoin from 'url-join';
 import { signIn } from 'next-auth/react';
 
 import PageLayout from '../../PageLayout';
-import { Illustration } from '../../theme/icons';
 
 import { IconProps } from '../../theme/icons/types';
 import { getConfig } from '../../../global/config';
@@ -34,20 +32,25 @@ import { trim } from 'lodash';
 import ErrorNotification from '../../ErrorNotification';
 import providerMap, { ProviderDetail } from '../../../global/utils/providerTypeMap';
 import { ProviderType } from '../../../global/types/types';
-import { AUTH_PROVIDER, EXPLORER_PATH } from '@/global/utils/constants';
+import { AUTH_PROVIDER, USER_PATH } from '@/global/utils/constants';
 
-const LoginButton = ({ Icon, title, path }: { Icon: React.ComponentType<IconProps>; title: string; path: string }) => {
-	const { NEXT_PUBLIC_EGO_API_ROOT, NEXT_PUBLIC_EGO_CLIENT_ID, NEXT_PUBLIC_AUTH_PROVIDER } = getConfig();
+const LoginButton = ({
+	Icon,
+	title,
+	path,
+}: {
+	Icon: React.ComponentType<IconProps>;
+	title: string;
+	path: string;
+}) => {
+	const { NEXT_PUBLIC_AUTH_PROVIDER } =
+		getConfig();
 
-	const url = `${urlJoin(NEXT_PUBLIC_EGO_API_ROOT, '/oauth/login', path)}?client_id=${NEXT_PUBLIC_EGO_CLIENT_ID}`;
 	const disabled = !path;
 
 	const handleLogin = () => {
-		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.EGO) {
-			window.location.href = url;
-			return false;
-		} else if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
-			signIn(AUTH_PROVIDER.KEYCLOAK, { callbackUrl: EXPLORER_PATH });
+		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
+			signIn(AUTH_PROVIDER.KEYCLOAK, { callbackUrl: USER_PATH });
 		} else {
 			return false;
 		}
@@ -191,34 +194,10 @@ const LoginPage = () => {
 							font-weight: normal;
 						`}
 					>
-						Please choose one of the following log in methods to access your API token for data download:
+						Please choose one of the following log in methods to access your API token for data
+						download:
 					</span>
-					{NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.EGO && providers.length ? (
-						<ul
-							css={css`
-								width: 400px;
-								max-height: 400px;
-								display: grid;
-								grid-template-columns: repeat(2, 1fr);
-								row-gap: 15px;
-								column-gap: 15px;
-								padding-inline-start: 0;
-							`}
-						>
-							{providers.map(({ displayName, icon, path }) => {
-								return (
-									<li
-										key={displayName}
-										css={css`
-											list-style: none;
-										`}
-									>
-										<LoginButton Icon={icon} title={`Log in with ${displayName}`} path={path} />
-									</li>
-								);
-							})}
-						</ul>
-					) : NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK ? (
+					{NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK ? (
 						<LoginButton
 							Icon={providerMap[ProviderType.KEYCLOAK].icon}
 							title={`Log in with ${providerMap[ProviderType.KEYCLOAK].displayName}`}
@@ -232,7 +211,7 @@ const LoginPage = () => {
 							`}
 						>
 							<ErrorNotification size="md" title="No Configured Providers">
-								No identity providers have been configured. Please check your Stage configuration file.
+								No identity providers have been configured. Please check you dms configuration file.
 							</ErrorNotification>
 						</div>
 					)}
@@ -252,15 +231,6 @@ const LoginPage = () => {
 							background-color: ${theme.colors.primary};
 						`}
 					/>
-					<div
-						css={css`
-							position: absolute;
-							right: 190px;
-							top: 50px;
-						`}
-					>
-						<Illustration width={559} height={538} />
-					</div>
 				</div>
 			</div>
 		</PageLayout>

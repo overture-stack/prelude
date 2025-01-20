@@ -22,7 +22,7 @@
 import { ReactNode } from 'react';
 import { css, useTheme } from '@emotion/react';
 
-import { GenericHelpMessage } from '@/components/DMSAdminContact';
+import { GenericHelpMessage } from '@/components/PlatformAdminContact';
 import StyledLink from '@/components/Link';
 import { Checkmark, Warning } from '@/components/theme/icons';
 import { getConfig } from '@/global/config';

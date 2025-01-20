@@ -39,7 +39,6 @@ export enum Language {
 
 export enum ProviderType {
 	GOOGLE = 'GOOGLE',
-	// FACEBOOK = 'FACEBOOK', // hide from allowed types, related to https://github.com/overture-stack/ego/issues/555
 	GITHUB = 'GITHUB',
 	LINKEDIN = 'LINKEDIN',
 	ORCID = 'ORCID',
@@ -59,19 +58,6 @@ export interface User {
 	providerSubjectId: string;
 	scope: string[];
 }
-
-export type EgoJwtData = {
-	iat: number;
-	exp: number;
-	sub: string;
-	iss: string;
-	aud: string[];
-	jti: string;
-	context: {
-		scope: string[];
-		user: User;
-	};
-};
 
 export interface UserWithId extends User {
 	id: string;

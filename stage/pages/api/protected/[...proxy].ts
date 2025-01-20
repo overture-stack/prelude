@@ -8,8 +8,6 @@ import {
 	INTERNAL_API_PROXY,
 	KEYCLOAK_API_KEY_ENDPOINT,
 	KEYCLOAK_URL_TOKEN,
-	EGO_API_KEY_ENDPOINT,
-	EGO_SCOPES_ENDPOINT,
 } from '@/global/utils/constants';
 import { decryptContent } from '@/global/utils/crypt';
 import { removeFromPath, SSLSecured } from '@/global/utils/proxyUtils';
@@ -53,12 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	if (req.url?.startsWith(INTERNAL_API_PROXY.PROTECTED_ARRANGER)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.PROTECTED_ARRANGER);
 		target = NEXT_PUBLIC_ARRANGER_API;
-	} else if (req.url?.startsWith(INTERNAL_API_PROXY.PROTECTED_EGO_APIKEY_ENDPOINT)) {
-		path = removeFromPath(req?.url, INTERNAL_API_PROXY.PROTECTED_EGO_APIKEY_ENDPOINT);
-		target = EGO_API_KEY_ENDPOINT;
-	} else if (req.url?.startsWith(INTERNAL_API_PROXY.PROTECTED_EGO_API_SCOPES_ENDPOINT)) {
-		path = removeFromPath(req?.url, INTERNAL_API_PROXY.PROTECTED_EGO_API_SCOPES_ENDPOINT);
-		target = EGO_SCOPES_ENDPOINT;
 	} else if (req.url?.startsWith(INTERNAL_API_PROXY.PROTECTED_KEYCLOAK_APIKEY_ENDPOINT)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.PROTECTED_KEYCLOAK_APIKEY_ENDPOINT);
 		target = KEYCLOAK_API_KEY_ENDPOINT;
@@ -88,7 +80,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			target,
 			changeOrigin: true,
 			secure: SSLSecured,
-			cors: true,
 			headers: {
 			  'Access-Control-Allow-Origin': '*',
 			},

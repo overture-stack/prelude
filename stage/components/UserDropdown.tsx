@@ -73,24 +73,27 @@ const CurrentUser = () => {
 };
 
 const StyledListLink = styled('a')`
-	${({ theme }) => css`
-		text-decoration: none;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		background: ${theme.colors.white};
-		padding: 6px 12px;
-		color: ${theme.colors.black};
-		background-color: ${theme.colors.white};
-		border: 1px solid ${theme.colors.grey_3};
-		outline: none;
-		font-size: 16px;
-		cursor: pointer;
-		width: 100%;
-		&:hover {
-			background-color: ${theme.colors.grey_1};
-		}
-	`}
+  ${({ theme }) => css`
+    text-decoration: none;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    color: ${theme.colors.black};
+    background-color: ${theme.colors.white};
+    outline: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+
+    &:hover {
+      background-color: ${theme.colors.grey_1};
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid ${theme.colors.grey_3};
+    }
+  `}
 `;
 
 const UserDropdown = () => {
@@ -122,7 +125,7 @@ const UserDropdown = () => {
 	const fillColor = router.pathname === USER_PATH ? theme.colors.accent2_dark : theme.colors.accent_dark;
 
 	const handleLogout = () => {
-		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.EGO || NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
+		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
 			signOut();
 		}
 	};
@@ -171,27 +174,32 @@ const UserDropdown = () => {
 				/>
 			)}
 			{open && (
-				<ul
-					css={css`
-						width: 100%;
-						list-style: none;
-						padding: 0;
-						position: absolute;
-						top: ${theme.dimensions.navbar.height}px;
-						left: 0;
-						margin: 0;
-					`}
-				>
-					<li>
-						<Link path={USER_PATH}>
-							<StyledListLink>Profile & Token</StyledListLink>
-						</Link>
-					</li>
-					<li>
-						<StyledListLink onClick={handleLogout}>Logout</StyledListLink>
-					</li>
-				</ul>
-			)}
+			<ul
+				css={css`
+				position: absolute;
+				width: 100%;
+				list-style: none; 
+				padding: 0;
+				margin: 0;
+				top: 100%;
+				background: ${theme.colors.white};
+				box-shadow: ${theme.shadow.default};
+				left: 0;
+				border: 1px solid ${theme.colors.grey_3};
+				border-radius: 0 0 4px 4px;
+				overflow: hidden;
+				`}
+			>
+				<li>
+				<Link path={USER_PATH}>
+					<StyledListLink>Profile & Token</StyledListLink>
+				</Link>
+				</li>
+				<li>
+				<StyledListLink onClick={handleLogout}>Logout</StyledListLink>
+				</li>
+			</ul>
+			)}	
 		</div>
 	);
 };
