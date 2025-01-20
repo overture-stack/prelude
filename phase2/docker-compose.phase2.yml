@@ -530,7 +530,9 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
   # --------------------------------------
   stage:
-    image: localstageimage:1.0
+    build:
+      context: .
+      dockerfile: ./stage/Dockerfile.local
     container_name: stage
     pull_policy: never
     platform: linux/arm64/v8
