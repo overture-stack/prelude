@@ -19,8 +19,8 @@
  *
  */
 
-import React from 'react';
 import { NextPageContext } from 'next';
+import { type ComponentType } from 'react';
 
 export type GetInitialPropsContext = NextPageContext & {
 	res?: NextPageContext['res'] & {
@@ -43,4 +43,4 @@ export type PageConfigProps = {
 	isPublic?: boolean;
 };
 
-export type PageWithConfig = PageConfigProps & React.ComponentType<any>;
+export type PageWithConfig = PageConfigProps & ComponentType;

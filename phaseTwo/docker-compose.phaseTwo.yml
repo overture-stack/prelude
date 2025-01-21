@@ -545,11 +545,11 @@ services:
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       # Composition Arranger Variables
-      NEXT_PUBLIC_ARRANGER_COMPOSITION_API: http://localhost:5050/graphql # Updated inline with nginx reverse proxy
+      NEXT_PUBLIC_ARRANGER_COMPOSITION_API: http://localhost:5050 # Updated inline with nginx reverse proxy
       NEXT_PUBLIC_ARRANGER_COMPOSITION_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_COMPOSITION_INDEX: composition_centric
       # Instrument Arranger Variables
-      NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: http://localhost:5051/graphql # Updated inline with nginx reverse proxy
+      NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: http://localhost:5051 # Updated inline with nginx reverse proxy
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: instrument_centric
       # Song Variables (For Swagger Pages)

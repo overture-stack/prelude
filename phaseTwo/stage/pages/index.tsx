@@ -19,16 +19,12 @@
  *
  */
 
-import React from 'react';
-
 import { createPage } from '../global/utils/pages';
 import HomePage from './home';
 
 const LandingPage = createPage({
 	getInitialProps: async () => null,
 	isPublic: true,
-})(() => {
-	return <HomePage />;
-});
+})(HomePage);
 
 export default LandingPage;

@@ -20,12 +20,13 @@ down:
 
 clean:
 	@echo "\033[31mWARNING: This will remove all data within Elasticsearch.\033[0m"
-	@echo "Are you sure you want to proceed? [y/N] " && read ans && [ $${ans:-N} = y ]
-	@echo "Stopping related containers..."
-	docker compose -f docker-compose.phaseOne.yml down || true
-	@echo "Cleaning up Elasticsearch volumes..."
-	-rm -rf ./phaseOne/persistentStorage/es-volumes/*/data/nodes 2>/dev/null || true
-	-find ./phaseOne/persistentStorage/es-volumes/*/logs -type f ! -name 'logs.txt' -delete 2>/dev/null || true
-	-docker volume rm -f conductor_elasticsearch-data 2>/dev/null || true
-	-docker volume rm -f conductor_elasticsearch-logs 2>/dev/null || true
-	@echo "Cleanup completed!"
+	@/bin/bash -c 'echo "Are you sure you want to proceed? [y/N] " && read ans && [ $${ans:-N} = y ] && (\
+		echo "Stopping related containers..." && \
+		docker compose -f phaseOne/docker-compose.phaseOne.yml down || true && \
+		echo "Cleaning up Elasticsearch volumes..." && \
+		rm -rf ./phaseOne/volumes/es-data/nodes 2>/dev/null || true && \
+		find ./phaseOne/volumes/es-logs/ -type f ! -name "logs.txt" -delete 2>/dev/null || true && \
+		docker volume rm -f conductor_elasticsearch-data 2>/dev/null || true && \
+		docker volume rm -f conductor_elasticsearch-logs 2>/dev/null || true && \
+		echo "Cleanup completed!" \
+	)'
