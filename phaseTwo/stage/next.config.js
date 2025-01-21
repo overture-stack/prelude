@@ -95,16 +95,10 @@ module.exports = withPlugins([withTranspileModules], {
 	},
 	async rewrites() {
 		return [
-		  // Song API rewrites
 		  {
 			source: '/api/song/:path*',
-			destination: 'http://song:8080/:path*', // or use process.env.NEXT_PUBLIC_SONG_API
-		  },
-		  // Keep your existing rewrites for specific swagger paths
-		  {
-			source: '/api/song/v2/api-docs',
-			destination: 'http://song:8080/v2/api-docs',
+			destination: 'http://song:8080/:path*', // Query params are automatically forwarded
 		  }
 		];
-	  },
-});
+	  }
+	});

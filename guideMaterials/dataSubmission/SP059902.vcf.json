@@ -1,0 +1,128 @@
+{
+  "studyId": "demo",
+  "analysisType": {
+    "name": "quickStartSchema"
+  },
+  "collaborator": [
+    {
+      "contactEmail": "dataSubmitter@example.com"
+    }
+  ],
+  "samples": [
+    {
+      "submitterSampleId": "SP059902",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP059902",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Blood derived - bone marrow"
+      },
+      "donor": {
+        "submitterDonorId": "DO0599",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP059902.snv.vcf.gz",
+      "fileSize": 17246,
+      "fileMd5sum": "94b790078d8e98ad08ffc42389e2fa68",
+      "fileAccess": "open",
+      "fileType": "VCF",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Raw SV Calls",
+      "fileName": "SP059902.snv.vcf.gz.tbi",
+      "fileSize": 141,
+      "fileMd5sum": "f5cca6ace25d076d1f76cebf4ce3defd",
+      "fileAccess": "open",
+      "fileType": "TBI",
+      "info": {
+        "dataCategory": "Simple Nucelotide Variation",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD059901",
+    "submitterSpecimenId": "SP059902",
+    "specimenAnatomicLocation": "C31",
+    "tumourGradingSystem": "Nuclear grading system for DCIS",
+    "tumourGrade": "G1"
+  },
+  "donor": {
+    "submitterDonorId": "DO0599",
+    "primarySite": "Windpipe",
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD059901",
+        "ageAtDiagnosis": 50,
+        "cancerTypeCode": "C34.2",
+        "clinicalTumourStagingSystem": "Binet staging system",
+        "clinicalStageGroup": "Stage A",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR059901",
+            "treatmentType": [
+              "Chemotherapy"
+            ],
+            "treatmentStartInterval": 58,
+            "treatmentDuration": 52,
+            "responseToTreatment": "Complete response",
+            "chemotherapy": [
+              {
+                "drugName": "Tamoxifen "
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO059901",
+            "submitterTreatmentId": "TR059901",
+            "intervalOfFollowUp": 45,
+            "diseaseStatusAtFollowUp": "Stable",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "PacBio",
+    "experimentalStrategy": "WXS",
+    "model": "SEQUEL IIe",
+    "sequencingCenter": "CGTA",
+    "sequencingDate": "2021-03-08T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "Mutect2 Variant Calling",
+    "workflowShortName": "Mutect2Variant",
+    "workflowVersion": "0.1.1.1",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_alignment",
+        "tumourAnalysisId": "00000000-0000-0000-0000-0000000000599",
+        "normalAnalysisId": "00000000-0000-0000-0000-0000000000599"
+      }
+    ],
+    "runId": "RI0599",
+    "sessionId": "SI0599"
+  },
+  "publication": {
+    "publication": "NAR",
+    "doi": "10.1093/nar/gkae188"
+  }
+}

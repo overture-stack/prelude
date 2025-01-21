@@ -2,7 +2,6 @@ import dynamic from 'next/dynamic';
 import { css } from '@emotion/react';
 import PageLayout from '../../PageLayout';
 import 'swagger-ui-react/swagger-ui.css';
-import { getConfig } from '@/global/config';
 import { SwaggerUIProps } from 'swagger-ui-react';
 
 const SwaggerUI = dynamic(() => import('swagger-ui-react'), { 
@@ -10,8 +9,6 @@ const SwaggerUI = dynamic(() => import('swagger-ui-react'), {
 });
 
 const Song = () => {
-  const { NEXT_PUBLIC_SONG_API } = getConfig();
-
   const swaggerConfig: SwaggerUIProps = {
     url: `/api/song/v2/api-docs`,
     docExpansion: 'none',
@@ -19,7 +16,22 @@ const Song = () => {
     defaultModelExpandDepth: 1,
     plugins: [],
     presets: [],
-    layout: "BaseLayout"
+    layout: "BaseLayout",
+    requestInterceptor: (req) => {
+      // Always use the Next.js proxy route
+      if (req.url.startsWith('http')) {
+        const url = new URL(req.url);
+        req.url = `/api/song${url.pathname}${url.search}`;
+      }
+      return req;
+    },
+    // Add CORS headers to the Swagger UI requests
+    responseInterceptor: (response) => {
+      if (response.headers) {
+        response.headers['Access-Control-Allow-Origin'] = '*';
+      }
+      return response;
+    }
   };
 
   return (

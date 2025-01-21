@@ -1,0 +1,677 @@
+{
+  "name": "quickStartSchema",
+  "schema": {
+    "type": "object",
+    "required": ["donor", "specimen", "workflow", "experiment"],
+    "properties": {
+      "workflow": {
+        "propertyNames": {
+          "enum": ["workflowName", "workflowShortName", "workflowVersion", "genomeBuild", "inputs","sessionId","runId"]
+        },
+        "required": ["workflowName", "genomeBuild", "inputs"],
+        "type": "object",
+        "properties": {
+          "workflowName": {
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9 _\\-]+[a-zA-Z0-9]+$"
+          },
+          "workflowShortName": {
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_\\-]+[a-zA-Z0-9]+$"
+          },
+          "workflowVersion": {
+            "type": "string"
+          },
+          "genomeBuild": {
+            "type": "string",
+            "enum": ["GRCh37", "GRCh38_hla_decoy_ebv", "GRCh38_Verily_v1"]
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tumourAnalysisId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{13}$"
+                },
+                "normalAnalysisId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{13}$"
+                },
+                "analysisType": {
+                  "type": "string"
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 2
+          },
+          "runId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "pattern": "SI[0-9]{4}"
+          }
+        }
+      },
+      "experiment": {
+        "propertyNames": {
+          "enum": [
+            "platform",
+            "experimentalStrategy",
+            "model",
+            "sequencingCenter",
+            "sequencingDate"
+          ]
+        },
+        "required": ["platform", "experimentalStrategy"],
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": ["string", "null"]
+          },
+          "experimentalStrategy": {
+            "type": ["string", "null"]
+          },
+          "model": {
+            "type": ["string", "null"]
+          },
+          "sequencingCenter": {
+            "type": ["string", "null"]
+          },
+          "sequencingDate": {
+            "type": ["string", "null"],
+            "pattern": "^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$"
+          }
+        }
+      },
+      "donor": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "submitterDonorId",
+            "primarySite",
+            "vitalStatus",
+            "survivalTime",
+            "causeOfDeath",
+            "primaryDiagnosis"
+          ]
+        },
+        "required": ["submitterDonorId", "primarySite", "vitalStatus", "primaryDiagnosis"],
+        "properties": {
+          "submitterDonorId": {
+            "type": "string"
+          },
+          "primarySite": {
+            "type": "string",
+            "enum": [
+              "Accessory sinuses",
+              "Adrenal gland",
+              "Base of tongue",
+              "Bladder",
+              "Bones, joints and articular cartilage of limbs",
+              "Bones, joints and articular cartilage of other and unspecified sites",
+              "Brain",
+              "Breast",
+              "Bronchus and lung",
+              "Cervix uteri",
+              "Colon",
+              "Connective, subcutaneous and other soft tissues",
+              "Corpus uteri",
+              "Esophagus",
+              "Eye and adnexa",
+              "Floor of mouth",
+              "Gallbladder",
+              "Gum",
+              "Heart, mediastinum, and pleura",
+              "Hematopoietic and reticuloendothelial systems",
+              "Hypopharynx",
+              "Kidney",
+              "Larynx",
+              "Lip",
+              "Liver and intrahepatic bile ducts",
+              "Lymph nodes",
+              "Meninges",
+              "Nasal cavity and middle ear",
+              "Nasopharynx",
+              "Oropharynx",
+              "Other and ill-defined digestive organs",
+              "Other and ill-defined sites",
+              "Other and ill-defined sites in lip, oral cavity and pharynx",
+              "Other and ill-defined sites within respiratory system and intrathoracic organs",
+              "Other and unspecified female genital organs",
+              "Other and unspecified major salivary glands",
+              "Other and unspecified male genital organs",
+              "Other and unspecified parts of biliary tract",
+              "Other and unspecified parts of mouth",
+              "Other and unspecified parts of tongue",
+              "Other and unspecified urinary organs",
+              "Other endocrine glands and related structures",
+              "Ovary",
+              "Palate",
+              "Pancreas",
+              "Parotid gland",
+              "Penis",
+              "Peripheral nerves and autonomic nervous system",
+              "Placenta",
+              "Prostate gland",
+              "Pyriform sinus",
+              "Rectosigmoid junction",
+              "Rectum",
+              "Renal pelvis",
+              "Retroperitoneum and peritoneum",
+              "Skin",
+              "Small intestine",
+              "Spinal cord, cranial nerves, and other parts of central nervous system",
+              "Stomach",
+              "Testis",
+              "Thymus",
+              "Thyroid gland",
+              "Tonsil",
+              "Trachea",
+              "Ureter",
+              "Uterus, NOS",
+              "Vagina",
+              "Vulva"
+            ]
+          },
+          "vitalStatus": {
+            "type": "string",
+            "enum": ["Alive", "Deceased"]
+          },
+          "survivalTime": {
+            "type": ["null", "integer"],
+            "minimum": 0
+          },
+          "causeOfDeath": {
+            "type": ["null", "string"],
+            "enum": ["Died of cancer", "Died of other reasons", "Unknown", null]
+          },
+          "primaryDiagnosis": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "propertyNames": {
+                "enum": [
+                  "submitterPrimaryDiagnosisId",
+                  "ageAtDiagnosis",
+                  "cancerTypeCode",
+                  "clinicalTumourStagingSystem",
+                  "clinicalStageGroup",
+                  "treatment",
+                  "followUp"
+                ]
+              },
+              "required": ["submitterPrimaryDiagnosisId", "ageAtDiagnosis", "cancerTypeCode"],
+              "properties": {
+                "submitterPrimaryDiagnosisId": {
+                  "type": "string"
+                },
+                "ageAtDiagnosis": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "cancerTypeCode": {
+                  "type": "string",
+                  "pattern": "^[C|D][0-9]{2}(.[0-9]{1,3}[A-Z]{0,1})?$"
+                },
+                "clinicalTumourStagingSystem": {
+                  "type": "string",
+                  "enum": [
+                    "AJCC 8th edition",
+                    "AJCC 7th edition",
+                    "AJCC 6th edition",
+                    "Ann Arbor staging system",
+                    "Binet staging system",
+                    "Durie-Salmon staging system",
+                    "FIGO staging system",
+                    "Lugano staging system",
+                    "Rai staging system",
+                    "Revised International staging system (RISS)",
+                    "St Jude staging system"
+                  ]
+                },
+                "clinicalStageGroup": {
+                  "type": "string",
+                  "enum": [
+                    "Occult Carcinoma",
+                    "Stage 0",
+                    "Stage 0a",
+                    "Stage 0is",
+                    "Stage 1",
+                    "Stage 1A",
+                    "Stage 1B",
+                    "Stage A",
+                    "Stage B",
+                    "Stage C",
+                    "Stage I",
+                    "Stage IA",
+                    "Stage IA1",
+                    "Stage IA2",
+                    "Stage IA3",
+                    "Stage IAB",
+                    "Stage IAE",
+                    "Stage IAES",
+                    "Stage IAS",
+                    "Stage IB",
+                    "Stage IB1",
+                    "Stage IB2",
+                    "Stage IBE",
+                    "Stage IBES",
+                    "Stage IBS",
+                    "Stage IC",
+                    "Stage IE",
+                    "Stage IEA",
+                    "Stage IEB",
+                    "Stage IES",
+                    "Stage II",
+                    "Stage II bulky",
+                    "Stage IIA",
+                    "Stage IIA1",
+                    "Stage IIA2",
+                    "Stage IIAE",
+                    "Stage IIAES",
+                    "Stage IIAS",
+                    "Stage IIB",
+                    "Stage IIBE",
+                    "Stage IIBES",
+                    "Stage IIBS",
+                    "Stage IIC",
+                    "Stage IIE",
+                    "Stage IIEA",
+                    "Stage IIEB",
+                    "Stage IIES",
+                    "Stage III",
+                    "Stage IIIA",
+                    "Stage IIIA1",
+                    "Stage IIIA2",
+                    "Stage IIIAE",
+                    "Stage IIIAES",
+                    "Stage IIIAS",
+                    "Stage IIIB",
+                    "Stage IIIBE",
+                    "Stage IIIBES",
+                    "Stage IIIBS",
+                    "Stage IIIC",
+                    "Stage IIIC1",
+                    "Stage IIIC2",
+                    "Stage IIID",
+                    "Stage IIIE",
+                    "Stage IIIES",
+                    "Stage IIIS",
+                    "Stage IIS",
+                    "Stage IS",
+                    "Stage IV",
+                    "Stage IVA",
+                    "Stage IVA1",
+                    "Stage IVA2",
+                    "Stage IVAE",
+                    "Stage IVAES",
+                    "Stage IVAS",
+                    "Stage IVB",
+                    "Stage IVBE",
+                    "Stage IVBES",
+                    "Stage IVBS",
+                    "Stage IVC",
+                    "Stage IVE",
+                    "Stage IVES",
+                    "Stage IVS",
+                    "Cannot be assessed"
+                  ]
+                },
+                "followUp": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "propertyNames": {
+                      "enum": [
+                        "submitterFollowUpId",
+                        "intervalOfFollowUp",
+                        "diseaseStatusAtFollowUp",
+                        "relapseType",
+                        "submitterTreatmentId"
+                      ]
+                    },
+                    "required": [
+                      "submitterFollowUpId",
+                      "intervalOfFollowUp",
+                      "diseaseStatusAtFollowUp"
+                    ],
+                    "properties": {
+                      "submitterFollowUpId": {
+                        "type": "string"
+                      },
+                      "submitterTreatmentId": {
+                        "type": "string"
+                      },
+                      "intervalOfFollowUp": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "diseaseStatusAtFollowUp": {
+                        "type": "string",
+                        "enum": [
+                          "Complete remission",
+                          "Distant progression",
+                          "Loco-regional progression",
+                          "No evidence of disease",
+                          "Partial remission",
+                          "Progression NOS",
+                          "Relapse or recurrence",
+                          "Stable"
+                        ]
+                      },
+                      "relapseType": {
+                        "type": ["string", "null"],
+                        "enum": [
+                          "Distant recurrence/metastasis",
+                          "Local recurrence",
+                          "Local recurrence and distant metastasis",
+                          "Progression (liquid tumours)",
+                          null
+                        ]
+                      }
+                    }
+                  }
+                },
+                "treatment": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "propertyNames": {
+                      "enum": [
+                        "submitterTreatmentId",
+                        "treatmentType",
+                        "treatmentStartInterval",
+                        "treatmentDuration",
+                        "responseToTreatment",
+                        "chemotherapy",
+                        "hormoneTherapy",
+                        "radiation"
+                      ]
+                    },
+                    "required": ["submitterTreatmentId", "treatmentType"],
+                    "properties": {
+                      "submitterTreatmentId": {
+                        "type": "string"
+                      },
+                      "treatmentType": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "Ablation",
+                            "Bone marrow transplant",
+                            "Chemotherapy",
+                            "Endoscopic therapy",
+                            "Hormonal therapy",
+                            "No treatment",
+                            "Other targeting molecular therapy",
+                            "Photodynamic therapy",
+                            "Radiation therapy",
+                            "Stem cell transplant",
+                            "Surgery"
+                          ]
+                        }
+                      },
+                      "treatmentStartInterval": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "treatmentDuration": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "responseToTreatment": {
+                        "type": "string",
+                        "enum": [
+                          "Complete response",
+                          "Disease progression",
+                          "NED",
+                          "Minor response",
+                          "Partial response",
+                          "Stable disease"
+                        ]
+                      },
+                      "chemotherapy": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "propertyNames": {
+                            "enum": ["drugName"]
+                          },
+                          "required": ["drugName"],
+                          "properties": {
+                            "drugName": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "hormoneTherapy": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "propertyNames": {
+                            "enum": ["drugName"]
+                          },
+                          "required": ["drugName"],
+                          "properties": {
+                            "drugName": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "radiation": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "propertyNames": {
+                            "enum": ["radiationTherapyModality", "anatomicalSiteIrradiated"]
+                          },
+                          "required": ["radiationTherapyModality", "anatomicalSiteIrradiated"],
+                          "properties": {
+                            "radiationTherapyModality": {
+                              "type": "string",
+                              "enum": ["Electron", "Heavy Ions", "Photon", "Proton"]
+                            },
+                            "anatomicalSiteIrradiated": {
+                              "type": "string",
+                              "enum": [
+                                "Abdomen",
+                                "Body",
+                                "Brain",
+                                "Chest",
+                                "Head",
+                                "Liver",
+                                "Lower Limb",
+                                "Lung",
+                                "Neck",
+                                "Pelvis",
+                                "Skin",
+                                "Spine",
+                                "Thorax",
+                                "Upper Limb"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "treatmentType": {
+                              "contains": {
+                                "const": "Chemotherapy"
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "required": ["chemotherapy"]
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "treatmentType": {
+                              "contains": {
+                                "const": "Radiation therapy"
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "required": ["radiation"]
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "treatmentType": {
+                              "contains": {
+                                "const": "Hormonal therapy"
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "required": ["hormoneTherapy"]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "vitalStatus": {
+              "const": "Deceased"
+            }
+          }
+        },
+        "then": {
+          "required": ["causeOfDeath", "survivalTime"]
+        }
+      },
+      "specimen": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "submitterSpecimenId",
+            "submitterPrimaryDiagnosisId",
+            "specimenAnatomicLocation",
+            "tumourGradingSystem",
+            "tumourGrade"
+          ]
+        },
+        "required": [
+          "submitterSpecimenId",
+          "submitterPrimaryDiagnosisId",
+          "specimenAnatomicLocation"
+        ],
+        "properties": {
+          "submitterSpecimenId": {
+            "type": "string"
+          },
+          "submitterPrimaryDiagnosisId": {
+            "type": "string"
+          },
+          "specimenAnatomicLocation": {
+            "type": "string",
+            "pattern": "^[C][0-9]{2}(.[0-9]{1})?$"
+          },
+          "tumourGradingSystem": {
+            "type": "string",
+            "enum": [
+              "FNCLCC grading system",
+              "Four-tier grading system",
+              "Gleason grade group system",
+              "Grading system for GISTs",
+              "Grading system for GNETs",
+              "ISUP grading system",
+              "Nuclear grading system for DCIS",
+              "Scarff-Bloom-Richardson grading system",
+              "Three-tier grading system",
+              "Two-tier grading system",
+              "WHO grading system for CNS tumours"
+            ]
+          },
+          "tumourGrade": {
+            "type": "string",
+            "enum": [
+              "Low grade",
+              "High grade",
+              "GX",
+              "G1",
+              "G2",
+              "G3",
+              "G4",
+              "Low",
+              "High",
+              "Grade I",
+              "Grade II",
+              "Grade III",
+              "Grade IV",
+              "Grade Group 1",
+              "Grade Group 2",
+              "Grade Group 3",
+              "Grade Group 4",
+              "Grade Group 5"
+            ]
+          }
+        }
+      },
+      "publication": {
+        "type": "object",
+        "propertyNames": {
+          "enum": ["publication", "doi"]
+        },
+        "properties": {
+          "publication": {
+            "type": ["string", "null"]
+          },
+          "doi": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "collaborator": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "propertyNames": {
+                "enum": [
+                    "name",
+                    "contactEmail"
+                ]
+            },
+            "required": [
+              "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "contactEmail": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "pattern": "^\\S+@\\S+\\.\\S+$"
+                }
+             }       
+           }
+        }
+    }
+  }
+}

@@ -231,14 +231,11 @@ services:
       # Spring Variables
       SPRING_PROFILES_ACTIVE: prod,secure,kafka
       # Swagger/OpenAPI Configuration
-      SPRINGDOC_API_DOCS_PATH: /v2/api-docs
-      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui.html
-      SPRINGDOC_SWAGGER_UI_CONFIGURL: /v2/api-docs/swagger-config
-      SPRINGDOC_SWAGGER_UI_URL: /v2/api-docs
-      SPRING_MVC_CORS_ENABLED: true
-      SPRING_MVC_CORS_ALLOWED-ORIGINS: http://localhost:3000
-      SPRING_MVC_CORS_ALLOWED-METHODS: GET,POST,PUT,DELETE,OPTIONS
+      SPRING_MVC_CORS_ENABLED: "true"
+      SPRING_MVC_CORS_ALLOWED-ORIGINS: "*"
+      SPRING_MVC_CORS_ALLOWED-METHODS: "GET,POST,PUT,DELETE,PATCH,OPTIONS"
       SPRING_MVC_CORS_ALLOWED-HEADERS: "*"
+      SPRING_MVC_CORS_ALLOW-CREDENTIALS: "true"
       # Flyway variables
       SPRING_FLYWAY_ENABLED: true
       # Song Variables
@@ -555,9 +552,8 @@ services:
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: http://localhost:5051/graphql # Updated inline with nginx reverse proxy
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: instrument_centric
-      # Song and Score Variables (For Swagger Pages)
-      NEXT_PUBLIC_SONG_API: http://song:8080 
-      NEXT_PUBLIC_SCORE_API: http://score:8087
+      # Song Variables (For Swagger Pages)
+      NEXT_PUBLIC_SONG_API: http://localhost:8080
       NEXTAUTH_SECRET: "your-secure-secret-here"
       # Keycloak Variables
       NEXT_PUBLIC_AUTH_PROVIDER: keycloak
