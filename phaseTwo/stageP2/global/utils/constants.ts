@@ -57,7 +57,7 @@ const PROXY_API_PATH = '/api';
 const PROXY_PROTECTED_API_PATH = '/api/protected';
 
 export const INTERNAL_API_PROXY = {
-	DEMO_ARRANGER: urlJoin(PROXY_API_PATH, 'correlation_arranger'),
+	DEMO_ARRANGER: urlJoin(PROXY_API_PATH, 'demo_arranger'),
 	INSTRUMENT_ARRANGER: urlJoin(PROXY_API_PATH, 'instrument_arranger'),
 	SONG: urlJoin(PROXY_API_PATH, 'song'), // Updated to use urlJoin and PROXY_API_PATH
 	PROTECTED_ARRANGER: urlJoin(PROXY_PROTECTED_API_PATH, 'arranger'),

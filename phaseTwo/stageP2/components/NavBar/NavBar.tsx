@@ -92,7 +92,7 @@ const NavBar = (): ReactElement => {
 				css={css`
 					display: flex;
 					margin-left: 30px;
-					margin-top: 5px;
+					margin-top: 0px;
 					align-items: center;
 					justify-content: space-between;
 					width: 100%;

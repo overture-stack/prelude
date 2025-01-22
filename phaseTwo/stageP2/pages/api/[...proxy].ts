@@ -40,6 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 	if (req.url?.startsWith(INTERNAL_API_PROXY.DEMO_ARRANGER)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.DEMO_ARRANGER);
+		console.log({path})
 		target = NEXT_PUBLIC_ARRANGER_DEMO_API;
 	} else if (req.url?.startsWith(INTERNAL_API_PROXY.INSTRUMENT_ARRANGER)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.INSTRUMENT_ARRANGER);

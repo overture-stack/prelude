@@ -1,20 +1,42 @@
+/*
+ *
+ * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ *
+ *  This program and the accompanying materials are made available under the terms of
+ *  the GNU Affero General Public License v3.0. You should have received a copy of the
+ *  GNU Affero General Public License along with this program.
+ *   If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+ *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ *  SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ *  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ *  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+import { useMemo } from 'react';
 import { css, useTheme } from '@emotion/react';
 import {
 	Pagination,
 	Table,
 	TableContextProvider,
-	Toolbar,
 	useArrangerTheme,
+	Toolbar,
 } from '@overture-stack/arranger-components';
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
-import { useMemo } from 'react';
 import urlJoin from 'url-join';
 
+import { getConfig } from '@/global/config';
 import StyledLink from '@/components/Link';
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
-import { getConfig } from '@/global/config';
+import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 
 const getTableConfigs = ({
 	apiHost,
@@ -39,30 +61,11 @@ const getTableConfigs = ({
 			`,
 
 			// Child components
-			columnTypes: {
-				all: {
-					cellValue: ({ getValue }) => {
-						const value = getValue();
-						return ['', null, 'null', undefined, 'undefined'].includes(value) ? (
-							<span
-								css={css`
-									color: #9c9c9c;
-								`}
-							>
-								--
-							</span>
-						) : (
-							value
-						);
-					},
-				},
-			},
 			CountDisplay: {
 				fontColor: 'inherit',
 			},
 			DownloadButton: {
 				customExporters,
-				exportSelectedRowsField: 'submission_metadata.submitter_id',
 				downloadUrl: urlJoin(apiHost, 'download'),
 				label: () => (
 					<>
@@ -127,7 +130,7 @@ const getTableConfigs = ({
 				`,
 				hoverBackground: theme.colors.grey_highlight,
 				lineHeight: '1.5rem',
-				selectedBackground: theme.colors.accent_highlight,
+				selectedBackground: 'pink',
 				verticalBorderColor: theme.colors.grey_3,
 			},
 			TableWrapper: {
@@ -138,20 +141,18 @@ const getTableConfigs = ({
 });
 
 const RepoTable = () => {
-	const { NEXT_PUBLIC_ARRANGER_DEMO_API, NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS } = getConfig();
+	const { NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS } = getConfig();
 	const theme = useTheme();
+	console.log({NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS});
 
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-
-	// Parse manifest columns from config
-	const manifestColumns =
-		NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS?.split(',')
-			.filter((field) => field.trim())
-			.map((fieldName) => fieldName.replace(/['"]+/g, '').trim()) || [];
-
+	const manifestColumns = NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS.split(',')
+		.filter((field) => field.trim()) // break it into arrays, and ensure there's no empty field names
+		.map((fieldName) => fieldName.replace(/['"]+/g, '').trim());
+		console.log({manifestColumns});
 	const customExporters = [
-		{ label: 'File Table', fileName: `demo-data-export.${today}.tsv` },
-		{ label: 'File Manifest', fileName: `score-manifest.${today}.tsv`, columns: manifestColumns },
+		{ label: 'File Table', fileName: `data-explorer-table-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
+		{ label: 'File Manifest', fileName: `score-manifest.${today}.tsv`, columns: manifestColumns }, // exports a TSV with the manifest columns
 		{
 			label: () => (
 				<span
@@ -183,7 +184,7 @@ const RepoTable = () => {
 		},
 	];
 
-	useArrangerTheme(getTableConfigs({ apiHost: NEXT_PUBLIC_ARRANGER_DEMO_API, customExporters, theme }));
+	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DEMO_ARRANGER, customExporters, theme }));
 
 	return useMemo(
 		() => (
@@ -210,3 +211,4 @@ const RepoTable = () => {
 };
 
 export default RepoTable;
+

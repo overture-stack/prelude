@@ -20,15 +20,14 @@
  */
 
 import createArrangerFetcher from '@/components/utils/arrangerFetcher';
-import { getConfig } from '@/global/config';
+import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types';
 import SQON from '@overture-stack/sqon-builder';
 import { isEmpty } from 'lodash';
 
-const { NEXT_PUBLIC_ARRANGER_INSTRUMENT_API } = getConfig();
 
 export const arrangerFetcher = createArrangerFetcher({
-	ARRANGER_API: NEXT_PUBLIC_ARRANGER_INSTRUMENT_API,
+	ARRANGER_API: INTERNAL_API_PROXY.INSTRUMENT_ARRANGER,
 });
 
 const saveSetMutation = `mutation ($sqon: JSON!)  {

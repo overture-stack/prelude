@@ -474,7 +474,7 @@ services:
     environment:
       # Arranger Variables
       PORT: 5050
-      ENABLE_LOGS: false
+      ENABLE_LOGS: true
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
@@ -509,7 +509,7 @@ services:
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       # Demo Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DEMO_API: http://localhost:5050 # Updated inline with nginx reverse proxy
+      NEXT_PUBLIC_ARRANGER_DEMO_API: http://arranger-demo:5050 
       NEXT_PUBLIC_ARRANGER_DEMO_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_DEMO_INDEX: demo_centric
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS:
