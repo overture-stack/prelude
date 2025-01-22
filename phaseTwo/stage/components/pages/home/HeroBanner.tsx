@@ -88,7 +88,7 @@ const HeroBanner = (): ReactElement => {
 						}
 					`}
 				>
-					The Prelude Development Portal
+					Prelude Development Portal
 				</h2>
 				<p
 					css={css`

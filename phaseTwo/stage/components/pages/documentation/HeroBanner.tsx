@@ -88,22 +88,22 @@ const HeroBanner = (): ReactElement => {
 						}
 					`}
 				>
-					Documentation
-					<p
-						css={css`
-							font-size: 18px;
-							line-height: 1.5;
-							max-width: 800px;
-							margin-top: 10px; /* Add specific margin here */
-
-							@media (min-width: 1345px) {
-								font-size: 20px;
-							}
-						`}
-					>
-						Bespoke documentation covering basic platform usage and administration
-					</p>
+					Prelude Documentation
 				</h2>
+				<p
+					css={css`
+						font-size: 14px;
+						line-height: 1.5;
+						max-width: 800px;
+						margin-top: 10px; /* Add specific margin here */
+
+						@media (min-width: 1345px) {
+							font-size: 20px;
+						}
+					`}
+				>
+				Breaking down data portal development into phased steps
+				</p>
 			</section>
 		</article>
 	);

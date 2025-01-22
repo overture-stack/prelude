@@ -1,4 +1,4 @@
-# Prelude Overview
+# Overview
 
 Prelude is a tool that enables teams to incrementally build their data platform. By breaking down data portal development into phased steps, teams can systematically verify requirements and user workflows while minimizing technical overhead.
 

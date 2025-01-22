@@ -1,3 +1,3 @@
-# Phase One
+# PhaseOne
 
-[Content]
+![Image Title](/docs/images/phaseOne.png "PhaseOne Architecture Diagram")
