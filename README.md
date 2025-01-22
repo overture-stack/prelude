@@ -1,48 +1,34 @@
-# Prelude - Early Release
+# Prelude Early Release
 
-Rapid development and deployment of proof-of-concept portals.
+Prelude is a tool that enables teams to incrementally build their data platform. By breaking down data portal development into phased steps, teams can systematically verify requirements and user workflows while minimizing technical overhead.
 
-![Prelude Arch](./images/prelude.png)
+Development progresses through four distinct phases, each building upon the previous phase's foundation while introducing new capabilities.
 
-Prelude serves as a lightweight proof-of-concept platform, designed to streamline early-stage portal development before committing to full infrastructure deployment. While maintaining essential functionality for data exploration, it minimizes deployment complexity. This approach allows teams to validate their portal requirements and user workflows before transitioning to a more robust production architecture with complete database integration, object storage, and comprehensive API services.
+This process enables teams to:
 
-Prelude's architecture serves as a foundation for future expansion, offering a clearer path to scale into the full production system outlined below while preserving your initial development work.
+* Validate project requirements with hands-on testing
+* Gain a clear understanding of user workflows and interactions
+* Documented data management processes
+* Define security and access control needs
+* Build a solid foundation for production deployment planning
 
-![Complete Arch](./images/complete-architecture.png)
+## Prelude Development Phases
+
+| Phase | Description | Software Components |
+|-------|-------------|----------------|
+| **PhaseOne:** Data Exploration & Theming | Display your tabular data in a themable portal with our front-end and back-end search components. | CSV-processor, Elasticsearch, Arranger, Stage |
+| **PhaseTwo:** Tabular Data Management & Validation | Implementation of tabular data submission, storage and validation. | All the above with Lyric, LyricDb (Postgres), Lectern and LecternDb (MongoDb) added |
+| **PhaseThree:** File Data & Metadata Management | Implement back-end file management. | All the above with Song, Score, SongDb (Postgres) and Object Storage (Minio) |
+| **PhaseFour:** Identity and Access management | Configure Keycloak to authenticate users and authorize what they have access too. | Empahsis on data access control planning and Keycloak configuration |
+
 
 ## Repository Structure
 
-
-phaseOne
-
-phaseTwo
-
-- No persistent ES volumes as we have a database to handle that now 
-- Need to update nGinX Configs
-- Figure out seperation of stage images
-- makeFile needs some down, particualrly on down and clean commands
-
-```
-.
-├── Makefile
-├── make.bat
-├── README.md
-├── conductorScripts/ # Scripts that run on startup with the docker compose
-├── configurationFiles/ # Elasticsearch mappings, Arranger configs, and nginx configs for server deployments
-├── csv-processor/ # Data processing module for CSV ingestion and transformation
-├── docker-compose.yml
-├── sampleData/ # Sample and test data for development and testing
-├── stage/ # Front-end UI Scaffolding and React components
-└── volumes/ # Local persistent volumes for elasticsearch and data storage
-```
-
-Each directory serves a specific purpose:
-
-- `conductorScripts/` contains initialization and startup scripts that execute when the Docker containers are launched, handling necessary setup and configuration tasks.
+- `scripts/` contains initialization and startup scripts that execute when the Docker containers are launched, handling necessary setup and configuration tasks.
    - Note: Service scripts in this directory require updates when modifying index template names to maintain system functionality
 - `configurationFiles/` houses essential configuration files for Elasticsearch mappings, Arranger configs, and optional nginx server configurations for production deployments
    - For more information on these configuration files see our docs on [index mappings](https://docs.overture.bio/guides/administration-guides/index-mappings) and [customizing the data portal](https://docs.overture.bio/guides/administration-guides/customizing-the-data-portal) 
-- `csv-processor/` A relatively ligthwieght command-line tool for processing and uploading CSV files into Elasticsearch. It has basic data validation, error handling and submitter metadata automation to help facilitate data submission for this proof of concept setup.
+- `csv-processor/` A command-line tool for processing and uploading CSV files into Elasticsearch. It has basic data validation, error handling and submitter metadata automation to help facilitate data submission for this proof of concept setup.
 - `sampleData/` provides test datasets and example files for development, testing, and demonstration purposes
 - `stage/` contains the front-end application code, including React components, styles, and UI logic
    - Note working on this has highlighted a gap in our docs on editing and customizing stage (the front-end UI), it is essentially just a react based single page app however I will work in the new year on updating our docs with clarifications and guides on the repo structure and how to configure and work with it. 

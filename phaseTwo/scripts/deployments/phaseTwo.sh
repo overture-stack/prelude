@@ -39,12 +39,8 @@ done
 echo -e "\033[1;32mSuccess:\033[0m Elasticsearch is reachable"
 
 # Elasticsearch (Comp) Setup
-echo -e "\033[1;35m[5/11]\033[0m Setting up Composition Data in Elasticsearch"
-rs /scripts/services/elasticsearchSetupCompositionData.sh
-
-# Elasticsearch (Instrument) Setup
-echo -e "\033[1;35m[6/11]\033[0m Setting Instrument Data in Elasticsearch"
-rs /scripts/services/elasticsearchSetupInstrumentData.sh
+echo -e "\033[1;35m[5/11]\033[0m Setting up Demo Data in Elasticsearch"
+rs /scripts/services/elasticsearchSetupDemoData.sh
 
 # Update Conductor to Healthy Status, this signals search and exploration services (maestro, arranger, stage) to startup
 echo "healthy" > /health/conductor_health

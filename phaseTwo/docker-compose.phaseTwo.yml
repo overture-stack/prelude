@@ -19,12 +19,11 @@ services:
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
-      - "9204:9204"
+      - '9204:9204'
     volumes:
       - ./persistentStorage/data-song-db:/song/db-folder-init
       - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
-      - ./configurationFiles/elasticsearchConfigs/composition_index_template.json:/usr/share/elasticsearch/config/composition_index_template.json
-      - ./configurationFiles/elasticsearchConfigs/instrument_index_template.json:/usr/share/elasticsearch/config/instrument_index_template.json
+      - ./configurationFiles/elasticsearchConfigs/demo_index_template.json:/usr/share/elasticsearch/config/demo_index_template.json
       - ./scripts:/scripts
       - ./health:/health
     command: >
@@ -36,7 +35,7 @@ services:
         exit 0
       '
     healthcheck:
-      test: ["CMD", "test", "-f", "/health/conductor_health"]
+      test: ['CMD', 'test', '-f', '/health/conductor_health']
       interval: 5s
       timeout: 40s
       retries: 100
@@ -47,7 +46,7 @@ services:
   # ==================================================================================
   # OAuth (KeyCloak)
   # ==================================================================================
-  
+
   # ======================================
   # Keycloak Database
   # --------------------------------------
@@ -67,18 +66,18 @@ services:
     volumes:
       - ./persistentStorage/data-keycloak-db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d keycloakDb"]
+      test: ['CMD-SHELL', 'pg_isready -U admin -d keycloakDb']
       interval: 20s
       timeout: 10s
       retries: 10
       start_period: 20s
     networks:
       - conductor-network
-   
+
   # ==========================
-  # Keycloak 
+  # Keycloak
   # ==========================
-  # Authorization and authentication service 
+  # Authorization and authentication service
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
   # --------------------------------------
   keycloak:
@@ -89,7 +88,7 @@ services:
       keycloak-db:
         condition: service_healthy
     ports:
-      - "8180:8080"
+      - '8180:8080'
     environment:
       # Postgres Variables
       KC_DB: postgres
@@ -100,7 +99,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin123
       KC_HOSTNAME: localhost
-      KC_HEALTH_ENABLED: true 
+      KC_HEALTH_ENABLED: true
     volumes:
       - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
       - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
@@ -108,76 +107,74 @@ services:
     networks:
       - conductor-network
     command: >
-      start-dev
-      --import-realm
-      --hostname-port=8180
-   
+      start-dev --import-realm --hostname-port=8180
+
   # ==================================================================================
   # File Management (Song, Score, Kafka, Minio)
   # ==================================================================================
- 
+
   # ======================================
-  # Kafka 
+  # Kafka
   # ======================================
   # Messaging system for Song and Maestro, used to orchestrate asynchronous communication, job execution, queuing, and processing.
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-kafka
   # --------------------------------------
   kafka:
-      image: confluentinc/cp-kafka:7.6.1
-      container_name: kafka
-      platform: linux/amd64
-      ports:
-        - "9092:9092"
-        - "29092:29092"
-      volumes:
-        - ./scripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
-      environment:
-        # Core Kafka Configuration
-        KAFKA_PROCESS_ROLES: broker,controller
-        KAFKA_NODE_ID: 1
-        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
-        KAFKA_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://kafka:9093
-        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
-        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-        KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-        KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-        # Storage Configuration
-        KAFKA_LOG_DIRS: /var/lib/kafka/data
-        KAFKA_LOG_RETENTION_HOURS: 168  # 7 days
-        KAFKA_LOG_RETENTION_BYTES: -1   # Unlimited size
-        # Topic Configuration
-        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-        KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
-        KAFKA_NUM_PARTITIONS: 1
-        KAFKA_DEFAULT_REPLICATION_FACTOR: 1
-        KAFKA_MIN_INSYNC_REPLICAS: 1
-        # Performance Tuning
-        KAFKA_MESSAGE_MAX_BYTES: 5242880  # 5MB max message size
-        KAFKA_REPLICA_FETCH_MAX_BYTES: 5242880
-        # Logging Configuration
-        KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
-        # Cluster Configuration
-        CLUSTER_ID: "q1Sh-9_ISia_zwGINzRvyQ" 
-      command: >
-        sh -c '
-          echo "Setting up Kafka..."
-          chmod +x /scripts/kafkaSetup.sh
-          /scripts/kafkaSetup.sh &
-          
-          # Start Kafka broker
-          /etc/confluent/docker/run
-        '
-      healthcheck:
-        test: 
-          - "CMD-SHELL"
-          - >
-            /bin/kafka-topics --bootstrap-server kafka:9092 --list
-        interval: 10s
-        timeout: 5s
-        retries: 10
-      networks:
-        - conductor-network
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    platform: linux/amd64
+    ports:
+      - '9092:9092'
+      - '29092:29092'
+    volumes:
+      - ./scripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
+    environment:
+      # Core Kafka Configuration
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # Storage Configuration
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 168 # 7 days
+      KAFKA_LOG_RETENTION_BYTES: -1 # Unlimited size
+      # Topic Configuration
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      # Performance Tuning
+      KAFKA_MESSAGE_MAX_BYTES: 5242880 # 5MB max message size
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 5242880
+      # Logging Configuration
+      KAFKA_LOG4J_LOGGERS: 'kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO'
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+      # Cluster Configuration
+      CLUSTER_ID: 'q1Sh-9_ISia_zwGINzRvyQ'
+    command: >
+      sh -c '
+        echo "Setting up Kafka..."
+        chmod +x /scripts/kafkaSetup.sh
+        /scripts/kafkaSetup.sh &
+        
+        # Start Kafka broker
+        /etc/confluent/docker/run
+      '
+    healthcheck:
+      test:
+        - 'CMD-SHELL'
+        - >
+          /bin/kafka-topics --bootstrap-server kafka:9092 --list
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - conductor-network
 
   # ======================================
   # Song Database
@@ -191,8 +188,8 @@ services:
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
-    ports: 
-      - "5433:5432"
+    ports:
+      - '5433:5432'
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
@@ -200,14 +197,14 @@ services:
     volumes:
       - ./persistentStorage/data-song-db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
+      test: ['CMD-SHELL', 'pg_isready -U admin -d songDb']
       interval: 20s
       timeout: 10s
       retries: 10
       start_period: 20s
     networks:
       - conductor-network
-   
+
   # ======================================
   # Song
   # ======================================
@@ -226,16 +223,16 @@ services:
       song-db:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       # Spring Variables
       SPRING_PROFILES_ACTIVE: prod,secure,kafka
       # Swagger/OpenAPI Configuration
-      SPRING_MVC_CORS_ENABLED: "true"
-      SPRING_MVC_CORS_ALLOWED-ORIGINS: "*"
-      SPRING_MVC_CORS_ALLOWED-METHODS: "GET,POST,PUT,DELETE,PATCH,OPTIONS"
-      SPRING_MVC_CORS_ALLOWED-HEADERS: "*"
-      SPRING_MVC_CORS_ALLOW-CREDENTIALS: "true"
+      SPRING_MVC_CORS_ENABLED: 'true'
+      SPRING_MVC_CORS_ALLOWED-ORIGINS: '*'
+      SPRING_MVC_CORS_ALLOWED-METHODS: 'GET,POST,PUT,DELETE,PATCH,OPTIONS'
+      SPRING_MVC_CORS_ALLOWED-HEADERS: '*'
+      SPRING_MVC_CORS_ALLOW-CREDENTIALS: 'true'
       # Flyway variables
       SPRING_FLYWAY_ENABLED: true
       # Song Variables
@@ -267,12 +264,12 @@ services:
       SWAGGER_ALTERNATEURL: /swagger-api
     networks:
       - conductor-network
-   
+
   # ======================================
   # Minio
   # ======================================
-  # High-performance open-source object storage provider 
-  # Used here for local object storage found at persistentStorage/data-minio 
+  # High-performance open-source object storage provider
+  # Used here for local object storage found at persistentStorage/data-minio
   # data-minio contains 60 data files linked to the pre-populated analyses in the song-db. This folder is passed into the image on startup
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#setting-up-object-storage
   # --------------------------------------
@@ -289,13 +286,13 @@ services:
     volumes:
       - ./persistentStorage/data-minio:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s
       timeout: 20s
       retries: 3
     networks:
       - conductor-network
-   
+
   # ======================================
   # Score
   # ======================================
@@ -310,7 +307,7 @@ services:
       keycloak:
         condition: service_started
     ports:
-      - "8087:8087"
+      - '8087:8087'
     environment:
       # Spring Variables
       SPRING_PROFILES_ACTIVE: default,collaboratory,prod,secure,jwt
@@ -318,7 +315,7 @@ services:
       # Song Variable
       METADATA_URL: http://song:8080
       # Score Variables
-      SERVER_SSL_ENABLED: "false"
+      SERVER_SSL_ENABLED: 'false'
       # Object Storage Variables
       S3_ENDPOINT: http://host.docker.internal:9000
       S3_ACCESSKEY: admin
@@ -337,12 +334,12 @@ services:
       AUTH_SERVER_TOKENNAME: apiKey
       AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
       AUTH_SERVER_KEYCLOAK_REALM: myrealm
-      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.            
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.
       AUTH_SERVER_SCOPE_DOWNLOAD_SUFFIX: .READ
       AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.READ
       AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.WRITE
       AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
-      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/      
+      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
       AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
     networks:
@@ -359,7 +356,7 @@ services:
     container_name: elasticsearch
     platform: linux/amd64
     ports:
-      - "9200:9200"
+      - '9200:9200'
     environment:
       PUID: 3381
       PGID: 100
@@ -367,10 +364,10 @@ services:
       cluster.name: workflow.elasticsearch
       ES_JAVA_OPTS: -Xms4g -Xmx4g
       ELASTIC_PASSWORD: myelasticpassword
-      xpack.security.enabled: "true"
-      MANAGE_INDEX_TEMPLATES: "true"
+      xpack.security.enabled: 'true'
+      MANAGE_INDEX_TEMPLATES: 'true'
       NETWORK_HOST: http://localhost:9200
-      bootstrap.memory_lock: "true"
+      bootstrap.memory_lock: 'true'
     ulimits:
       memlock:
         soft: -1
@@ -387,12 +384,14 @@ services:
           cpus: '2'
           memory: 8G
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "50m"
-        max-file: "10"
+        max-size: '50m'
+        max-file: '10'
     healthcheck:
-      test: "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s || exit 1"
+      test:
+        'curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
+        exit 1'
       interval: 10s
       timeout: 10s
       retries: 5
@@ -418,7 +417,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - "11235:11235"
+      - '11235:11235'
     environment:
       # Maestro Variables
       MAESTRO_FAILURELOG_ENABLED: true
@@ -438,7 +437,7 @@ services:
       MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
       MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: overture-quickstart-index
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: demo-index
       MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: file_centric
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
       MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
@@ -452,26 +451,26 @@ services:
       - conductor-network
 
   # ======================================
-  # Arranger-Server compositions
+  # Arranger-Server demo data
   # ======================================
   # Search API generation with compatible search UI components
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
   # --------------------------------------
-  arranger-composition:
+  arranger-demo:
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-composition
+    container_name: arranger-demo
     platform: linux/amd64
     depends_on:
       conductor:
         condition: service_healthy
     ports:
-      - "5050:5050"
+      - '5050:5050'
     volumes:
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/compositionConfigs/table.json:/app/modules/server/configs/table.json
+      - ./configurationFiles/arrangerConfigs/base.json:/app/modules/server/configs/base.json
+      - ./configurationFiles/arrangerConfigs/extended.json:/app/modules/server/configs/extended.json
+      - ./configurationFiles/arrangerConfigs/facets.json:/app/modules/server/configs/facets.json
+      - ./configurationFiles/arrangerConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+      - ./configurationFiles/arrangerConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       PORT: 5050
@@ -480,42 +479,7 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: composition_arranger_set
-      DEBUG: true
-    networks:
-      - conductor-network
-
-  # ======================================
-  # Arranger-Server instruments
-  # ======================================
-  # Search API generation with compatible search UI components
-  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
-  # Check logs on arranger server for manifest columns
-  # --------------------------------------
-  arranger-instrument:
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-instrument
-    platform: linux/amd64
-    depends_on:
-      conductor:
-        condition: service_healthy
-    ports:
-      - "5051:5051"
-    volumes:
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/instrumentConfigs/table.json:/app/modules/server/configs/table.json
-    environment:
-      # Arranger Variables
-      PORT: 5051
-      ENABLE_LOGS: false
-      # Elasticsearch Variables
-      ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: instrument_arranger_set
+      ES_ARRANGER_SET_INDEX: demo_arranger_set
       DEBUG: true
     networks:
       - conductor-network
@@ -527,7 +491,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
   # --------------------------------------
   stage:
-    image: localstageimage:1.0 
+    image: localstageimage:2.0
     container_name: stage
     pull_policy: never
     platform: linux/arm64/v8
@@ -535,7 +499,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
@@ -544,17 +508,17 @@ services:
       NEXT_PUBLIC_DEBUG: true
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
-      # Composition Arranger Variables
-      NEXT_PUBLIC_ARRANGER_COMPOSITION_API: http://localhost:5050 # Updated inline with nginx reverse proxy
-      NEXT_PUBLIC_ARRANGER_COMPOSITION_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_COMPOSITION_INDEX: composition_centric
-      # Instrument Arranger Variables
-      NEXT_PUBLIC_ARRANGER_INSTRUMENT_API: http://localhost:5051 # Updated inline with nginx reverse proxy
-      NEXT_PUBLIC_ARRANGER_INSTRUMENT_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_INSTRUMENT_INDEX: instrument_centric
+      # Demo Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DEMO_API: http://localhost:5050 # Updated inline with nginx reverse proxy
+      NEXT_PUBLIC_ARRANGER_DEMO_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DEMO_INDEX: demo_centric
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS:
+        repositories.code, analysis.analysis_id, object_id, study_id, file_type, file.name,
+        file.size, file.md5sum, file.index_file.object_id, donors.donor_id,
+        donors.specimens.samples.sample_id
       # Song Variables (For Swagger Pages)
       NEXT_PUBLIC_SONG_API: http://localhost:8080
-      NEXTAUTH_SECRET: "your-secure-secret-here"
+      NEXTAUTH_SECRET: 'your-secure-secret-here'
       # Keycloak Variables
       NEXT_PUBLIC_AUTH_PROVIDER: keycloak
       ACCESSTOKEN_ENCRYPTION_SECRET: super_secret
