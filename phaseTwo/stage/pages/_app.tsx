@@ -19,18 +19,16 @@
  *
  */
 
-import Root from '../components/Root';
+import { getSession, SessionProvider } from 'next-auth/react';
 import { AppContext } from 'next/app';
-import { SessionProvider, getSession } from 'next-auth/react';
+import Root from '../components/Root';
 
-import { AUTH_PROVIDER, LOGIN_PATH } from '../global/utils/constants';
-import { PageWithConfig } from '../global/utils/pages/types';
-import { useEffect } from 'react';
 import Router from 'next/router';
-import getInternalLink from '../global/utils/getInternalLink';
-import { isValidJwt } from '../global/utils/egoTokenUtils';
+import { useEffect } from 'react';
 import { getConfig } from '../global/config';
-import { decryptContent } from '@/global/utils/crypt';
+import { AUTH_PROVIDER, LOGIN_PATH } from '../global/utils/constants';
+import getInternalLink from '../global/utils/getInternalLink';
+import { PageWithConfig } from '../global/utils/pages/types';
 
 const DMSApp = ({
 	Component,
@@ -45,18 +43,7 @@ const DMSApp = ({
 }) => {
 	const { NEXT_PUBLIC_AUTH_PROVIDER } = getConfig();
 	useEffect(() => {
-		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.EGO) {
-			if (
-				(!session || !isValidJwt(decryptContent(session?.account?.accessToken))) &&
-				!Component.isPublic
-			) {
-				// redirect to logout when token is expired/missing only if user is on a non-public page
-				Router.push({
-					pathname: getInternalLink({ path: LOGIN_PATH }),
-					query: { session_expired: true },
-				});
-			}
-		} else if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
+		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
 			if (!session && !Component.isPublic) {
 				Router.push({
 					pathname: getInternalLink({ path: LOGIN_PATH }),

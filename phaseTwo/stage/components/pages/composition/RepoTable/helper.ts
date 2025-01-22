@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2024 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -18,17 +18,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+import createArrangerFetcher from '@/components/utils/arrangerFetcher';
+import { getConfig } from '@/global/config';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types';
 import SQON from '@overture-stack/sqon-builder';
 import { isEmpty } from 'lodash';
-import createArrangerFetcher from '@/components/utils/arrangerFetcher';
-import { getConfig } from '@/global/config';
 
 const { NEXT_PUBLIC_ARRANGER_COMPOSITION_API } = getConfig();
 
 export const arrangerFetcher = createArrangerFetcher({
-    ARRANGER_API: NEXT_PUBLIC_ARRANGER_COMPOSITION_API,
+	ARRANGER_API: NEXT_PUBLIC_ARRANGER_COMPOSITION_API,
 });
 
 const saveSetMutation = `mutation ($sqon: JSON!)  {
@@ -42,45 +41,49 @@ const saveSetMutation = `mutation ($sqon: JSON!)  {
 }`;
 
 export const saveSet = (sqon: SQONType): Promise<string> => {
-    return arrangerFetcher({
-        body: {
-            query: saveSetMutation,
-            variables: { sqon },
-        },
-    })
-        .then(
-            ({
-                data: {
-                    saveSet: { setId },
-                },
-            }) => {
-                return setId;
-            },
-        )
-        .catch((err: any) => {
-            console.warn(err);
-            Promise.reject(err);
-        }) as Promise<string>;
+	return arrangerFetcher({
+		body: {
+			query: saveSetMutation,
+			variables: { sqon },
+		},
+	})
+		.then(
+			({
+				data: {
+					saveSet: { setId },
+				},
+			}) => {
+				return setId;
+			},
+		)
+		.catch((err: Error) => {
+			console.warn(err);
+			return Promise.reject(err);
+		});
 };
 
 // Type guard to check if SQON is not null
-function isSQON(sqon: SQONType | null): sqon is SQON {
-    return sqon !== null && !isEmpty(sqon);
+function isSQON(sqon: SQONType | null): sqon is SQONType {
+	return sqon !== null && !isEmpty(sqon);
 }
 
 export function buildSqonWithObjectIds(currentSqon: SQONType, objectIds: string[]): SQONType {
-    // Create object ID SQON only if we have IDs
-    const objectsSqon = objectIds.length > 0 
-        ? SQON.in('object_id', objectIds) 
-        : null;
+	// Create object ID SQON only if we have IDs
+	let objectsSqon: SQONType | null = null;
+	if (objectIds.length > 0) {
+		const builder = SQON.in('object_id', objectIds);
+		objectsSqon = builder.toValue() as unknown as SQONType;
+	}
 
-    // If both SQONs are valid, combine them
-    if (isSQON(currentSqon) && isSQON(objectsSqon)) {
-        return SQON.and([currentSqon, objectsSqon]);
-    }
+	// If both SQONs are valid, combine them
+	if (isSQON(currentSqon) && isSQON(objectsSqon)) {
+		const sqonArray = [currentSqon, objectsSqon].map((sqon) => sqon as any);
+		const builder = SQON.and(sqonArray);
+		return builder.toValue() as unknown as SQONType;
+	}
 
-    // Return whichever SQON is valid, or null if neither is
-    return isSQON(currentSqon) ? currentSqon : 
-           isSQON(objectsSqon) ? objectsSqon : 
-           null;
+	// Return whichever SQON is valid, or null if neither is
+	if (isSQON(currentSqon)) return currentSqon;
+	if (isSQON(objectsSqon)) return objectsSqon;
+	return null;
 }

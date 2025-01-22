@@ -21,9 +21,9 @@
 
 import React, { createContext, useEffect, useState } from 'react';
 
-import { AUTH_PROVIDER } from '../utils/constants';
-import { ProviderType, UserStatus, UserType, UserWithId } from '../types/types';
 import { getConfig } from '../config';
+import { ProviderType, UserStatus, UserType, UserWithId } from '../types/types';
+import { AUTH_PROVIDER } from '../utils/constants';
 
 type T_AuthContext = {
 	user?: UserWithId;
@@ -54,12 +54,6 @@ export const AuthProvider = ({ children, session }: { children: React.ReactEleme
 				lastLogin: 0,
 				providerType: ProviderType.KEYCLOAK,
 				providerSubjectId: '',
-				scope: session?.scopes,
-			};
-			setUser(newUser);
-		} else if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.EGO && session?.user) {
-			const newUser: UserWithId = {
-				...session?.user,
 				scope: session?.scopes,
 			};
 			setUser(newUser);
