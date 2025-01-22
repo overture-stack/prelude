@@ -50,9 +50,9 @@ npm run build
 npm install -g .
 ```
 
-#### Basic Usage
+### Basic Usage
 
-###### Command Structure
+#### Command Structure
 
 ```bash
 node csv-processor.js -f <file-path> [options]
