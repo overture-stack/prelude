@@ -2,94 +2,105 @@
   "name": "enzymeDataset",
   "schema": {
     "type": "object",
-    "required": ["enzyme dataset", "acknowledgements", "annotations", "data"],
+    "required": ["experiment"],
     "properties": {
-      "enzyme dataset": {
-        "type": "string",
-        "description": "Name of the enzyme dataset"
-      },
-      "acknowledgements": {
+      "experiment": {
         "type": "object",
-        "required": ["preferred citation", "method", "strategy", "data source"],
+        "required": [
+          "enzyme_dataset",
+          "acknowledgements",
+          "annotations",
+          "data"
+        ],
         "properties": {
-          "preferred citation": {
-            "type": "string"
-          },
-          "method": {
+          "enzyme_dataset": {
             "type": "string",
-            "enum": ["in silico", "in vitro", "in vivo"]
+            "description": "Name of the enzyme dataset"
           },
-          "strategy": {
-            "type": "string"
-          },
-          "data source": {
+          "acknowledgements": {
             "type": "object",
-            "required": ["source"],
+            "required": ["preferred_citation", "method", "strategy", "data_source"],
             "properties": {
-              "source": {
+              "preferred_citation": {
+                "type": "string"
+              },
+              "method": {
+                "type": "string",
+                "enum": ["in silico", "in vitro", "in vivo"]
+              },
+              "strategy": {
+                "type": "string"
+              },
+              "data_source": {
+                "type": "object",
+                "required": ["source"],
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "annotations": {
+            "type": "object",
+            "required": ["additional_documentation", "challenge_problem"],
+            "properties": {
+              "additional_documentation": {
+                "type": "string"
+              },
+              "challenge_problem": {
                 "type": "string"
               }
             }
-          }
-        }
-      },
-      "annotations": {
-        "type": "object",
-        "required": ["additional documentation and resources", "challenge problem"],
-        "properties": {
-          "additional documentation and resources": {
-            "type": "string"
           },
-          "challenge problem": {
-            "type": "string"
-          }
-        }
-      },
-      "data": {
-        "type": "object",
-        "required": [
-          "sequence length",
-          "mutations",
-          "classification",
-          "ec number",
-          "pdb xtal structure",
-          "expression system",
-          "organism",
-          "target sequence",
-          "substrate used in specific activity measurement"
-        ],
-        "properties": {
-          "sequence length": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "mutations": {
-            "type": "string",
-            "enum": ["yes", "no"]
-          },
-          "classification": {
-            "type": "string"
-          },
-          "ec number": {
-            "type": "string",
-            "pattern": "^EC [0-9]\\.[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"
-          },
-          "pdb xtal structure": {
-            "type": "string",
-            "pattern": "^[0-9][A-Za-z0-9]{3}$"
-          },
-          "expression system": {
-            "type": "string"
-          },
-          "organism": {
-            "type": "string"
-          },
-          "target sequence": {
-            "type": "string",
-            "pattern": "^[A-Z]+$"
-          },
-          "substrate used in specific activity measurement": {
-            "type": "string"
+          "data": {
+            "type": "object",
+            "required": [
+              "sequence_length",
+              "mutations",
+              "classification",
+              "ec_number",
+              "pdb_xtal_structure",
+              "expression_system",
+              "organism",
+              "target_sequence",
+              "substrate_activity"
+            ],
+            "properties": {
+              "sequence_length": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "mutations": {
+                "type": "string",
+                "enum": ["yes", "no"]
+              },
+              "classification": {
+                "type": "string"
+              },
+              "ec_number": {
+                "type": "string",
+                "pattern": "^EC [0-9]\\.[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"
+              },
+              "pdb_xtal_structure": {
+                "type": "string",
+                "pattern": "^[0-9][A-Za-z0-9]{3}$"
+              },
+              "expression_system": {
+                "type": "string"
+              },
+              "organism": {
+                "type": "string"
+              },
+              "target_sequence": {
+                "type": "string",
+                "pattern": "^[A-Z]+$"
+              },
+              "substrate_activity": {
+                "type": "string"
+              }
+            }
           }
         }
       }

@@ -76,6 +76,9 @@ Following startup the front end portal will be available at your `localhost:3000
 
 Information on usage can be found from the `/docs` folder at the root of this repo or from the documentation tab found on our front-end at `http://localhost:3000/documentation`
 
+## Data Submition
+
+1. Run the Score-client:
 
 ```
 docker run -d -it --name score-client \
@@ -87,6 +90,8 @@ docker run -d -it --name score-client \
     --mount type=bind,source=./demoData/fileData,target=/output \
     ghcr.io/overture-stack/score:latest
 ```
+
+2. Run the Song Client
 
 ```
 ➜ docker run -d -it --name song-client \
@@ -100,4 +105,16 @@ ghcr.io/overture-stack/song-client:5.1.1
 dadf24c9c146a1417ec4c2b0e1cf9da7aa08ba08bb325de915351262af1f4955
 ```
 
+3. Update Song with the premade Schema 
+
+4. Submit the mock file metadata
+
 `docker exec song-client sh -c "sing submit -f /output/PL098798.json"`
+
+5. Generate a manafest
+
+`docker exec song-client sh -c "sing manifest -a {AnalysisId} -f /output/manifest.txt -d /output/"`
+
+6. Submit the payload
+
+`docker exec score-client sh -c "score-client  upload --manifest /output/manifest.txt"`
