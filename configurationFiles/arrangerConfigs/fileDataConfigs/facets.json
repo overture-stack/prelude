@@ -3,43 +3,43 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "experiment.acknowledgements.method",
+        "fieldName": "experiment__acknowledgements__method",
         "show": true,
         "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "experiment.acknowledgements.strategy",
+        "fieldName": "experiment__acknowledgements__strategy",
         "show": true,
         "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "experiment.data.mutations",
+        "fieldName": "experiment__data__mutations",
         "show": true,
         "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "experiment.data.classification",
+        "fieldName": "experiment__data__classification",
         "show": true,
         "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "experiment.data.ec_number",
+        "fieldName": "experiment__data__ec_number",
         "show": true,
         "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "experiment.data.expression_system",
+        "fieldName": "experiment__data__expression_system",
         "show": true,
         "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "experiment.data.organism",
+        "fieldName": "experiment__data__organism",
         "show": true,
         "type": "keyword"
       }

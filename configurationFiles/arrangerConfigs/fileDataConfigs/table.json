@@ -1,6 +1,19 @@
+
 {
   "table": {
     "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "studyId",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysisType.name",
+        "show": true,
+        "sortable": true
+      },
       {
         "canChangeShow": true,
         "fieldName": "experiment.enzyme_dataset",
@@ -27,24 +40,6 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.acknowledgements.data_source.source",
-        "show": false,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.annotations.additional_documentation",
-        "show": false,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.annotations.challenge_problem",
-        "show": false,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
         "fieldName": "experiment.data.sequence_length",
         "show": true,
         "sortable": true
@@ -58,42 +53,6 @@
       {
         "canChangeShow": true,
         "fieldName": "experiment.data.classification",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.data.ec_number",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.data.pdb_xtal_structure",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.data.expression_system",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.data.organism",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.data.target_sequence",
-        "show": false,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "experiment.data.substrate_activity",
         "show": true,
         "sortable": true
       }
