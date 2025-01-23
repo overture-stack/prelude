@@ -10,9 +10,7 @@
       },
       "analysisType": {
         "properties": {
-          "name": {
-            "type": "keyword"
-          }
+          "name": { "type": "keyword" }
         }
       },
       "samples": {
@@ -88,7 +86,7 @@
           "acknowledgements": {
             "properties": {
               "preferred_citation": {
-                "type": "text"
+                "type": "keyword"
               },
               "method": {
                 "type": "keyword"
@@ -99,7 +97,7 @@
               "data_source": {
                 "properties": {
                   "source": {
-                    "type": "text"
+                    "type": "keyword"
                   }
                 }
               }
@@ -108,10 +106,10 @@
           "annotations": {
             "properties": {
               "additional_documentation": {
-                "type": "text"
+                "type": "keyword"
               },
               "challenge_problem": {
-                "type": "text"
+                "type": "keyword"
               }
             }
           },
@@ -139,7 +137,7 @@
                 "type": "keyword"
               },
               "target_sequence": {
-                "type": "text",
+                "type": "keyword",
                 "fields": {
                   "keyword": {
                     "type": "keyword"
@@ -147,7 +145,7 @@
                 }
               },
               "substrate_activity": {
-                "type": "text"
+                "type": "keyword"
               }
             }
           }

@@ -37,6 +37,22 @@
       "fieldName": "analysis.analysis_state"
     },
     {
+      "displayName": "Updated At",
+      "fieldName": "analysis.updated_at"
+    },
+    {
+      "displayName": "First Published At",
+      "fieldName": "analysis.first_published_at"
+    },
+    {
+      "displayName": "Published At",
+      "fieldName": "analysis.published_at"
+    },
+    {
+      "displayName": "Created At",
+      "fieldName": "analysis.createdAt"
+    },
+    {
       "displayName": "Organism",
       "fieldName": "analysis.experiment.data.organism"
     },
@@ -57,52 +73,148 @@
       "fieldName": "analysis.experiment.data.sequence_length"
     },
     {
+      "displayName": "Target Sequence",
+      "fieldName": "analysis.experiment.data.target_sequence"
+    },
+    {
       "displayName": "Expression System",
       "fieldName": "analysis.experiment.data.expression_system"
     },
     {
-      "displayName": "PDB Structure",
+      "displayName": "PDB Crystal Structure",
       "fieldName": "analysis.experiment.data.pdb_xtal_structure"
+    },
+    {
+      "displayName": "Substrate Activity",
+      "fieldName": "analysis.experiment.data.substrate_activity"
+    },
+    {
+      "displayName": "Challenge Problem",
+      "fieldName": "analysis.experiment.annotations.challenge_problem"
+    },
+    {
+      "displayName": "Additional Documentation",
+      "fieldName": "analysis.experiment.annotations.additional_documentation"
     },
     {
       "displayName": "Enzyme Dataset",
       "fieldName": "analysis.experiment.enzyme_dataset"
     },
     {
-      "displayName": "File Name",
-      "fieldName": "file.name"
+      "displayName": "Method",
+      "fieldName": "analysis.experiment.acknowledgements.method"
     },
     {
-      "displayName": "File Size",
-      "fieldName": "file.size"
+      "displayName": "Strategy",
+      "fieldName": "analysis.experiment.acknowledgements.strategy"
+    },
+    {
+      "displayName": "Data Source",
+      "fieldName": "analysis.experiment.acknowledgements.data_source.source"
+    },
+    {
+      "displayName": "Preferred Citation",
+      "fieldName": "analysis.experiment.acknowledgements.preferred_citation"
+    },
+    {
+      "displayName": "Analysis Initial State",
+      "fieldName": "analysis.analysisStateHistory.initialState"
+    },
+    {
+      "displayName": "Analysis Updated State",
+      "fieldName": "analysis.analysisStateHistory.updatedState"
+    },
+    {
+      "displayName": "Analysis State Updated At",
+      "fieldName": "analysis.analysisStateHistory.updatedAt"
+    },
+    {
+      "displayName": "File Name",
+      "fieldName": "file.name"
     },
     {
       "displayName": "File MD5",
       "fieldName": "file.md5sum"
     },
     {
-      "displayName": "Repository Name",
-      "fieldName": "repositories.name"
+      "displayName": "File Size",
+      "fieldName": "file.size"
+    },
+    {
+      "displayName": "File Data Type",
+      "fieldName": "file.data_type"
+    },
+    {
+      "displayName": "Repository Code",
+      "fieldName": "repositories.code"
     },
     {
       "displayName": "Repository Organization",
       "fieldName": "repositories.organization"
     },
     {
+      "displayName": "Repository Name",
+      "fieldName": "repositories.name"
+    },
+    {
+      "displayName": "Repository Type",
+      "fieldName": "repositories.type"
+    },
+    {
+      "displayName": "Repository Country",
+      "fieldName": "repositories.country"
+    },
+    {
+      "displayName": "Repository URL",
+      "fieldName": "repositories.url"
+    },
+    {
       "displayName": "Donor ID",
       "fieldName": "donors.donor_id"
+    },
+    {
+      "displayName": "Submitter Donor ID",
+      "fieldName": "donors.submitter_donor_id"
     },
     {
       "displayName": "Donor Gender",
       "fieldName": "donors.gender"
     },
     {
+      "displayName": "Specimen ID",
+      "fieldName": "donors.specimens.specimen_id"
+    },
+    {
       "displayName": "Specimen Type",
       "fieldName": "donors.specimens.specimen_type"
     },
     {
+      "displayName": "Submitter Specimen ID",
+      "fieldName": "donors.specimens.submitter_specimen_id"
+    },
+    {
+      "displayName": "Tumour Normal Designation",
+      "fieldName": "donors.specimens.tumour_normal_designation"
+    },
+    {
+      "displayName": "Specimen Tissue Source",
+      "fieldName": "donors.specimens.specimen_tissue_source"
+    },
+    {
+      "displayName": "Sample ID",
+      "fieldName": "donors.specimens.samples.sample_id"
+    },
+    {
+      "displayName": "Submitter Sample ID",
+      "fieldName": "donors.specimens.samples.submitter_sample_id"
+    },
+    {
       "displayName": "Sample Type",
       "fieldName": "donors.specimens.samples.sample_type"
+    },
+    {
+      "displayName": "Matched Normal Submitter Sample ID",
+      "fieldName": "donors.specimens.samples.matched_normal_submitter_sample_id"
     }
   ]
 }

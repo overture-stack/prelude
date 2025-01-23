@@ -1,90 +1,189 @@
 {
-  "table": {
-    "columns": [
-      {
-        "canChangeShow": true,
-        "fieldName": "object_id",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "study_id",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data_type",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "file_type",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "file_access",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "analysis.analysis_id",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "analysis.analysis_type",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "analysis.analysis_state",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "analysis.experiment.data.organism",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "analysis.experiment.data.ec_number",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "analysis.experiment.data.classification",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "analysis.experiment.enzyme_dataset",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "file.name",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "file.size",
-        "show": true,
-        "sortable": true
-      }
-    ]
+    "table": {
+      "columns": [
+        {
+          "canChangeShow": true,
+          "fieldName": "study_id",
+          "show": false,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "data_type",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "file_access",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "file.name",
+          "show": false,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.organism",
+          "jsonPath": "$.analysis.experiment.data.organism",
+          "query": "analysis { experiment { data { organism } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.ec_number",
+          "jsonPath": "$.analysis.experiment.data.ec_number",
+          "query": "analysis { experiment { data { ec_number } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.mutations",
+          "jsonPath": "$.analysis.experiment.data.mutations",
+          "query": "analysis { experiment { data { mutations } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.classification",
+          "jsonPath": "$.analysis.experiment.data.classification",
+          "query": "analysis { experiment { data { classification } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.sequence_length",
+          "jsonPath": "$.analysis.experiment.data.sequence_length",
+          "query": "analysis { experiment { data { sequence_length } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.expression_system",
+          "jsonPath": "$.analysis.experiment.data.expression_system",
+          "query": "analysis { experiment { data { expression_system } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.pdb_xtal_structure",
+          "jsonPath": "$.analysis.experiment.data.pdb_xtal_structure",
+          "query": "analysis { experiment { data { pdb_xtal_structure } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.data.substrate_activity",
+          "jsonPath": "$.analysis.experiment.data.substrate_activity",
+          "query": "analysis { experiment { data { substrate_activity } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.annotations.challenge_problem",
+          "jsonPath": "$.analysis.experiment.annotations.challenge_problem",
+          "query": "analysis { experiment { annotations { challenge_problem } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.annotations.additional_documentation",
+          "jsonPath": "$.analysis.experiment.annotations.additional_documentation",
+          "query": "analysis { experiment { annotations { additional_documentation } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.enzyme_dataset",
+          "jsonPath": "$.analysis.experiment.enzyme_dataset",
+          "query": "analysis { experiment { enzyme_dataset } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.acknowledgements.method",
+          "jsonPath": "$.analysis.experiment.acknowledgements.method",
+          "query": "analysis { experiment { acknowledgements { method } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.acknowledgements.strategy",
+          "jsonPath": "$.analysis.experiment.acknowledgements.strategy",
+          "query": "analysis { experiment { acknowledgements { strategy } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.acknowledgements.data_source.source",
+          "jsonPath": "$.analysis.experiment.acknowledgements.data_source.source",
+          "query": "analysis { experiment { acknowledgements { data_source { source } } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.experiment.acknowledgements.preferred_citation",
+          "jsonPath": "$.analysis.experiment.acknowledgements.preferred_citation",
+          "query": "analysis { experiment { acknowledgements { preferred_citation } } }",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "file.md5sum",
+          "show": false,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "displayType": "bytes",
+          "fieldName": "file.size",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "file.data_type",
+          "show": true,
+          "sortable": true
+        },
+        {
+          "canChangeShow": false,
+          "fieldName": "repositories.code",
+          "jsonPath": "$.repositories.hits.edges[*].node.code",
+          "query": "repositories { hits { edges { node { code } } } }",
+          "show": false,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "analysis.analysis_id",
+          "show": false,
+          "sortable": true
+        },
+        {
+          "canChangeShow": true,
+          "fieldName": "object_id",
+          "show": false,
+          "sortable": true
+        }
+      ]
+    }
   }
-}

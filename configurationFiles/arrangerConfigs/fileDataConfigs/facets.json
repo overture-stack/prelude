@@ -3,32 +3,12 @@
     "aggregations": [
       {
         "active": true,
+        "fieldName": "file__data_type",
+        "show": true
+      },
+      {
+        "active": true,
         "fieldName": "file_type",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "file_access",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "analysis__analysis_type",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "analysis__analysis_state",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "analysis__experiment__data__organism",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "analysis__experiment__data__ec_number",
         "show": true
       },
       {
