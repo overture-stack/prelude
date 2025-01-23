@@ -3,53 +3,45 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "analysis__collaborator__name",
-        "show": true
+        "fieldName": "experiment.acknowledgements.method",
+        "show": true,
+        "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "file_access",
-        "show": true
+        "fieldName": "experiment.acknowledgements.strategy",
+        "show": true,
+        "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "analysis__donor__primarySite",
-        "show": true
+        "fieldName": "experiment.data.mutations",
+        "show": true,
+        "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "donors__gender",
-        "show": true
+        "fieldName": "experiment.data.classification",
+        "show": true,
+        "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "analysis__donor__primaryDiagnosis__ageAtDiagnosis",
-        "show": true
+        "fieldName": "experiment.data.ec_number",
+        "show": true,
+        "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "donors__specimens__specimen_tissue_source",
-        "show": true
+        "fieldName": "experiment.data.expression_system",
+        "show": true,
+        "type": "keyword"
       },
       {
         "active": true,
-        "fieldName": "file_type",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "data_type",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "analysis__workflow__workflowName",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "analysis__publication__publication",
-        "show": true
+        "fieldName": "experiment.data.organism",
+        "show": true,
+        "type": "keyword"
       }
     ]
   }
