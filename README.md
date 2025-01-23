@@ -75,3 +75,29 @@ Following startup the front end portal will be available at your `localhost:3000
 | Shuts down all containers & removes all persistent Elasticsearch volumes (only relevant for phaseOne) | `make clean` | pending | 
 
 Information on usage can be found from the `/docs` folder at the root of this repo or from the documentation tab found on our front-end at `http://localhost:3000/documentation`
+
+
+```
+docker run -d -it --name score-client \
+    -e ACCESSTOKEN=68fb42b4-f1ed-4e8c-beab-3724b99fe528 \
+    -e STORAGE_URL=http://localhost:8087 \
+    -e METADATA_URL=http://localhost:8080 \
+    --network="host" \
+    --platform="linux/amd64" \
+    --mount type=bind,source=./demoData/fileData,target=/output \
+    ghcr.io/overture-stack/score:latest
+```
+
+```
+➜ docker run -d -it --name song-client \
+-e CLIENT_ACCESS_TOKEN=68fb42b4-f1ed-4e8c-beab-3724b99fe528 \
+-e CLIENT_STUDY_ID=demo \
+-e CLIENT_SERVER_URL=http://localhost:8080 \
+--network="host" \
+--platform="linux/amd64" \
+--mount type=bind,source=./demoData/fileData,target=/output \
+ghcr.io/overture-stack/song-client:5.1.1
+dadf24c9c146a1417ec4c2b0e1cf9da7aa08ba08bb325de915351262af1f4955
+```
+
+`docker exec song-client sh -c "sing submit -f /output/PL098798.json"`
