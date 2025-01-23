@@ -1,0 +1,31 @@
+{
+  "name": "csv-processor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "csv-processor": "./dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.17.14",
+    "@types/chalk": "^0.4.31",
+    "@types/node": "^22.9.3",
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "csv-parse": "^5.6.0",
+    "ts-node": "^10.9.2",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.7.2"
+  }
+}

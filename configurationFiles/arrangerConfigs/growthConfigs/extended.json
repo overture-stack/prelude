@@ -1,0 +1,80 @@
+{
+	"extended": [
+	  {
+		"displayName": "Plate Position",
+		"fieldName": "position"
+	  },
+	  {
+		"displayName": "Well",
+		"fieldName": "well"
+	  },
+	  {
+		"displayName": "Row",
+		"fieldName": "row"
+	  },
+	  {
+		"displayName": "Column",
+		"fieldName": "column"
+	  },
+	  {
+		"displayName": "Inducer ID",
+		"fieldName": "inducerId"
+	  },
+	  {
+		"displayName": "Inducer Concentration",
+		"fieldName": "inducerConcentration"
+	  },
+	  {
+		"displayName": "Inducer Units",
+		"fieldName": "inducerUnits"
+	  },
+	  {
+		"displayName": "Selector ID",
+		"fieldName": "selectorId"
+	  },
+	  {
+		"displayName": "Selector Concentration",
+		"fieldName": "selectorConc"
+	  },
+	  {
+		"displayName": "Selector Units",
+		"fieldName": "selectorUnits"
+	  },
+	  {
+		"displayName": "Strain",
+		"fieldName": "strain"
+	  },
+	  {
+		"displayName": "Plasmid",
+		"fieldName": "plasmid"
+	  },
+	  {
+		"displayName": "Submission ID",
+		"fieldName": "submission_metadata.submitter_id"
+	  },
+	  {
+		"displayName": "Processing Started",
+		"fieldName": "submission_metadata.processing_started"
+	  },
+	  {
+		"displayName": "Processed At",
+		"fieldName": "submission_metadata.processed_at"
+	  },
+	  {
+		"displayName": "Source File",
+		"fieldName": "submission_metadata.source_file"
+	  },
+	  {
+		"displayName": "Record Number",
+		"fieldName": "submission_metadata.record_number"
+	  },
+	  {
+		"displayName": "Hostname",
+		"fieldName": "submission_metadata.hostname"
+	  },
+	  {
+		"displayName": "Username",
+		"fieldName": "submission_metadata.username"
+	  }
+	]
+  }

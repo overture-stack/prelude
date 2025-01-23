@@ -1,0 +1,49 @@
+{
+  "index_patterns": ["growth-*"],
+  "aliases": {
+    "growth_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "position": { "type": "keyword" },
+      "well": { "type": "keyword" },
+      "row": { "type": "keyword" },
+      "column": { "type": "keyword" },
+      "inducerId": { "type": "keyword" },
+      "inducerConcentration": { "type": "float" },
+      "inducerUnits": { "type": "keyword" },
+      "selectorId": { "type": "keyword" },
+      "selectorConc": { "type": "float" },
+      "selectorUnits": { "type": "keyword" },
+      "strain": { "type": "keyword" },
+      "plasmid": { "type": "keyword" },
+      "submission_metadata": {
+        "properties": {
+          "submitter_id": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          },
+          "processing_started": { "type": "date" },
+          "processed_at": { "type": "date" },
+          "source_file": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          },
+          "record_number": { "type": "integer" },
+          "hostname": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          },
+          "username": { 
+            "type": "keyword",
+            "null_value": "Not Applicable" 
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

@@ -1,0 +1,16 @@
+{
+	"facets": {
+	  "aggregations": [
+		{
+		  "active": true,
+		  "fieldName": "strain",
+		  "show": true
+		},
+		{
+		  "active": true,
+		  "fieldName": "plasmid",
+		  "show": true
+		}
+	  ]
+	}
+  }

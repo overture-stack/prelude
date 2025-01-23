@@ -1,0 +1,85 @@
+{
+	"table": {
+	  "rowIdFieldName": "submission_metadata.submitter_id",
+	  "columns": [
+		{
+		  "canChangeShow": true,
+		  "fieldName": "submission_metadata.submitter_id",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "position",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "well",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "row",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "column",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "inducerId",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "inducerConcentration",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "inducerUnits",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "selectorId",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "selectorConc",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "selectorUnits",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "strain",
+		  "show": true,
+		  "sortable": true
+		},
+		{
+		  "canChangeShow": true,
+		  "fieldName": "plasmid",
+		  "show": true,
+		  "sortable": true
+		}	
+	  ]
+	}
+  }
