@@ -20,11 +20,10 @@
  */
 
 import createArrangerFetcher from '@/components/utils/arrangerFetcher';
-import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types';
 import SQON from '@overture-stack/sqon-builder';
 import { isEmpty } from 'lodash';
-
+import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 
 export const arrangerFetcher = createArrangerFetcher({
 	ARRANGER_API: INTERNAL_API_PROXY.GROWTH_ARRANGER,

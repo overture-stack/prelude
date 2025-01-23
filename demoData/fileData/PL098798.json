@@ -1,0 +1,30 @@
+{
+    "studyId": "ENZYME-01",
+    "analysisType": {
+      "name": "enzymeDataset"
+    },
+    "enzyme dataset": "Alkaline phosphatase PafA",
+    "acknowledgements": {
+      "preferred citation": "FMarkin, C. J., Mokhtari, D. A., Sunden, F., Appel, M. J., Akiva, E., Longwell, S. A., Sabatti, C., Herschlag, D. & Fordyce, P. M. Revealing enzyme functional architecture via high-throughput microfluidic enzyme kinetics. Science 373, eabf8761 (2021)",
+      "method": "in silico",
+      "strategy": "supervised",
+      "data source": {
+        "source": "This dataset was provided by the Polly Fordyce Group, Stanford University, with guidance from Dr. Craig Markin and Prof. Polly Fordyce."
+      }
+    },
+    "annotations": {
+      "additional documentation and resources": "All data are available in a registered Open Science Foundation Repository (DOI: 10.17605/OSF.IO/QRN3C)",
+      "challenge problem": "Score activity for each of the three substrates. The range of scoring is arbitrary."
+    },
+    "data": {
+      "sequence length": 549,
+      "mutations": "no",
+      "classification": "hydrolase",
+      "ec number": "EC 3.1.3.1",
+      "pdb xtal structure": "5TJ3",
+      "expression system": "Escherichia coli",
+      "organism": "Elizabethkingia meningoseptica",
+      "target sequence": "MDIGIDSDPQKTNAVPRPKLVVGLVVDQMRWDYLYRYYSKYGEGGFKRMLNTGYSLNNVHIDYVPTVTAIGHTSIFTGSVPSIHGIAGNDWYDKELGKSVYCTSDETVQPVGTTSNSVGQHSPRNLWSTTVTDQLGLATNFTSKVVGVSLKDRASILPAGHNPTGAFWFDDTTGKFITSTYYTKELPKWVNDFNNKNVPAQLVANGWNTLLPINQYTESSEDNVEWEGLLGSKKTPTFPYTDLAKDYEAKKGLIRTTPFGNTLTLQMADAAIDGNQMGVDDITDFLTVNLASTDYVGHNFGPNSIEVEDTYLRLDRDLADFFNNLDKKVGKGNYLVFLSADHGAAHSVGFMQAHKMPTGFFVEDMKKEMNAKLKQKFGADNIIAAAMNYQVYFDRKVLADSKLELDDVRDYVMTELKKEPSVLYVLSTDEIWESSIPEPIKSRVINGYNWKRSGDIQIISKDGYLSAYSKKGTTHSVWNSYDSHIPLLFMGWGIKQGESNQPYHMTDIAPTVSSLLKIQFPSGAVGKPITEVIGRIEGRSAWSHPQFEK",
+      "substrate used in specific activity measurement": "Rmethyl phosphate (MeP) - chemistry limited substrate, Carboxy 4-methylumbelliferyl phosphate ester (cMUP) - binding limited substrate, methyl phosphodiester (MecMUP) - promiscuous substrate"
+    }
+  }

@@ -1,0 +1,98 @@
+{
+  "name": "enzymeDataset",
+  "schema": {
+    "type": "object",
+    "required": ["enzyme dataset", "acknowledgements", "annotations", "data"],
+    "properties": {
+      "enzyme dataset": {
+        "type": "string",
+        "description": "Name of the enzyme dataset"
+      },
+      "acknowledgements": {
+        "type": "object",
+        "required": ["preferred citation", "method", "strategy", "data source"],
+        "properties": {
+          "preferred citation": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string",
+            "enum": ["in silico", "in vitro", "in vivo"]
+          },
+          "strategy": {
+            "type": "string"
+          },
+          "data source": {
+            "type": "object",
+            "required": ["source"],
+            "properties": {
+              "source": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "annotations": {
+        "type": "object",
+        "required": ["additional documentation and resources", "challenge problem"],
+        "properties": {
+          "additional documentation and resources": {
+            "type": "string"
+          },
+          "challenge problem": {
+            "type": "string"
+          }
+        }
+      },
+      "data": {
+        "type": "object",
+        "required": [
+          "sequence length",
+          "mutations",
+          "classification",
+          "ec number",
+          "pdb xtal structure",
+          "expression system",
+          "organism",
+          "target sequence",
+          "substrate used in specific activity measurement"
+        ],
+        "properties": {
+          "sequence length": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "mutations": {
+            "type": "string",
+            "enum": ["yes", "no"]
+          },
+          "classification": {
+            "type": "string"
+          },
+          "ec number": {
+            "type": "string",
+            "pattern": "^EC [0-9]\\.[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"
+          },
+          "pdb xtal structure": {
+            "type": "string",
+            "pattern": "^[0-9][A-Za-z0-9]{3}$"
+          },
+          "expression system": {
+            "type": "string"
+          },
+          "organism": {
+            "type": "string"
+          },
+          "target sequence": {
+            "type": "string",
+            "pattern": "^[A-Z]+$"
+          },
+          "substrate used in specific activity measurement": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

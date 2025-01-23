@@ -143,13 +143,11 @@ const getTableConfigs = ({
 const RepoTable = () => {
 	const { NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS } = getConfig();
 	const theme = useTheme();
-	console.log({NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS});
 
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 	const manifestColumns = NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS.split(',')
 		.filter((field) => field.trim()) // break it into arrays, and ensure there's no empty field names
 		.map((fieldName) => fieldName.replace(/['"]+/g, '').trim());
-		console.log({manifestColumns});
 	const customExporters = [
 		{ label: 'File Table', fileName: `data-explorer-table-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 		{ label: 'File Manifest', fileName: `score-manifest.${today}.tsv`, columns: manifestColumns }, // exports a TSV with the manifest columns
