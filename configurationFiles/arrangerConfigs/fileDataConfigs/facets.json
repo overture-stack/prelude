@@ -3,45 +3,38 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "experiment__acknowledgements__method",
-        "show": true,
-        "type": "keyword"
+        "fieldName": "file_type",
+        "show": true
       },
       {
         "active": true,
-        "fieldName": "experiment__acknowledgements__strategy",
-        "show": true,
-        "type": "keyword"
+        "fieldName": "file_access",
+        "show": true
       },
       {
         "active": true,
-        "fieldName": "experiment__data__mutations",
-        "show": true,
-        "type": "keyword"
+        "fieldName": "analysis__analysis_type",
+        "show": true
       },
       {
         "active": true,
-        "fieldName": "experiment__data__classification",
-        "show": true,
-        "type": "keyword"
+        "fieldName": "analysis__analysis_state",
+        "show": true
       },
       {
         "active": true,
-        "fieldName": "experiment__data__ec_number",
-        "show": true,
-        "type": "keyword"
+        "fieldName": "analysis__experiment__data__organism",
+        "show": true
       },
       {
         "active": true,
-        "fieldName": "experiment__data__expression_system",
-        "show": true,
-        "type": "keyword"
+        "fieldName": "analysis__experiment__data__ec_number",
+        "show": true
       },
       {
         "active": true,
-        "fieldName": "experiment__data__organism",
-        "show": true,
-        "type": "keyword"
+        "fieldName": "analysis__experiment__data__classification",
+        "show": true
       }
     ]
   }

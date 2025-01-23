@@ -1,58 +1,87 @@
-
 {
   "table": {
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "studyId",
+        "fieldName": "object_id",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "analysisType.name",
+        "fieldName": "study_id",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.enzyme_dataset",
+        "fieldName": "data_type",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.acknowledgements.preferred_citation",
+        "fieldName": "file_type",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.acknowledgements.method",
+        "fieldName": "file_access",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.acknowledgements.strategy",
+        "fieldName": "analysis.analysis_id",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.data.sequence_length",
+        "fieldName": "analysis.analysis_type",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.data.mutations",
+        "fieldName": "analysis.analysis_state",
         "show": true,
         "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "experiment.data.classification",
+        "fieldName": "analysis.experiment.data.organism",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.data.ec_number",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.data.classification",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.enzyme_dataset",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file.name",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file.size",
         "show": true,
         "sortable": true
       }
