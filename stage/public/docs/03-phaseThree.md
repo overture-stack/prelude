@@ -40,9 +40,9 @@ schema will need to work alongside these requirements.
 The base schema enforces the following hierarchy:
 
 - Each submission must have a study ID and analysis type
-- Each submission must include at least one sample
-- Each sample must have one specimen and one donor
-- Each submission must include at least one file
+- Each submission must include at least one sample (to be removed in our next update)
+- Each sample must have one specimen and one donor (to be removed in our next update)
+- Each submission must include at least one file (to be removed in our next update)
 
 #### Mandatory Fields Reference
 
@@ -54,22 +54,24 @@ every submission:
 | studyId                                    | string      | minLength: 1                                                                                                                              |
 | analysisType.name                          | string      | -                                                                                                                                         |
 | samples (array)                            | array       | minItems: 1                                                                                                                               |
-| samples[].submitterSampleId                | string      | pattern: ^[A-Za-z0-9\-\._]{1,64}$                                                                                                         |
-| samples[].sampleType                       | string      | enum: ["Total DNA", "Amplified DNA", "ctDNA", "Other DNA enrichments", "Total RNA", "Ribo-Zero RNA", "polyA+ RNA", "Other RNA fractions"] |
-| samples[].specimen.submitterSpecimenId     | string      | pattern: ^[A-Za-z0-9\-\._]{1,64}$                                                                                                         |
-| samples[].specimen.specimenTissueSource    | string      | enum (25+ values including "Blood derived", "Solid tissue", etc.)                                                                         |
-| samples[].specimen.tumourNormalDesignation | string      | enum: ["Normal", "Tumour"]                                                                                                                |
-| samples[].specimen.specimenType            | string      | enum (18+ values including "Normal", "Primary tumour", etc.)                                                                              |
-| samples[].donor.submitterDonorId           | string      | pattern: ^[A-Za-z0-9\-\._]{1,64}$                                                                                                         |
-| samples[].donor.gender                     | string      | enum: ["Male", "Female", "Other"]                                                                                                         |
-| samples[].matchedNormalSubmitterSampleId   | string/null | Required if specimen.tumourNormalDesignation is "Tumour"                                                                                  |
+| samples.submitterSampleId                | string      | pattern: ^[A-Za-z0-9\-\._]{1,64}$                                                                                                         |
+| samples.sampleType                       | string      | enum: ["Total DNA", "Amplified DNA", "ctDNA", "Other DNA enrichments", "Total RNA", "Ribo-Zero RNA", "polyA+ RNA", "Other RNA fractions"] |
+| samples.specimen.submitterSpecimenId     | string      | pattern: ^[A-Za-z0-9\-\._]{1,64}$                                                                                                         |
+| samples.specimen.specimenTissueSource    | string      | enum (25+ values including "Blood derived", "Solid tissue", etc.)                                                                         |
+| samples.specimen.tumourNormalDesignation | string      | enum: ["Normal", "Tumour"]                                                                                                                |
+| samples.specimen.specimenType            | string      | enum (18+ values including "Normal", "Primary tumour", etc.)                                                                              |
+| samples.donor.submitterDonorId           | string      | pattern: ^[A-Za-z0-9\-\._]{1,64}$                                                                                                         |
+| samples.donor.gender                     | string      | enum: ["Male", "Female", "Other"]                                                                                                         |
+| samples.matchedNormalSubmitterSampleId   | string/null | Required if specimen.tumourNormalDesignation is "Tumour"                                                                                  |
 | files (array)                              | array       | minItems: 1                                                                                                                               |
-| files[].dataType                           | string      | -                                                                                                                                         |
-| files[].fileName                           | string      | pattern: ^[A-Za-z0-9_\.\-\[\]\(\)]+$                                                                                                      |
-| files[].fileSize                           | integer     | min: 0                                                                                                                                    |
-| files[].fileType                           | string      | -                                                                                                                                         |
-| files[].fileAccess                         | string      | enum: ["open", "controlled"]                                                                                                              |
-| files[].fileMd5sum                         | string      | pattern: ^[a-fA-F0-9]{32}$                                                                                                                |
+| files.dataType                           | string      | -                                                                                                                                         |
+| files.fileName                           | string      | pattern: ^[A-Za-z0-9_\.\-\[\]\(\)]+$                                                                                                      |
+| files.fileSize                           | integer     | min: 0                                                                                                                                    |
+| files.fileType                           | string      | -                                                                                                                                         |
+| files.fileAccess                         | string      | enum: ["open", "controlled"]                                                                                                              |
+| files.fileMd5sum                         | string      | pattern: ^[a-fA-F0-9]{32}$                                                                                                                |
+
+Please note to make our system more data agnost our most recent upcoming update includes the removal of all required sample, submitter and specimen fields.
 
 #### Important Considerations
 
@@ -91,7 +93,7 @@ When working with the base schema, keep in mind:
 
 3. **Optional Fields**
 
-   - Info objects (sample.info, specimen.info, donor.info, files[].info) are
+   - Info objects (sample.info, specimen.info, donor.info, files.info) are
      optional
    - The analysisId field is explicitly forbidden in submissions
 
@@ -100,7 +102,7 @@ When working with the base schema, keep in mind:
    - File names must match the pattern: ^[A-Za-z0-9_\.\-\[\]\(\)]+$
    - MD5 checksums must be 32 characters of hexadecimal
 
-### 2. Create and update your Schema to Song
+### Configuring song with your data model
 
 1. **Build Your Schema**
 
@@ -120,17 +122,7 @@ When working with the base schema, keep in mind:
 
      - [Full documentation: Updating Song schema using a curl Command](https://docs.overture.bio/guides/administration-guides/updating-the-data-model#using-the-curl-command)
 
-### Additional Resources
-
-- [Complete Song Data Model Documentation](https://docs.overture.bio/guides/administration-guides/updating-the-data-model)
-- [JSON Schema Guide](https://json-schema.org/understanding-json-schema)
-  (external)
-- [Example Schemas](https://raw.githubusercontent.com/cancogen-virus-seq/metadata-schemas/main/schemas/consensus_sequence.json)
-- [Song Base Schema Reference](https://github.com/overture-stack/SONG/blob/develop/song-server/src/main/resources/schemas/analysis/analysisBase.json)
-
-### Submit your data
-
-### 3. Submitting your Data
+### Submitting data to Song and Score
 
 The submission process involves:
 
@@ -139,8 +131,6 @@ The submission process involves:
 3. Generating a manifest
 4. Uploading files with Score
 5. Publishing the analysis
-
-#### Setting Up the Clients
 
 1. **Run the Song Client**
 
@@ -168,9 +158,7 @@ docker run -d -it --name score-client \
     ghcr.io/overture-stack/score:latest
 ```
 
-#### Step 1: Submit Metadata to Song
-
-1. **Prepare Your Metadata**
+3. **Prepare Your Metadata**
 
    - Create a JSON file containing your metadata according to the schema
      requirements
@@ -178,19 +166,19 @@ docker run -d -it --name score-client \
    - If you need to reference the schema it can be viewed using the GET /schemas
      endpoint
 
-2. **Submit the Metadata**
+4. **Submit the Metadata**
 
 ```bash
 docker exec song-client sh -c "sing submit -f /output/your-metadata.json"
 ```
 
-3. **Handle Validation Errors** If you receive schema validation errors:
+5. **Handle Validation Errors** If you receive schema validation errors:
    - Review the error messages
    - Update your metadata file to address the issues
    - Resubmit until successful
    - Note the `analysisId` returned upon successful submission
 
-#### Step 2: Generate a Manifest
+6. Generate a Manifest
 
 After successful metadata submission run:
 
@@ -200,7 +188,7 @@ docker exec song-client sh -c "sing manifest -a {AnalysisId} -f /output/manifest
 
 Replace `{AnalysisId}` with the ID received from the metadata submission.
 
-#### Step 3: Upload Files with Score
+7. Upload Files with Score
 
 Use the generated manifest to upload your files:
 
@@ -208,7 +196,7 @@ Use the generated manifest to upload your files:
 docker exec score-client sh -c "score-client upload --manifest /output/manifest.txt"
 ```
 
-#### Step 4: Publish the Analysis
+8. Publish the Analysis
 
 Once files are uploaded, publish the analysis:
 

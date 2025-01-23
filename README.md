@@ -94,7 +94,7 @@ docker run -d -it --name score-client \
 2. Run the Song Client
 
 ```
-➜ docker run -d -it --name song-client \
+docker run -d -it --name song-client \
 -e CLIENT_ACCESS_TOKEN=68fb42b4-f1ed-4e8c-beab-3724b99fe528 \
 -e CLIENT_STUDY_ID=demo \
 -e CLIENT_SERVER_URL=http://localhost:8080 \
@@ -102,7 +102,6 @@ docker run -d -it --name score-client \
 --platform="linux/amd64" \
 --mount type=bind,source=./demoData/fileData,target=/output \
 ghcr.io/overture-stack/song-client:5.1.1
-dadf24c9c146a1417ec4c2b0e1cf9da7aa08ba08bb325de915351262af1f4955
 ```
 
 3. Update Song with the premade Schema 
@@ -118,3 +117,7 @@ dadf24c9c146a1417ec4c2b0e1cf9da7aa08ba08bb325de915351262af1f4955
 6. Submit the payload
 
 `docker exec score-client sh -c "score-client  upload --manifest /output/manifest.txt"`
+
+7. Publish the payload
+
+ff837b02-0418-4a7c-837b-0204185a7c3e

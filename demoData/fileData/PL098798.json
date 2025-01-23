@@ -24,7 +24,7 @@
     {
       "dataType": "Sequence Mutations",
       "fileName": "fileData.txt",
-      "fileSize": 60,
+      "fileSize": 59715,
       "fileType": "TXT",
       "fileAccess": "open",
       "fileMd5sum": "d41d8cd98f00b204e9800998ecf8427e"
