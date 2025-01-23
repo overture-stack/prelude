@@ -5,151 +5,223 @@
   },
   "mappings": {
     "properties": {
-      "studyId": {
+      "study_id": {
         "type": "keyword"
       },
-      "analysisType": {
+      "analysis": {
         "properties": {
-          "name": { "type": "keyword" }
-        }
-      },
-      "samples": {
-        "type": "nested",
-        "properties": {
-          "submitterSampleId": {
+          "analysis_type": {
             "type": "keyword"
           },
-          "sampleType": {
+          "analysis_id": {
             "type": "keyword"
           },
-          "matchedNormalSubmitterSampleId": {
+          "analysis_state": {
             "type": "keyword"
           },
-          "specimen": {
+          "analysis_version": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "date"
+          },
+          "updated_at": {
+            "type": "date"
+          },
+          "first_published_at": {
+            "type": "date"
+          },
+          "published_at": {
+            "type": "date"
+          },
+          "analysisStateHistory": {
             "type": "nested",
             "properties": {
-              "submitterSpecimenId": {
+              "initialState": {
                 "type": "keyword"
               },
-              "specimenTissueSource": {
+              "updatedState": {
                 "type": "keyword"
               },
-              "tumourNormalDesignation": {
-                "type": "keyword"
-              },
-              "specimenType": {
-                "type": "keyword"
+              "updatedAt": {
+                "type": "date"
               }
             }
           },
-          "donor": {
-            "type": "nested",
+          "experiment": {
             "properties": {
-              "submitterDonorId": {
+              "enzyme_dataset": {
                 "type": "keyword"
               },
-              "gender": {
-                "type": "keyword"
+              "acknowledgements": {
+                "properties": {
+                  "preferred_citation": {
+                    "type": "keyword"
+                  },
+                  "method": {
+                    "type": "keyword"
+                  },
+                  "strategy": {
+                    "type": "keyword"
+                  },
+                  "data_source": {
+                    "properties": {
+                      "source": {
+                        "type": "text"
+                      }
+                    }
+                  }
+                }
+              },
+              "annotations": {
+                "properties": {
+                  "additional_documentation": {
+                    "type": "text"
+                  },
+                  "challenge_problem": {
+                    "type": "text"
+                  }
+                }
+              },
+              "data": {
+                "properties": {
+                  "sequence_length": {
+                    "type": "integer"
+                  },
+                  "mutations": {
+                    "type": "keyword"
+                  },
+                  "classification": {
+                    "type": "keyword"
+                  },
+                  "ec_number": {
+                    "type": "keyword"
+                  },
+                  "pdb_xtal_structure": {
+                    "type": "keyword"
+                  },
+                  "expression_system": {
+                    "type": "keyword"
+                  },
+                  "organism": {
+                    "type": "keyword"
+                  },
+                  "target_sequence": {
+                    "type": "text"
+                  },
+                  "substrate_activity": {
+                    "type": "text"
+                  }
+                }
               }
             }
           }
         }
       },
-      "files": {
+      "donors": {
         "type": "nested",
         "properties": {
-          "dataType": {
+          "donor_id": {
             "type": "keyword"
           },
-          "fileName": {
+          "submitter_donor_id": {
             "type": "keyword"
           },
-          "fileSize": {
+          "gender": {
+            "type": "keyword"
+          },
+          "specimens": {
+            "type": "nested",
+            "properties": {
+              "specimen_id": {
+                "type": "keyword"
+              },
+              "submitter_specimen_id": {
+                "type": "keyword"
+              },
+              "specimen_type": {
+                "type": "keyword"
+              },
+              "specimen_tissue_source": {
+                "type": "keyword"
+              },
+              "tumour_normal_designation": {
+                "type": "keyword"
+              },
+              "samples": {
+                "type": "nested",
+                "properties": {
+                  "sample_id": {
+                    "type": "keyword"
+                  },
+                  "submitter_sample_id": {
+                    "type": "keyword"
+                  },
+                  "sample_type": {
+                    "type": "keyword"
+                  },
+                  "matched_normal_submitter_sample_id": {
+                    "type": "keyword"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "repositories": {
+        "type": "nested",
+        "properties": {
+          "code": {
+            "type": "keyword"
+          },
+          "organization": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "keyword"
+          },
+          "type": {
+            "type": "keyword"
+          },
+          "country": {
+            "type": "keyword"
+          },
+          "url": {
+            "type": "keyword"
+          }
+        }
+      },
+      "file": {
+        "properties": {
+          "name": {
+            "type": "keyword"
+          },
+          "size": {
             "type": "long"
           },
-          "fileType": {
+          "md5sum": {
             "type": "keyword"
           },
-          "fileAccess": {
+          "data_type": {
             "type": "keyword"
           },
-          "fileMd5sum": {
+          "index_file": {
             "type": "keyword"
           }
         }
       },
-      "experiment": {
-        "properties": {
-          "enzyme_dataset": {
-            "type": "keyword"
-          },
-          "acknowledgements": {
-            "properties": {
-              "preferred_citation": {
-                "type": "keyword"
-              },
-              "method": {
-                "type": "keyword"
-              },
-              "strategy": {
-                "type": "keyword"
-              },
-              "data_source": {
-                "properties": {
-                  "source": {
-                    "type": "keyword"
-                  }
-                }
-              }
-            }
-          },
-          "annotations": {
-            "properties": {
-              "additional_documentation": {
-                "type": "keyword"
-              },
-              "challenge_problem": {
-                "type": "keyword"
-              }
-            }
-          },
-          "data": {
-            "properties": {
-              "sequence_length": {
-                "type": "integer"
-              },
-              "mutations": {
-                "type": "keyword"
-              },
-              "classification": {
-                "type": "keyword"
-              },
-              "ec_number": {
-                "type": "keyword"
-              },
-              "pdb_xtal_structure": {
-                "type": "keyword"
-              },
-              "expression_system": {
-                "type": "keyword"
-              },
-              "organism": {
-                "type": "keyword"
-              },
-              "target_sequence": {
-                "type": "keyword",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword"
-                  }
-                }
-              },
-              "substrate_activity": {
-                "type": "keyword"
-              }
-            }
-          }
-        }
+      "file_access": {
+        "type": "keyword"
+      },
+      "file_type": {
+        "type": "keyword"
+      },
+      "data_type": {
+        "type": "keyword"
+      },
+      "object_id": {
+        "type": "keyword"
       }
     }
   },

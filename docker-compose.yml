@@ -550,7 +550,7 @@ services:
       NEXT_PUBLIC_ARRANGER_DEMO_INDEX: demo_centric
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS:
         repositories.code, analysis.analysis_id, object_id, study_id, file_type, file.name,
-        file.size, file.md5sum
+        file.size, file.md5sum, analysis.published_at, analysis.experiment.data.organism, analysis.experiment.data.ec_number, analysis.experiment.data.sequence_length
       # Growth Arranger Variables
       NEXT_PUBLIC_ARRANGER_GROWTH_API: http://arranger-growth:5051 
       NEXT_PUBLIC_ARRANGER_GROWTH_DOCUMENT_TYPE: file

@@ -54,79 +54,79 @@
     },
     {
       "displayName": "Organism",
-      "fieldName": "analysis.experiment.data.organism"
+      "fieldName": "experiment.data.organism"
     },
     {
       "displayName": "EC Number",
-      "fieldName": "analysis.experiment.data.ec_number"
+      "fieldName": "experiment.data.ec_number"
     },
     {
       "displayName": "Mutations",
-      "fieldName": "analysis.experiment.data.mutations"
+      "fieldName": "experiment.data.mutations"
     },
     {
       "displayName": "Classification",
-      "fieldName": "analysis.experiment.data.classification"
+      "fieldName": "experiment.data.classification"
     },
     {
       "displayName": "Sequence Length",
-      "fieldName": "analysis.experiment.data.sequence_length"
+      "fieldName": "experiment.data.sequence_length"
     },
     {
       "displayName": "Target Sequence",
-      "fieldName": "analysis.experiment.data.target_sequence"
+      "fieldName": "experiment.data.target_sequence"
     },
     {
       "displayName": "Expression System",
-      "fieldName": "analysis.experiment.data.expression_system"
+      "fieldName": "experiment.data.expression_system"
     },
     {
       "displayName": "PDB Crystal Structure",
-      "fieldName": "analysis.experiment.data.pdb_xtal_structure"
+      "fieldName": "experiment.data.pdb_xtal_structure"
     },
     {
       "displayName": "Substrate Activity",
-      "fieldName": "analysis.experiment.data.substrate_activity"
+      "fieldName": "experiment.data.substrate_activity"
     },
     {
       "displayName": "Challenge Problem",
-      "fieldName": "analysis.experiment.annotations.challenge_problem"
+      "fieldName": "experiment.annotations.challenge_problem"
     },
     {
       "displayName": "Additional Documentation",
-      "fieldName": "analysis.experiment.annotations.additional_documentation"
+      "fieldName": "experiment.annotations.additional_documentation"
     },
     {
       "displayName": "Enzyme Dataset",
-      "fieldName": "analysis.experiment.enzyme_dataset"
+      "fieldName": "experiment.enzyme_dataset"
     },
     {
       "displayName": "Method",
-      "fieldName": "analysis.experiment.acknowledgements.method"
+      "fieldName": "experiment.acknowledgements.method"
     },
     {
       "displayName": "Strategy",
-      "fieldName": "analysis.experiment.acknowledgements.strategy"
+      "fieldName": "experiment.acknowledgements.strategy"
     },
     {
       "displayName": "Data Source",
-      "fieldName": "analysis.experiment.acknowledgements.data_source.source"
+      "fieldName": "experiment.acknowledgements.data_source.source"
     },
     {
       "displayName": "Preferred Citation",
-      "fieldName": "analysis.experiment.acknowledgements.preferred_citation"
+      "fieldName": "experiment.acknowledgements.preferred_citation"
     },
     {
       "displayName": "Analysis Initial State",
-      "fieldName": "analysis.analysisStateHistory.initialState"
+      "fieldName": "analysis.analysis_state_history.initial_state"
     },
     {
       "displayName": "Analysis Updated State",
-      "fieldName": "analysis.analysisStateHistory.updatedState"
+      "fieldName": "analysis.analysis_state_history.updated_state"
     },
     {
       "displayName": "Analysis State Updated At",
-      "fieldName": "analysis.analysisStateHistory.updatedAt"
+      "fieldName": "analysis.analysis_state_history.updated_at"
     },
     {
       "displayName": "File Name",
