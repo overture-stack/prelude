@@ -1,2 +1,2 @@
-Repository Code	Analysis ID	Object ID	Study ID
-song.overture	94a05f84-0d9a-440d-a05f-840d9a440dd5	e13ab1be-f2ef-530b-9139-a06199358cbb	demo
+Repository Code	Analysis ID	Object ID	Study ID	File Name	File Size	File MD5	File Access	Strategy	File Data Type	Sequence Length
+song.overture	94a05f84-0d9a-440d-a05f-840d9a440dd5	e13ab1be-f2ef-530b-9139-a06199358cbb	demo	fileData.txt	59715	d41d8cd98f00b204e9800998ecf8427e	open	supervised	Sequence Mutations	549

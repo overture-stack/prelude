@@ -198,7 +198,7 @@
             "type": "keyword"
           },
           "size": {
-            "type": "long"
+            "type": "integer"
           },
           "md5sum": {
             "type": "keyword"
