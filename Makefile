@@ -4,8 +4,10 @@ phaseOne:
 	docker compose -f ./phaseOne/docker-compose.phaseOne.yml up --attach conductor
 
 phaseTwo:
-
 	docker compose -f ./phaseTwo/docker-compose.phaseTwo.yml up --attach conductor
+
+platform:
+	docker compose -f /docker-compose.yml up --attach conductor
 
 down:
 	@if [ -n "$$(docker compose -f ./phaseOne/docker-compose.phaseOne.yml ps -q)" ]; then \
