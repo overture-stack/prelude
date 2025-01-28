@@ -19,8 +19,8 @@
  *
  */
 
-import { ReactElement } from 'react';
 import { css, useTheme } from '@emotion/react';
+import { ReactElement } from 'react';
 
 import defaultTheme from '../../theme';
 
@@ -102,7 +102,7 @@ const HeroBanner = (): ReactElement => {
 						}
 					`}
 				>
-					Rapid development and deployment of proof-of-concept portals.
+					Made to steamline the development of proof-of-concept data portals.
 				</p>
 			</section>
 		</article>

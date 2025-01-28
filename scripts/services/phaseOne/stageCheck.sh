@@ -1,9 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 
-# Check Stage
-echo -e "Checking if Stage is reachable"
-    until curl -s -o /dev/null -w "%{http_code}" "http://stage:3000" | grep -q "200"; do
-        echo -e "\033[1;36mStage:\033[0m Not yet reachable, checking again in 10 seconds"
-        sleep 10
-    done
-echo -e "\033[1;32mSuccess:\033[0m Stage is now reachable"
+# Define some basic configurations
+RETRY_COUNT=0
+MAX_RETRIES=10          
+RETRY_DELAY=5           
+TIMEOUT=10              
+STAGE_URL="http://stage:3000"
+
+printf "\033[1;36mConductor:\033[0m Checking if Stage is reachable\n"
+
+until curl -s -f --max-time "$TIMEOUT" "$STAGE_URL" > /dev/null 2>&1; do
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+    
+    if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
+        printf "\033[1;31mFailed to connect to Stage after %d attempts\033[0m\n" "$MAX_RETRIES"
+        exit 1
+    fi
+    
+    printf "Trying again in %d seconds...\n" "$RETRY_DELAY"
+    sleep "$RETRY_DELAY"
+done
+
+printf "\033[1;32mSuccess:\033[0m Stage is now reachable\n"

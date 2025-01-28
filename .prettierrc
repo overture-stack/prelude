@@ -19,6 +19,15 @@
         "proseWrap": "always",
         "singleQuote": false
       }
+    },
+    {
+      "files": "*.yml",
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 100,
+        "singleQuote": true,
+        "bracketSpacing": true
+      }
     }
   ]
 }

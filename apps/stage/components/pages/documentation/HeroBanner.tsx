@@ -19,91 +19,54 @@
  *
  */
 
-import { ReactElement } from 'react';
 import { css, useTheme } from '@emotion/react';
-
+import { ReactElement } from 'react';
 import defaultTheme from '../../theme';
 
-/** Layout notes:
-  - Article is the full-width background for the hero banner
-  - Section centers the content in larger screens
- ** */
+const styles = {
+	article: css`
+		background-color: ${defaultTheme.colors.hero};
+		box-sizing: border-box;
+		color: ${defaultTheme.colors.white};
+		display: flex;
+		padding: 20px;
+		width: 100%;
+		justify-content: center;
+
+		@media (min-width: 1270px) {
+			height: 200px;
+		}
+	`,
+	section: css`
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		max-width: 1550px;
+		width: 100%;
+
+		> * {
+			margin: 0;
+		}
+	`,
+	title: css`
+		font-size: 30px;
+		font-weight: normal;
+		position: relative;
+		padding-right: 20%;
+
+		@media (min-width: 1345px) {
+			font-size: 34px;
+		}
+	`,
+};
 
 const HeroBanner = (): ReactElement => {
 	const theme: typeof defaultTheme = useTheme();
 
 	return (
-		<article
-			css={css`
-				background-color: ${theme.colors.hero};
-				box-sizing: border-box;
-				color: ${theme.colors.white};
-				display: flex;
-				padding: 50px 50px;
-				width: 100%;
-
-				@media (min-width: 1270px) {
-					height: 200px;
-				}
-
-				@media (min-width: 2165px) {
-					padding-left: 50px;
-					justify-content: center;
-				}
-
-				@media (min-width: 2170px) {
-				}
-
-				@media (min-width: 2880px) {
-					padding-left: 50px;
-				}
-			`}
-		>
-			<section
-				css={css`
-					display: flex;
-					flex-direction: column;
-					justify-content: space-between;
-					max-width: 1550px;
-					width: 100%;
-
-					> * {
-						margin: 0;
-
-						&:not(h1) {
-							margin-top: 10px;
-						}
-					}
-				`}
-			>
-				<h2
-					css={css`
-						font-size: 30px;
-						font-weight: normal;
-						position: relative;
-						padding-right: 20%;
-
-						@media (min-width: 1345px) {
-							font-size: 34px;
-						}
-					`}
-				>
-					Prelude Documentation
-				</h2>
-				<p
-					css={css`
-						font-size: 14px;
-						line-height: 1.5;
-						max-width: 800px;
-						margin-top: 10px; /* Add specific margin here */
-
-						@media (min-width: 1345px) {
-							font-size: 20px;
-						}
-					`}
-				>
-				Breaking down data portal development into phased steps
-				</p>
+		<article css={styles.article}>
+			<section css={styles.section}>
+				<h2 css={styles.title}>Documentation</h2>
 			</section>
 		</article>
 	);

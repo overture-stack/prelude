@@ -1,16 +1,25 @@
 #!/bin/sh
- 
-        # Checking first arranger server
-        echo -e "Checking if our Arrangers are reachable"
-        until curl -s -o /dev/null -w "%{http_code}" "http://arranger-composition:5050/graphql" | tr -d '/' | grep -q "200"; do
-          echo -e "\033[1;36mComposition Data Arranger:\033[0m Not yet reachable, checking again in 20 seconds"
-          sleep 20
-        done
-        echo -e "\033[1;32mSuccess:\033[0m Arranger Composition is now reachable"
 
-        # Checking second arranger server
-        until curl -s -o /dev/null -w "%{http_code}" "http://arranger-instrument:5051/graphql" | tr -d '/' | grep -q "200"; do
-          echo -e "\033[1;36mInstrument Data Arranger:\033[0m Not yet reachable, checking again in 20 seconds"
-          sleep 20
-        done
-        echo -e "\033[1;32mSuccess:\033[0m Arranger Instrument is now reachable"
+# Define configurations
+RETRY_DELAY=20
+ARRANGER_FILE_URL="http://arranger-file:5050/graphql"
+ARRANGER_TABULAR_URL="http://arranger-tabular:5051/graphql"
+
+# Check Arrangers
+echo -e "Checking Arranger services"
+
+# Check File Data Arranger
+echo -e "\033[1;36mConductor:\033[0m Checking File Data Arranger"
+until curl -s -o /dev/null -w "%{http_code}" "$ARRANGER_FILE_URL" | tr -d '/' | grep -q "200"; do
+    printf "Trying again in %d seconds...\n" "$RETRY_DELAY"
+    sleep "$RETRY_DELAY"
+done
+echo -e "\033[1;32mSuccess:\033[0m File Data Arranger is reachable"
+
+# Check Tabular Data Arranger
+echo -e "\033[1;36mConductor:\033[0m Checking Tabular Data Arranger"
+until curl -s -o /dev/null -w "%{http_code}" "$ARRANGER_TABULAR_URL" | tr -d '/' | grep -q "200"; do
+    printf "Trying again in %d seconds...\n" "$RETRY_DELAY"
+    sleep "$RETRY_DELAY"
+done
+echo -e "\033[1;32mSuccess:\033[0m Tabular Data Arranger is reachable"

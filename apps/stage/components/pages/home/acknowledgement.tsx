@@ -1,5 +1,5 @@
-import { ReactElement } from 'react';
 import { css } from '@emotion/react';
+import { ReactElement } from 'react';
 import defaultTheme from '../../theme';
 
 const styles = {
@@ -35,7 +35,7 @@ const styles = {
 		color: ${defaultTheme.colors.white};
 		text-decoration: none;
 		font-weight: 900;
-		border-radius: 900px;
+		border-radius: 5px;
 		transition: transform 0.3s ease;
 		margin-top: 1rem;
 
@@ -47,7 +47,7 @@ const styles = {
 
 const Acknowledgment = (): ReactElement => (
 	<div css={styles.container}>
-		<h2 css={styles.title}>Acknowledgement</h2>
+		<h2 css={styles.title}>Acknowledgements</h2>
 		<p css={styles.text}>
 			The OICR Genome Informatics group built this portal using Overture, their open-source software suite that helps
 			researchers organize, share, and explore their datasets.

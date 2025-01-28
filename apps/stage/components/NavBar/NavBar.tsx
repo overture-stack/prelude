@@ -11,7 +11,8 @@ import defaultTheme from '../theme';
 import UserDropdown from '../UserDropdown';
 
 import labIcon from '@/public/images/navbar-logo.png';
-import { StyledLink } from './styles';
+import Dropdown from './Dropdown';
+import { linkStyles, StyledLink, StyledListLink } from './styles';
 
 export const navBarRef = createRef<HTMLDivElement>();
 
@@ -19,7 +20,7 @@ const NavBar = (): ReactElement => {
 	const router = useRouter();
 	const theme: typeof defaultTheme = useTheme();
 	const { user } = useAuthContext();
-	const { NEXT_PUBLIC_AUTH_PROVIDER } = getConfig();
+	const { NEXT_PUBLIC_AUTH_PROVIDER, NEXT_PUBLIC_LAB_NAME } = getConfig();
 
 	const activeLinkStyle = `
     background-color: ${theme.colors.grey_2};
@@ -83,7 +84,7 @@ const NavBar = (): ReactElement => {
 								}
 							`}
 						>
-							Prelude Development Portal
+							{NEXT_PUBLIC_LAB_NAME}
 						</span>
 					</a>
 				</InternalLink>
@@ -107,11 +108,22 @@ const NavBar = (): ReactElement => {
 						color: ${theme.colors.black};
 					`}
 				>
-					<InternalLink path={INTERNAL_PATHS.DEMO}>
-						<StyledLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.DEMO) })}>
-							Data Explorer
-						</StyledLink>
-					</InternalLink>
+					<Dropdown
+						css={linkStyles}
+						data={[
+							<InternalLink path={INTERNAL_PATHS.TABULAR}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.TABULAR) })}>
+									Tabular Data
+								</StyledListLink>
+							</InternalLink>,
+							<InternalLink path={INTERNAL_PATHS.FILE}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.FILE) })}>
+									File Data
+								</StyledListLink>
+							</InternalLink>,
+						]}
+						label="Explore The Data"
+					/>
 					<InternalLink path={INTERNAL_PATHS.DOCUMENTATION}>
 						<StyledLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.DOCUMENTATION) })}>
 							Documentation

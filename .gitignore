@@ -4,6 +4,5 @@ node_modules
 __MACOSX
 
 volumes
-dist
 node_modules
  

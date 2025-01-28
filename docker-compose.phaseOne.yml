@@ -1,0 +1,232 @@
+services:
+  conductor:
+    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev', 'mockData', 'clean']
+    image: node:18-alpine
+    container_name: conductor
+    ports:
+      - '9204:9204'
+    volumes:
+      - ./volumes/data-song-db:/song/db-folder-init
+      - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/config/file_data_index_template.json
+      - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/config/tabular_data_index_template.json
+      - ./apps/csv-processor:/csv-processor
+      - ./apps/stage:/stage
+      - ./data:/data
+      - ./scripts:/scripts
+      - ./volumes/health:/health
+    environment:
+      - PROFILE=${PROFILE:-platform}
+
+    command: >
+      sh -c '
+        apk add --no-cache --quiet curl >/dev/null 2>&1
+        set -e
+          echo "Profile is set to: $PROFILE"
+          case "$PROFILE" in
+            phaseOne)
+              echo "Running phaseOne deployment..."
+              chmod +x scripts/deployments/phaseOne.sh
+              scripts/deployments/phaseOne.sh
+              ;;
+            PhaseTwo)
+              echo "Running phaseTwo deployment..."
+              chmod +x scripts/deployments/phaseTwo.sh
+              scripts/deployments/phaseTwo.sh
+              ;;
+            phaseThree)
+              echo "Running phaseThree deployment ..."
+              chmod +x scripts/deployments/phaseThree.sh
+              scripts/deployments/phaseThree.sh
+              ;;
+            platform)
+              echo "Running platform deployment..."
+              chmod +x scripts/deployments/platform.sh
+              scripts/deployments/platform.sh
+              ;;
+            stageDev)
+              echo "Running Stage Dev deployment..."
+              chmod +x scripts/deployments/stageDev.sh
+              scripts/deployments/stageDev.sh
+              ;;
+            mockData)
+              echo "Running mock data submission..."
+              chmod +x scripts/services/phaseOne/submitMockData.sh
+              scripts/services/phaseOne/submitMockData.sh
+              ;;
+            clean)
+              echo "Removing mock data..."
+              chmod +x scripts/services/phaseOne/clearElasticsearchData.sh
+              scripts/services/phaseOne/clearElasticsearchData.sh
+              ;;
+            *)
+              echo "Invalid profile: $PROFILE. Available options are [platform, songDev, scoreDev,
+      maestroDev, arrangerDev, stageDev]."
+              exit 1
+              ;;
+          esac
+          exit 0
+      '
+    healthcheck:
+      test: ['CMD', 'test', '-f', '/health/conductor_health']
+      interval: 5s
+      timeout: 40s
+      retries: 100
+      start_period: 30s
+    networks:
+      - conductor-network
+
+  # ==================================================================================
+  #  PhaseOne: Search & Discovery
+  # ==================================================================================
+
+  elasticsearch:
+    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev']
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
+    container_name: elasticsearch
+    platform: linux/amd64
+    ports:
+      - '9200:9200'
+    environment:
+      discovery.type: single-node
+      cluster.name: workflow.elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx2048m
+      ELASTIC_PASSWORD: myelasticpassword
+      xpack.security.enabled: 'true'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '10'
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test:
+        'curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
+        exit 1'
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 25s
+    networks:
+      - conductor-network
+
+  # ======================================
+  # Arranger-Server file data
+  # ======================================
+  # Search API generation with compatible search UI components
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
+  # --------------------------------------
+  arranger-file:
+    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev']
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-file
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - '5050:5050'
+    volumes:
+      - ./configs/arrangerConfigs/fileDataConfigs/base.json:/app/modules/server/configs/base.json
+      - ./configs/arrangerConfigs/fileDataConfigs/extended.json:/app/modules/server/configs/extended.json
+      - ./configs/arrangerConfigs/fileDataConfigs/facets.json:/app/modules/server/configs/facets.json
+      - ./configs/arrangerConfigs/fileDataConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+      - ./configs/arrangerConfigs/fileDataConfigs/table.json:/app/modules/server/configs/table.json
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: file_arranger_set
+      # Arranger Variables
+      DEBUG: false
+      ENABLE_LOGS: false
+    networks:
+      - conductor-network
+
+  # ======================================
+  # Arranger-Server Tabular
+  # ======================================
+  # Search API generation with compatible search UI components
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-arranger
+  # --------------------------------------
+  arranger-tabular:
+    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev']
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-tabular
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - '5051:5051'
+    volumes:
+      - ./configs/arrangerConfigs/tabularDataConfigs/base.json:/app/modules/server/configs/base.json
+      - ./configs/arrangerConfigs/tabularDataConfigs/extended.json:/app/modules/server/configs/extended.json
+      - ./configs/arrangerConfigs/tabularDataConfigs/facets.json:/app/modules/server/configs/facets.json
+      - ./configs/arrangerConfigs/tabularDataConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+      - ./configs/arrangerConfigs/tabularDataConfigs/table.json:/app/modules/server/configs/table.json
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: tabular_arranger_set
+      # Arranger Variables (Port required)
+      PORT: 5051
+      DEBUG: false
+      ENABLE_LOGS: false
+    networks:
+      - conductor-network
+
+  # ======================================
+  # Stage Phase One
+  # ======================================
+  # The react-based, front end portal UI for Overture
+  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#setting-up-stage
+  # --------------------------------------
+  stage:
+    profiles: ['phaseOne']
+    image: localstageimage:1.0
+    container_name: stage
+    pull_policy: never
+    platform: linux/arm64/v8
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    environment:
+      # Stage Variables
+      NEXTAUTH_URL: http://localhost:3000/api/auth
+      NEXT_PUBLIC_LAB_NAME: Prelude Portal
+      NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
+      NEXT_PUBLIC_DEBUG: true
+      NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
+      NEXT_PUBLIC_ENABLE_DOWNLOADS: true
+      # File Arranger Variables
+      NEXT_PUBLIC_ARRANGER_FILE_API: http://arranger-file:5050
+      NEXT_PUBLIC_ARRANGER_FILE_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_FILE_INDEX: file_centric
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS:
+        repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size,
+        file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type,
+        analysis.experiment.data.sequence_length
+      # Tabular Arranger Variables
+      NEXT_PUBLIC_ARRANGER_TABULAR_API: http://arranger-tabular:5051
+      NEXT_PUBLIC_ARRANGER_TABULAR_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_TABULAR_INDEX: tabular_centric
+      # Song Variables (For Swagger Pages)
+      NEXT_PUBLIC_SONG_API: http://localhost:8080
+      NEXTAUTH_SECRET: 'your-secure-secret-here'
+    volumes:
+      - stage-data:/usr/src/public/static/dms_user_assets
+    networks:
+      - conductor-network
+
+volumes:
+  elasticsearch-data:
+  stage-data:
+networks:
+  conductor-network:
+    driver: bridge

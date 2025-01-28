@@ -32,8 +32,8 @@ export const LOGIN_PATH = '/login';
 export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
-	DEMO = '/demo',
-	INSTRUMENT = '/instrument',
+	FILE = '/file',
+	TABULAR = '/tabular',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
 	SONG = '/api-docs/song',
@@ -57,8 +57,8 @@ const PROXY_API_PATH = '/api';
 const PROXY_PROTECTED_API_PATH = '/api/protected';
 
 export const INTERNAL_API_PROXY = {
-	DEMO_ARRANGER: urlJoin(PROXY_API_PATH, 'demo_arranger'),
-	INSTRUMENT_ARRANGER: urlJoin(PROXY_API_PATH, 'instrument_arranger'),
+	FILE_ARRANGER: urlJoin(PROXY_API_PATH, 'file_arranger'),
+	TABULAR_ARRANGER: urlJoin(PROXY_API_PATH, 'tabular_arranger'),
 	SONG: urlJoin(PROXY_API_PATH, 'song'), // Updated to use urlJoin and PROXY_API_PATH
 	PROTECTED_ARRANGER: urlJoin(PROXY_PROTECTED_API_PATH, 'arranger'),
 	PROTECTED_KEYCLOAK_APIKEY_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'keycloak/apikey'),

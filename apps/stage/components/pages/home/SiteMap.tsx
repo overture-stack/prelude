@@ -41,26 +41,25 @@ const categories: Record<string, Category> = {
 	},
 	documentation: {
 		title: 'Documentation',
-		description:
-			'Documentation covering basic platform usage, configuration and customization, this will be expanded on in the near future.',
+		description: 'Documentation covering basic platform usage, configuration and customization.',
 	},
 };
 
 const products: Product[] = [
 	// Data Category
 	{
-		title: 'Example Demo Data',
-		link: '/demo',
+		title: 'File Data',
+		link: '/file',
 		category: 'data',
 	},
 	{
-		title: 'Example Instrument Data',
-		link: '/instruments',
+		title: 'Tabular Data',
+		link: '/tabulars',
 		category: 'data',
 	},
 	// Documentation Category
 	{
-		title: 'Prelude Early Release Docs',
+		title: 'Prelude Docs',
 		link: '/documentation',
 		category: 'documentation',
 	},
@@ -129,7 +128,7 @@ const styles = {
 		transition: transform 0.3s ease, box-shadow 0.3s ease;
 		text-decoration: none;
 		font-weight: 900;
-		border-radius: 900px;
+		border-radius: 5px;
 		color: ${defaultTheme.colors.white};
 
 		&:hover {

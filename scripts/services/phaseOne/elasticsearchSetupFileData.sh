@@ -1,56 +1,41 @@
 #!/bin/sh
 
-# Check if template file exists
-if [ ! -f "/usr/share/elasticsearch/config/demo_index_template.json" ]; then
-    echo -e "\033[1;31mError:\033[0m Template file not found at /usr/share/elasticsearch/config/demo_index_template.json"
-    exit 1
-fi
+TEMPLATE_FILE="/usr/share/elasticsearch/config/file_data_index_template.json"
+ES_URL="http://elasticsearch:9200"
+AUTH="-u elastic:myelasticpassword"
+INDEX_NAME="file-index"
+TEMPLATE_NAME="file_template"
+ALIAS_NAME="file_centric"
 
-# Set up Elasticsearch index template
-echo -e "\033[1;36mConductor:\033[0m Setting up the Elasticsearch demo index template"
-if ! curl -s -u elastic:myelasticpassword "http://elasticsearch:9200/_template/demo_template" | grep -q "\"index_patterns\""; then 
-    curl -s -u elastic:myelasticpassword -X PUT "http://elasticsearch:9200/_template/demo_template" \
-        -H "Content-Type: application/json" -d @/usr/share/elasticsearch/config/demo_index_template.json > /dev/null &&
-    echo -e "\033[1;32mSuccess:\033[0m Elasticsearch demo index template created successfully"
+# Check template file
+[ ! -f "$TEMPLATE_FILE" ] && printf "\033[1;31mError:\033[0m Template file not found at $TEMPLATE_FILE\n" && exit 1
+
+# Set up template if it doesn't exist
+printf "\033[1;36mConductor:\033[0m Setting up the Elasticsearch file index template\n"
+if ! curl -s $AUTH "$ES_URL/_template/$TEMPLATE_NAME" | grep -q "\"index_patterns\""; then 
+   curl -s $AUTH -X PUT "$ES_URL/_template/$TEMPLATE_NAME" \
+       -H "Content-Type: application/json" -d @"$TEMPLATE_FILE" > /dev/null && \
+   printf "\033[1;32mSuccess:\033[0m Elasticsearch file index template created successfully\n"
 else
-    echo -e "\033[1;36mElasticsearch (Demo):\033[0m demo Index template already exists, skipping creation"
+   printf "\033[1;36mElasticsearch (File):\033[0m File Index template already exists, skipping creation\n"
 fi
 
-# Set up Elasticsearch index and alias 
-echo -e "\033[1;36mConductor:\033[0m Setting up the Elasticsearch demo index and alias"
-
-# Check if index exists
-if ! curl -s -f -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/demo-index" > /dev/null 2>&1; then
-    echo -e "\033[1;36mElasticsearch (Demo):\033[0m Index does not exist, creating demo index"
-    response=$(curl -s -w "\n%{http_code}" -u elastic:myelasticpassword -X PUT "http://elasticsearch:9200/demo-index" \
-        -H "Content-Type: application/json" -d "{\"aliases\": {\"demo_centric\": {}}}")
-    http_code=$(echo "$response" | tail -n1)
-    body=$(echo "$response" | sed '$d')
-    
-    if [ "$http_code" != "200" ] && [ "$http_code" != "201" ]; then
-        echo -e "\033[1;31mError:\033[0m Failed to create demo index. Response: $body"
-        exit 1
-    fi
-    echo -e "\033[1;32mSuccess:\033[0m demo index created"
+# Create index with alias if it doesn't exist
+printf "\033[1;36mConductor:\033[0m Setting up the Elasticsearch file index and alias\n"
+if ! curl -s -f $AUTH -X GET "$ES_URL/$INDEX_NAME" > /dev/null 2>&1; then
+   printf "\033[1;36mElasticsearch (File):\033[0m Index does not exist, creating file index\n"
+   response=$(curl -s -w "\n%{http_code}" $AUTH -X PUT "$ES_URL/$INDEX_NAME" \
+       -H "Content-Type: application/json" \
+       -d "{\"aliases\": {\"$ALIAS_NAME\": {}}}")
+   
+   http_code=$(echo "$response" | tail -n1)
+   if [ "$http_code" != "200" ] && [ "$http_code" != "201" ]; then
+       printf "\033[1;31mError:\033[0m Failed to create file index. HTTP Code: $http_code\n"
+       exit 1
+   fi
+   printf "\033[1;32mSuccess:\033[0m File index and alias created\n"
 else
-    echo -e "\033[1;36mElasticsearch (Demo):\033[0m demo index already exists"
+   printf "\033[1;36mElasticsearch (File):\033[0m File index already exists\n"
 fi
 
-# Check if alias exists
-if ! curl -s -f -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/_alias/demo_centric" > /dev/null 2>&1; then
-    echo -e "\033[1;36mElasticsearch (Demo):\033[0m Creating demo alias"
-    response=$(curl -s -w "\n%{http_code}" -u elastic:myelasticpassword -X POST "http://elasticsearch:9200/demo-index/_alias/demo_centric" \
-        -H "Content-Type: application/json")
-    http_code=$(echo "$response" | tail -n1)
-    body=$(echo "$response" | sed '$d')
-    
-    if [ "$http_code" != "200" ] && [ "$http_code" != "201" ]; then
-        echo -e "\033[1;31mError:\033[0m Failed to create demo alias. Response: $body"
-        exit 1
-    fi
-    echo -e "\033[1;32mSuccess:\033[0m demo alias created"
-else
-    echo -e "\033[1;36mElasticsearch (Demo):\033[0m demo alias already exists"
-fi
-
-echo -e "\033[1;32mSuccess:\033[0m Elasticsearch demo setup complete"
+printf "\033[1;32mSuccess:\033[0m Elasticsearch file setup complete\n"

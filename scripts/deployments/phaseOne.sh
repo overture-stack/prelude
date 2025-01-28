@@ -1,34 +1,56 @@
 #!/bin/sh
 
+# Debug mode flag (set to "true" to enable debug output)
+DEBUG=false
+# Set the base directory for scripts
+SCRIPT_DIR="/scripts/services/phaseOne"
+
+# Debug function for logging
+debug() {
+    if [ "$DEBUG" = "true" ]; then
+        echo "[DEBUG] $1"
+    fi
+}
+
+# rs = "Run Script" a simple function to apply permissions and run scripts
+rs() {
+    if [ -f "$1" ]; then
+        debug "Found script at: $1"
+        debug "Current permissions: $(ls -l "$1")"
+        if chmod +x "$1"; then
+            debug "Successfully set execute permissions"
+            debug "New permissions: $(ls -l "$1")"
+            debug "Attempting to execute with sh explicitly..."
+            sh "$1"
+        else
+            echo "Failed to set execute permissions for $1"
+            return 1
+        fi
+    else
+        echo "Script not found at: $1"
+        return 1
+    fi
+}
+
 # Welcome
 echo -e "\033[1;36m╔══════════════════════════════════════════════════════════╗\033[0m"
 echo -e "\033[1;36m║   Spinning up the Prelude Phase One Development Portal   ║\033[0m"
 echo -e "\033[1;36m╚══════════════════════════════════════════════════════════╝\033[0m\n"
 
-# rs = "Run Script" a simple function to apply permissions and run scripts
-rs() {
-    chmod +x "$1" && "$1"
-}
-
 # Cleanup any existing healthcheck file
 echo -e "\033[1;35m[1/6]\033[0m Cleaning up existing health check files"
-rs scripts/phaseOneServices/healthcheckCleanup.sh
+rs "${SCRIPT_DIR}/healthcheckCleanup.sh"
 
-# Wait a bit for Elasticsearch 
 echo -e "\033[1;36mElasticsearch:\033[0m Starting up (this may take a few minutes)"
-until curl -s -u elastic:myelasticpassword -X GET "http://elasticsearch:9200/_cluster/health" > /dev/null; do
-    echo -e "\033[1;36mElasticsearch:\033[0m Not yet reachable, checking again in 30 seconds"
-    sleep 30
-done
-echo -e "\033[1;32mSuccess:\033[0m Elasticsearch is reachable"
+rs "${SCRIPT_DIR}/elasticsearchCheck.sh"
 
-# Elasticsearch (Comp) Setup
-echo -e "\033[1;35m[2/6]\033[0m Setting up Composition Data in Elasticsearch"
-rs /scripts/services/elasticsearchSetupCompositionData.sh
+# Elasticsearch (File) Setup
+echo -e "\033[1;35m[2/6]\033[0m Setting up File Data in Elasticsearch"
+rs "${SCRIPT_DIR}/elasticsearchSetupFileData.sh"
 
-# Elasticsearch (Instrument) Setup
-echo -e "\033[1;35m[3/6]\033[0m Setting Instrument Data in Elasticsearch"
-rs /scripts/services/elasticsearchSetupInstrumentData.sh
+# Elasticsearch (Tabular) Setup
+echo -e "\033[1;35m[3/6]\033[0m Setting Tabular Data in Elasticsearch"
+rs "${SCRIPT_DIR}/elasticsearchSetupTabularData.sh"
 
 # Update Conductor to Healthy Status
 echo -e "\033[1;35m[4/6]\033[0m Updating Conductor health status"
@@ -37,11 +59,11 @@ echo -e "\033[1;36mConductor:\033[0m Updating Container Status. Health check fil
 
 # Check Stage
 echo -e "\033[1;35m[5/6]\033[0m Checking Stage"
-rs /scripts/services/stageCheck.sh
+rs "${SCRIPT_DIR}/stageCheck.sh"
 
 # Check Arranger
 echo -e "\033[1;35m[6/6]\033[0m Checking Arranger"
-rs /scripts/services/arrangerCheck.sh
+rs "${SCRIPT_DIR}/arrangerCheck.sh"
 
 # Remove Health Check File
 rm /health/conductor_health
