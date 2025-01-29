@@ -48,5 +48,3 @@ Deployment Sequence:
 The script includes progress tracking with colored output and completes by
 displaying the portal's access URL (default: http://localhost:3000). Each step
 includes error handling and debug logging capabilities when enabled.
-
-## Services
