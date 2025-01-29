@@ -6,6 +6,7 @@ MAX_RETRIES=10
 RETRY_DELAY=5           
 TIMEOUT=10              
 
+
 printf "\033[1;36mConductor:\033[0m Checking if Stage is reachable\n"
 
 until curl -s -f --max-time "$TIMEOUT" "$STAGE_URL" > /dev/null 2>&1; do
