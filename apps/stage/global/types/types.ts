@@ -62,3 +62,26 @@ export interface User {
 export interface UserWithId extends User {
 	id: string;
 }
+
+export type AlertLevel = 'error' | 'warning' | 'info';
+
+export type AlertDef = {
+	level: AlertLevel;
+	title: string;
+	message?: string;
+	dismissable: boolean;
+	id: string;
+};
+
+// Type guards
+export const isAlertLevel = (level: any): level is AlertLevel => {
+	return level === 'error' || level === 'warning' || level === 'info';
+};
+
+export const isAlertDef = (obj: any): obj is AlertDef => {
+	return obj.id && obj.title && obj.dismissable !== undefined && isAlertLevel(obj.level);
+};
+
+export const isAlertDefs = (obj: any): obj is AlertDef[] => {
+	return Array.isArray(obj) && obj.every(isAlertDef);
+};

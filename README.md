@@ -45,7 +45,9 @@ previous phase's foundation while introducing new capabilities.
 >
 > Adjust these in Docker Desktop settings under "Resources".
 
-## Installation & Setup
+### Running the portal
+
+#### Step 1: Installation & Setup
 
 1. **Clone the repo branch**
 
@@ -63,18 +65,16 @@ docker build -t localstageimage:1.0 .
 After editing your stage folder make sure you run the above build command before
 deploying locally using this docker compose setup.
 
-## Running the Platform
+#### Step 2: Deployment
 
-### Deployment Commands
-
-Run one of the following commands from the root of the repository:
+Run one of the following commands **from the root of the repository**:
 
 | Environment          | Unix/macOS       | Windows |
 | -------------------- | ---------------- | ------- |
 | Phase One Platform   | `make phase-one` | pending |
-| Stage Development    | `make stage-dev` | pending |
 | Phase Two Platform   | pending          | pending |
 | Phase Three Platform | pending          | pending |
+| Stage Development    | `make stage-dev` | pending |
 
 Following startup the front end portal will be available at your
 `localhost:3000`

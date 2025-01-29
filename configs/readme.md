@@ -21,7 +21,8 @@ configs/
 
 ### Tabular & File Data Configs
 
-Contains configuration files for the tabular data exploration table and facets:
+Contains configuration files for the tabular and file data exploration table and
+facets:
 
 - `base.json` - Core settings including document type and index name
 - `extended.json` - Field mappings and display properties
