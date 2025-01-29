@@ -6,11 +6,9 @@ services:
     ports:
       - '9204:9204'
     volumes:
-      - ./volumes/data-song-db:/song/db-folder-init
       - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/config/file_data_index_template.json
       - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/config/tabular_data_index_template.json
       - ./apps/csv-processor:/csv-processor
-      - ./apps/stage:/stage
       - ./data:/data
       - ./scripts:/scripts
       - ./volumes/health:/health
@@ -68,7 +66,7 @@ services:
               scripts/services/phaseOne/submitMockData.sh
               ;;
             clean)
-              echo "Removing mock data..."
+              echo "Removing data..."
               chmod +x scripts/services/phaseOne/clearElasticsearchData.sh
               scripts/services/phaseOne/clearElasticsearchData.sh
               ;;

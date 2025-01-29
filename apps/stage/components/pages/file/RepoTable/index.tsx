@@ -19,23 +19,23 @@
  *
  */
 
-import { useMemo } from 'react';
 import { css, useTheme } from '@emotion/react';
 import {
 	Pagination,
 	Table,
 	TableContextProvider,
-	useArrangerTheme,
 	Toolbar,
+	useArrangerTheme,
 } from '@overture-stack/arranger-components';
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
+import { useMemo } from 'react';
 import urlJoin from 'url-join';
 
-import { getConfig } from '@/global/config';
 import StyledLink from '@/components/Link';
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
+import { getConfig } from '@/global/config';
 import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 
 const getTableConfigs = ({
@@ -61,6 +61,24 @@ const getTableConfigs = ({
 			`,
 
 			// Child components
+			columnTypes: {
+				all: {
+					cellValue: ({ getValue }) => {
+						const value = getValue();
+						return ['', null, 'null', 'NA', undefined, 'undefined'].includes(value) ? (
+							<span
+								css={css`
+									color: #9c9c9c;
+								`}
+							>
+								--
+							</span>
+						) : (
+							value
+						);
+					},
+				},
+			},
 			CountDisplay: {
 				fontColor: 'inherit',
 			},
@@ -143,13 +161,13 @@ const getTableConfigs = ({
 const RepoTable = () => {
 	const { NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS } = getConfig();
 	const theme = useTheme();
-	console.log({NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS});
+	console.log({ NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS });
 
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 	const manifestColumns = NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS.split(',')
 		.filter((field) => field.trim()) // break it into arrays, and ensure there's no empty field names
 		.map((fieldName) => fieldName.replace(/['"]+/g, '').trim());
-		console.log({manifestColumns});
+	console.log({ manifestColumns });
 	const customExporters = [
 		{ label: 'File Table', fileName: `data-explorer-table-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 		{ label: 'File Manifest', fileName: `score-manifest.${today}.tsv`, columns: manifestColumns }, // exports a TSV with the manifest columns
@@ -211,4 +229,3 @@ const RepoTable = () => {
 };
 
 export default RepoTable;
-

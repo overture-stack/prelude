@@ -63,7 +63,7 @@ const getTableConfigs = ({
 				all: {
 					cellValue: ({ getValue }) => {
 						const value = getValue();
-						return ['', null, 'null', undefined, 'undefined'].includes(value) ? (
+						return ['', null, 'null', 'NA', undefined, 'undefined'].includes(value) ? (
 							<span
 								css={css`
 									color: #9c9c9c;

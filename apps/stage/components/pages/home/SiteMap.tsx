@@ -41,7 +41,7 @@ const categories: Record<string, Category> = {
 	},
 	documentation: {
 		title: 'Documentation',
-		description: 'Documentation covering basic platform usage, configuration and customization.',
+		description: 'Covering basic platform usage, configuration and customization.',
 	},
 };
 
