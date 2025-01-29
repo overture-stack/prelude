@@ -1,16 +1,14 @@
 services:
   conductor:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev', 'mockData', 'clean']
+    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev', 'data', 'clean']
     image: node:18-alpine
     container_name: conductor
     ports:
       - '9204:9204'
     volumes:
-      - ./volumes/data-song-db:/song/db-folder-init
       - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/config/file_data_index_template.json
       - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/config/tabular_data_index_template.json
       - ./apps/csv-processor:/csv-processor
-      - ./apps/stage:/stage
       - ./data:/data
       - ./scripts:/scripts
       - ./volumes/health:/health
@@ -48,13 +46,13 @@ services:
               chmod +x scripts/deployments/stageDev.sh
               scripts/deployments/stageDev.sh
               ;;
-            mockData)
-              echo "Running mock data submission..."
+            data)
+              echo "Running data submission scripts..."
               chmod +x scripts/services/phaseOne/submitMockData.sh
               scripts/services/phaseOne/submitMockData.sh
               ;;
             clean)
-              echo "Removing mock data..."
+              echo "Removing data..."
               chmod +x scripts/services/phaseOne/clearElasticsearchData.sh
               scripts/services/phaseOne/clearElasticsearchData.sh
               ;;

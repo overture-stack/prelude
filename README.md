@@ -69,24 +69,24 @@ deploying locally using this docker compose setup.
 
 Run one of the following commands from the root of the repository:
 
-| Environment         | Unix/macOS      | Windows |
-| ------------------- | --------------- | ------- |
-| phaseOne Platform   | `make phaseOne` | pending |
-| phaseTwo Platform   | pending         | pending |
-| phaseThree Platform | pending         | pending |
+| Environment          | Unix/macOS       | Windows |
+| -------------------- | ---------------- | ------- |
+| Phase One Platform   | `make phase-one` | pending |
+| Stage Development    | `make stage-dev` | pending |
+| Phase Two Platform   | pending          | pending |
+| Phase Three Platform | pending          | pending |
 
 Following startup the front end portal will be available at your
 `localhost:3000`
 
 ### Helper Commands
 
-| Description                                                     | Unix/macOS         | Windows |
-| --------------------------------------------------------------- | ------------------ | ------- |
-| Shuts down all containers                                       | `make down`        | pending |
-| Shuts down all containers and removes volumes                   | `make downVolumes` | pending |
-| Submits pre-configured demo data                                | `make mockData`    | pending |
-| Removes all documents from elasticsearch                        | `make clean`       | pending |
-| Spins up all complementary services for local stage development | `make stageDev`    | pending |
+| Description                                   | Unix/macOS        | Windows |
+| --------------------------------------------- | ----------------- | ------- |
+| Shuts down all containers                     | `make down`       | pending |
+| Shuts down all containers and removes volumes | `make reset`      | pending |
+| Submits pre-configured demo data              | `make load-data`  | pending |
+| Removes all documents from elasticsearch      | `make clean-data` | pending |
 
 ## Documentation
 
