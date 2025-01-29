@@ -1,16 +1,16 @@
 # Define all phony targets (targets that don't create files)
-.PHONY: phaseOne phaseTwo down clean cleanVolumes mockData
+.PHONY: dev-phase-one dev-stage clean-data reset-volumes load-sample-data
 
 # Start Phase One development environment
-phaseOne:
+phase-one:
 	PROFILE=phaseOne docker compose -f ./docker-compose.phaseOne.yml --profile phaseOne up --attach conductor 
 
-# Start Phase Two development environment
-stageDev:
+# Start Stage development environment
+stage-dev:
 	PROFILE=stageDev docker compose -f ./docker-compose.phaseOne.yml --profile stageDev up --attach conductor
 	
 # Gracefully shutdown all containers while preserving volumes
-down:
+shutdown:
 	@{ \
 		printf "\033[1;36mConductor:\033[0m Checking for containers...\n"; \
 		if docker compose -f ./docker-compose.phaseOne.yml ps -a -q 2>/dev/null | grep -q .; then \
@@ -25,7 +25,7 @@ down:
 	}
 
 # Shutdown all containers and remove all volumes (WARNING: Deletes all data)
-downVolumes:
+reset:
 	@{ \
 		printf "\033[1;33mWarning:\033[0m This will remove all containers AND their volumes. Data will be lost.\n"; \
 		read -p "Are you sure you want to continue? [y/N] " confirm; \
@@ -46,11 +46,11 @@ downVolumes:
 	}
 
 # Load sample data into Elasticsearch
-mockData:
-	PROFILE=mockData docker compose -f ./docker-compose.phaseOne.yml --profile mockData up --attach conductor
+load-data:
+	PROFILE=data docker compose -f ./docker-compose.phaseOne.yml --profile data up --attach conductor
 
 # Remove all documents from Elasticsearch (preserves index structure)
-clean:
+clean-data:
 	@echo "\033[1;33mWarning:\033[0m This will delete ALL data from the Elasticsearch index."
 	@echo "This action cannot be undone."
 	@/bin/bash -c 'read -p "Are you sure you want to continue? [y/N] " confirm; \

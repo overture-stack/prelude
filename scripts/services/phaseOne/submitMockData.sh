@@ -3,10 +3,9 @@
 # Configuration
 MAX_RETRIES=10
 RETRY_COUNT=0
-CSV_PROCESSOR_PATH="/csv-processor"
-ES_URL="http://elasticsearch:9200"
-DATA_FILE="/data/tabularData.csv"
-INDEX_NAME="tabular-index"
+CSV_PROCESSOR_PATH="${CSV_PROCESSOR_PATH:-/csv-processor}"
+DATA_FILE="${TABULAR_DATA_FILE}"
+INDEX_NAME="${TABULAR_INDEX_NAME}"
 
 # Check if data file exists
 if [ ! -f "$DATA_FILE" ]; then

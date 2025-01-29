@@ -1,9 +1,7 @@
 #!/bin/sh
 
-# Define configurations
-RETRY_DELAY=20
-ARRANGER_FILE_URL="http://arranger-file:5050/graphql"
-ARRANGER_TABULAR_URL="http://arranger-tabular:5051/graphql"
+# Define configurations with environment variables and defaults
+RETRY_DELAY="${RETRY_DELAY:-20}"
 
 # Check Arrangers
 echo -e "Checking Arranger services"

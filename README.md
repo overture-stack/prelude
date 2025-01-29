@@ -50,7 +50,7 @@ previous phase's foundation while introducing new capabilities.
 1. **Clone the repo branch**
 
 ```
-git clone -b prelude https://github.com/overture-stack/conductor.git
+git clone -b preludeV2.1 https://github.com/overture-stack/conductor.git
 ```
 
 2. **Build the Stage image using the dockerfile** For phaseOne run:

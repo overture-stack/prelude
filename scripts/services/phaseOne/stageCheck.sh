@@ -5,7 +5,6 @@ RETRY_COUNT=0
 MAX_RETRIES=10          
 RETRY_DELAY=5           
 TIMEOUT=10              
-STAGE_URL="http://stage:3000"
 
 printf "\033[1;36mConductor:\033[0m Checking if Stage is reachable\n"
 

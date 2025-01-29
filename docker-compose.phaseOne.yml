@@ -1,6 +1,6 @@
 services:
   conductor:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev', 'mockData', 'clean']
+    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform', 'stageDev', 'data', 'clean']
     image: node:18-alpine
     container_name: conductor
     ports:
@@ -15,8 +15,22 @@ services:
       - ./scripts:/scripts
       - ./volumes/health:/health
     environment:
-      - PROFILE=${PROFILE:-platform}
-
+      PROFILE: ${PROFILE:-platform}
+      ES_URL: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ARRANGER_FILE_URL: http://arranger-file:5050/graphql
+      ARRANGER_TABULAR_URL: http://arranger-tabular:5051/graphql
+      FILE_INDEX_NAME: file-index
+      FILE_ES_TEMPLATE_FILE: /usr/share/elasticsearch/config/file_data_index_template.json
+      FILE_ES_TEMPLATE_NAME: file_template
+      FILE_ES_ALIAS_NAME: file_centric
+      TABULAR_INDEX_NAME: tabular-index
+      TABULAR_ES_TEMPLATE_FILE: /usr/share/elasticsearch/config/tabular_data_index_template.json
+      TABULAR_ES_TEMPLATE_NAME: tabular_template
+      TABULAR_ES_ALIAS_NAME: tabular_centric
+      STAGE_URL: http://stage:3000
+      TABULAR_DATA_FILE: /data/tabularData.csv
     command: >
       sh -c '
         apk add --no-cache --quiet curl >/dev/null 2>&1
@@ -48,7 +62,7 @@ services:
               chmod +x scripts/deployments/stageDev.sh
               scripts/deployments/stageDev.sh
               ;;
-            mockData)
+            data)
               echo "Running mock data submission..."
               chmod +x scripts/services/phaseOne/submitMockData.sh
               scripts/services/phaseOne/submitMockData.sh
@@ -90,6 +104,7 @@ services:
       discovery.type: single-node
       cluster.name: workflow.elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx2048m
+      ES_USER: elastic
       ELASTIC_PASSWORD: myelasticpassword
       xpack.security.enabled: 'true'
     logging:

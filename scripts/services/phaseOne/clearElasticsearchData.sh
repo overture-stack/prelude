@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Configuration
-ES_URL="http://elasticsearch:9200"
-INDEX_NAME="tabular-index"
-ES_AUTH="elastic:myelasticpassword"
+ES_URL="${ES_URL:-http://elasticsearch:9200}"
+INDEX_NAME="${INDEX_NAME:-tabular-index}"
+ES_AUTH="${ES_USER}:${ES_PASS}" 
 
 echo -e "\033[1;36mElasticsearch:\033[0m Clearing data from index $INDEX_NAME"
 

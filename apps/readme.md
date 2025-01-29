@@ -1,6 +1,6 @@
 # Apps folder
 
-This folder contains the following
+This folder containers a
 
 ## CSV-Processor
 
