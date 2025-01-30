@@ -245,7 +245,7 @@ services:
       NEXT_PUBLIC_ARRANGER_TABULAR_INDEX: tabular_centric
       # Song Variables (For Swagger Pages used in phaseThree)
       NEXT_PUBLIC_SONG_API: http://localhost:8080
-      NEXTAUTH_SECRET: 'your-secure-secret-here'
+      NEXTAUTH_SECRET: your-secure-secret-here
       # Homepage banner
       NEXT_PUBLIC_SYSTEM_ALERTS:
         '[{"level":"info","title":"Welcome to Prelude PhaseOne","message":"See the documentation tab

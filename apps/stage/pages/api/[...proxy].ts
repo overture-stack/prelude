@@ -40,10 +40,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 	if (req.url?.startsWith(INTERNAL_API_PROXY.FILE_ARRANGER)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.FILE_ARRANGER);
-		console.log({path})
+		console.log({ path });
 		target = NEXT_PUBLIC_ARRANGER_FILE_API;
 	} else if (req.url?.startsWith(INTERNAL_API_PROXY.TABULAR_ARRANGER)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.TABULAR_ARRANGER);
+		console.log({ path });
 		target = NEXT_PUBLIC_ARRANGER_TABULAR_API;
 	} else {
 		return res.status(404).end();

@@ -14,9 +14,9 @@ deployment configurations where scripts can be added, removed, or reordered as
 needed.
 
 To reduce coginitive overload we have organized setup scripts by the phase they
-are introduced in. All configurable variables are located at the top of the
-script and are configurable from the enviorment variables of the conductor
-service within the docker compose file.
+are introduced in. All commonly configurabled variables area located at the top
+of the script and are configurable from the environment variables of the
+conductor service within the docker compose file.
 
 ### PhaseOne.sh
 

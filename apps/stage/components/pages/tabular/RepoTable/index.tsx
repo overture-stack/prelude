@@ -34,7 +34,7 @@ import urlJoin from 'url-join';
 
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
-import { getConfig } from '@/global/config';
+import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 
 const getTableConfigs = ({
 	apiHost,
@@ -158,16 +158,13 @@ const getTableConfigs = ({
 });
 
 const RepoTable = () => {
-	const { NEXT_PUBLIC_ARRANGER_TABULAR_API } = getConfig();
 	const theme = useTheme();
-
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-
 	const customExporters = [
 		{ label: 'Download', fileName: `tabular-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
 
-	useArrangerTheme(getTableConfigs({ apiHost: NEXT_PUBLIC_ARRANGER_TABULAR_API, customExporters, theme }));
+	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.TABULAR_ARRANGER, customExporters, theme }));
 
 	return useMemo(
 		() => (
