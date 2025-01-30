@@ -5,6 +5,14 @@
 phase-one:
 	PROFILE=phaseOne docker compose -f ./docker-compose.yml --profile phaseOne up --attach conductor 
 
+# Start Phase Two development environment
+phase-two:
+	PROFILE=phaseTwo docker compose -f ./docker-compose.yml --profile phaseTwo up --attach conductor
+
+# Start Phase Three development environment
+phase-three:
+	PROFILE=phaseThree docker compose -f ./docker-compose.yml --profile phaseThree up --attach conductor 
+
 # Start Stage development environment
 stage-dev:
 	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach conductor
@@ -30,19 +38,9 @@ reset:
 		printf "\033[1;33mWarning:\033[0m This will remove all containers AND their volumes. Data will be lost.\n"; \
 		read -p "Are you sure you want to continue? [y/N] " confirm; \
 		if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
-			printf "\033[1;36mConductor:\033[0m Checking for containers...\n"; \
-			if docker compose -f ./docker-compose.yml ps -a -q 2>/dev/null | grep -q .; then \
-				printf "\033[1;36mConductor:\033[0m Removing Phase One containers and volumes...\n"; \
-				PROFILE=phaseOne docker compose -f ./docker-compose.yml --profile phaseOne down -v; \
-			fi; \
-			if docker compose -f ./docker-compose.yml.phaseTwo.yml ps -a -q 2>/dev/null | grep -q .; then \
-				printf "\033[1;36mConductor:\033[0m Removing Phase Two containers and volumes...\n"; \
-				PROFILE=phaseTwo docker compose -f ./docker-compose.yml.phaseTwo.yml --profile phaseTwo down -v; \
-			fi; \
-			printf "\033[1;32mSuccess:\033[0m Cleanup completed\n"; \
-		else \
-			printf "\033[1;36mOperation cancelled\033[0m\n"; \
-		fi \
+			printf "\033[1;36mConductor:\033[0m Removing all containers and volumes...\n"; \
+			PROFILE=platform docker compose -f ./docker-compose.yml --profile platform down -v ; \
+		fi; \
 	}
 
 # Load sample data into Elasticsearch

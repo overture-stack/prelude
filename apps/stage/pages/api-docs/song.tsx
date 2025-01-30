@@ -9,7 +9,7 @@ const alertsJson: AlertDef[] = [
 		level: 'warning',
 		title: 'Song API Unavailable?',
 		message:
-			'If you are using Prelude PhaseOne, the Song Swagger API will not available as song is not running. See our documentation tab for more details.',
+			'If you are using Prelude PhaseOne the Song Swagger API will not work as song is not deployed until PhaseThree.',
 		dismissable: true,
 		id: 'song-api-unavailability', // Make sure each alert has a unique ID
 	},
