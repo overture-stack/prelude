@@ -13,7 +13,7 @@ const styles = {
 		@media (max-width: 768px) {
 			margin-top: -3rem;
 			margin-bottom: 2rem;
-			min-height: 325px;
+			min-height: 0px;
 		}
 	`,
 	title: css`
@@ -45,19 +45,27 @@ const styles = {
 	`,
 };
 
-const Acknowledgment = (): ReactElement => (
+const Support = (): ReactElement => (
 	<div css={styles.container}>
-		<h2 css={styles.title}>Acknowledgements</h2>
+		<h2 css={styles.title}>Need Help?</h2>
 		<p css={styles.text}>
-			The OICR Genome Informatics group built this portal using Overture, their open-source software suite that helps
-			researchers organize, share, and explore their datasets.
+			Reach out through our{' '}
+			<a href="https://docs.overture.bio/community/support" target="_blank" rel="noopener">
+				community support channels
+			</a>
+			. Using public support channels helps us track issues and filenstrates active community engagement, a key
+			indicator of project health.
 		</p>
-		<p css={styles.text}>Want to improve your data management?</p>
-		<p css={styles.text}>Email contact@overture.bio</p>
-		<a href="https://www.overture.bio/" target="_blank" rel="noopener noreferrer" css={styles.ctaButton}>
-			Learn More
+		<p css={styles.text}>For business inquiries contact us by email at contact@overture.bio</p>
+		<a
+			href="https://github.com/overture-stack/docs/discussions/categories/support"
+			target="_blank"
+			rel="noopener noreferrer"
+			css={styles.ctaButton}
+		>
+			Get Help
 		</a>
 	</div>
 );
 
-export default Acknowledgment;
+export default Support;

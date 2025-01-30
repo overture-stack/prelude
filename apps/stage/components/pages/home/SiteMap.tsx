@@ -37,11 +37,11 @@ interface Category {
 const categories: Record<string, Category> = {
 	data: {
 		title: 'Explore The Data',
-		description: 'Two data table examples populated with mock data.',
+		description: 'Two data table examples.',
 	},
 	documentation: {
 		title: 'Documentation',
-		description: 'Covering basic platform usage, configuration and customization.',
+		description: 'Basic platform usage, configuration and customization.',
 	},
 };
 

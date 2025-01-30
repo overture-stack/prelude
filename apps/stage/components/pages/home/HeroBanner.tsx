@@ -88,7 +88,7 @@ const HeroBanner = (): ReactElement => {
 						}
 					`}
 				>
-					Prelude Development Portal
+					Proof Of Concept Portal
 				</h2>
 				<p
 					css={css`
@@ -102,7 +102,7 @@ const HeroBanner = (): ReactElement => {
 						}
 					`}
 				>
-					Made to steamline the development of proof-of-concept data portals.
+					Made to steamline the discovery and development phases of new projects.
 				</p>
 			</section>
 		</article>

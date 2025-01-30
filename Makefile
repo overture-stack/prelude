@@ -3,23 +3,23 @@
 
 # Start Phase One development environment
 phase-one:
-	PROFILE=phaseOne docker compose -f ./docker-compose.phaseOne.yml --profile phaseOne up --attach conductor 
+	PROFILE=phaseOne docker compose -f ./docker-compose.yml --profile phaseOne up --attach conductor 
 
 # Start Stage development environment
 stage-dev:
-	PROFILE=stageDev docker compose -f ./docker-compose.phaseOne.yml --profile stageDev up --attach conductor
+	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach conductor
 	
 # Gracefully shutdown all containers while preserving volumes
-shutdown:
+down:
 	@{ \
 		printf "\033[1;36mConductor:\033[0m Checking for containers...\n"; \
-		if docker compose -f ./docker-compose.phaseOne.yml ps -a -q 2>/dev/null | grep -q .; then \
+		if docker compose -f ./docker-compose.yml ps -a -q 2>/dev/null | grep -q .; then \
 			printf "\033[1;36mConductor:\033[0m Removing Phase One containers...\n"; \
-			PROFILE=phaseOne docker compose -f ./docker-compose.phaseOne.yml --profile phaseOne down ; \
+			PROFILE=phaseOne docker compose -f ./docker-compose.yml --profile phaseOne down ; \
 		fi; \
-		if docker compose -f ./docker-compose.phaseTwo.yml ps -a -q 2>/dev/null | grep -q .; then \
+		if docker compose -f ./docker-compose.yml.phaseTwo.yml ps -a -q 2>/dev/null | grep -q .; then \
 			printf "\033[1;36mConductor:\033[0m Removing Phase Two containers...\n"; \
-			PROFILE=phaseTwo docker compose -f ./docker-compose.phaseTwo.yml --profile phaseTwo down ; \
+			PROFILE=phaseTwo docker compose -f ./docker-compose.yml.phaseTwo.yml --profile phaseTwo down ; \
 		fi; \
 		printf "\033[1;32mSuccess:\033[0m Cleanup completed\n"; \
 	}
@@ -31,13 +31,13 @@ reset:
 		read -p "Are you sure you want to continue? [y/N] " confirm; \
 		if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
 			printf "\033[1;36mConductor:\033[0m Checking for containers...\n"; \
-			if docker compose -f ./docker-compose.phaseOne.yml ps -a -q 2>/dev/null | grep -q .; then \
+			if docker compose -f ./docker-compose.yml ps -a -q 2>/dev/null | grep -q .; then \
 				printf "\033[1;36mConductor:\033[0m Removing Phase One containers and volumes...\n"; \
-				PROFILE=phaseOne docker compose -f ./docker-compose.phaseOne.yml --profile phaseOne down -v; \
+				PROFILE=phaseOne docker compose -f ./docker-compose.yml --profile phaseOne down -v; \
 			fi; \
-			if docker compose -f ./docker-compose.phaseTwo.yml ps -a -q 2>/dev/null | grep -q .; then \
+			if docker compose -f ./docker-compose.yml.phaseTwo.yml ps -a -q 2>/dev/null | grep -q .; then \
 				printf "\033[1;36mConductor:\033[0m Removing Phase Two containers and volumes...\n"; \
-				PROFILE=phaseTwo docker compose -f ./docker-compose.phaseTwo.yml --profile phaseTwo down -v; \
+				PROFILE=phaseTwo docker compose -f ./docker-compose.yml.phaseTwo.yml --profile phaseTwo down -v; \
 			fi; \
 			printf "\033[1;32mSuccess:\033[0m Cleanup completed\n"; \
 		else \
@@ -47,7 +47,7 @@ reset:
 
 # Load sample data into Elasticsearch
 load-data:
-	PROFILE=data docker compose -f ./docker-compose.phaseOne.yml --profile data up --attach conductor
+	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach conductor
 
 # Remove all documents from Elasticsearch (preserves index structure)
 clean-data:
@@ -55,7 +55,7 @@ clean-data:
 	@echo "This action cannot be undone."
 	@/bin/bash -c 'read -p "Are you sure you want to continue? [y/N] " confirm; \
 	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
-		PROFILE=clean docker compose -f ./docker-compose.phaseOne.yml --profile clean up --attach conductor; \
+		PROFILE=clean docker compose -f ./docker-compose.yml --profile clean up --attach conductor; \
 	else \
 		echo "\033[1;36mOperation cancelled\033[0m"; \
 	fi'
