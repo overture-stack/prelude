@@ -105,7 +105,9 @@ async function validateFile(filePath) {
             return false;
         }
         // Success message
-        process.stdout.write(chalk_1.default.green('✓ File ') + chalk_1.default.yellow(`'${filePath}'`) + chalk_1.default.green(' is valid and readable.\n'));
+        process.stdout.write(chalk_1.default.green('✓ File ') +
+            chalk_1.default.yellow(`'${filePath}'`) +
+            chalk_1.default.green(' is valid and readable.\n'));
         return true;
     }
     catch (error) {
@@ -132,7 +134,8 @@ async function validateElasticsearchConnection(client, config) {
         process.stdout.write(chalk_1.default.green(`\n✓ Connection to Elasticsearch successful.\n`));
         return true;
     }
-    catch (error) { // Type as any for error handling
+    catch (error) {
+        // Type as any for error handling
         process.stdout.write(chalk_1.default.red('\n❌ Error connecting to Elasticsearch:\n\n'));
         if ((error === null || error === void 0 ? void 0 : error.name) === 'ConnectionError') {
             process.stdout.write(chalk_1.default.yellow('Could not connect to Elasticsearch. Please check:\n'));
@@ -166,9 +169,7 @@ async function validateElasticsearchConnection(client, config) {
  */
 async function validateCSVStructure(headers) {
     // Remove empty strings and trim whitespace
-    const cleanedHeaders = headers
-        .map(header => header.trim())
-        .filter(header => header !== '');
+    const cleanedHeaders = headers.map(header => header.trim()).filter(header => header !== '');
     // Check if we have the expected number of headers
     if (cleanedHeaders.length === 0) {
         process.stdout.write(chalk_1.default.red('\n❌ Error: No valid headers found in CSV file\n\n'));
@@ -270,8 +271,8 @@ async function validateIndex(client, indexName) {
             const filteredIndices = body
                 .filter((idx) => {
                 const name = idx.index;
-                return !name.startsWith('.') && // Remove system indices
-                    !name.endsWith('_arranger_set'); // Remove arranger sets
+                return (!name.startsWith('.') && // Remove system indices
+                    !name.endsWith('_arranger_set')); // Remove arranger sets
             })
                 .sort((a, b) => a.index.localeCompare(b.index));
             filteredIndices.forEach((idx) => {
@@ -282,7 +283,7 @@ async function validateIndex(client, indexName) {
         // Get index settings and mappings for additional validation if needed
         await client.indices.get({
             index: indexName,
-            include_type_name: false
+            include_type_name: false,
         });
         // Log index details
         process.stdout.write(chalk_1.default.green('\n✓ ') + chalk_1.default.yellow(`'${indexName}'`) + chalk_1.default.green(' exists and is valid.\n'));
@@ -296,12 +297,12 @@ async function validateIndex(client, indexName) {
 async function checkElasticsearchIndex(client, indexName) {
     try {
         const indexExists = await client.indices.exists({
-            index: indexName
+            index: indexName,
         });
         if (!indexExists.body) {
             const { body } = await client.cat.indices({
                 format: 'json',
-                v: true
+                v: true,
             });
             process.stdout.write(chalk_1.default.red(`\n❌ Error: Index '${indexName}' does not exist\n\n`));
             process.stdout.write(chalk_1.default.yellow('Available indices:\n'));
@@ -309,8 +310,8 @@ async function checkElasticsearchIndex(client, indexName) {
             const filteredIndices = body
                 .filter((idx) => {
                 const indexName = idx.index;
-                return !indexName.startsWith('.') && // Remove system indices
-                    !indexName.endsWith('_arranger_set'); // Remove arranger sets
+                return (!indexName.startsWith('.') && // Remove system indices
+                    !indexName.endsWith('_arranger_set')); // Remove arranger sets
             })
                 .sort((a, b) => a.index.localeCompare(b.index));
             filteredIndices.forEach((idx) => {
@@ -339,15 +340,13 @@ async function validateHeadersMatchMappings(client, headers, indexName) {
     try {
         // Retrieve the current index mapping
         const { body: mappingResponse } = await client.indices.getMapping({
-            index: indexName
+            index: indexName,
         });
         // Get the properties (fields) from the mapping
         const mapping = mappingResponse[indexName].mappings;
         const existingFields = Object.keys(mapping.properties || {});
         // Clean headers to remove any potential extra whitespace or empty strings
-        const cleanedHeaders = headers
-            .map(header => header.trim())
-            .filter(header => header !== '');
+        const cleanedHeaders = headers.map(header => header.trim()).filter(header => header !== '');
         if (cleanedHeaders.length === 0) {
             process.stdout.write(chalk_1.default.red('\n❌ No valid headers found\n\n'));
             return false;
@@ -363,9 +362,7 @@ async function validateHeadersMatchMappings(client, headers, indexName) {
             // CSV Headers (with matched and mismatched)
             process.stdout.write(chalk_1.default.yellow.bold.underline('CSV headers:\n\n'));
             cleanedHeaders.forEach(header => {
-                const matchStatus = existingFields.includes(header)
-                    ? chalk_1.default.green('✓ ')
-                    : chalk_1.default.red('✗ ');
+                const matchStatus = existingFields.includes(header) ? chalk_1.default.green('✓ ') : chalk_1.default.red('✗ ');
                 process.stdout.write(matchStatus + header + '\n');
             });
             // Missing Required Fields

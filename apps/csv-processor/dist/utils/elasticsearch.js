@@ -12,19 +12,16 @@ function createClient(config) {
         node: config.elasticsearch.url,
         auth: {
             username: config.elasticsearch.user,
-            password: config.elasticsearch.password
-        }
+            password: config.elasticsearch.password,
+        },
     });
 }
 async function sendBulkWriteRequest(client, records, indexName, onFailure) {
     try {
-        const body = records.flatMap(doc => [
-            { index: { _index: indexName } },
-            doc
-        ]);
+        const body = records.flatMap(doc => [{ index: { _index: indexName } }, doc]);
         const { body: result } = await client.bulk({
             body,
-            refresh: true
+            refresh: true,
         });
         if (result.errors) {
             let failureCount = 0;
@@ -36,7 +33,7 @@ async function sendBulkWriteRequest(client, records, indexName, onFailure) {
                     console.error({
                         status: item.index.status,
                         error: item.index.error,
-                        document: item.index._id
+                        document: item.index._id,
                     });
                 }
             });

@@ -41,53 +41,70 @@ const cli_1 = require("./utils/cli");
 const elasticsearch_1 = require("./utils/elasticsearch");
 const processor_1 = require("./services/processor");
 const validations = __importStar(require("./services/validations"));
+const configurator_1 = require("./services/configurator");
 const chalk_1 = __importDefault(require("chalk"));
+const fs = __importStar(require("fs"));
 async function main() {
     try {
-        // Display a simple start log with chalk
         console.log(chalk_1.default.blue('\n============================================='));
         console.log(chalk_1.default.bold.blue('      CSV Processor Starting... 🚀'));
         console.log(chalk_1.default.blue('=============================================\n'));
         // Setup configuration from CLI arguments
-        const { config, filePath } = (0, cli_1.setupCLI)();
+        const { config, filePath, outputPath, mode } = (0, cli_1.setupCLI)();
         if (!filePath) {
-            console.error('Error: No input file specified');
+            console.error(chalk_1.default.red('Error: No input file specified'));
             process.exit(1);
         }
-        // Validate file existence and readability
+        // Common validations for both modes
         const fileValid = await validations.validateFile(filePath);
-        if (!fileValid) {
+        if (!fileValid)
             process.exit(1);
-        }
-        // Validate batch size
-        const batchSizeValid = validations.validateBatchSize(config.batchSize);
-        if (!batchSizeValid) {
-            process.exit(1);
-        }
-        // Validate delimiter
         const delimiterValid = validations.validateDelimiter(config.delimiter);
-        if (!delimiterValid) {
+        if (!delimiterValid)
             process.exit(1);
+        // Handle mapping mode
+        if (mode === 'mapping') {
+            const mapping = await (0, configurator_1.validateAndGetMapping)(filePath, config.delimiter);
+            if (outputPath) {
+                fs.writeFileSync(outputPath, JSON.stringify(mapping, null, 2));
+                console.log(chalk_1.default.green(`\n✓ Mapping saved to ${outputPath}`));
+            }
+            else {
+                console.log(chalk_1.default.green('\nGenerated Elasticsearch Mapping:\n'), JSON.stringify(mapping, null, 2));
+            }
+            return;
         }
-        // Initialize Elasticsearch client
+        // Validations specific to upload mode
+        const batchSizeValid = validations.validateBatchSize(config.batchSize);
+        if (!batchSizeValid)
+            process.exit(1);
+        // Initialize and validate Elasticsearch
         const client = (0, elasticsearch_1.createClient)(config);
-        // Validate Elasticsearch connection
         const connectionValid = await validations.validateElasticsearchConnection(client, config);
-        if (!connectionValid) {
+        if (!connectionValid)
             process.exit(1);
-        }
-        // Validate Elasticsearch index
         const indexValid = await validations.validateIndex(client, config.elasticsearch.index);
-        if (!indexValid) {
+        if (!indexValid)
             process.exit(1);
-        }
         // Process the CSV file
         await (0, processor_1.processCSVFile)(filePath, config, client);
     }
     catch (error) {
-        console.error(chalk_1.default.red('Error during processing:'), error);
+        console.error(chalk_1.default.red('\nError during processing:'));
+        if (error instanceof Error) {
+            console.error(chalk_1.default.red(error.message));
+            if (error.stack) {
+                console.error(chalk_1.default.gray(error.stack));
+            }
+        }
+        else {
+            console.error(chalk_1.default.red(String(error)));
+        }
         process.exit(1);
     }
 }
 // Start processing
-main();
+main().catch(error => {
+    console.error(chalk_1.default.red('Fatal error:'), error);
+    process.exit(1);
+});

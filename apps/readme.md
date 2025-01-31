@@ -8,7 +8,8 @@ All localized applications are included in this folder, this includes:
 ## CSV-processor
 
 A Node.js command-line tool for processing and uploading CSV files to
-Elasticsearch, featuring validation and error handling.
+Elasticsearch, featuring validation, error handling, and mapping generation
+capabilities.
 
 ### Prerequisites
 
@@ -40,33 +41,50 @@ npm install -g .
 Basic command structure:
 
 ```bash
-csv-processor -f <file-path> [options]
+csv-processor -f <file-path> -i <index-name> [options]
 ```
 
 #### Configuration Options
 
-| Option                      | Description              | Default               |
-| --------------------------- | ------------------------ | --------------------- |
-| `-f, --file <path>`         | CSV file path (required) | -                     |
-| `--url <url>`               | Elasticsearch URL        | http://localhost:9200 |
-| `-i, --index <name>`        | Elasticsearch index name | tabular-index         |
-| `-u, --user <username>`     | Elasticsearch username   | elastic               |
-| `-p, --password <password>` | Elasticsearch password   | myelasticpassword     |
-| `-b, --batch-size <size>`   | Processing batch size    | 1000                  |
-| `-d, --delimiter <char>`    | CSV delimiter            | ,                     |
+| Option                      | Description                             | Default               |
+| --------------------------- | --------------------------------------- | --------------------- |
+| `-f, --file <path>`         | CSV file path (required)                | -                     |
+| `-i, --index <name>`        | Elasticsearch index name (required)     | -                     |
+| `-m, --mode <enum>`         | Processing mode ('upload' or 'mapping') | upload                |
+| `-o, --output <file>`       | Output for mapping JSON file            | -                     |
+| `--url <url>`               | Elasticsearch URL                       | http://localhost:9200 |
+| `-u, --user <username>`     | Elasticsearch username                  | elastic               |
+| `-p, --password <password>` | Elasticsearch password                  | myelasticpassword     |
+| `-b, --batch-size <size>`   | Processing batch size                   | 1000                  |
+| `-d, --delimiter <char>`    | CSV delimiter                           | ,                     |
+
+#### Operating Modes
+
+The tool supports two operating modes:
+
+1. **Upload Mode** (default): Processes and uploads CSV data directly to
+   Elasticsearch
+2. **Mapping Mode**: Generates an Elasticsearch mapping file based on CSV
+   structure
 
 #### Example Commands
 
-Custom Elasticsearch configuration:
+Upload data to Elasticsearch:
 
 ```bash
-csv-processor -f data.csv --url http://localhost:9200 -i my-index -u elastic -p mypassword
+csv-processor -f data.csv -i my-index --url http://localhost:9200 -u elastic -p mypassword
+```
+
+Generate mapping file:
+
+```bash
+csv-processor -m mapping -f data.csv -o mapping.json
 ```
 
 Custom delimiter and batch size:
 
 ```bash
-csv-processor -f data.csv -d ";" -b 100
+csv-processor -f data.csv -i my-index -d ";" -b 100
 ```
 
 ### Troubleshooting
@@ -77,6 +95,8 @@ Common issues and solutions:
 2. **Connection Errors**: Verify Elasticsearch URL and credentials
 3. **Performance Issues**: Adjust batch size as needed
 4. **File Access Errors**: Verify file permissions and path
+5. **Mapping Generation**: When using mapping mode, ensure the output path is
+   writable
 
 ## Stage
 
