@@ -19,9 +19,9 @@
  *
  */
 
-import { ReactElement, useEffect, useState } from 'react';
 import { css, useTheme } from '@emotion/react';
 import { ArrangerDataProvider } from '@overture-stack/arranger-components';
+import { ReactElement, useEffect, useState } from 'react';
 
 import ErrorNotification from '@/components/ErrorNotification';
 import Loader from '@/components/Loader';
@@ -55,9 +55,9 @@ export interface PageContentProps {
 }
 
 const {
-	NEXT_PUBLIC_ARRANGER_TABULAR_API,
-	NEXT_PUBLIC_ARRANGER_TABULAR_DOCUMENT_TYPE,
-	NEXT_PUBLIC_ARRANGER_TABULAR_INDEX,
+	NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API,
+	NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE,
+	NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX,
 } = getConfig();
 
 const configsQuery = `
@@ -76,8 +76,8 @@ const TABULARRepositoryPage = (): ReactElement => {
 			endpoint: 'graphql/hasValidConfig',
 			body: JSON.stringify({
 				variables: {
-					documentType: NEXT_PUBLIC_ARRANGER_TABULAR_DOCUMENT_TYPE,
-					index: NEXT_PUBLIC_ARRANGER_TABULAR_INDEX,
+					documentType: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE,
+					index: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX,
 				},
 				query: configsQuery,
 			}),
@@ -103,8 +103,8 @@ const TABULARRepositoryPage = (): ReactElement => {
 
 	const ConfigError = getConfigError({
 		hasConfig: arrangerHasConfig,
-		index: NEXT_PUBLIC_ARRANGER_TABULAR_INDEX,
-		documentType: NEXT_PUBLIC_ARRANGER_TABULAR_DOCUMENT_TYPE,
+		index: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX,
+		documentType: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE,
 	});
 
 	return (
@@ -135,9 +135,9 @@ const TABULARRepositoryPage = (): ReactElement => {
 				</ErrorNotification>
 			) : (
 				<ArrangerDataProvider
-					apiUrl={NEXT_PUBLIC_ARRANGER_TABULAR_API}
+					apiUrl={NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API}
 					customFetcher={arrangerFetcher}
-					documentType={NEXT_PUBLIC_ARRANGER_TABULAR_DOCUMENT_TYPE}
+					documentType={NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE}
 					theme={{
 						colors: {
 							common: {

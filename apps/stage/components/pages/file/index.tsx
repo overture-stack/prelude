@@ -54,8 +54,11 @@ export interface PageContentProps {
 	fetchData?: () => Promise<any>;
 }
 
-const { NEXT_PUBLIC_ARRANGER_FILE_API, NEXT_PUBLIC_ARRANGER_FILE_DOCUMENT_TYPE, NEXT_PUBLIC_ARRANGER_FILE_INDEX } =
-	getConfig();
+const {
+	NEXT_PUBLIC_ARRANGER_FILE_DATA_API,
+	NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE,
+	NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX,
+} = getConfig();
 
 const configsQuery = `
 	query ($documentType: String!, $index: String!) {
@@ -73,8 +76,8 @@ const FileRepositoryPage = (): ReactElement => {
 			endpoint: 'graphql/hasValidConfig',
 			body: JSON.stringify({
 				variables: {
-					documentType: NEXT_PUBLIC_ARRANGER_FILE_DOCUMENT_TYPE,
-					index: NEXT_PUBLIC_ARRANGER_FILE_INDEX,
+					documentType: NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE,
+					index: NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX,
 				},
 				query: configsQuery,
 			}),
@@ -96,12 +99,12 @@ const FileRepositoryPage = (): ReactElement => {
 				await sleep(1000);
 				setLoadingArrangerConfig(false);
 			});
-	}, [NEXT_PUBLIC_ARRANGER_FILE_DOCUMENT_TYPE, NEXT_PUBLIC_ARRANGER_FILE_INDEX]);
+	}, [NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE, NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX]);
 
 	const ConfigError = getConfigError({
 		hasConfig: arrangerHasConfig,
-		index: NEXT_PUBLIC_ARRANGER_FILE_INDEX,
-		documentType: NEXT_PUBLIC_ARRANGER_FILE_DOCUMENT_TYPE,
+		index: NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX,
+		documentType: NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE,
 	});
 
 	return (
@@ -132,9 +135,9 @@ const FileRepositoryPage = (): ReactElement => {
 				</ErrorNotification>
 			) : (
 				<ArrangerDataProvider
-					apiUrl={NEXT_PUBLIC_ARRANGER_FILE_API}
+					apiUrl={NEXT_PUBLIC_ARRANGER_FILE_DATA_API}
 					customFetcher={arrangerFetcher}
-					documentType={NEXT_PUBLIC_ARRANGER_FILE_DOCUMENT_TYPE}
+					documentType={NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE}
 					theme={{
 						colors: {
 							common: {

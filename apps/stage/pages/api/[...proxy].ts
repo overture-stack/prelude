@@ -7,7 +7,7 @@ import { removeFromPath, SSLSecured } from '@/global/utils/proxyUtils';
 
 const proxy = httpProxy.createProxyServer();
 
-const { NEXT_PUBLIC_ARRANGER_FILE_API, NEXT_PUBLIC_ARRANGER_TABULAR_API } = getConfig();
+const { NEXT_PUBLIC_ARRANGER_FILE_DATA_API, NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API } = getConfig();
 
 export const config = {
 	api: {
@@ -41,11 +41,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	if (req.url?.startsWith(INTERNAL_API_PROXY.FILE_ARRANGER)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.FILE_ARRANGER);
 		console.log({ path });
-		target = NEXT_PUBLIC_ARRANGER_FILE_API;
+		target = NEXT_PUBLIC_ARRANGER_FILE_DATA_API;
 	} else if (req.url?.startsWith(INTERNAL_API_PROXY.TABULAR_ARRANGER)) {
 		path = removeFromPath(req?.url, INTERNAL_API_PROXY.TABULAR_ARRANGER);
 		console.log({ path });
-		target = NEXT_PUBLIC_ARRANGER_TABULAR_API;
+		target = NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API;
 	} else {
 		return res.status(404).end();
 	}

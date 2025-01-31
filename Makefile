@@ -45,7 +45,7 @@ reset:
 
 # Load sample data into Elasticsearch
 load-data:
-	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach conductor
+	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach csv-processor
 
 # Remove all documents from Elasticsearch (preserves index structure)
 clean-data:

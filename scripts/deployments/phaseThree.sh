@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# Debug mode flag (set to "true" to enable debug output)
-DEBUG=false
 # Set the base directory for scripts
 P1_SCRIPT_DIR="/scripts/services/phaseOne"
 P3_SCRIPT_DIR="/scripts/services/phaseThree"

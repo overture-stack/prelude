@@ -11,8 +11,8 @@ services:
   #  scripts to automate general setup and configuration.                              #
   # ================================================================================== #
   conductor:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'data', 'clean', 'platform']
-    image: node:18-alpine
+    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'clean', 'platform']
+    image: alpine/curl:8.8.0
     container_name: conductor
     ports:
       - '9204:9204'
@@ -25,9 +25,10 @@ services:
       - ./volumes/health:/health
     environment:
       PROFILE: ${PROFILE:-platform}
+      DEBUG: false
       # Arranger service script variables
-      ARRANGER_FILE_URL: http://arranger-file:5050/graphql
-      ARRANGER_TABULAR_URL: http://arranger-tabular:5051/graphql
+      ARRANGER_FILE_DATA_URL: http://arranger-file:5050/graphql
+      ARRANGER_TABULAR_DATA_URL: http://arranger-tabular:5051/graphql
       # Elasticsearch service script variables
       ES_URL: http://elasticsearch:9200
       ES_USER: elastic
@@ -105,6 +106,31 @@ services:
   # want them configured. This is also a good time to do any theming of your portal.   #
   # through Stage.                                                                     #
   # ================================================================================== #
+  csv-processor:
+    profiles: ['data']
+    image: node:18-alpine
+    container_name: data-loader
+    ports:
+      - '9205:9205'
+    volumes:
+      - ./apps/csv-processor:/csv-processor
+      - ./data:/data
+      - ./scripts:/scripts
+    environment:
+      # Data upload service script variable
+      TABULAR_DATA_FILE: /data/tabularData.csv
+      TABULAR_INDEX_NAME: tabular-index
+      ES_URL: http://elasticsearch:9200
+    command: >
+      sh -c '
+        echo "Running tabular data submission..."
+        chmod +x scripts/services/phaseOne/submitMockData.sh
+        scripts/services/phaseOne/submitMockData.sh
+        exit 0
+       '
+    networks:
+      - conductor-network
+
   elasticsearch:
     profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'platform']
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
@@ -232,17 +258,17 @@ services:
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       # File Arranger Variables
-      NEXT_PUBLIC_ARRANGER_FILE_API: http://arranger-file:5050
-      NEXT_PUBLIC_ARRANGER_FILE_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_FILE_INDEX: file_centric
+      NEXT_PUBLIC_ARRANGER_FILE_DATA_API: http://arranger-file:5050
+      NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS:
         repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size,
         file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type,
         analysis.experiment.data.sequence_length
       # Tabular Arranger Variables
-      NEXT_PUBLIC_ARRANGER_TABULAR_API: http://arranger-tabular:5051
-      NEXT_PUBLIC_ARRANGER_TABULAR_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_TABULAR_INDEX: tabular_centric
+      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API: http://arranger-tabular:5051
+      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX: tabular_centric
       # Song Variables (For Swagger Pages used in phaseThree)
       NEXT_PUBLIC_SONG_API: http://localhost:8080
       NEXTAUTH_SECRET: your-secure-secret-here
