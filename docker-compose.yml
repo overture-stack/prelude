@@ -106,6 +106,13 @@ services:
   # want them configured. This is also a good time to do any theming of your portal.   #
   # through Stage.                                                                     #
   # ================================================================================== #
+
+  # ------------------------------------------------------------------------------------#
+  # CSV-Processor                                                                       #
+  # ------------------------------------------------------------------------------------#
+  # Tool for processing and uploading CSV files to Elasticsearch                        #
+  # Documentation can be found from ./apps/readme.md & ./docs/phaseOne.md               #
+  # ------------------------------------------------------------------------------------#
   csv-processor:
     profiles: ['data']
     image: node:18-alpine
@@ -131,6 +138,13 @@ services:
     networks:
       - conductor-network
 
+  # --------------------------------------------------------------------------------------#
+  # Elasticsearch                                                                         #
+  # --------------------------------------------------------------------------------------#
+  # A search and analytics engine used to help query massive datasets.                    #
+  # Documentation Link:                                                                   #
+  # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
+  # --------------------------------------------------------------------------------------#
   elasticsearch:
     profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'platform']
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
