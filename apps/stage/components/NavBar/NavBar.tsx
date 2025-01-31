@@ -79,7 +79,7 @@ const NavBar = (): ReactElement => {
 								color: ${theme.colors.black};
 								padding-left: 30px;
 								white-space: nowrap;
-								@media (max-width: 675px) {
+								@media (max-width: 884px) {
 									display: none;
 								}
 							`}

@@ -8,10 +8,12 @@ const styles = {
 		padding: 2rem;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 		margin-top: 2rem;
+		border-radius: 5px;
 
-		@media (max-width: 768px) {
+		@media (max-width: 884px) {
 			margin-top: -3rem;
 			margin-bottom: 2rem;
+			padding-bottom: 20px;
 		}
 	`,
 	title: css`

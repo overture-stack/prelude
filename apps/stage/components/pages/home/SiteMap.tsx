@@ -83,6 +83,7 @@ const styles = {
 		padding: 2rem;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 		margin-bottom: 2rem;
+		border-radius: 5px;
 	`,
 	categoryHeader: css`
 		margin-bottom: 0.5rem;
@@ -112,7 +113,7 @@ const styles = {
 			}
 		}
 
-		@media (max-width: 600px) {
+		@media (max-width: 884px) {
 			grid-template-columns: 1fr;
 			&[data-category='documentation'] {
 				grid-template-columns: 1fr;

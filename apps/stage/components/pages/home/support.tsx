@@ -9,8 +9,9 @@ const styles = {
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 		margin-top: 2rem;
 		min-height: 415px;
+		border-radius: 5px;
 
-		@media (max-width: 768px) {
+		@media (max-width: 884px) {
 			margin-top: -3rem;
 			margin-bottom: 2rem;
 			min-height: 0px;

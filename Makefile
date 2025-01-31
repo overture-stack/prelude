@@ -17,6 +17,10 @@ phase-three:
 stage-dev:
 	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach conductor
 	
+# Load sample data into Elasticsearch
+load-data:
+	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach csv-processor
+
 # Gracefully shutdown all containers while preserving volumes
 down:
 	@{ \
@@ -42,10 +46,6 @@ reset:
 			PROFILE=platform docker compose -f ./docker-compose.yml --profile platform down -v ; \
 		fi; \
 	}
-
-# Load sample data into Elasticsearch
-load-data:
-	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach csv-processor
 
 # Remove all documents from Elasticsearch (preserves index structure)
 clean-data:

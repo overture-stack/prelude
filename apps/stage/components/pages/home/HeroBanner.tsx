@@ -45,18 +45,6 @@ const HeroBanner = (): ReactElement => {
 				@media (min-width: 1270px) {
 					height: 200px;
 				}
-
-				@media (min-width: 2165px) {
-					padding-left: 50px;
-					justify-content: center;
-				}
-
-				@media (min-width: 2170px) {
-				}
-
-				@media (min-width: 2880px) {
-					padding-left: 50px;
-				}
 			`}
 		>
 			<section

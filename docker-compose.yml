@@ -19,8 +19,6 @@ services:
     volumes:
       - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/config/file_data_index_template.json
       - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/config/tabular_data_index_template.json
-      - ./apps/csv-processor:/csv-processor
-      - ./data:/data
       - ./scripts:/scripts
       - ./volumes/health:/health
     environment:
@@ -43,11 +41,13 @@ services:
       TABULAR_ES_ALIAS_NAME: tabular_centric
       # Stage service script variable
       STAGE_URL: http://stage:3000
-      # Data upload service script variable
-      TABULAR_DATA_FILE: /data/tabularData.csv
+      # PhaseTwo healthcheck endpoints
+      SONG_URL: http://song:8080/isAlive
+      SCORE_URL: http://score:8087/download/ping
+      OBJECT_STORAGE_URL: http://minio:9000/minio/health/live
+      MAESTRO_URL: http://maestro-file:11235/
     command: >
       sh -c '
-        apk add --no-cache --quiet curl >/dev/null 2>&1
         set -e
           echo "Profile is set to: $PROFILE"
           case "$PROFILE" in
@@ -70,11 +70,6 @@ services:
               echo "Running Stage Dev deployment..."
               chmod +x scripts/deployments/stageDev.sh
               scripts/deployments/stageDev.sh
-              ;;
-            data)
-              echo "Running mock data submission..."
-              chmod +x scripts/services/phaseOne/submitMockData.sh
-              scripts/services/phaseOne/submitMockData.sh
               ;;
             clean)
               echo "Removing data..."
@@ -114,7 +109,7 @@ services:
   # Documentation can be found from ./apps/readme.md & ./docs/phaseOne.md               #
   # ------------------------------------------------------------------------------------#
   csv-processor:
-    profiles: ['data']
+    profiles: ['data', 'platform']
     image: node:18-alpine
     container_name: data-loader
     ports:
@@ -124,6 +119,7 @@ services:
       - ./data:/data
       - ./scripts:/scripts
     environment:
+      PROFILE: ${PROFILE:-data}
       # Data upload service script variable
       TABULAR_DATA_FILE: /data/tabularData.csv
       TABULAR_INDEX_NAME: tabular-index
@@ -504,6 +500,7 @@ services:
       MAESTRO_FAILURELOG_DIR: app/logs/maestro
       MAESTRO_LOGGING_LEVEL_ROOT: INFO
       MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
+      MAESTRO_DISABLEEVENTINDEXING: true
       # Song Variables
       MAESTRO_REPOSITORIES_0_CODE: song.overture
       MAESTRO_REPOSITORIES_0_URL: http://song:8080
@@ -524,10 +521,7 @@ services:
       # Spring Variables
       SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
       SPRINGDOC_SWAGGERUI_PATH: /swagger-api
-      # Kafka Variables
-      MAESTRO_DISABLEEVENTINDEXING: true
-      # SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
-      # SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
+
     volumes:
       - maestro-file-data:/app/app-data
     networks:

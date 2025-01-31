@@ -11,7 +11,7 @@ const styles = {
 		gap: 2rem;
 		padding: 0 50px;
 
-		@media (max-width: 768px) {
+		@media (max-width: 884px) {
 			flex-direction: column;
 			gap: 1rem;
 		}
@@ -23,7 +23,7 @@ const styles = {
 		width: 300px;
 		align-self: flex-start;
 
-		@media (max-width: 768px) {
+		@media (max-width: 884px) {
 			width: 100%;
 		}
 	`,
@@ -31,7 +31,7 @@ const styles = {
 		width: 100%;
 		margin-top: -60px;
 
-		@media (max-width: 768px) {
+		@media (max-width: 884px) {
 			margin-top: 50px;
 		}
 	`,

@@ -42,7 +42,7 @@ rs "${P1_SCRIPT_DIR}/healthcheckCleanup.sh"
 
 # Minio Check
 echo -e "\033[1;35m[2/10]\033[0m Checking Minio Object Storage"
-rs "${P3_SCRIPT_DIR}/minioCheck.sh"
+rs "${P3_SCRIPT_DIR}/objectStorageCheck.sh"
 
 # Score Setup
 echo -e "\033[1;35m[3/10]\033[0m Checking on Score (this may take a few minutes)"
