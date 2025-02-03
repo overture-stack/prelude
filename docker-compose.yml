@@ -109,7 +109,7 @@ services:
   # Documentation can be found from ./apps/readme.md & ./docs/phaseOne.md               #
   # ------------------------------------------------------------------------------------#
   csv-processor:
-    profiles: ['data', 'platform']
+    profiles: ['data', 'config', 'all', 'platform']
     image: node:18-alpine
     container_name: data-loader
     ports:
@@ -117,18 +117,45 @@ services:
     volumes:
       - ./apps/csv-processor:/csv-processor
       - ./data:/data
+      - ./configs/arrangerConfigs/tabularDataConfigs:/arrangerConfigs/tabularDataConfigs
+      - ./configs/elasticsearchConfigs:/elasticsearchConfigs/
       - ./scripts:/scripts
     environment:
       PROFILE: ${PROFILE:-data}
-      # Data upload service script variable
-      TABULAR_DATA_FILE: /data/tabularData.csv
+      # Common variables
+      TABULAR_DATA_FILE: /data/sampleData.csv
       TABULAR_INDEX_NAME: tabular-index
       ES_URL: http://elasticsearch:9200
+      # Config directories
+      ES_CONFIG_DIR: /elasticsearchConfigs/tabular_data_index_template.json
+      ARRANGER_CONFIG_DIR: /arrangerConfigs/tabularDataConfigs
     command: >
       sh -c '
-        echo "Running tabular data submission..."
-        chmod +x scripts/services/phaseOne/submitMockData.sh
-        scripts/services/phaseOne/submitMockData.sh
+        case "$PROFILE" in
+          "data")
+            echo "Running tabular data submission..."
+            chmod +x scripts/services/phaseOne/dataSubmission.sh
+            scripts/services/phaseOne/dataSubmission.sh
+            ;;
+          "config")
+            echo "Generating configurations..."
+            chmod +x scripts/services/phaseOne/generateConfigs.sh
+            scripts/services/phaseOne/generateConfigs.sh
+            ;;
+          "all")
+            echo "Generating configurations..."
+            chmod +x scripts/services/phaseOne/generateConfigs.sh
+            scripts/services/phaseOne/generateConfigs.sh
+            
+            echo "Running tabular data submission..."
+            chmod +x scripts/services/phaseOne/dataSubmission.sh
+            scripts/services/phaseOne/dataSubmission.sh
+            ;;
+          *)
+            echo "Invalid profile specified"
+            exit 1
+            ;;
+        esac
         exit 0
        '
     networks:

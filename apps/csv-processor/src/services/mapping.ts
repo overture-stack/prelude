@@ -1,30 +1,7 @@
 import chalk from 'chalk';
 import { parseCSVLine } from '../utils/csv';
+import type { ElasticsearchMapping, ElasticsearchField } from '../types/index';
 import * as fs from 'fs';
-
-/**
- * Elasticsearch field type definition
- */
-interface ElasticsearchField {
-  type: 'keyword' | 'integer' | 'float' | 'date' | 'object';
-  null_value?: string;
-  properties?: Record<string, ElasticsearchField>;
-}
-
-/**
- * Elasticsearch mapping definition
- */
-interface ElasticsearchMapping {
-  index_patterns: string[];
-  aliases: Record<string, object>;
-  mappings: {
-    properties: Record<string, ElasticsearchField>;
-  };
-  settings: {
-    number_of_shards: number;
-    number_of_replicas: number;
-  };
-}
 
 /**
  * Infers the Elasticsearch field type based on header name and sample value

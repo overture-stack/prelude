@@ -1,0 +1,193 @@
+import type { ElasticsearchMapping, ElasticsearchField } from '../types/index';
+
+interface ArrangerBaseConfig {
+  documentType: 'file' | 'analysis';
+  index: string;
+}
+
+interface ExtendedField {
+  displayName: string;
+  fieldName: string;
+}
+
+interface ArrangerExtendedConfig {
+  extended: ExtendedField[];
+}
+
+interface TableColumn {
+  canChangeShow: boolean;
+  fieldName: string;
+  show: boolean;
+  sortable: boolean;
+  jsonPath?: string;
+  query?: string;
+}
+
+interface ArrangerTableConfig {
+  table: {
+    columns: TableColumn[];
+  };
+}
+
+interface FacetAggregation {
+  active: boolean;
+  fieldName: string;
+  show: boolean;
+}
+
+interface ArrangerFacetsConfig {
+  facets: {
+    aggregations: FacetAggregation[];
+  };
+}
+
+function formatFieldName(path: string[]): string {
+  return path.join('.');
+}
+
+function formatFacetFieldName(path: string[]): string {
+  return path.join('__');
+}
+
+function formatDisplayName(fieldName: string): string {
+  return fieldName
+    .split(/[._]/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function generateJsonPathAndQuery(
+  fieldName: string
+): { jsonPath: string; query: string } | undefined {
+  // Only generate for nested fields
+  if (!fieldName.includes('.')) {
+    return undefined;
+  }
+
+  const parts = fieldName.split('.');
+  const jsonPath = `$.${parts.join('.hits.edges[*].node.')}`;
+  const query =
+    parts.map(part => `${part} { hits { edges { node {`).join(' ') +
+    ` ${parts[parts.length - 1]} ` +
+    '} } }'.repeat(parts.length);
+
+  return {
+    jsonPath,
+    query,
+  };
+}
+
+function processFields(
+  properties: Record<string, ElasticsearchField>,
+  parentPath: string[] = []
+): {
+  extendedFields: ExtendedField[];
+  tableColumns: TableColumn[];
+  facetAggregations: FacetAggregation[];
+} {
+  const extendedFields: ExtendedField[] = [];
+  const tableColumns: TableColumn[] = [];
+  const facetAggregations: FacetAggregation[] = [];
+
+  for (const [fieldName, field] of Object.entries(properties)) {
+    const currentPath = [...parentPath, fieldName];
+
+    if (field.type === 'object' && field.properties) {
+      // Recursively process nested fields
+      const nestedResults = processFields(field.properties, currentPath);
+      extendedFields.push(...nestedResults.extendedFields);
+      tableColumns.push(...nestedResults.tableColumns);
+      facetAggregations.push(...nestedResults.facetAggregations);
+    } else {
+      const formattedFieldName = formatFieldName(currentPath);
+
+      // Add to extended fields
+      extendedFields.push({
+        displayName: formatDisplayName(formattedFieldName),
+        fieldName: formattedFieldName,
+      });
+
+      // Add to table columns
+      const tableColumn: TableColumn = {
+        canChangeShow: true,
+        fieldName: formattedFieldName,
+        show: currentPath.length === 1, // Show only top-level fields by default
+        sortable: true,
+      };
+
+      // Add jsonPath and query for nested fields
+      const pathQuery = generateJsonPathAndQuery(formattedFieldName);
+      if (pathQuery) {
+        tableColumn.jsonPath = pathQuery.jsonPath;
+        tableColumn.query = pathQuery.query;
+      }
+
+      tableColumns.push(tableColumn);
+
+      // Add to facet aggregations for keyword fields
+      if (field.type === 'keyword') {
+        facetAggregations.push({
+          active: true,
+          fieldName: formatFacetFieldName(currentPath),
+          show: true,
+        });
+      }
+    }
+  }
+
+  return { extendedFields, tableColumns, facetAggregations };
+}
+
+export function generateArrangerConfigs(
+  mapping: ElasticsearchMapping,
+  indexName: string
+): {
+  base: ArrangerBaseConfig;
+  extended: ArrangerExtendedConfig;
+  table: ArrangerTableConfig;
+  facets: ArrangerFacetsConfig;
+} {
+  const { extendedFields, tableColumns, facetAggregations } = processFields(
+    mapping.mappings.properties
+  );
+
+  const base: ArrangerBaseConfig = {
+    documentType: 'file',
+    index: indexName,
+  };
+
+  const extended: ArrangerExtendedConfig = {
+    extended: extendedFields,
+  };
+
+  const table: ArrangerTableConfig = {
+    table: {
+      columns: tableColumns,
+    },
+  };
+
+  const facets: ArrangerFacetsConfig = {
+    facets: {
+      aggregations: facetAggregations,
+    },
+  };
+
+  return {
+    base,
+    extended,
+    table,
+    facets,
+  };
+}
+
+// Example usage:
+/*
+const mapping = // Your Elasticsearch mapping
+const configs = generateArrangerConfigs(mapping, 'your-index-name');
+
+// Write configs to files
+fs.writeFileSync('base.json', JSON.stringify(configs.base, null, 2));
+fs.writeFileSync('extended.json', JSON.stringify(configs.extended, null, 2));
+fs.writeFileSync('table.json', JSON.stringify(configs.table, null, 2));
+fs.writeFileSync('facets.json', JSON.stringify(configs.facets, null, 2));
+*/

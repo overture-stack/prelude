@@ -1,5 +1,5 @@
 # Define all phony targets (targets that don't create files)
-.PHONY: dev-phase-one dev-stage clean-data reset-volumes load-sample-data
+.PHONY: dev-phase-one dev-stage clean-data reset-volumes load-data generate-configs setup-all
 
 # Start Phase One development environment
 phase-one:
@@ -20,6 +20,16 @@ stage-dev:
 # Load sample data into Elasticsearch
 load-data:
 	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach csv-processor
+
+# Generate Elasticsearch and Arranger configurations
+generate-configs:
+	@echo "\033[1;36mConductor:\033[0m Generating configurations..."
+	PROFILE=config docker compose -f ./docker-compose.yml --profile config up --attach csv-processor
+
+# Generate configs and load data
+setup-all:
+	@echo "\033[1;36mConductor:\033[0m Setting up configurations and loading data..."
+	PROFILE=all docker compose -f ./docker-compose.yml --profile all up --attach csv-processor
 
 # Gracefully shutdown all containers while preserving volumes
 down:

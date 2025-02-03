@@ -41,16 +41,18 @@ const cli_1 = require("./utils/cli");
 const elasticsearch_1 = require("./utils/elasticsearch");
 const processor_1 = require("./services/processor");
 const validations = __importStar(require("./services/validations"));
-const configurator_1 = require("./services/configurator");
+const mapping_1 = require("./services/mapping");
+const arranger_1 = require("./services/arranger");
 const chalk_1 = __importDefault(require("chalk"));
 const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
 async function main() {
     try {
         console.log(chalk_1.default.blue('\n============================================='));
         console.log(chalk_1.default.bold.blue('      CSV Processor Starting... 🚀'));
         console.log(chalk_1.default.blue('=============================================\n'));
         // Setup configuration from CLI arguments
-        const { config, filePath, outputPath, mode } = (0, cli_1.setupCLI)();
+        const { config, filePath, outputPath, mode, arrangerConfigDir } = (0, cli_1.setupCLI)();
         if (!filePath) {
             console.error(chalk_1.default.red('Error: No input file specified'));
             process.exit(1);
@@ -62,32 +64,80 @@ async function main() {
         const delimiterValid = validations.validateDelimiter(config.delimiter);
         if (!delimiterValid)
             process.exit(1);
-        // Handle mapping mode
-        if (mode === 'mapping') {
-            const mapping = await (0, configurator_1.validateAndGetMapping)(filePath, config.delimiter);
-            if (outputPath) {
-                fs.writeFileSync(outputPath, JSON.stringify(mapping, null, 2));
-                console.log(chalk_1.default.green(`\n✓ Mapping saved to ${outputPath}`));
+        // Generate Elasticsearch mapping
+        const mapping = await (0, mapping_1.validateAndGetMapping)(filePath, config.delimiter);
+        // Function to generate and save mapping
+        const generateAndSaveMapping = (mapping, outputPath) => {
+            fs.writeFileSync(outputPath, JSON.stringify(mapping, null, 2));
+            console.log(chalk_1.default.green(`\n✓ Mapping saved to ${outputPath}`));
+        };
+        // Function to generate and save Arranger configs
+        const generateAndSaveArrangerConfigs = (mapping, arrangerConfigDir, indexName) => {
+            if (!fs.existsSync(arrangerConfigDir)) {
+                fs.mkdirSync(arrangerConfigDir, { recursive: true });
             }
-            else {
-                console.log(chalk_1.default.green('\nGenerated Elasticsearch Mapping:\n'), JSON.stringify(mapping, null, 2));
-            }
-            return;
+            console.log(chalk_1.default.cyan('\nGenerating Arranger configurations...'));
+            const arrangerConfigs = (0, arranger_1.generateArrangerConfigs)(mapping, indexName);
+            // Write config files
+            const configFiles = [
+                { name: 'base.json', content: arrangerConfigs.base },
+                { name: 'extended.json', content: arrangerConfigs.extended },
+                { name: 'table.json', content: arrangerConfigs.table },
+                { name: 'facets.json', content: arrangerConfigs.facets },
+            ];
+            configFiles.forEach(({ name, content }) => {
+                const filePath = path.join(arrangerConfigDir, name);
+                fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
+                console.log(chalk_1.default.green(`✓ Generated ${name}`));
+            });
+            console.log(chalk_1.default.green(`\n✓ All Arranger configurations saved to ${arrangerConfigDir}`));
+        };
+        // Handle different modes
+        switch (mode) {
+            case 'mapping':
+                if (outputPath) {
+                    generateAndSaveMapping(mapping, outputPath);
+                }
+                else {
+                    console.log(chalk_1.default.green('\nGenerated Elasticsearch Mapping:\n'), JSON.stringify(mapping, null, 2));
+                }
+                break;
+            case 'arranger':
+                if (!arrangerConfigDir) {
+                    console.error(chalk_1.default.red('Error: Arranger config directory not specified'));
+                    process.exit(1);
+                }
+                generateAndSaveArrangerConfigs(mapping, arrangerConfigDir, config.elasticsearch.index);
+                break;
+            case 'all':
+                if (!outputPath || !arrangerConfigDir) {
+                    console.error(chalk_1.default.red('Error: Both --output and --arranger-config-dir are required for all mode'));
+                    process.exit(1);
+                }
+                // Generate both mapping and Arranger configs
+                generateAndSaveMapping(mapping, outputPath);
+                generateAndSaveArrangerConfigs(mapping, arrangerConfigDir, config.elasticsearch.index);
+                break;
+            case 'upload':
+                // Validations specific to upload mode
+                const batchSizeValid = validations.validateBatchSize(config.batchSize);
+                if (!batchSizeValid)
+                    process.exit(1);
+                // Initialize and validate Elasticsearch
+                const client = (0, elasticsearch_1.createClient)(config);
+                const connectionValid = await validations.validateElasticsearchConnection(client, config);
+                if (!connectionValid)
+                    process.exit(1);
+                const indexValid = await validations.validateIndex(client, config.elasticsearch.index);
+                if (!indexValid)
+                    process.exit(1);
+                // Process the CSV file
+                await (0, processor_1.processCSVFile)(filePath, config, client);
+                break;
+            default:
+                console.error(chalk_1.default.red(`Error: Unknown mode '${mode}'`));
+                process.exit(1);
         }
-        // Validations specific to upload mode
-        const batchSizeValid = validations.validateBatchSize(config.batchSize);
-        if (!batchSizeValid)
-            process.exit(1);
-        // Initialize and validate Elasticsearch
-        const client = (0, elasticsearch_1.createClient)(config);
-        const connectionValid = await validations.validateElasticsearchConnection(client, config);
-        if (!connectionValid)
-            process.exit(1);
-        const indexValid = await validations.validateIndex(client, config.elasticsearch.index);
-        if (!indexValid)
-            process.exit(1);
-        // Process the CSV file
-        await (0, processor_1.processCSVFile)(filePath, config, client);
     }
     catch (error) {
         console.error(chalk_1.default.red('\nError during processing:'));

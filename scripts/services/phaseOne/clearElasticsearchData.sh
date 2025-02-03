@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Configuration
+# Update with wildcare for index removal
 ES_URL="${ES_URL:-http://elasticsearch:9200}"
 INDEX_NAME="${INDEX_NAME:-tabular-index}"
 ES_AUTH="${ES_USER}:${ES_PASS}" 
