@@ -21,6 +21,8 @@
 
 import { css } from '@emotion/react';
 import { ReactElement } from 'react';
+
+import { DOCS_URL, INTERNAL_PATHS } from '../../../global/utils/constants';
 import defaultTheme from '../../theme';
 
 interface Product {
@@ -49,23 +51,23 @@ const products: Product[] = [
 	// Data Category
 	{
 		title: 'File Data',
-		link: '/file',
+		link: INTERNAL_PATHS.FILE,
 		category: 'data',
 	},
 	{
 		title: 'Tabular Data',
-		link: '/tabulars',
+		link: INTERNAL_PATHS.TABULAR,
 		category: 'data',
 	},
 	// Documentation Category
 	{
 		title: 'Prelude Docs',
-		link: '/documentation',
+		link: INTERNAL_PATHS.DOCUMENTATION,
 		category: 'documentation',
 	},
 	{
 		title: 'Overture Docs',
-		link: 'https://docs.overture.bio/',
+		link: DOCS_URL,
 		category: 'documentation',
 	},
 ];

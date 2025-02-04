@@ -41,6 +41,7 @@ export enum INTERNAL_PATHS {
 }
 
 // external docs links
+export const DOCS_URL = 'https://docs.overture.bio/';
 export const HELP_URL = 'https://github.com/overture-stack/docs/discussions/new?category=support';
 export const EMAIL_SETTING_URL = 'admin@example.com';
 
