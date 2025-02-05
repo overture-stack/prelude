@@ -123,7 +123,7 @@ services:
     environment:
       PROFILE: ${PROFILE:-data}
       # Common variables
-      TABULAR_DATA_FILE: /data/sampleData.csv
+      TABULAR_DATA_FILE: /data/tabularData.csv
       TABULAR_INDEX_NAME: tabular-index
       ES_URL: http://elasticsearch:9200
       # Config directories
