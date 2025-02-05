@@ -20,7 +20,6 @@ const Lyric = () => {
 				const response = await fetch('/api/lyric/api-docs'); // TODO update lyric or find url with spec
 
 				console.log('Response status:', response.status);
-				w;
 
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);

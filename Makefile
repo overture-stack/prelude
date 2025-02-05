@@ -3,7 +3,7 @@
 
 # Start Phase One development environment
 phase1:
-	PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach conductor 
+	PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach conductor
 
 # Start Phase Two development environment
 phase2:
@@ -11,12 +11,12 @@ phase2:
 
 # Start Phase Three development environment
 phase3:
-	PROFILE=phase3 docker compose -f ./docker-compose.yml --profile phase3 up --attach conductor 
+	PROFILE=phase3 docker compose -f ./docker-compose.yml --profile phase3 up --attach conductor
 
 # Start Stage development environment
 stage-dev:
 	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach conductor
-	
+
 # Load sample data into Elasticsearch
 load-data:
 	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach composer
