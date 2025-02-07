@@ -1,45 +1,13 @@
 import type { ElasticsearchMapping, ElasticsearchField } from '../types/index';
-
-interface ArrangerBaseConfig {
-  documentType: 'file' | 'analysis';
-  index: string;
-}
-
-interface ExtendedField {
-  displayName: string;
-  fieldName: string;
-}
-
-interface ArrangerExtendedConfig {
-  extended: ExtendedField[];
-}
-
-interface TableColumn {
-  canChangeShow: boolean;
-  fieldName: string;
-  show: boolean;
-  sortable: boolean;
-  jsonPath?: string;
-  query?: string;
-}
-
-interface ArrangerTableConfig {
-  table: {
-    columns: TableColumn[];
-  };
-}
-
-interface FacetAggregation {
-  active: boolean;
-  fieldName: string;
-  show: boolean;
-}
-
-interface ArrangerFacetsConfig {
-  facets: {
-    aggregations: FacetAggregation[];
-  };
-}
+import type {
+  ArrangerBaseConfig,
+  ExtendedField,
+  ArrangerExtendedConfig,
+  TableColumn,
+  ArrangerTableConfig,
+  FacetAggregation,
+  ArrangerFacetsConfig
+} from '../types/index';
 
 function formatFieldName(path: string[]): string {
   return path.join('.');
@@ -56,26 +24,26 @@ function formatDisplayName(fieldName: string): string {
     .join(' ');
 }
 
-function generateJsonPathAndQuery(
-  fieldName: string
-): { jsonPath: string; query: string } | undefined {
-  // Only generate for nested fields
-  if (!fieldName.includes('.')) {
-    return undefined;
-  }
+// function generateJsonPathAndQuery(
+//   fieldName: string
+// ): { jsonPath: string; query: string } | undefined {
+//   // Only generate for nested fields
+//   if (!fieldName.includes('.')) {
+//     return undefined;
+//   }
 
-  const parts = fieldName.split('.');
-  const jsonPath = `$.${parts.join('.hits.edges[*].node.')}`;
-  const query =
-    parts.map(part => `${part} { hits { edges { node {`).join(' ') +
-    ` ${parts[parts.length - 1]} ` +
-    '} } }'.repeat(parts.length);
+//   const parts = fieldName.split('.');
+//   const jsonPath = `$.${parts.join('.hits.edges[*].node.')}`;
+//   const query =
+//     parts.map(part => `${part} { hits { edges { node {`).join(' ') +
+//     ` ${parts[parts.length - 1]} ` +
+//     '} } }'.repeat(parts.length);
 
-  return {
-    jsonPath,
-    query,
-  };
-}
+//   return {
+//     jsonPath,
+//     query
+//   };
+// }
 
 function processFields(
   properties: Record<string, ElasticsearchField>,
@@ -104,7 +72,7 @@ function processFields(
       // Add to extended fields
       extendedFields.push({
         displayName: formatDisplayName(formattedFieldName),
-        fieldName: formattedFieldName,
+        fieldName: formattedFieldName
       });
 
       // Add to table columns
@@ -112,15 +80,15 @@ function processFields(
         canChangeShow: true,
         fieldName: formattedFieldName,
         show: currentPath.length === 1, // Show only top-level fields by default
-        sortable: true,
+        sortable: true
       };
 
       // Add jsonPath and query for nested fields
-      const pathQuery = generateJsonPathAndQuery(formattedFieldName);
-      if (pathQuery) {
-        tableColumn.jsonPath = pathQuery.jsonPath;
-        tableColumn.query = pathQuery.query;
-      }
+      // const pathQuery = generateJsonPathAndQuery(formattedFieldName);
+      // if (pathQuery) {
+      //   tableColumn.jsonPath = pathQuery.jsonPath;
+      //   tableColumn.query = pathQuery.query;
+      // }
 
       tableColumns.push(tableColumn);
 
@@ -129,7 +97,7 @@ function processFields(
         facetAggregations.push({
           active: true,
           fieldName: formatFacetFieldName(currentPath),
-          show: true,
+          show: true
         });
       }
     }
@@ -153,30 +121,30 @@ export function generateArrangerConfigs(
 
   const base: ArrangerBaseConfig = {
     documentType: 'file',
-    index: indexName,
+    index: indexName
   };
 
   const extended: ArrangerExtendedConfig = {
-    extended: extendedFields,
+    extended: extendedFields
   };
 
   const table: ArrangerTableConfig = {
     table: {
-      columns: tableColumns,
-    },
+      columns: tableColumns
+    }
   };
 
   const facets: ArrangerFacetsConfig = {
     facets: {
-      aggregations: facetAggregations,
-    },
+      aggregations: facetAggregations
+    }
   };
 
   return {
     base,
     extended,
     table,
-    facets,
+    facets
   };
 }
 
