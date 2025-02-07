@@ -3,7 +3,7 @@ a#!/bin/sh
 # Debug mode flag (set to "true" to enable debug output)
 DEBUG=false
 # Set the base directory for scripts
-SCRIPT_DIR="/scripts/services/phaseOne"
+SCRIPT_DIR="/scripts/services/phase1"
 
 # Debug function for logging
 debug() {

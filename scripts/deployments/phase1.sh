@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set the base directory for scripts
-SCRIPT_DIR="/scripts/services/phaseOne"
+SCRIPT_DIR="/scripts/services/phase1"
 
 # Debug function for logging
 debug() {

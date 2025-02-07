@@ -1,10 +1,10 @@
-# PhaseThree
+# Phase3
 
 Here we will focus on implementing our back-end file management services which
 will include the addition of Song, Score, SongDb (Postgres) and an Object
 Storage provider (Minio).
 
-![Image Title](/docs/images/phaseThree.png "PhaseThree Architecture Diagram")
+![Image Title](/docs/images/phase3.png 'Phase3 Architecture Diagram')
 
 | Added Software                                                           | Description                                                                                      |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |

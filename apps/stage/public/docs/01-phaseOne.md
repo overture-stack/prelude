@@ -1,13 +1,13 @@
-# PhaseOne
+# Phase1
 
-PhaseOne focuses on how you want your data displayed in the front-end portal.
+Phase1 focuses on how you want your data displayed in the front-end portal.
 Here you want to figure out how many data tables you want and how you want them
 configured. This is also a good time to do any theming of your portal. The idea
 is to get the look and feel of the user experience down before diving into your
 back-end data management configurations. The architecture of this phase is as
 follows:
 
-![Image Title](/docs/images/phaseOne.png "PhaseOne Architecture Diagram")
+![Image Title](/docs/images/phase1.png 'Phase1 Architecture Diagram')
 
 A description of each component shown above is provided here with links to the
 relevant documentation pages.
@@ -79,7 +79,7 @@ file data exploration table and facets:
 - `table.json` - Data table layout and column settings
 - `facets.json` - Search facet configurations
 
-Within the `docker-compose.phaseOne.yml`, these configurations are passed to
+Within the `docker-compose.phase1.yml`, these configurations are passed to
 each Arranger instance as volumes. Arranger uses these to generate a GraphQL API
 linked to its front-end UI components. For more information, see our
 [data portal customization guide](https://docs.overture.bio/guides/administration-guides/customizing-the-data-portal).

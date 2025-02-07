@@ -1,10 +1,10 @@
-# PhaseTwo
+# Phase2
 
 Here we will focus on implementing our back-end tabular data management services
 which will include the addition of Lyric, Lectern, LyricDb (Postgres) and a
 LecternDb (MongoDb).
 
-![Image Title](/docs/images/phaseTwo.png "PhaseTwo Architecture Diagram")
+![Image Title](/docs/images/phase2.png 'Phase2 Architecture Diagram')
 
 | Added Software                                                           | Description                                                                                                                                                                                                                                                                                         |
 | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

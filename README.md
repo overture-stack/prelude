@@ -18,12 +18,12 @@ This process enables teams to:
 Development progresses through four distinct phases, each building upon the
 previous phase's foundation while introducing new capabilities.
 
-| Phase                                              | Description                                                                                       | Software Components                                                                 | Status         |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------- |
-| **PhaseOne:** Data Exploration & Theming           | Display your tabular data in a themable portal with our front-end and back-end search components. | CSV-processor, Elasticsearch, Arranger, Stage                                       | 🟢 Working     |
-| **PhaseTwo:** Tabular Data Management & Validation | Implementation of tabular data submission, storage and validation.                                | All the above with Lyric, LyricDb (Postgres), Lectern and LecternDb (MongoDb) added | 🟡 Pending     |
-| **PhaseThree:** File Data & Metadata Management    | Implement back-end file management.                                                               | All the above with Song, Score, SongDb (Postgres) and Object Storage (Minio)        | 🟡 Pending     |
-| **PhaseFour:** Identity and Access management      | Configure Keycloak to authenticate users and authorize what they have access too.                 | Empahsis on data access control planning and Keycloak configuration                 | ⚪ Not Started |
+| Phase                                            | Description                                                                                       | Software Components                                                                 | Status         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------- |
+| **Phase1:** Data Exploration & Theming           | Display your tabular data in a themable portal with our front-end and back-end search components. | CSV-processor, Elasticsearch, Arranger, Stage                                       | 🟢 Working     |
+| **Phase2:** Tabular Data Management & Validation | Implementation of tabular data submission, storage and validation.                                | All the above with Lyric, LyricDb (Postgres), Lectern and LecternDb (MongoDb) added | 🟡 Pending     |
+| **Phase3:** File Data & Metadata Management      | Implement back-end file management.                                                               | All the above with Song, Score, SongDb (Postgres) and Object Storage (Minio)        | 🟡 Pending     |
+| **PhaseFour:** Identity and Access management    | Configure Keycloak to authenticate users and authorize what they have access too.                 | Empahsis on data access control planning and Keycloak configuration                 | ⚪ Not Started |
 
 ## Prerequisites
 
@@ -55,7 +55,7 @@ previous phase's foundation while introducing new capabilities.
 git clone -b preludeV2.1 https://github.com/overture-stack/conductor.git
 ```
 
-2. **Build the Stage image using the dockerfile** For phaseOne run:
+2. **Build the Stage image using the dockerfile** For phase1 run:
 
 ```
 cd apps/stage
@@ -71,7 +71,7 @@ Run one of the following commands **from the root of the repository**:
 
 | Environment          | Unix/macOS       | Windows |
 | -------------------- | ---------------- | ------- |
-| Phase One Platform   | `make phase-one` | pending |
+| Phase One Platform   | `make phase1`    | pending |
 | Phase Two Platform   | pending          | pending |
 | Phase Three Platform | pending          | pending |
 | Stage Development    | `make stage-dev` | pending |

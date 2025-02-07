@@ -1,17 +1,17 @@
 # Define all phony targets (targets that don't create files)
-.PHONY: dev-phase-one dev-stage clean-data reset-volumes load-data generate-configs setup-all
+.PHONY: dev-phase1 dev-stage clean-data reset-volumes load-data generate-configs setup-all
 
 # Start Phase One development environment
-phase-one:
-	PROFILE=phaseOne docker compose -f ./docker-compose.yml --profile phaseOne up --attach conductor 
+phase1:
+	PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach conductor 
 
 # Start Phase Two development environment
-phase-two:
-	PROFILE=phaseTwo docker compose -f ./docker-compose.yml --profile phaseTwo up --attach conductor
+phase2:
+	PROFILE=phase2 docker compose -f ./docker-compose.yml --profile phase2 up --attach conductor
 
 # Start Phase Three development environment
-phase-three:
-	PROFILE=phaseThree docker compose -f ./docker-compose.yml --profile phaseThree up --attach conductor 
+phase3:
+	PROFILE=phase3 docker compose -f ./docker-compose.yml --profile phase3 up --attach conductor 
 
 # Start Stage development environment
 stage-dev:
@@ -37,11 +37,11 @@ down:
 		printf "\033[1;36mConductor:\033[0m Checking for containers...\n"; \
 		if docker compose -f ./docker-compose.yml ps -a -q 2>/dev/null | grep -q .; then \
 			printf "\033[1;36mConductor:\033[0m Removing Phase One containers...\n"; \
-			PROFILE=phaseOne docker compose -f ./docker-compose.yml --profile phaseOne down ; \
+			PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 down ; \
 		fi; \
-		if docker compose -f ./docker-compose.yml.phaseTwo.yml ps -a -q 2>/dev/null | grep -q .; then \
+		if docker compose -f ./docker-compose.yml.phase2.yml ps -a -q 2>/dev/null | grep -q .; then \
 			printf "\033[1;36mConductor:\033[0m Removing Phase Two containers...\n"; \
-			PROFILE=phaseTwo docker compose -f ./docker-compose.yml.phaseTwo.yml --profile phaseTwo down ; \
+			PROFILE=phase2 docker compose -f ./docker-compose.yml.phase2.yml --profile phase2 down ; \
 		fi; \
 		printf "\033[1;32mSuccess:\033[0m Cleanup completed\n"; \
 	}

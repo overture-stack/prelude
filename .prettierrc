@@ -14,12 +14,11 @@
   "embeddedLanguageFormatting": "auto",
   "overrides": [
     {
-      "files": ["*.yml", "*.yaml"],
+      "files": ["*.yaml", "*.yml"],
       "options": {
-        "parser": "yaml",
-        "tabWidth": 2,
         "bracketSpacing": false,
-        "proseWrap": "preserve"
+        "singleQuote": false,
+        "quoteProps": "preserve"
       }
     }
   ]

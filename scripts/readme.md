@@ -18,7 +18,7 @@ are introduced in. All commonly configurabled variables area located at the top
 of the script and are configurable from the environment variables of the
 conductor service within the docker compose file.
 
-### PhaseOne.sh
+### Phase1.sh
 
 Configurations:
 

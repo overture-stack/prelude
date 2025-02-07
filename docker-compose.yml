@@ -11,11 +11,11 @@ services:
   #  scripts to automate general setup and configuration.                              #
   # ================================================================================== #
   conductor:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'clean', 'platform']
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "clean", "platform"]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
-      - '9204:9204'
+      - "9204:9204"
     volumes:
       - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/config/file_data_index_template.json
       - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/config/tabular_data_index_template.json
@@ -41,30 +41,34 @@ services:
       TABULAR_ES_ALIAS_NAME: tabular_centric
       # Stage service script variable
       STAGE_URL: http://stage:3000
-      # PhaseTwo healthcheck endpoints
+      # phase2 healthcheck endpoints
+      LYRIC_URL: http://lyric:3030
+      LECTERN_URL: http://lectern:3031
+      # phase3 healthcheck endpoints
       SONG_URL: http://song:8080/isAlive
       SCORE_URL: http://score:8087/download/ping
       OBJECT_STORAGE_URL: http://minio:9000/minio/health/live
-      MAESTRO_URL: http://maestro-file:11235/
+      MAESTRO_FILE_URL: http://maestro-file:11235/
+      MAESTRO_TABULAR_URL: http://maestro-tabular:11235/
     command: >
       sh -c '
         set -e
           echo "Profile is set to: $PROFILE"
           case "$PROFILE" in
-            phaseOne)
-              echo "Running phaseOne deployment..."
-              chmod +x scripts/deployments/phaseOne.sh
-              scripts/deployments/phaseOne.sh
+            phase1)
+              echo "Running phase1 deployment..."
+              chmod +x scripts/deployments/phase1.sh
+              scripts/deployments/phase1.sh
               ;;
-            phaseTwo)
-              echo "Running phaseTwo deployment..."
-              chmod +x scripts/deployments/phaseTwo.sh
-              scripts/deployments/phaseTwo.sh
+            phase2)
+              echo "Running phase2 deployment..."
+              chmod +x scripts/deployments/phase2.sh
+              scripts/deployments/phase2.sh
               ;;
-            phaseThree)
-              echo "Running phaseThree deployment ..."
-              chmod +x scripts/deployments/phaseThree.sh
-              scripts/deployments/phaseThree.sh
+            phase3)
+              echo "Running phase3 deployment ..."
+              chmod +x scripts/deployments/phase3.sh
+              scripts/deployments/phase3.sh
               ;;
             stageDev)
               echo "Running Stage Dev deployment..."
@@ -73,8 +77,8 @@ services:
               ;;
             clean)
               echo "Removing data..."
-              chmod +x scripts/services/phaseOne/clearElasticsearchData.sh
-              scripts/services/phaseOne/clearElasticsearchData.sh
+              chmod +x scripts/services/phase1/clearElasticsearchData.sh
+              scripts/services/phase1/clearElasticsearchData.sh
               ;;
             *)
               echo "No profile set..."
@@ -83,7 +87,7 @@ services:
           exit 0
       '
     healthcheck:
-      test: ['CMD', 'test', '-f', '/health/conductor_health']
+      test: ["CMD", "test", "-f", "/health/conductor_health"]
       interval: 5s
       timeout: 40s
       retries: 100
@@ -93,10 +97,10 @@ services:
 
   # ================================================================================== #
   # ================================================================================== #
-  #                                    PhaseOne:                                       #
+  #                                    phase1:                                       #
   #                               Search & Discovery                                   #
   # ================================================================================== #
-  # PhaseOne focuses on how you want your data displayed in the front-end portal.      #
+  # phase1 focuses on how you want your data displayed in the front-end portal.      #
   # Here you want to figure out how many data tables (Arrangers) you want and how you  #
   # want them configured. This is also a good time to do any theming of your portal.   #
   # through Stage.                                                                     #
@@ -106,14 +110,14 @@ services:
   # CSV-Processor                                                                       #
   # ------------------------------------------------------------------------------------#
   # Tool for processing and uploading CSV files to Elasticsearch                        #
-  # Documentation can be found from ./apps/readme.md & ./docs/phaseOne.md               #
+  # Documentation can be found from ./apps/readme.md & ./docs/phase1.md               #
   # ------------------------------------------------------------------------------------#
   csv-processor:
-    profiles: ['data', 'config', 'all', 'platform']
+    profiles: ["data", "config", "all", "platform"]
     image: node:18-alpine
     container_name: data-loader
     ports:
-      - '9205:9205'
+      - "9205:9205"
     volumes:
       - ./apps/csv-processor:/csv-processor
       - ./data:/data
@@ -134,22 +138,22 @@ services:
         case "$PROFILE" in
           "data")
             echo "Running tabular data submission..."
-            chmod +x scripts/services/phaseOne/dataSubmission.sh
-            scripts/services/phaseOne/dataSubmission.sh
+            chmod +x scripts/services/phase1/dataSubmission.sh
+            scripts/services/phase1/dataSubmission.sh
             ;;
           "config")
             echo "Generating configurations..."
-            chmod +x scripts/services/phaseOne/generateConfigs.sh
-            scripts/services/phaseOne/generateConfigs.sh
+            chmod +x scripts/services/phase1/generateConfigs.sh
+            scripts/services/phase1/generateConfigs.sh
             ;;
           "all")
             echo "Generating configurations..."
-            chmod +x scripts/services/phaseOne/generateConfigs.sh
-            scripts/services/phaseOne/generateConfigs.sh
+            chmod +x scripts/services/phase1/generateConfigs.sh
+            scripts/services/phase1/generateConfigs.sh
             
             echo "Running tabular data submission..."
-            chmod +x scripts/services/phaseOne/dataSubmission.sh
-            scripts/services/phaseOne/dataSubmission.sh
+            chmod +x scripts/services/phase1/dataSubmission.sh
+            scripts/services/phase1/dataSubmission.sh
             ;;
           *)
             echo "Invalid profile specified"
@@ -169,30 +173,30 @@ services:
   # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
   # --------------------------------------------------------------------------------------#
   elasticsearch:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'platform']
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "platform"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
     container_name: elasticsearch
     platform: linux/amd64
     ports:
-      - '9200:9200'
+      - "9200:9200"
     environment:
       discovery.type: single-node
       cluster.name: workflow.elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx2048m
       ES_USER: elastic
       ELASTIC_PASSWORD: myelasticpassword
-      xpack.security.enabled: 'true'
+      xpack.security.enabled: "true"
     logging:
-      driver: 'json-file'
+      driver: "json-file"
       options:
-        max-size: '50m'
-        max-file: '10'
+        max-size: "50m"
+        max-file: "10"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     healthcheck:
       test:
-        'curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
-        exit 1'
+        "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
+        exit 1"
       interval: 10s
       timeout: 10s
       retries: 5
@@ -207,7 +211,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
   arranger-file:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'platform']
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "platform"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-file
     platform: linux/amd64
@@ -215,7 +219,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - '5050:5050'
+      - "5050:5050"
     volumes:
       - ./configs/arrangerConfigs/fileDataConfigs/base.json:/app/modules/server/configs/base.json
       - ./configs/arrangerConfigs/fileDataConfigs/extended.json:/app/modules/server/configs/extended.json
@@ -241,7 +245,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
   arranger-tabular:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'stageDev', 'platform']
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "platform"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-tabular
     platform: linux/amd64
@@ -249,7 +253,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - '5051:5051'
+      - "5051:5051"
     volumes:
       - ./configs/arrangerConfigs/tabularDataConfigs/base.json:/app/modules/server/configs/base.json
       - ./configs/arrangerConfigs/tabularDataConfigs/extended.json:/app/modules/server/configs/extended.json
@@ -276,7 +280,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Stage/overview     #
   # ------------------------------------------------------------------------------------#
   stage:
-    profiles: ['phaseOne', 'phaseTwo', 'phaseThree', 'platform']
+    profiles: ["phase1", "phase2", "phase3", "platform"]
     image: localstageimage:1.0
     container_name: stage
     pull_policy: never
@@ -285,7 +289,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - '3000:3000'
+      - "3000:3000"
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
@@ -306,12 +310,12 @@ services:
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API: http://arranger-tabular:5051
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX: tabular_centric
-      # Song Variables (For Swagger Pages used in phaseThree)
+      # Song Variables (For Swagger Pages used in phase3)
       NEXT_PUBLIC_SONG_API: http://localhost:8080
       NEXTAUTH_SECRET: your-secure-secret-here
       # Homepage banner
       # NEXT_PUBLIC_SYSTEM_ALERTS:
-      #   '[{"level":"info","title":"Welcome to Prelude PhaseOne","message":"See the documentation tab
+      #   '[{"level":"info","title":"Welcome to Prelude phase1","message":"See the documentation tab
       #   for information on next steps including portal configuration and data
       #   submission.","dismissable":true,"id":"maintenance-2023"}]'
     volumes:
@@ -321,7 +325,7 @@ services:
 
   # ================================================================================== #
   # ================================================================================== #
-  #                                    PhaseTwo:                                       #
+  #                                    phase2:                                       #
   #                          Tabular data storage & submission                         #
   # ================================================================================== #
   # Here we will focus on implementing our back-end tabular data management services   #
@@ -335,12 +339,67 @@ services:
   # Schema manager that validates and stores collections of data dictionaries.         #                                                               #
   # Documentation Link: https://docs.overture.bio/docs/under-development/lectern/      #
   # -----------------------------------------------------------------------------------#
+  lectern:
+    profiles: ["phase2", "phase3", "platform"]
+    image: ghcr.io/overture-stack/lectern:2.0.0-beta.3
+    container_name: lectern
+    platform: linux/amd64
+    depends_on:
+      lectern-db:
+        condition: service_healthy
+    ports:
+      - "3031:3031"
+    environment:
+      PORT: 3031
+      OPENAPI_PATH: /api-docs
+      MONGO_HOST: lectern-db
+      MONGO_PORT: 27017
+      MONGO_DB: lectern
+      MONGO_USER: admin
+      MONGO_PASS: admin123
+      AUTH_ENABLED: false
+      VAULT_ENABLED: false
+    networks:
+      - conductor-network
 
   # -----------------------------------------------------------------------------------#
   # LecternDb                                                                          #
   # -----------------------------------------------------------------------------------#
   # Database used by Lectern to store its schemas.                                     #                                                               #
   # -----------------------------------------------------------------------------------#
+  lectern-db:
+    profiles: ["phase2", "phase3", "platform"]
+    image: bitnami/mongodb:4.0
+    container_name: lectern-db
+    ports:
+      - 27017:27017
+    volumes:
+      - lectern-db-data:/bitnami
+    environment:
+      MONGODB_USERNAME: admin
+      MONGODB_PASSWORD: admin123
+      MONGODB_DATABASE: lectern
+      MONGODB_ROOT_PASSWORD: admin123
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongo",
+          "--authenticationDatabase",
+          "admin",
+          "-u",
+          "root",
+          "-p",
+          "admin123",
+          "--eval",
+          "db.adminCommand('ping')"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - conductor-network
 
   # -----------------------------------------------------------------------------------#
   # Lryic                                                                              #
@@ -348,12 +407,60 @@ services:
   # Submit, validate, and manage structured data according to predefined schemas.      #
   # Documentation Link: https://docs.overture.bio/docs/under-development/lyric/        #
   # -----------------------------------------------------------------------------------#
+  lyric:
+    profiles: ["phase2", "phase3", "platform"]
+    image: ghcr.io/overture-stack/lyric:0.6.0
+    container_name: lyric
+    platform: linux/amd64
+    depends_on:
+      lyric-db:
+        condition: service_healthy
+      lectern:
+        condition: service_started
+    ports:
+      - "3030:3030"
+    environment:
+      PORT: 3030
+      DB_HOST: lyric-db
+      DB_PORT: 5432
+      DB_NAME: lyricDb
+      DB_USER: admin
+      DB_PASSWORD: admin123
+      LECTERN_URL: http://lectern:3001
+      LOG_LEVEL: info
+      AUDIT_ENABLED: false
+      ID_USELOCAL: true
+      UPLOAD_LIMIT: "100mb"
+      PLURALIZE_SCHEMAS_ENABLED: false
+    networks:
+      - conductor-network
 
   # -----------------------------------------------------------------------------------#
   # LyricDb                                                                            #
   # -----------------------------------------------------------------------------------#
   # Database used by Lyric to store its tabular data.                                  #                                                               #
   # -----------------------------------------------------------------------------------#
+  lyric-db:
+    profiles: ["phase2", phase3, "platform"]
+    image: postgres:15-alpine
+    container_name: lyric-db
+    platform: linux/amd64
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: admin
+      POSTGRES_DB: lyricDb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d lyricDb"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - lyric-db-data:/var/lib/postgresql/data
+    networks:
+      - conductor-network
 
   # -----------------------------------------------------------------------------------#
   # Maestro (Tabular Data)                                                             #
@@ -361,10 +468,53 @@ services:
   # Indexs tabular data into Elasticsearch on publication                              #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview  #
   # -----------------------------------------------------------------------------------#
+  maestro-tabular:
+    profiles: ["phase2", phase3, "platform"]
+    image: ghcr.io/overture-stack/maestro:4.3.0
+    container_name: maestro-tabular
+    platform: linux/amd64
+    depends_on:
+      lectern:
+        condition: service_started
+      conductor:
+        condition: service_healthy
+    ports:
+      - "11236:11235"
+    environment:
+      # Maestro Variables
+      MAESTRO_FAILURELOG_ENABLED: true
+      MAESTRO_FAILURELOG_DIR: app/logs/maestro
+      MAESTRO_LOGGING_LEVEL_ROOT: INFO
+      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
+      MAESTRO_DISABLEEVENTINDEXING: true
+      # Song Variables
+      MAESTRO_REPOSITORIES_0_CODE: song.overture
+      MAESTRO_REPOSITORIES_0_URL: http://song:8080
+      MAESTRO_REPOSITORIES_0_NAME: Overture
+      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_0_COUNTRY: CA
+      # Elasticsearch Variables
+      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
+      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: tabular-index
+      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: tabular_centric
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
+      # Spring Variables
+      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
+      SPRINGDOC_SWAGGERUI_PATH: /swagger-api
+    volumes:
+      - maestro-file-data:/app/app-data
+    networks:
+      - conductor-network
 
   # ================================================================================== #
   # ================================================================================== #
-  #                                    PhaseThree:                                     #
+  #                                    phase3:                                     #
   #                          File data storage & submission                            #
   # ================================================================================== #
   # Here we will focus on implementing our back-end file management services which     #
@@ -379,7 +529,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Song/overview     #
   # -----------------------------------------------------------------------------------#
   song:
-    profiles: ['phaseThree', 'platform']
+    profiles: ["phase3", "platform"]
     image: ghcr.io/overture-stack/song-server:a81a8e48
     container_name: song
     platform: linux/amd64
@@ -387,16 +537,16 @@ services:
       song-db:
         condition: service_healthy
     ports:
-      - '8080:8080'
+      - "8080:8080"
     environment:
       # Spring Variables
       SPRING_PROFILES_ACTIVE: dev, noSecurityDev
       # Swagger/OpenAPI Configuration
-      SPRING_MVC_CORS_ENABLED: 'true'
-      SPRING_MVC_CORS_ALLOWED-ORIGINS: '*'
-      SPRING_MVC_CORS_ALLOWED-METHODS: 'GET,POST,PUT,DELETE,PATCH,OPTIONS'
-      SPRING_MVC_CORS_ALLOWED-HEADERS: '*'
-      SPRING_MVC_CORS_ALLOW-CREDENTIALS: 'true'
+      SPRING_MVC_CORS_ENABLED: "true"
+      SPRING_MVC_CORS_ALLOWED-ORIGINS: "*"
+      SPRING_MVC_CORS_ALLOWED-METHODS: "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+      SPRING_MVC_CORS_ALLOWED-HEADERS: "*"
+      SPRING_MVC_CORS_ALLOW-CREDENTIALS: "true"
       # Flyway variables
       SPRING_FLYWAY_ENABLED: true
       # Song Variables
@@ -419,21 +569,21 @@ services:
   # Database used by Lyric to store its tabular data.                                  #                                                               #
   # -----------------------------------------------------------------------------------#
   song-db:
-    profiles: ['phaseThree', 'platform']
+    profiles: ["phase3", "platform"]
     depends_on:
       - conductor
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
     ports:
-      - '5433:5432'
+      - "5433:5432"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: songDb
     user: postgres:postgres
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U admin -d songDb']
+      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
       interval: 20s
       timeout: 10s
       retries: 10
@@ -450,7 +600,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Score/overview    #                                                            #
   # -----------------------------------------------------------------------------------#
   score:
-    profiles: ['phaseThree', 'platform']
+    profiles: ["phase3", "platform"]
     image: ghcr.io/overture-stack/score-server:6c4a3a3c
     container_name: score
     platform: linux/amd64
@@ -458,7 +608,7 @@ services:
       minio:
         condition: service_healthy
     ports:
-      - '8087:8087'
+      - "8087:8087"
     environment:
       # Spring Variables
       SPRING_PROFILES_ACTIVE: noSecurityDev, s3
@@ -466,7 +616,7 @@ services:
       # Song Variable
       METADATA_URL: http://song:8080
       # Score Variables
-      SERVER_SSL_ENABLED: 'false'
+      SERVER_SSL_ENABLED: "false"
       # Object Storage Variables
       S3_ENDPOINT: http://host.docker.internal:9000
       S3_ACCESSKEY: admin
@@ -489,7 +639,7 @@ services:
   # http://docs.overture.bio/guides/deployment-guide/data-management-&-storage         #
   # -----------------------------------------------------------------------------------#
   minio:
-    profiles: ['phaseThree', 'platform']
+    profiles: ["phase3", "platform"]
     image: minio/minio:RELEASE.2018-05-11T00-29-24Z
     container_name: minio
     platform: linux/amd64
@@ -502,7 +652,7 @@ services:
     volumes:
       - ./volumes/data-minio:/data
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -516,7 +666,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview  #
   # -----------------------------------------------------------------------------------#
   maestro-file:
-    profiles: ['phaseThree', 'platform']
+    profiles: ["phase3", "platform"]
     image: ghcr.io/overture-stack/maestro:4.3.0
     container_name: maestro-file
     platform: linux/amd64
@@ -526,7 +676,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - '11235:11235'
+      - "11235:11235"
     environment:
       # Maestro Variables
       MAESTRO_FAILURELOG_ENABLED: true
@@ -554,7 +704,6 @@ services:
       # Spring Variables
       SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
       SPRINGDOC_SWAGGERUI_PATH: /swagger-api
-
     volumes:
       - maestro-file-data:/app/app-data
     networks:
@@ -564,7 +713,10 @@ volumes:
   elasticsearch-data:
   stage-data:
   maestro-file-data:
+  maestro-tabular-data:
   song-db-data:
+  lyric-db-data:
+  lectern-db-data:
 networks:
   conductor-network:
     driver: bridge
