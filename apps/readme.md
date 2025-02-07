@@ -149,7 +149,7 @@ The development server will be available at: http://localhost:3000
 Stage supports displaying informational banners at the top of each page that can
 be configured through environment variables.
 
-![Banners example](./images/banners.png "Banners example")
+![Banners example](./images/banners.png 'Banners example')
 
 ## Usage
 

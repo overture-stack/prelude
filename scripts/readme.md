@@ -2,8 +2,8 @@
 
 ## Deployments
 
-Deployment scripts are an ordered collection of service scripts made to
-systematically deploy platform infrastructure.
+The deployment folder contains our deployment scripts. These are ordered collections of service scripts that
+systematically deploy any given platform infrastructure.
 
 ## Services
 
@@ -13,7 +13,7 @@ executed by deployment scripts. The plug-and-play setup allows for flexible
 deployment configurations where scripts can be added, removed, or reordered as
 needed.
 
-To reduce coginitive overload we have organized setup scripts by the phase they
+We have organized setup scripts by the phase they
 are introduced in. All commonly configurabled variables area located at the top
 of the script and are configurable from the environment variables of the
 conductor service within the docker compose file.

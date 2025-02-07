@@ -310,10 +310,10 @@ services:
       NEXT_PUBLIC_SONG_API: http://localhost:8080
       NEXTAUTH_SECRET: your-secure-secret-here
       # Homepage banner
-      NEXT_PUBLIC_SYSTEM_ALERTS:
-        '[{"level":"info","title":"Welcome to Prelude PhaseOne","message":"See the documentation tab
-        for information on next steps including portal configuration and data
-        submission.","dismissable":true,"id":"maintenance-2023"}]'
+      # NEXT_PUBLIC_SYSTEM_ALERTS:
+      #   '[{"level":"info","title":"Welcome to Prelude PhaseOne","message":"See the documentation tab
+      #   for information on next steps including portal configuration and data
+      #   submission.","dismissable":true,"id":"maintenance-2023"}]'
     volumes:
       - stage-data:/usr/src/public/static/dms_user_assets
     networks:
@@ -391,6 +391,12 @@ services:
     environment:
       # Spring Variables
       SPRING_PROFILES_ACTIVE: dev, noSecurityDev
+      # Swagger/OpenAPI Configuration
+      SPRING_MVC_CORS_ENABLED: 'true'
+      SPRING_MVC_CORS_ALLOWED-ORIGINS: '*'
+      SPRING_MVC_CORS_ALLOWED-METHODS: 'GET,POST,PUT,DELETE,PATCH,OPTIONS'
+      SPRING_MVC_CORS_ALLOWED-HEADERS: '*'
+      SPRING_MVC_CORS_ALLOW-CREDENTIALS: 'true'
       # Flyway variables
       SPRING_FLYWAY_ENABLED: true
       # Song Variables

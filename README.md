@@ -81,12 +81,13 @@ Following startup the front end portal will be available at your
 
 ### Helper Commands
 
-| Description                                   | Unix/macOS        | Windows |
-| --------------------------------------------- | ----------------- | ------- |
-| Shuts down all containers                     | `make down`       | pending |
-| Shuts down all containers and removes volumes | `make reset`      | pending |
-| Submits pre-configured demo data              | `make load-data`  | pending |
-| Removes all documents from elasticsearch      | `make clean-data` | pending |
+| Description                                                                                 | Unix/macOS              | Windows |
+| ------------------------------------------------------------------------------------------- | ----------------------- | ------- |
+| Shuts down all containers                                                                   | `make down`             | pending |
+| Shuts down all containers and removes volumes                                               | `make reset`            | pending |
+| Submits pre-configured demo data                                                            | `make load-data`        | pending |
+| Generates index mappings and arranger configurations using the default tabularData.csv file | `make generate-configs` | pending |
+| Removes all documents from elasticsearch                                                    | `make clean-data`       | pending |
 
 ## Documentation
 

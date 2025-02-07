@@ -98,7 +98,7 @@ module.exports = withPlugins([withTranspileModules], {
 		return [
 			{
 				source: '/api/song/:path*',
-				destination: 'http://song:8080/:path*', // Query params are automatically forwarded
+				destination: 'http://localhost:8080/:path*', // Query params are automatically forwarded
 			},
 		];
 	},
