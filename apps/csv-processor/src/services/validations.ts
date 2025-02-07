@@ -2,6 +2,9 @@ import { Client } from '@elastic/elasticsearch';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import { Config } from '../types';
+import { generateMapping } from './mapping';
+import { parseCSVLine } from '../utils/csv';
+import type { ElasticsearchMapping } from '../types/index';
 
 /**
  * Validation Utilities for CSV Processing Pipeline
@@ -132,80 +135,191 @@ export async function validateElasticsearchConnection(
  */
 
 export async function validateCSVStructure(headers: string[]): Promise<boolean> {
-  // Remove empty strings and trim whitespace
-  const cleanedHeaders = headers.map(header => header.trim()).filter(header => header !== '');
+  try {
+    // Remove empty strings and trim whitespace
+    const cleanedHeaders = headers.map(header => header.trim()).filter(header => header !== '');
 
-  // Check if we have the expected number of headers
-  if (cleanedHeaders.length === 0) {
-    process.stdout.write(chalk.red('\n❌ Error: No valid headers found in CSV file\n\n'));
-    return false;
-  }
+    // Check if we have the expected number of headers
+    if (cleanedHeaders.length === 0) {
+      process.stdout.write(chalk.red('\n❌ Error: No valid headers found in CSV file\n\n'));
+      return false;
+    }
 
-  // Check if the number of cleaned headers matches the original headers
-  if (cleanedHeaders.length !== headers.length) {
-    process.stdout.write(chalk.red('\n❌ Error: Empty or whitespace-only headers detected\n\n'));
-    process.stdout.write(chalk.yellow('Problematic headers are:\n'));
+    // Check if the number of cleaned headers matches the original headers
+    if (cleanedHeaders.length !== headers.length) {
+      process.stdout.write(chalk.red('\n❌ Error: Empty or whitespace-only headers detected\n\n'));
+      process.stdout.write(chalk.yellow('Problematic headers are:\n'));
 
-    headers.forEach((header, index) => {
-      if (header.trim() === '') {
-        process.stdout.write(chalk.yellow(`├─ Column ${index + 1}: Empty header\n\n`));
-      }
+      headers.forEach((header: string, index: number) => {
+        if (header.trim() === '') {
+          process.stdout.write(chalk.yellow(`├─ Column ${index + 1}: Empty header\n\n`));
+        }
+      });
+
+      process.stdout.write(chalk.cyan('\nSuggestions:\n'));
+      process.stdout.write('1. Remove empty columns from the CSV file\n');
+      process.stdout.write('2. Ensure each column has a meaningful name\n');
+      process.stdout.write('3. Check your CSV export settings\n');
+
+      return false;
+    }
+
+    // Validation constants
+    const invalidChars = [
+      ':',
+      '>',
+      '<',
+      '.',
+      ' ',
+      ',',
+      '/',
+      '\\',
+      '?',
+      '#',
+      '[',
+      ']',
+      '{',
+      '}',
+      '"',
+      '*',
+      '|',
+      '+',
+      '@',
+      '&',
+      '(',
+      ')',
+      '!',
+      '^'
+    ];
+    const maxLength = 255;
+    const reservedWords = [
+      // Elasticsearch reserved
+      '_type',
+      '_id',
+      '_source',
+      '_all',
+      '_parent',
+      '_field_names',
+      '_routing',
+      '_index',
+      '_size',
+      '_timestamp',
+      '_ttl',
+      '_meta',
+      '_doc',
+      // GraphQL reserved
+      '__typename',
+      '__schema',
+      '__type'
+    ];
+
+    // GraphQL compliant name pattern
+    const graphqlNamePattern = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+    const invalidHeaders = cleanedHeaders.filter((header: string) => {
+      // Check for invalid characters
+      const hasInvalidChars = invalidChars.some(char => header.includes(char));
+      // Check length
+      const isTooLong = Buffer.from(header).length > maxLength;
+      // Check if it's a reserved word
+      const isReserved = reservedWords.includes(header.toLowerCase());
+      // Check if it matches GraphQL naming pattern
+      const isValidGraphQLName = graphqlNamePattern.test(header);
+
+      return hasInvalidChars || isTooLong || isReserved || !isValidGraphQLName;
     });
 
-    process.stdout.write(chalk.cyan('\nSuggestions:\n'));
-    process.stdout.write('1. Remove empty columns from the CSV file\n');
-    process.stdout.write('2. Ensure each column has a meaningful name\n');
-    process.stdout.write('3. Check your CSV export settings\n');
+    if (invalidHeaders.length > 0) {
+      process.stdout.write(chalk.red('\n❌ Error: Invalid header names detected\n\n'));
+      process.stdout.write(chalk.yellow('The following headers are invalid:\n'));
 
+      invalidHeaders.forEach((header: string) => {
+        process.stdout.write(chalk.yellow(`├─ "${header}"\n`));
+        if (Buffer.from(header).length > maxLength) {
+          process.stdout.write(chalk.yellow(`   ↳ Exceeds maximum length of ${maxLength} bytes\n`));
+        }
+        if (reservedWords.includes(header.toLowerCase())) {
+          process.stdout.write(
+            chalk.yellow(`   ↳ Is a reserved field name (Elasticsearch/GraphQL)\n`)
+          );
+        }
+        if (!graphqlNamePattern.test(header)) {
+          process.stdout.write(
+            chalk.yellow(
+              `   ↳ Must match pattern: start with letter/underscore, contain only letters/numbers/underscores\n`
+            )
+          );
+        }
+        const foundInvalidChars = invalidChars.filter(char => header.includes(char));
+        if (foundInvalidChars.length > 0) {
+          process.stdout.write(
+            chalk.yellow(`   ↳ Contains invalid characters: ${foundInvalidChars.join(' ')}\n`)
+          );
+        }
+      });
+
+      process.stdout.write(chalk.cyan('\nSuggestions:\n'));
+      process.stdout.write('1. Use only letters, numbers, and underscores\n');
+      process.stdout.write('2. Start field names with a letter or underscore\n');
+      process.stdout.write('3. Keep field names under 255 bytes\n');
+      process.stdout.write('4. Avoid Elasticsearch and GraphQL reserved words\n');
+      process.stdout.write('5. Follow pattern: ^[A-Za-z_][A-Za-z0-9_]*$\n\n');
+
+      return false;
+    }
+
+    // Count header occurrences for duplicates
+    const headerCounts: Record<string, number> = cleanedHeaders.reduce(
+      (acc: Record<string, number>, header: string) => {
+        acc[header] = (acc[header] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
+
+    // Find duplicate headers
+    const duplicates = Object.entries(headerCounts)
+      .filter(([_, count]) => count > 1)
+      .map(([header, _]) => header);
+
+    if (duplicates.length > 0) {
+      process.stdout.write(chalk.red('\n❌ Error: Duplicate headers found in CSV file\n\n'));
+
+      duplicates.forEach(header => {
+        process.stdout.write(
+          chalk.yellow(`├─ Duplicate header: "${header}" appears ${headerCounts[header]} times\n`)
+        );
+      });
+
+      process.stdout.write(chalk.cyan('\nSuggestions:\n'));
+      process.stdout.write('1. Remove duplicate columns from the CSV file\n');
+      process.stdout.write('2. Ensure each column has a unique name\n');
+      process.stdout.write('3. Check your CSV export settings\n');
+
+      return false;
+    }
+
+    // Optional: Suggest renaming generic headers
+    const genericHeaderWarnings = cleanedHeaders.filter(header =>
+      ['0', '1', '2', 'col1', 'col2', 'column1', 'column2'].includes(header.toLowerCase())
+    );
+
+    if (genericHeaderWarnings.length > 0) {
+      process.stdout.write(chalk.yellow('\n⚠️  Warning: Generic headers detected\n'));
+      genericHeaderWarnings.forEach(header => {
+        process.stdout.write(chalk.yellow(`├─ Generic header: "${header}"\n`));
+      });
+      process.stdout.write(chalk.cyan('Consider using more descriptive column names\n\n'));
+    }
+
+    process.stdout.write(chalk.green('\n✓ CSV header structure is valid.\n\n'));
+    return true;
+  } catch (error) {
+    process.stdout.write(chalk.red(`\n❌ Error validating CSV structure: ${error}\n\n`));
     return false;
   }
-
-  // Count header occurrences
-  const headerCounts = cleanedHeaders.reduce((acc, header) => {
-    acc[header] = (acc[header] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  // Find duplicate headers
-  const duplicates = Object.entries(headerCounts)
-    .filter(([_, count]) => count > 1)
-    .map(([header, _]) => header);
-
-  if (duplicates.length > 0) {
-    process.stdout.write(chalk.red('\n❌ Error: Duplicate headers found in CSV file\n\n'));
-
-    // Display duplicate headers
-    duplicates.forEach(header => {
-      process.stdout.write(
-        chalk.yellow(`├─ Duplicate header: "${header}" appears ${headerCounts[header]} times\n`)
-      );
-    });
-
-    // Provide suggestions
-    process.stdout.write(chalk.cyan('\nSuggestions:\n'));
-    process.stdout.write('1. Remove duplicate columns from the CSV file\n');
-    process.stdout.write('2. Ensure each column has a unique name\n');
-    process.stdout.write('3. Check your CSV export settings\n');
-
-    return false;
-  }
-
-  // Optional: Suggest renaming generic headers
-  const genericHeaderWarnings = cleanedHeaders.filter(header =>
-    ['0', '1', '2', 'col1', 'col2', 'column1', 'column2'].includes(header.toLowerCase())
-  );
-
-  if (genericHeaderWarnings.length > 0) {
-    process.stdout.write(chalk.yellow('\n⚠️  Warning: Generic headers detected\n'));
-    genericHeaderWarnings.forEach(header => {
-      process.stdout.write(chalk.yellow(`├─ Generic header: "${header}"\n`));
-    });
-    process.stdout.write(chalk.cyan('Consider using more descriptive column names\n\n'));
-  }
-
-  process.stdout.write(chalk.green('\n✓ CSV header structure is valid.\n\n'));
-  return true;
 }
+
 /**
  * Validates batch size configuration
  *
@@ -276,7 +390,7 @@ export async function validateIndex(client: Client, indexName: string): Promise<
     // Get index settings and mappings for additional validation if needed
     await client.indices.get({
       index: indexName,
-      include_type_name: false,
+      include_type_name: false
     });
 
     // Log index details
@@ -293,13 +407,13 @@ export async function validateIndex(client: Client, indexName: string): Promise<
 export async function checkElasticsearchIndex(client: Client, indexName: string): Promise<boolean> {
   try {
     const indexExists = await client.indices.exists({
-      index: indexName,
+      index: indexName
     });
 
     if (!indexExists.body) {
       const { body } = await client.cat.indices({
         format: 'json',
-        v: true,
+        v: true
       });
 
       process.stdout.write(chalk.red(`\n❌ Error: Index '${indexName}' does not exist\n\n`));
@@ -351,7 +465,7 @@ export async function validateHeadersMatchMappings(
   try {
     // Retrieve the current index mapping
     const { body: mappingResponse } = await client.indices.getMapping({
-      index: indexName,
+      index: indexName
     });
 
     // Get the properties (fields) from the mapping
@@ -433,4 +547,51 @@ export function validateDelimiter(delimiter: string): boolean {
     return false;
   }
   return true;
+}
+
+/**
+ * Validates and extracts mapping information from CSV file
+ * @param filePath - Path to the CSV file
+ * @param delimiter - CSV delimiter character
+ * @returns Promise resolving to Elasticsearch mapping object
+ */
+export async function validateAndGetMapping(
+  filePath: string,
+  delimiter: string
+): Promise<ElasticsearchMapping> {
+  try {
+    // Read first two lines for mapping generation
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const [headerLine, sampleLine] = fileContent.split('\n');
+
+    if (!headerLine || !sampleLine) {
+      throw new Error('CSV file must contain at least a header row and one data row');
+    }
+
+    const headers = parseCSVLine(headerLine, delimiter, true)[0];
+    const sampleValues = parseCSVLine(sampleLine, delimiter, false)[0];
+
+    if (!headers || !sampleValues) {
+      throw new Error('Failed to parse CSV headers or sample data');
+    }
+
+    // Validate CSV structure before generating mapping
+    const isValid = await validateCSVStructure(headers);
+    if (!isValid) {
+      throw new Error(
+        'CSV header validation failed. Please fix the headers according to the above suggestions and try again.'
+      );
+    }
+
+    // Create sample data object
+    const sampleData: Record<string, string> = {};
+    headers.forEach((header: string, index: number) => {
+      sampleData[header] = sampleValues[index]?.toString() || '';
+    });
+
+    return generateMapping(headers, sampleData);
+  } catch (error) {
+    process.stdout.write(chalk.red(`\n❌ Error in validateAndGetMapping: ${error}\n\n`));
+    throw error;
+  }
 }

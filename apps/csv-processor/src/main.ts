@@ -4,8 +4,9 @@ import { setupCLI } from './utils/cli';
 import { createClient } from './utils/elasticsearch';
 import { processCSVFile } from './services/processor';
 import * as validations from './services/validations';
-import { validateAndGetMapping } from './services/mapping';
+import { validateAndGetMapping } from './services/validations';
 import { generateArrangerConfigs } from './services/arranger';
+import { parseCSVLine } from './utils/csv';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -63,6 +64,36 @@ function handleArrangerMode(mapping: any, arrangerConfigDir: string, indexName: 
   console.log(chalk.green(`\n✓ All Arranger configurations saved to ${arrangerConfigDir}`));
 }
 
+async function validateCSVHeaders(filePath: string, delimiter: string): Promise<boolean> {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const [headerLine] = fileContent.split('\n');
+
+    if (!headerLine) {
+      console.error(chalk.red('Error: CSV file is empty or has no headers'));
+      return false;
+    }
+
+    const headers = parseCSVLine(headerLine, delimiter, true)[0];
+    if (!headers) {
+      console.error(chalk.red('Error: Failed to parse CSV headers'));
+      return false;
+    }
+
+    // Validate CSV structure using our validation function
+    const isValid = await validations.validateCSVStructure(headers);
+    if (!isValid) {
+      console.error(chalk.red('Error: CSV headers failed validation'));
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(chalk.red('Error validating CSV headers:'), error);
+    return false;
+  }
+}
+
 async function main() {
   try {
     console.log(chalk.blue('\n============================================='));
@@ -82,6 +113,10 @@ async function main() {
 
     const delimiterValid = validations.validateDelimiter(config.delimiter);
     if (!delimiterValid) process.exit(1);
+
+    // Validate CSV headers before proceeding
+    const headersValid = await validateCSVHeaders(filePath, config.delimiter);
+    if (!headersValid) process.exit(1);
 
     // Handle different modes
     switch (mode as Mode) {

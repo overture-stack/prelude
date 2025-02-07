@@ -1,7 +1,5 @@
 import chalk from 'chalk';
-import { parseCSVLine } from '../utils/csv';
 import type { ElasticsearchMapping, ElasticsearchField } from '../types/index';
-import * as fs from 'fs';
 
 /**
  * Infers the Elasticsearch field type based on header name and sample value
@@ -60,7 +58,7 @@ export function generateMapping(
   const mapping: ElasticsearchMapping = {
     index_patterns: ['tabular-*'],
     aliases: {
-      data_centric: {},
+      data_centric: {}
     },
     mappings: {
       properties: {
@@ -70,73 +68,39 @@ export function generateMapping(
           properties: {
             submitter_id: {
               type: 'keyword',
-              null_value: 'No Data',
+              null_value: 'No Data'
             },
             processing_started: {
-              type: 'date',
+              type: 'date'
             },
             processed_at: {
-              type: 'date',
+              type: 'date'
             },
             source_file: {
               type: 'keyword',
-              null_value: 'No Data',
+              null_value: 'No Data'
             },
             record_number: {
-              type: 'integer',
+              type: 'integer'
             },
             hostname: {
               type: 'keyword',
-              null_value: 'No Data',
+              null_value: 'No Data'
             },
             username: {
               type: 'keyword',
-              null_value: 'No Data',
-            },
-          },
-        },
-      },
+              null_value: 'No Data'
+            }
+          }
+        }
+      }
     },
     settings: {
       number_of_shards: 1,
-      number_of_replicas: 0,
-    },
+      number_of_replicas: 0
+    }
   };
 
   process.stdout.write(chalk.green(`✓ Mapping generated successfully\n`));
   return mapping;
-}
-
-/**
- * Validates and extracts mapping information from CSV file
- * @param filePath - Path to the CSV file
- * @param delimiter - CSV delimiter character
- * @returns Promise resolving to Elasticsearch mapping object
- */
-export async function validateAndGetMapping(
-  filePath: string,
-  delimiter: string
-): Promise<ElasticsearchMapping> {
-  // Read first two lines for mapping generation
-  const fileContent = fs.readFileSync(filePath, 'utf-8');
-  const [headerLine, sampleLine] = fileContent.split('\n');
-
-  if (!headerLine || !sampleLine) {
-    throw new Error('CSV file must contain at least a header row and one data row');
-  }
-
-  const headers = parseCSVLine(headerLine, delimiter, true)[0];
-  const sampleValues = parseCSVLine(sampleLine, delimiter, false)[0];
-
-  if (!headers || !sampleValues) {
-    throw new Error('Failed to parse CSV headers or sample data');
-  }
-
-  // Create sample data object
-  const sampleData: Record<string, string> = {};
-  headers.forEach((header: string, index: number) => {
-    sampleData[header] = sampleValues[index]?.toString() || '';
-  });
-
-  return generateMapping(headers, sampleData);
 }
