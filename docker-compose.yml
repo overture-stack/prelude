@@ -11,14 +11,16 @@ services:
   #  scripts to automate general setup and configuration.                              #
   # ================================================================================== #
   conductor:
-    profiles: ["phase1", "phase2", "phase3", "stageDev", "clean", "platform"]
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "clean", "platform", loadLectern]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
       - "9204:9204"
     volumes:
-      - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/config/file_data_index_template.json
-      - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/config/tabular_data_index_template.json
+      - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/file_data_index_template.json
+      - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/tabular_data_index_template.json
+      - ./configs/lecternSchema/lecternSchema.json:/usr/share/lecternSchema/lecternSchema.json
+      - ./configs/songSchema/songSchema.json:/usr/share/songSchema/songSchema.json
       - ./scripts:/scripts
       - ./volumes/health:/health
     environment:
@@ -32,18 +34,19 @@ services:
       ES_USER: elastic
       ES_PASS: myelasticpassword
       FILE_INDEX_NAME: file-index
-      FILE_ES_TEMPLATE_FILE: /usr/share/elasticsearch/config/file_data_index_template.json
+      FILE_ES_TEMPLATE_FILE: /usr/share/elasticsearch/file_data_index_template.json
       FILE_ES_TEMPLATE_NAME: file_template
       FILE_ES_ALIAS_NAME: file_centric
       TABULAR_INDEX_NAME: tabular-index
-      TABULAR_ES_TEMPLATE_FILE: /usr/share/elasticsearch/config/tabular_data_index_template.json
+      TABULAR_ES_TEMPLATE_FILE: /usr/share/elasticsearch/tabular_data_index_template.json
       TABULAR_ES_TEMPLATE_NAME: tabular_template
       TABULAR_ES_ALIAS_NAME: tabular_centric
       # Stage service script variable
       STAGE_URL: http://stage:3000
       # phase2 healthcheck endpoints
       LYRIC_URL: http://lyric:3030
-      LECTERN_URL: http://lectern:3031
+      LECTERN_URL: http://lectern:3031/dictionaries
+      LECTERN_SCHEMA: /usr/share/lecternSchema/lecternSchema.json
       # phase3 healthcheck endpoints
       SONG_URL: http://song:8080/isAlive
       SCORE_URL: http://score:8087/download/ping
@@ -74,6 +77,11 @@ services:
               echo "Running Stage Dev deployment..."
               chmod +x scripts/deployments/stageDev.sh
               scripts/deployments/stageDev.sh
+              ;;
+            loadLectern)
+              echo "Updating Lectern dictionary..."
+              chmod +x scripts/services/phase2/lecternSchemaUpload.sh
+              scripts/services/phase2/lecternSchemaUpload.sh
               ;;
             clean)
               echo "Removing data..."

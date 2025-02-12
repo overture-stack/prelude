@@ -21,6 +21,10 @@ stage-dev:
 load-data:
 	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach csv-processor
 
+# Load dictionary schema to Lectern
+load-lectern:
+	PROFILE=loadLectern docker compose -f ./docker-compose.yml --profile loadLectern up --attach conductor
+
 # Generate Elasticsearch and Arranger configurations
 generate-configs:
 	@echo "\033[1;36mConductor:\033[0m Generating configurations..."

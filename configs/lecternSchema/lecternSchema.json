@@ -59,7 +59,9 @@
           "description": "Typical market price in USD",
           "valueType": "integer",
           "restrictions": {
-            "minimum": 0
+            "range": {
+              "min": 0
+            }
           }
         },
         {
@@ -78,8 +80,10 @@
           "description": "Rating from 0-10 indicating the instrument's complexity of construction and playing",
           "valueType": "number",
           "restrictions": {
-            "minimum": 0,
-            "maximum": 10
+            "range": {
+              "min": 0,
+              "max": 10
+            }
           }
         },
         {
