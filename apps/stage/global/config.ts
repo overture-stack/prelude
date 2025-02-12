@@ -40,6 +40,8 @@ type Config = {
 	NEXT_PUBLIC_ARRANGER_TABULAR_DATA_MAX_BUCKET_COUNTS: number;
 	NEXT_PUBLIC_SONG_API: string;
 	NEXT_PUBLIC_SCORE_API: string;
+	NEXT_PUBLIC_LYRIC_API: string;
+	NEXT_PUBLIC_LECTERN_API: string;
 	NEXT_PUBLIC_BASE_PATH: string;
 	NEXT_PUBLIC_CHANGELOG_START_SECONDS: number;
 	NEXT_PUBLIC_DOWNLOAD_ALL_URL: string;
@@ -113,9 +115,11 @@ export const getConfig = (): Config => {
 		NEXT_PUBLIC_ARRANGER_TABULAR_DATA_MAX_BUCKET_COUNTS:
 			Number(publicConfig.NEXT_PUBLIC_ARRANGER_TABULAR_DATA_MAX_BUCKET_COUNTS) || 50000,
 
-		// Song & Score
+		// Swagger Docs
 		NEXT_PUBLIC_SONG_API: publicConfig.NEXT_PUBLIC_SONG_API || 'http://localhost:8080',
 		NEXT_PUBLIC_SCORE_API: publicConfig.NEXT_PUBLIC_SCORE_API || 'http://localhost:8087',
+		NEXT_PUBLIC_LYRIC_API: publicConfig.NEXT_PUBLIC_SONG_API || 'http://localhost:3030',
+		NEXT_PUBLIC_LECTERN_API: publicConfig.NEXT_PUBLIC_SCORE_API || 'http://localhost:3031',
 
 		// Auth
 		NEXT_PUBLIC_AUTH_PROVIDER: (publicConfig.NEXT_PUBLIC_AUTH_PROVIDER || '').toLowerCase(),

@@ -129,9 +129,32 @@ const NavBar = (): ReactElement => {
 							Documentation
 						</StyledLink>
 					</InternalLink>
-					<InternalLink path={INTERNAL_PATHS.SONG}>
-						<StyledLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SONG) })}>Song API</StyledLink>
-					</InternalLink>
+					<Dropdown
+						css={linkStyles}
+						data={[
+							<InternalLink path={INTERNAL_PATHS.LYRIC}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.LYRIC) })}>
+									Lyric
+								</StyledListLink>
+							</InternalLink>,
+							<InternalLink path={INTERNAL_PATHS.LECTERN}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.LECTERN) })}>
+									Lectern
+								</StyledListLink>
+							</InternalLink>,
+							<InternalLink path={INTERNAL_PATHS.SONG}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SONG) })}>
+									Song
+								</StyledListLink>
+							</InternalLink>,
+							<InternalLink path={INTERNAL_PATHS.SCORE}>
+								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SCORE) })}>
+									Score
+								</StyledListLink>
+							</InternalLink>,
+						]}
+						label="APIs"
+					/>
 				</div>
 
 				{/* Auth Section */}

@@ -1,5 +1,3 @@
-// @ts-check
-
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const withPlugins = require('next-compose-plugins');
@@ -7,17 +5,11 @@ const { patchWebpackConfig: patchForGlobalCSS } = require('next-global-css');
 const withTranspileModules = require('next-transpile-modules')(['swagger-ui-react', 'swagger-ui-dist']);
 const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 
-/**
- * @type {import('next').NextConfig}
- **/
 module.exports = withPlugins([withTranspileModules], {
 	typescript: {
 		ignoreBuildErrors: true,
 	},
 	webpack: (config, options) => {
-		// These 'react' related configs are added to enable linking packages in development
-		// (e.g. Arranger), and not get the "broken Hooks" warning.
-		// https://reactjs.org/warnings/invalid-hook-call-warning.html#duplicate-react
 		if (options.isServer) {
 			config.externals = ['react', ...config.externals];
 		} else {
@@ -37,7 +29,6 @@ module.exports = withPlugins([withTranspileModules], {
 
 		return patchForGlobalCSS(config, options);
 	},
-
 	publicRuntimeConfig: {
 		NEXT_PUBLIC_ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
 		NEXT_PUBLIC_APP_COMMIT: process.env.APP_COMMIT,
@@ -68,6 +59,9 @@ module.exports = withPlugins([withTranspileModules], {
 
 		// Song
 		NEXT_PUBLIC_SONG_API: process.env.NEXT_PUBLIC_SONG_API || 'http://localhost:8080',
+		NEXT_PUBLIC_LYRIC_API: process.env.NEXT_PUBLIC_LYRIC_API || 'http://localhost:3030',
+		NEXT_PUBLIC_LECTERN_API: process.env.NEXT_PUBLIC_LECTERN_API || 'http://localhost:3031',
+		NEXT_PUBLIC_SCORE_API: process.env.NEXT_PUBLIC_SCORE_API || 'http://localhost:8087',
 
 		// Auth & Keycloak
 		NEXT_PUBLIC_AUTH_PROVIDER: process.env.NEXT_PUBLIC_AUTH_PROVIDER || 'keycloak',
@@ -94,11 +88,37 @@ module.exports = withPlugins([withTranspileModules], {
 	experimental: {
 		esmExternals: 'loose',
 	},
+	async headers() {
+		return [
+			{
+				source: '/api/:path*',
+				headers: [
+					{ key: 'Access-Control-Allow-Origin', value: '*' },
+					{ key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
+					{ key: 'Access-Control-Allow-Headers', value: '*' },
+				],
+			},
+		];
+	},
+
 	async rewrites() {
+		const isDocker = process.env.IS_DOCKER === 'true';
 		return [
 			{
 				source: '/api/song/:path*',
-				destination: 'http://localhost:8080/:path*', // Query params are automatically forwarded
+				destination: isDocker ? 'http://song:8080/:path*' : 'http://localhost:8080/:path*',
+			},
+			{
+				source: '/api/lyric/:path*',
+				destination: isDocker ? 'http://lyric:3030/:path*' : 'http://localhost:3030/:path*',
+			},
+			{
+				source: '/api/lectern/:path*',
+				destination: isDocker ? 'http://lectern:3031/:path*' : 'http://localhost:3031/:path*',
+			},
+			{
+				source: '/api/score/:path*',
+				destination: isDocker ? 'http://score:8087/:path*' : 'http://localhost:8087/:path*',
 			},
 		];
 	},

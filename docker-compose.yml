@@ -274,7 +274,7 @@ services:
       - conductor-network
 
   # ------------------------------------------------------------------------------------#
-  # Stage                                                                    #
+  # Stage                                                                               #
   # ------------------------------------------------------------------------------------#
   # The react-based, front end UI scaffolding for Overture                              #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Stage/overview     #
@@ -302,22 +302,28 @@ services:
       NEXT_PUBLIC_ARRANGER_FILE_DATA_API: http://arranger-file:5050
       NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX: file_centric
-      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS:
-        repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size,
-        file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type,
-        analysis.experiment.data.sequence_length
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size, file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type, analysis.experiment.data.sequence_length
       # Tabular Arranger Variables
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API: http://arranger-tabular:5051
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX: tabular_centric
-      # Song Variables (For Swagger Pages used in phase3)
+      # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://localhost:8080
+      NEXT_PUBLIC_LYRIC_API: http://localhost:3030
+      NEXT_PUBLIC_LECTERN_API: http://localhost:3031
+      NEXT_PUBLIC_SCORE_API: http://localhost:8087
+      # Internal API Variables (For server-side proxying)
+      INTERNAL_SONG_API: http://song:8080
+      INTERNAL_LYRIC_API: http://lyric:3030
+      INTERNAL_LECTERN_API: http://lectern:3031
+      INTERNAL_SCORE_API: http://score:8087
+      # Auth Variables
       NEXTAUTH_SECRET: your-secure-secret-here
-      # Homepage banner
-      # NEXT_PUBLIC_SYSTEM_ALERTS:
-      #   '[{"level":"info","title":"Welcome to Prelude phase1","message":"See the documentation tab
-      #   for information on next steps including portal configuration and data
-      #   submission.","dismissable":true,"id":"maintenance-2023"}]'
+      # System Alerts
+      # NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
+      # CORS Configuration
+      NEXT_PUBLIC_CORS_ENABLED: "true"
+      NEXT_PUBLIC_CORS_ALLOWED_ORIGINS: "*"
     volumes:
       - stage-data:/usr/src/public/static/dms_user_assets
     networks:
@@ -325,7 +331,7 @@ services:
 
   # ================================================================================== #
   # ================================================================================== #
-  #                                    phase2:                                       #
+  #                                    phase2:                                         #
   #                          Tabular data storage & submission                         #
   # ================================================================================== #
   # Here we will focus on implementing our back-end tabular data management services   #
@@ -336,7 +342,7 @@ services:
   # -----------------------------------------------------------------------------------#
   # Lectern                                                                            #
   # -----------------------------------------------------------------------------------#
-  # Schema manager that validates and stores collections of data dictionaries.         #                                                               #
+  # Schema manager that validates and stores collections of data dictionaries.         #
   # Documentation Link: https://docs.overture.bio/docs/under-development/lectern/      #
   # -----------------------------------------------------------------------------------#
   lectern:
@@ -365,7 +371,7 @@ services:
   # -----------------------------------------------------------------------------------#
   # LecternDb                                                                          #
   # -----------------------------------------------------------------------------------#
-  # Database used by Lectern to store its schemas.                                     #                                                               #
+  # Database used by Lectern to store its schemas.                                     #
   # -----------------------------------------------------------------------------------#
   lectern-db:
     profiles: ["phase2", "phase3", "platform"]

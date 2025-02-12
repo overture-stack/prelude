@@ -1,0 +1,96 @@
+{
+  "name": "instruments_schema",
+  "description": "Schema for describing musical instruments, their origins, characteristics, and classifications",
+  "version": "1.0",
+  "schemas": [
+    {
+      "name": "instrument",
+      "description": "Details about a specific musical instrument including its physical characteristics, cultural significance, and technical specifications",
+      "fields": [
+        {
+          "meta": {
+            "displayName": "Instrument Name"
+          },
+          "name": "instrument_name",
+          "description": "The common or traditional name of the musical instrument",
+          "restrictions": {
+            "required": true,
+            "regex": "^[A-Za-z0-9\\s\\-()]+$"
+          },
+          "valueType": "string",
+          "unique": true
+        },
+        {
+          "meta": {
+            "displayName": "Origin Country"
+          },
+          "name": "origin_country",
+          "description": "The country or region where the instrument originated",
+          "restrictions": {
+            "required": true
+          },
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Instrument Type"
+          },
+          "name": "instrument_type",
+          "description": "The primary classification of the instrument",
+          "valueType": "string",
+          "restrictions": {
+            "required": true,
+            "codeList": ["String", "Wind", "Percussion", "Keyboard", "Electronic"]
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Historical Significance"
+          },
+          "name": "historical_significance",
+          "description": "Brief description of the instrument's historical and cultural importance",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Average Price"
+          },
+          "name": "average_price",
+          "description": "Typical market price in USD",
+          "valueType": "integer",
+          "restrictions": {
+            "minimum": 0
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Primary Materials"
+          },
+          "name": "primary_materials",
+          "description": "Main materials used in the instrument's construction",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Complexity Rating"
+          },
+          "name": "complexity_rating",
+          "description": "Rating from 0-10 indicating the instrument's complexity of construction and playing",
+          "valueType": "number",
+          "restrictions": {
+            "minimum": 0,
+            "maximum": 10
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Unique Characteristics"
+          },
+          "name": "unique_characteristics",
+          "description": "Special features or characteristics that distinguish this instrument",
+          "valueType": "string"
+        }
+      ]
+    }
+  ]
+}
