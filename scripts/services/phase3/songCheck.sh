@@ -8,7 +8,7 @@ TIMEOUT=10
 
 printf "\033[1;36mConductor:\033[0m Checking if Song is reachable\n"
 
-until [ "$(curl -s --max-time "$TIMEOUT" -o /dev/null -w "%{http_code}" "$SONG_URL" \
+until [ "$(curl -s --max-time "$TIMEOUT" -o /dev/null -w "%{http_code}" "$SONG_URL/isAlive" \
     -H "accept: */*")" = "200" ]; do
     
     RETRY_COUNT=$((RETRY_COUNT + 1))

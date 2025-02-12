@@ -8,7 +8,7 @@ TIMEOUT=10
 
 printf "\033[1;36mConductor:\033[0m Checking if object storage is reachable\n"
 
-until [ "$(curl -s --max-time "$TIMEOUT" -o /dev/null -w "%{http_code}" "$OBJECT_STORAGE_URL")" = "200" ]; do
+until [ "$(curl -s --max-time "$TIMEOUT" -o /dev/null -w "%{http_code}" "$OBJECT_STORAGE_URL/minio/health/live")" = "200" ]; do
     RETRY_COUNT=$((RETRY_COUNT + 1))
     
     if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then

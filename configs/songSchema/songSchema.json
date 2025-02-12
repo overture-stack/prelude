@@ -1,0 +1,128 @@
+{
+  "name": "InstrumentSchema",
+  "options": {
+    "externalValidations": [
+      {
+        "jsonPath": "",
+        "url": ""
+      }
+    ],
+    "fileTypes": ["csv", "json"]
+  },
+  "schema": {
+    "type": "object",
+    "required": ["instrument", "characteristics", "experiment"],
+    "properties": {
+      "instrument": {
+        "propertyNames": {
+          "enum": ["instrumentName", "originCountry", "instrumentType", "historicalSignificance"]
+        },
+        "required": ["instrumentName", "originCountry", "instrumentType"],
+        "type": "object",
+        "properties": {
+          "instrumentName": {
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9 _\\-]+[a-zA-Z0-9]+$"
+          },
+          "originCountry": {
+            "type": "string"
+          },
+          "instrumentType": {
+            "type": "string",
+            "enum": ["String", "Keyboard", "Wind", "Percussion", "Electronic", "Hybrid"]
+          },
+          "historicalSignificance": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "experiment": {
+        "propertyNames": {
+          "enum": ["platform", "experimentalStrategy"]
+        },
+        "required": ["platform", "experimentalStrategy"],
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": ["string", "null"]
+          },
+          "experimentalStrategy": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "characteristics": {
+        "type": "object",
+        "propertyNames": {
+          "enum": ["uniqueCharacteristics", "tonalRange", "playingTechnique", "maintenance"]
+        },
+        "required": ["uniqueCharacteristics"],
+        "properties": {
+          "uniqueCharacteristics": {
+            "type": "string"
+          },
+          "tonalRange": {
+            "type": ["string", "null"]
+          },
+          "playingTechnique": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "maintenance": {
+            "type": ["object", "null"],
+            "properties": {
+              "frequency": {
+                "type": "string",
+                "enum": ["Daily", "Weekly", "Monthly", "Quarterly", "Yearly", "As needed"]
+              },
+              "requirements": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "manufacturing": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "primaryMaterials",
+            "constructionMethod",
+            "averagePrice",
+            "manufacturingRegion",
+            "qualityGrade"
+          ]
+        },
+        "required": ["primaryMaterials"],
+        "properties": {
+          "primaryMaterials": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "constructionMethod": {
+            "type": ["string", "null"]
+          },
+          "averagePrice": {
+            "type": ["number", "null"],
+            "minimum": 0
+          },
+          "manufacturingRegion": {
+            "type": ["string", "null"]
+          },
+          "qualityGrade": {
+            "type": ["string", "null"],
+            "enum": ["Student", "Intermediate", "Professional", "Master", "Museum", null]
+          }
+        }
+      }
+    }
+  }
+}

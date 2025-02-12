@@ -11,7 +11,19 @@ services:
   #  scripts to automate general setup and configuration.                              #
   # ================================================================================== #
   conductor:
-    profiles: ["phase1", "phase2", "phase3", "stageDev", "clean", "platform", loadLectern]
+    profiles:
+      [
+        "phase1",
+        "phase2",
+        "phase3",
+        "stageDev",
+        "clean",
+        "platform",
+        "loadLectern",
+        "loadSongSchema",
+        "createStudy",
+        "loadSongData"
+      ]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
@@ -21,6 +33,7 @@ services:
       - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/tabular_data_index_template.json
       - ./configs/lecternSchema/lecternSchema.json:/usr/share/lecternSchema/lecternSchema.json
       - ./configs/songSchema/songSchema.json:/usr/share/songSchema/songSchema.json
+      - ./data/analysisFile.json:/usr/share/data/analysisFile.json
       - ./scripts:/scripts
       - ./volumes/health:/health
     environment:
@@ -45,12 +58,15 @@ services:
       STAGE_URL: http://stage:3000
       # phase2 healthcheck endpoints
       LYRIC_URL: http://lyric:3030
-      LECTERN_URL: http://lectern:3031/dictionaries
+      LECTERN_URL: http://lectern:3031
       LECTERN_SCHEMA: /usr/share/lecternSchema/lecternSchema.json
       # phase3 healthcheck endpoints
-      SONG_URL: http://song:8080/isAlive
-      SCORE_URL: http://score:8087/download/ping
-      OBJECT_STORAGE_URL: http://minio:9000/minio/health/live
+      SONG_URL: http://song:8080
+      STUDY_ID: demo
+      SONG_SCHEMA: /usr/share/songSchema/songSchema.json
+      ANALYSIS_FILE: /usr/share/data/analysisFile.json
+      SCORE_URL: http://score:8087
+      OBJECT_STORAGE_URL: http://minio:9000
       MAESTRO_FILE_URL: http://maestro-file:11235/
       MAESTRO_TABULAR_URL: http://maestro-tabular:11235/
     command: >
@@ -82,6 +98,16 @@ services:
               echo "Updating Lectern dictionary..."
               chmod +x scripts/services/phase2/lecternSchemaUpload.sh
               scripts/services/phase2/lecternSchemaUpload.sh
+              ;;
+            createStudy)
+              echo "Updating Song with a StudyId..."
+              chmod +x scripts/services/phase3/songStudyCreation.sh
+              scripts/services/phase3/songStudyCreation.sh
+              ;;
+           loadSongData)
+              echo "Loading Song Data..."
+              chmod +x /scripts/services/phase3/songAnalysisUpload.sh
+              /scripts/services/phase3/songAnalysisUpload.sh
               ;;
             clean)
               echo "Removing data..."
@@ -316,15 +342,10 @@ services:
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX: tabular_centric
       # Using localhost for client-side requests
-      NEXT_PUBLIC_SONG_API: http://localhost:8080
-      NEXT_PUBLIC_LYRIC_API: http://localhost:3030
-      NEXT_PUBLIC_LECTERN_API: http://localhost:3031
-      NEXT_PUBLIC_SCORE_API: http://localhost:8087
-      # Internal API Variables (For server-side proxying)
-      INTERNAL_SONG_API: http://song:8080
-      INTERNAL_LYRIC_API: http://lyric:3030
-      INTERNAL_LECTERN_API: http://lectern:3031
-      INTERNAL_SCORE_API: http://score:8087
+      NEXT_PUBLIC_SONG_API: http://song:8080
+      NEXT_PUBLIC_LYRIC_API: http://lyric:3030
+      NEXT_PUBLIC_LECTERN_API: http://lectern:3031
+      NEXT_PUBLIC_SCORE_API: http://score:8087
       # Auth Variables
       NEXTAUTH_SECRET: your-secure-secret-here
       # System Alerts

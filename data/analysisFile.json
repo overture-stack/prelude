@@ -1,0 +1,52 @@
+{
+  "studyId": "demo",
+  "analysisType": {
+    "name": "InstrumentSchemaRegistration",
+    "version": 1
+  },
+  "files": [
+    {
+      "dataType": "Acoustic Analysis",
+      "fileName": "violin_spectral_analysis.json",
+      "fileSize": 15246,
+      "fileMd5sum": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+      "fileAccess": "open",
+      "fileType": "JSON",
+      "info": {
+        "dataCategory": "Acoustic Measurement",
+        "analysisCoordinates": "frequency:20Hz-20kHz"
+      }
+    }
+  ],
+  "instrument": {
+    "instrumentName": "Stradivarius Soil Violin",
+    "originCountry": "Italy",
+    "instrumentType": "String",
+    "historicalSignificance": "Created by Antonio Stradivari in 1714"
+  },
+  "characteristics": {
+    "uniqueCharacteristics": "Distinctive dark varnish with exceptional tonal projection",
+    "tonalRange": "G3 to A7",
+    "playingTechnique": ["bowing", "pizzicato", "tremolo", "spiccato"],
+    "maintenance": {
+      "frequency": "Weekly",
+      "requirements": [
+        "Bow hair maintenance",
+        "Bridge alignment",
+        "Humidity control",
+        "String replacement"
+      ]
+    }
+  },
+  "experiment": {
+    "platform": "Acoustic Analysis Laboratory",
+    "experimentalStrategy": "Spectral Analysis"
+  },
+  "manufacturing": {
+    "primaryMaterials": ["Maple wood", "Spruce wood", "Ebony"],
+    "constructionMethod": "Traditional Cremonese technique",
+    "averagePrice": 16000000,
+    "manufacturingRegion": "Cremona, Italy",
+    "qualityGrade": "Museum"
+  }
+}

@@ -8,7 +8,7 @@ TIMEOUT=10
 
 printf "\033[1;36mConductor:\033[0m Checking if Score is reachable\n"
 
-until [ "$(curl -s --max-time "$TIMEOUT" -o /dev/null -w "%{http_code}" "$SCORE_URL" \
+until [ "$(curl -s --max-time "$TIMEOUT" -o /dev/null -w "%{http_code}" "$SCORE_URL/download/ping" \
     -H "accept: */*" \
     -H "Authorization: 68fb42b4-f1ed-4e8c-beab-3724b99fe528" \
     -H "User-Agent: unknown")" = "200" ]; do

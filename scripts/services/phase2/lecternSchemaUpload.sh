@@ -1,26 +1,33 @@
 #!/bin/sh
 
 # Configuration
-LECTERN_SCHEMA="/usr/share/lecternSchema/lecternSchema.json"
+SCHEMA_FILE="/usr/share/instrumentSchema/instrumentSchema.json"
 MAX_RETRIES=5
 RETRY_DELAY=10
+API_URL="http://localhost:8080/schemas"
+AUTH_TOKEN="bearer123"
 
-printf "\033[1;36mLectern:\033[0m Uploading schema to %s\n" "$LECTERN_URL"
-
-# Read schema file
-if [ ! -f "$LECTERN_SCHEMA" ]; then
-    printf "\033[1;31mError:\033[0m Schema file not found: %s\n" "$LECTERN_SCHEMA"
+# Check if environment variables are set
+if [ -z "$API_URL" ]; then
+    printf "\033[1;31mError:\033[0m API_URL environment variable is not set\n"
     exit 1
 fi
 
-SCHEMA_JSON=$(cat "$LECTERN_SCHEMA")
+printf "\033[1;36mUpload:\033[0m Uploading instrument schema to %s\n" "$API_URL"
+
+# Read schema file
+if [ ! -f "$SCHEMA_FILE" ]; then
+    printf "\033[1;31mError:\033[0m Schema file not found: %s\n" "$SCHEMA_FILE"
+    exit 1
+fi
 
 # Retry loop for uploading schema
 RETRY_COUNT=0
-until response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$LECTERN_URL" \
-    -H "accept: application/json" \
+until response=$(curl -s -w "%{http_code}" -X POST "$API_URL" \
+    -H "accept: */*" \
+    -H "Authorization: $AUTH_TOKEN" \
     -H "Content-Type: application/json" \
-    -d "$SCHEMA_JSON"); do
+    -d @"$SCHEMA_FILE"); do
     RETRY_COUNT=$((RETRY_COUNT + 1))
     
     if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then

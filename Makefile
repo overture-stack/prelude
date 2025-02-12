@@ -25,6 +25,18 @@ load-data:
 load-lectern:
 	PROFILE=loadLectern docker compose -f ./docker-compose.yml --profile loadLectern up --attach conductor
 
+# Create a Song Study
+create-study:
+	PROFILE=createStudy docker compose -f ./docker-compose.yml --profile createStudy up --attach conductor
+
+# Load a Song Schema
+load-song-schema:
+	PROFILE=loadSongSchema docker compose -f ./docker-compose.yml --profile loadSongSchema up --attach conductor
+
+# Load a Song Data
+load-song-data:
+	PROFILE=loadSongData docker compose -f ./docker-compose.yml --profile loadSongData up --attach conductor
+
 # Generate Elasticsearch and Arranger configurations
 generate-configs:
 	@echo "\033[1;36mConductor:\033[0m Generating configurations..."
