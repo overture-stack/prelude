@@ -7,7 +7,7 @@
         "url": ""
       }
     ],
-    "fileTypes": ["csv", "json"]
+    "fileTypes": [".csv", ".json"]
   },
   "schema": {
     "type": "object",

@@ -74,42 +74,47 @@ services:
         set -e
           echo "Profile is set to: $PROFILE"
           case "$PROFILE" in
-            phase1)
+            "phase1")
               echo "Running phase1 deployment..."
               chmod +x scripts/deployments/phase1.sh
               scripts/deployments/phase1.sh
               ;;
-            phase2)
+            "phase2")
               echo "Running phase2 deployment..."
               chmod +x scripts/deployments/phase2.sh
               scripts/deployments/phase2.sh
               ;;
-            phase3)
+            "phase3")
               echo "Running phase3 deployment ..."
               chmod +x scripts/deployments/phase3.sh
               scripts/deployments/phase3.sh
               ;;
-            stageDev)
+            "stageDev")
               echo "Running Stage Dev deployment..."
               chmod +x scripts/deployments/stageDev.sh
               scripts/deployments/stageDev.sh
               ;;
-            loadLectern)
+            "loadLectern")
               echo "Updating Lectern dictionary..."
               chmod +x scripts/services/phase2/lecternSchemaUpload.sh
               scripts/services/phase2/lecternSchemaUpload.sh
               ;;
-            createStudy)
+            "createStudy")
               echo "Updating Song with a StudyId..."
               chmod +x scripts/services/phase3/songStudyCreation.sh
               scripts/services/phase3/songStudyCreation.sh
               ;;
-           loadSongData)
-              echo "Loading Song Data..."
-              chmod +x /scripts/services/phase3/songAnalysisUpload.sh
-              /scripts/services/phase3/songAnalysisUpload.sh
+            "loadSongSchema")
+              echo "Updating Songs Schema..."
+              chmod +x scripts/services/phase3/songSchemaUpload.sh
+              scripts/services/phase3/songSchemaUpload.sh
               ;;
-            clean)
+            "loadSongData")
+              echo "Loading Song Data..."
+              chmod +x scripts/services/phase3/songDataUpload.sh
+              scripts/services/phase3/songDataUpload.sh
+              ;;
+            "clean")
               echo "Removing data..."
               chmod +x scripts/services/phase1/clearElasticsearchData.sh
               scripts/services/phase1/clearElasticsearchData.sh
@@ -184,7 +189,6 @@ services:
             echo "Generating configurations..."
             chmod +x scripts/services/phase1/generateConfigs.sh
             scripts/services/phase1/generateConfigs.sh
-            
             echo "Running tabular data submission..."
             chmod +x scripts/services/phase1/dataSubmission.sh
             scripts/services/phase1/dataSubmission.sh
@@ -406,6 +410,7 @@ services:
     profiles: ["phase2", "phase3", "platform"]
     image: bitnami/mongodb:4.0
     container_name: lectern-db
+    platform: linux/amd64
     ports:
       - 27017:27017
     volumes:
