@@ -44,6 +44,8 @@ BODY=$(echo "$RESPONSE" | sed '$d')
 
 # Check if request was successful (HTTP 200 or 201)
 if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 201 ]; then
+    ANALYSIS_ID=$(echo "$BODY" | grep -o '"analysisId":"[^"]*"' | cut -d'"' -f4)
+    printf "\033[1;32mSuccess:\033[0m Analysis ID: %s\n" "$ANALYSIS_ID"
     exit 0
 fi
 

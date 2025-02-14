@@ -22,11 +22,17 @@ load-data:
 	PROFILE=data docker compose -f ./docker-compose.yml --profile data up --attach csv-processor
 
 # Load dictionary schema to Lectern
-load-lectern:
+load-lectern-schema:
 	PROFILE=loadLectern docker compose -f ./docker-compose.yml --profile loadLectern up --attach conductor
 
+register-dictionary:
+	PROFILE=registerDictionary docker compose -f ./docker-compose.yml --profile registerDictionary up --attach conductor
+
+load-lyric:
+	PROFILE=loadLyric docker compose -f ./docker-compose.yml --profile loadLyric up --attach conductor
+
 # Create a Song Study
-create-study:
+create-song-study:
 	PROFILE=createStudy docker compose -f ./docker-compose.yml --profile createStudy up --attach conductor
 
 # Load a Song Schema

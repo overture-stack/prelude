@@ -1,0 +1,52 @@
+donor_id,diagnosis_id,primary_site,age_at_diagnosis,cancer_type,staging_system,stage
+DO0599,PD059901,Trachea,50,C34.2,Binet staging system,Stage A
+DO0600,PD059902,Brain,45,C71.0,AJCC 8th edition,Stage II
+DO0601,PD059903,Breast,62,C50.1,AJCC 8th edition,Stage IIA
+DO0602,PD059904,Prostate gland,71,C61,Gleason grade group system,Grade Group 2
+DO0603,PD059905,Ovary,58,C56,FIGO staging system,Stage IIIC
+DO0604,PD059906,Lung,67,C34.1,AJCC 8th edition,Stage IIIA
+DO0605,PD059907,Thyroid gland,43,C73,AJCC 8th edition,Stage I
+DO0606,PD059908,Colon,59,C18.2,AJCC 8th edition,Stage IIB
+DO0607,PD059909,Pancreas,64,C25.0,AJCC 8th edition,Stage IV
+DO0608,PD059910,Liver,55,C22.0,AJCC 8th edition,Stage II
+DO0609,PD059911,Cervix uteri,48,C53.0,FIGO staging system,Stage IB
+DO0610,PD059912,Bladder,72,C67.0,AJCC 8th edition,Stage I
+DO0611,PD059913,Breast,51,C50.2,AJCC 8th edition,Stage IIA
+DO0612,PD059914,Prostate gland,68,C61,Gleason grade group system,Grade Group 3
+DO0613,PD059915,Ovary,61,C56,FIGO staging system,Stage IV
+DO0614,PD059916,Kidney,57,C64.9,AJCC 8th edition,Stage II
+DO0615,PD059917,Thyroid gland,39,C73,AJCC 8th edition,Stage I
+DO0616,PD059918,Stomach,70,C16.0,AJCC 8th edition,Stage IIIB
+DO0617,PD059919,Lung,63,C34.3,AJCC 8th edition,Stage IIB
+DO0618,PD059920,Brain,52,C71.2,AJCC 8th edition,Stage IV
+DO0619,PD059921,Breast,47,C50.4,AJCC 8th edition,Stage I
+DO0620,PD059922,Colon,66,C18.7,AJCC 8th edition,Stage IIIA
+DO0621,PD059923,Pancreas,69,C25.1,AJCC 8th edition,Stage IV
+DO0622,PD059924,Liver,58,C22.0,AJCC 8th edition,Stage II
+DO0623,PD059925,Cervix uteri,44,C53.1,FIGO staging system,Stage IIA
+DO0624,PD059926,Bladder,73,C67.1,AJCC 8th edition,Stage I
+DO0625,PD059927,Breast,54,C50.1,AJCC 8th edition,Stage IIB
+DO0626,PD059928,Prostate gland,65,C61,Gleason grade group system,Grade Group 2
+DO0627,PD059929,Ovary,60,C56,FIGO staging system,Stage IIIC
+DO0628,PD059930,Kidney,56,C64.9,AJCC 8th edition,Stage I
+DO0629,PD059931,Thyroid gland,41,C73,AJCC 8th edition,Stage I
+DO0630,PD059932,Stomach,71,C16.3,AJCC 8th edition,Stage IV
+DO0631,PD059933,Lung,62,C34.1,AJCC 8th edition,Stage IIIA
+DO0632,PD059934,Brain,53,C71.6,AJCC 8th edition,Stage IV
+DO0633,PD059935,Breast,49,C50.2,AJCC 8th edition,Stage I
+DO0634,PD059936,Colon,67,C18.5,AJCC 8th edition,Stage IIIB
+DO0635,PD059937,Pancreas,68,C25.2,AJCC 8th edition,Stage IV
+DO0636,PD059938,Liver,57,C22.0,AJCC 8th edition,Stage II
+DO0637,PD059939,Cervix uteri,46,C53.0,FIGO staging system,Stage IB
+DO0638,PD059940,Bladder,74,C67.2,AJCC 8th edition,Stage I
+DO0639,PD059941,Breast,52,C50.3,AJCC 8th edition,Stage IIA
+DO0640,PD059942,Prostate gland,69,C61,Gleason grade group system,Grade Group 3
+DO0641,PD059943,Ovary,59,C56,FIGO staging system,Stage IV
+DO0642,PD059944,Kidney,55,C64.9,AJCC 8th edition,Stage II
+DO0643,PD059945,Thyroid gland,40,C73,AJCC 8th edition,Stage I
+DO0644,PD059946,Stomach,72,C16.4,AJCC 8th edition,Stage IIIB
+DO0645,PD059947,Lung,61,C34.3,AJCC 8th edition,Stage IIB
+DO0646,PD059948,Brain,54,C71.2,AJCC 8th edition,Stage IV
+DO0647,PD059949,Breast,48,C50.4,AJCC 8th edition,Stage I
+DO0648,PD059950,Colon,65,C18.7,AJCC 8th edition,Stage IIIA
+DO0649,PD059951,Pancreas,70,C25.1,AJCC 8th edition,Stage IV

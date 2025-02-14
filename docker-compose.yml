@@ -20,6 +20,8 @@ services:
         "clean",
         "platform",
         "loadLectern",
+        "registerDictionary",
+        "loadLyric",
         "loadSongSchema",
         "createStudy",
         "loadSongData"
@@ -32,8 +34,8 @@ services:
       - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/file_data_index_template.json
       - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/tabular_data_index_template.json
       - ./configs/lecternSchema/lecternSchema.json:/usr/share/lecternSchema/lecternSchema.json
-      - ./configs/songSchema/songSchema.json:/usr/share/songSchema/songSchema.json
-      - ./data/analysisFile.json:/usr/share/data/analysisFile.json
+      - ./configs/songSchema/sampleSchema.json:/usr/share/songSchema/sampleSchema.json
+      - ./data:/usr/share/data/
       - ./scripts:/scripts
       - ./volumes/health:/health
     environment:
@@ -63,8 +65,8 @@ services:
       # phase3 healthcheck endpoints
       SONG_URL: http://song:8080
       STUDY_ID: demo
-      SONG_SCHEMA: /usr/share/songSchema/songSchema.json
-      ANALYSIS_FILE: /usr/share/data/analysisFile.json
+      SONG_SCHEMA: /usr/share/songSchema/sampleSchema.json
+      ANALYSIS_FILE: /usr/share/data/fileData/analysisFile.json
       SCORE_URL: http://score:8087
       OBJECT_STORAGE_URL: http://minio:9000
       MAESTRO_FILE_URL: http://maestro-file:11235/
@@ -98,6 +100,16 @@ services:
               echo "Updating Lectern dictionary..."
               chmod +x scripts/services/phase2/lecternSchemaUpload.sh
               scripts/services/phase2/lecternSchemaUpload.sh
+              ;;
+            "registerDictionary")
+              echo "Updating registering Lyric with a Lectern dictionary..."
+              chmod +x scripts/services/phase2/lyricRegisterDictionary.sh
+              scripts/services/phase2/lyricRegisterDictionary.sh
+              ;;
+            "loadLyric")
+              echo "Uploading mock data to Lyric..."
+              chmod +x scripts/services/phase2/lyricDataUpload.sh
+              scripts/services/phase2/lyricDataUpload.sh
               ;;
             "createStudy")
               echo "Updating Song with a StudyId..."
@@ -466,8 +478,8 @@ services:
       DB_NAME: lyricDb
       DB_USER: admin
       DB_PASSWORD: admin123
-      LECTERN_URL: http://lectern:3001
-      LOG_LEVEL: info
+      LECTERN_URL: http://lectern:3031
+      LOG_LEVEL: debug
       AUDIT_ENABLED: false
       ID_USELOCAL: true
       UPLOAD_LIMIT: "100mb"
@@ -510,7 +522,7 @@ services:
   # -----------------------------------------------------------------------------------#
   maestro-tabular:
     profiles: ["phase2", phase3, "platform"]
-    image: ghcr.io/overture-stack/maestro:4.3.0
+    image: ghcr.io/overture-stack/maestro:e868d03
     container_name: maestro-tabular
     platform: linux/amd64
     depends_on:
@@ -521,29 +533,41 @@ services:
     ports:
       - "11236:11235"
     environment:
-      # Maestro Variables
+      # Maestro Base Variables
       MAESTRO_FAILURELOG_ENABLED: true
       MAESTRO_FAILURELOG_DIR: app/logs/maestro
       MAESTRO_LOGGING_LEVEL_ROOT: INFO
       MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
       MAESTRO_DISABLEEVENTINDEXING: true
-      # Song Variables
-      MAESTRO_REPOSITORIES_0_CODE: song.overture
-      MAESTRO_REPOSITORIES_0_URL: http://song:8080
-      MAESTRO_REPOSITORIES_0_NAME: Overture
-      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
-      MAESTRO_REPOSITORIES_0_COUNTRY: CA
-      # Elasticsearch Variables
-      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
-      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
-      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: tabular-index
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: tabular_centric
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
-      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
+      # Repository Configuration - Lyric
+      MAESTRO_REPOSITORIES_0_BASE_URL: http://lyric:3030
+      MAESTRO_REPOSITORIES_0_CODE: lyric.overture
+      MAESTRO_REPOSITORIES_0_NAME: Overture Lyric
+      MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: clinical_data_1.0
+      MAESTRO_REPOSITORIES_0_TYPE: LYRIC
+      MAESTRO_REPOSITORIES_0_LYRIC_VALID_DATA_ONLY: true
+      MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 1
+      # Repository Configuration - Song
+      # MAESTRO_REPOSITORIES_1_BASE_URL: http://song:8080
+      # MAESTRO_REPOSITORIES_1_CODE: song.overture
+      # MAESTRO_REPOSITORIES_1_NAME: Overture Song
+      # MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
+      # MAESTRO_REPOSITORIES_1_INDEX_NAME: clinical_data_1.0
+      # MAESTRO_REPOSITORIES_1_TYPE: SONG
+      # MAESTRO_REPOSITORIES_1_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
+      # MAESTRO_REPOSITORIES_1_SONG_ANALYSIS_CENTRIC_ENABLED: true
+      # MAESTRO_REPOSITORIES_1_SONG_ORGANIZATION: OICR
+      # MAESTRO_REPOSITORIES_1_SONG_COUNTRY: CA
+      # Elasticsearch Variables - Updated for version 5.0.0-alpha.1
+      MAESTRO_ELASTICSEARCH_NODES: http://elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_VERSION: "7"
+      MAESTRO_ELASTICSEARCH_INDEX_NAME: tabular-index
+      MAESTRO_ELASTICSEARCH_INDEX_ALIAS: tabular_centric
+      MAESTRO_ELASTICSEARCH_USER: elastic
+      MAESTRO_ELASTICSEARCH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_ANALYZER: maestro_analyzer
+      MAESTRO_ELASTICSEARCH_INDEX_MAPPING_NAME: metadata
       # Spring Variables
       SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
       SPRINGDOC_SWAGGERUI_PATH: /swagger-api

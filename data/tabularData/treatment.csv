@@ -1,0 +1,52 @@
+donor_id,treatment_id,treatment_type,treatment_start,treatment_duration,treatment_response,drug_name
+DO0599,TR059901,Chemotherapy,58,52,Complete response,Tamoxifen
+DO0600,TR059902,Radiation therapy,30,45,Partial response,None
+DO0601,TR059903,Chemotherapy,45,90,Complete response,Doxorubicin
+DO0602,TR059904,Hormonal therapy,15,180,Partial response,Leuprolide
+DO0603,TR059905,Chemotherapy,20,120,Disease progression,Carboplatin
+DO0604,TR059906,Chemotherapy,40,60,Partial response,Cisplatin
+DO0605,TR059907,Surgery,10,1,Complete response,None
+DO0606,TR059908,Chemotherapy,25,84,Complete response,FOLFOX
+DO0607,TR059909,Chemotherapy,15,45,Disease progression,Gemcitabine
+DO0608,TR059910,Surgery,5,1,Complete response,None
+DO0609,TR059911,Radiation therapy,20,40,Complete response,None
+DO0610,TR059912,Surgery,0,1,Complete response,None
+DO0611,TR059913,Chemotherapy,30,120,Complete response,Paclitaxel
+DO0612,TR059914,Hormonal therapy,10,240,Partial response,Enzalutamide
+DO0613,TR059915,Chemotherapy,25,90,Disease progression,Paclitaxel
+DO0614,TR059916,Surgery,15,1,Complete response,None
+DO0615,TR059917,Surgery,5,1,Complete response,None
+DO0616,TR059918,Chemotherapy,20,60,Partial response,FLOT
+DO0617,TR059919,Chemotherapy,35,75,Complete response,Pemetrexed
+DO0618,TR059920,Radiation therapy,15,30,Disease progression,None
+DO0619,TR059921,Surgery,0,1,Complete response,None
+DO0620,TR059922,Chemotherapy,25,120,Partial response,CAPOX
+DO0621,TR059923,Chemotherapy,10,60,Disease progression,FOLFIRINOX
+DO0622,TR059924,Surgery,5,1,Complete response,None
+DO0623,TR059925,Radiation therapy,20,45,Complete response,None
+DO0624,TR059926,Surgery,0,1,Complete response,None
+DO0625,TR059927,Chemotherapy,30,90,Complete response,AC-T
+DO0626,TR059928,Hormonal therapy,15,180,Partial response,Abiraterone
+DO0627,TR059929,Chemotherapy,25,120,Disease progression,Carboplatin
+DO0628,TR059930,Surgery,10,1,Complete response,None
+DO0629,TR059931,Surgery,5,1,Complete response,None
+DO0630,TR059932,Chemotherapy,20,45,Disease progression,FLOT
+DO0631,TR059933,Chemotherapy,35,60,Partial response,Cisplatin
+DO0632,TR059934,Radiation therapy,15,30,Disease progression,None
+DO0633,TR059935,Surgery,0,1,Complete response,None
+DO0634,TR059936,Chemotherapy,25,120,Partial response,FOLFOX
+DO0635,TR059937,Chemotherapy,10,45,Disease progression,Gemcitabine
+DO0636,TR059938,Surgery,5,1,Complete response,None
+DO0637,TR059939,Radiation therapy,20,40,Complete response,None
+DO0638,TR059940,Surgery,0,1,Complete response,None
+DO0639,TR059941,Chemotherapy,30,90,Complete response,TC
+DO0640,TR059942,Hormonal therapy,15,240,Partial response,Enzalutamide
+DO0641,TR059943,Chemotherapy,25,90,Disease progression,Paclitaxel
+DO0642,TR059944,Surgery,10,1,Complete response,None
+DO0643,TR059945,Surgery,5,1,Complete response,None
+DO0644,TR059946,Chemotherapy,20,60,Disease progression,FLOT
+DO0645,TR059947,Chemotherapy,35,75,Partial response,Pemetrexed
+DO0646,TR059948,Radiation therapy,15,30,Disease progression,None
+DO0647,TR059949,Surgery,0,1,Complete response,None
+DO0648,TR059950,Chemotherapy,25,120,Complete response,CAPOX
+DO0649,TR059951,Chemotherapy,10,60,Disease progression,FOLFIRINOX

@@ -3,27 +3,132 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "instrument_name",
+        "fieldName": "program_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "origin_country",
+        "fieldName": "submitter_donor_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "instrument_type",
+        "fieldName": "submitter_specimen_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "average_price",
+        "fieldName": "submitter_primary_diagnosis_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "complexity_rating",
+        "fieldName": "pathological_tumour_staging_system",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "pathological_t_category",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "pathological_n_category",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "pathological_m_category",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "pathological_stage_group",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "tumour_histological_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen_anatomic_location",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen_laterality",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen_processing",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen_storage",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "reference_pathology_confirmed",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "tumour_grading_system",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "tumour_grade",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "percent_tumour_cells_measurement_method",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "percent_proliferating_cells",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "percent_inflammatory_tissue",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "percent_stromal_cells",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "percent_necrosis",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "submission_metadata__submitter_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "submission_metadata__source_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "submission_metadata__hostname",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "submission_metadata__username",
         "show": true
       }
     ]

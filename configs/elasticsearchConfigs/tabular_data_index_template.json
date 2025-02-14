@@ -1,31 +1,111 @@
 {
-  "index_patterns": ["tabular-*"],
+  "index_patterns": [
+    "tabular-*"
+  ],
   "aliases": {
-    "instrument_centric": {}
+    "data_centric": {}
   },
   "mappings": {
     "properties": {
-      "instrument_name": { "type": "keyword" },
-      "origin_country": { "type": "keyword" },
-      "instrument_type": { "type": "keyword" },
-      "historical_significance": { "type": "keyword" },
-      "average_price": { "type": "float" },
-      "primary_materials": { "type": "keyword" },
-      "complexity_rating": { "type": "float" },
-      "unique_characteristics": { "type": "keyword" },
+      "program_id": {
+        "type": "keyword"
+      },
+      "submitter_donor_id": {
+        "type": "keyword"
+      },
+      "submitter_specimen_id": {
+        "type": "keyword"
+      },
+      "submitter_primary_diagnosis_id": {
+        "type": "keyword"
+      },
+      "pathological_tumour_staging_system": {
+        "type": "keyword"
+      },
+      "pathological_t_category": {
+        "type": "keyword"
+      },
+      "pathological_n_category": {
+        "type": "keyword"
+      },
+      "pathological_m_category": {
+        "type": "keyword"
+      },
+      "pathological_stage_group": {
+        "type": "keyword"
+      },
+      "specimen_acquisition_interval": {
+        "type": "integer"
+      },
+      "tumour_histological_type": {
+        "type": "keyword"
+      },
+      "specimen_anatomic_location": {
+        "type": "keyword"
+      },
+      "specimen_laterality": {
+        "type": "keyword",
+        "null_value": "No Data"
+      },
+      "specimen_processing": {
+        "type": "keyword",
+        "null_value": "No Data"
+      },
+      "specimen_storage": {
+        "type": "keyword",
+        "null_value": "No Data"
+      },
+      "reference_pathology_confirmed": {
+        "type": "keyword"
+      },
+      "tumour_grading_system": {
+        "type": "keyword"
+      },
+      "tumour_grade": {
+        "type": "keyword"
+      },
+      "percent_tumour_cells": {
+        "type": "float"
+      },
+      "percent_tumour_cells_measurement_method": {
+        "type": "keyword"
+      },
+      "percent_proliferating_cells": {
+        "type": "keyword",
+        "null_value": "No Data"
+      },
+      "percent_inflammatory_tissue": {
+        "type": "keyword",
+        "null_value": "No Data"
+      },
+      "percent_stromal_cells": {
+        "type": "keyword",
+        "null_value": "No Data"
+      },
+      "percent_necrosis": {
+        "type": "keyword",
+        "null_value": "No Data"
+      },
       "submission_metadata": {
+        "type": "object",
         "properties": {
           "submitter_id": {
             "type": "keyword",
             "null_value": "No Data"
           },
-          "processing_started": { "type": "date" },
-          "processed_at": { "type": "date" },
+          "processing_started": {
+            "type": "date"
+          },
+          "processed_at": {
+            "type": "date"
+          },
           "source_file": {
             "type": "keyword",
             "null_value": "No Data"
           },
-          "record_number": { "type": "integer" },
+          "record_number": {
+            "type": "integer"
+          },
           "hostname": {
             "type": "keyword",
             "null_value": "No Data"
