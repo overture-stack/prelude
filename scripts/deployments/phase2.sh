@@ -74,8 +74,8 @@ echo -e "\033[1;35m[8/9]\033[0m Checking Arranger"
 rs "${P1_SCRIPT_DIR}/arrangerCheck.sh"
 
 # Check Maestro
-echo -e "\033[1;35m[9/9]\033[0m Checking Tabular Maestro" 
-rs "${P2_SCRIPT_DIR}/maestroTabularCheck.sh"
+echo -e "\033[1;35m[9/9]\033[0m Checking Maestro" 
+rs "${P2_SCRIPT_DIR}/maestroCheck.sh"
 
 # Remove Health Check File
 rm /health/conductor_health

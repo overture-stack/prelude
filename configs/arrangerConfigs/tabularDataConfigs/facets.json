@@ -3,132 +3,117 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "program_id",
+        "fieldName": "data__donor_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "submitter_donor_id",
+        "fieldName": "data__gender",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "submitter_specimen_id",
+        "fieldName": "data__primary_site",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "submitter_primary_diagnosis_id",
+        "fieldName": "data__vital_status",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "pathological_tumour_staging_system",
+        "fieldName": "data__diagnosis_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "pathological_t_category",
+        "fieldName": "data__cancer_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "pathological_n_category",
+        "fieldName": "data__staging_system",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "pathological_m_category",
+        "fieldName": "data__stage",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "pathological_stage_group",
+        "fieldName": "data__specimen_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "tumour_histological_type",
+        "fieldName": "data__specimen_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "specimen_anatomic_location",
+        "fieldName": "data__tissue_source",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "specimen_laterality",
+        "fieldName": "data__sample_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "specimen_processing",
+        "fieldName": "data__sample_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "specimen_storage",
+        "fieldName": "data__treatment_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "reference_pathology_confirmed",
+        "fieldName": "data__treatment_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "tumour_grading_system",
+        "fieldName": "data__treatment_response",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "tumour_grade",
+        "fieldName": "data__drug_name",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "percent_tumour_cells_measurement_method",
+        "fieldName": "data__followup_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "percent_proliferating_cells",
+        "fieldName": "data__disease_status",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "percent_inflammatory_tissue",
+        "fieldName": "data__submission_metadata__submitter_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "percent_stromal_cells",
+        "fieldName": "data__submission_metadata__source_file",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "percent_necrosis",
+        "fieldName": "data__submission_metadata__hostname",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "submission_metadata__submitter_id",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "submission_metadata__source_file",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "submission_metadata__hostname",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "submission_metadata__username",
+        "fieldName": "data__submission_metadata__username",
         "show": true
       }
     ]

@@ -22,9 +22,11 @@ services:
         "loadLectern",
         "registerDictionary",
         "loadLyric",
+        "indexTabular",
         "loadSongSchema",
         "createStudy",
-        "loadSongData"
+        "loadSongData",
+        "everything"
       ]
     image: alpine/curl:8.8.0
     container_name: conductor
@@ -62,15 +64,15 @@ services:
       LYRIC_URL: http://lyric:3030
       LECTERN_URL: http://lectern:3031
       LECTERN_SCHEMA: /usr/share/lecternSchema/lecternSchema.json
+      MAESTRO_URL: http://maestro:11235
+      LYRIC_DATA: /usr/share/data/tabularData/
       # phase3 healthcheck endpoints
       SONG_URL: http://song:8080
+      SCORE_URL: http://score:8087
+      OBJECT_STORAGE_URL: http://minio:9000
       STUDY_ID: demo
       SONG_SCHEMA: /usr/share/songSchema/sampleSchema.json
       ANALYSIS_FILE: /usr/share/data/fileData/analysisFile.json
-      SCORE_URL: http://score:8087
-      OBJECT_STORAGE_URL: http://minio:9000
-      MAESTRO_FILE_URL: http://maestro-file:11235/
-      MAESTRO_TABULAR_URL: http://maestro-tabular:11235/
     command: >
       sh -c '
         set -e
@@ -110,6 +112,25 @@ services:
               echo "Uploading mock data to Lyric..."
               chmod +x scripts/services/phase2/lyricDataUpload.sh
               scripts/services/phase2/lyricDataUpload.sh
+              ;;
+            "everything")
+              echo "Updating Lectern dictionary..."
+              chmod +x scripts/services/phase2/lecternSchemaUpload.sh
+              scripts/services/phase2/lecternSchemaUpload.sh
+              echo "Updating registering Lyric with a Lectern dictionary..."
+              chmod +x scripts/services/phase2/lyricRegisterDictionary.sh
+              scripts/services/phase2/lyricRegisterDictionary.sh
+              echo "Uploading mock data to Lyric..."
+              chmod +x scripts/services/phase2/lyricDataUpload.sh
+              scripts/services/phase2/lyricDataUpload.sh
+              echo "Uploading mock data to Lyric..."
+              chmod +x scripts/services/phase2/indexTabularData.sh
+              scripts/services/phase2/indexTabularData.sh
+              ;;
+            "indexTabular")
+              echo "Uploading mock data to Lyric..."
+              chmod +x scripts/services/phase2/indexTabularData.sh
+              scripts/services/phase2/indexTabularData.sh
               ;;
             "createStudy")
               echo "Updating Song with a StudyId..."
@@ -178,7 +199,7 @@ services:
     environment:
       PROFILE: ${PROFILE:-data}
       # Common variables
-      TABULAR_DATA_FILE: /data/tabularData.csv
+      TABULAR_DATA_FILE: /data/tabularData/clinical_data.csv
       TABULAR_INDEX_NAME: tabular-index
       ES_URL: http://elasticsearch:9200
       # Config directories
@@ -251,40 +272,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 25s
-    networks:
-      - conductor-network
-
-  # ------------------------------------------------------------------------------------#
-  # Arranger-Server for our file data                                                   #
-  # ------------------------------------------------------------------------------------#
-  # Search API generation with compatible search UI components                          #
-  # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
-  # ------------------------------------------------------------------------------------#
-  arranger-file:
-    profiles: ["phase1", "phase2", "phase3", "stageDev", "platform"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-file
-    platform: linux/amd64
-    depends_on:
-      conductor:
-        condition: service_healthy
-    ports:
-      - "5050:5050"
-    volumes:
-      - ./configs/arrangerConfigs/fileDataConfigs/base.json:/app/modules/server/configs/base.json
-      - ./configs/arrangerConfigs/fileDataConfigs/extended.json:/app/modules/server/configs/extended.json
-      - ./configs/arrangerConfigs/fileDataConfigs/facets.json:/app/modules/server/configs/facets.json
-      - ./configs/arrangerConfigs/fileDataConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-      - ./configs/arrangerConfigs/fileDataConfigs/table.json:/app/modules/server/configs/table.json
-    environment:
-      # Elasticsearch Variables
-      ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: file_arranger_set
-      # Arranger Variables
-      DEBUG: false
-      ENABLE_LOGS: false
     networks:
       - conductor-network
 
@@ -518,12 +505,15 @@ services:
   # Maestro (Tabular Data)                                                             #
   # -----------------------------------------------------------------------------------#
   # Indexs tabular data into Elasticsearch on publication                              #
-  # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview  #
+  # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview
+  # Organization === study
+  # id === analysisId
   # -----------------------------------------------------------------------------------#
-  maestro-tabular:
+  # One maestro
+  maestro:
     profiles: ["phase2", phase3, "platform"]
     image: ghcr.io/overture-stack/maestro:e868d03
-    container_name: maestro-tabular
+    container_name: maestro
     platform: linux/amd64
     depends_on:
       lectern:
@@ -531,7 +521,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - "11236:11235"
+      - "11235:11235"
     environment:
       # Maestro Base Variables
       MAESTRO_FAILURELOG_ENABLED: true
@@ -541,44 +531,43 @@ services:
       MAESTRO_DISABLEEVENTINDEXING: true
       # Repository Configuration - Lyric
       MAESTRO_REPOSITORIES_0_BASE_URL: http://lyric:3030
+      # in the old world we added these to each document in elasticsearch,
       MAESTRO_REPOSITORIES_0_CODE: lyric.overture
       MAESTRO_REPOSITORIES_0_NAME: Overture Lyric
       MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_0_INDEX_NAME: clinical_data_1.0
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: tabular-index
       MAESTRO_REPOSITORIES_0_TYPE: LYRIC
       MAESTRO_REPOSITORIES_0_LYRIC_VALID_DATA_ONLY: true
       MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 1
-      # Repository Configuration - Song
-      # MAESTRO_REPOSITORIES_1_BASE_URL: http://song:8080
-      # MAESTRO_REPOSITORIES_1_CODE: song.overture
-      # MAESTRO_REPOSITORIES_1_NAME: Overture Song
-      # MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
-      # MAESTRO_REPOSITORIES_1_INDEX_NAME: clinical_data_1.0
-      # MAESTRO_REPOSITORIES_1_TYPE: SONG
-      # MAESTRO_REPOSITORIES_1_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
-      # MAESTRO_REPOSITORIES_1_SONG_ANALYSIS_CENTRIC_ENABLED: true
-      # MAESTRO_REPOSITORIES_1_SONG_ORGANIZATION: OICR
-      # MAESTRO_REPOSITORIES_1_SONG_COUNTRY: CA
-      # Elasticsearch Variables - Updated for version 5.0.0-alpha.1
+      # Elasticsearch Settings (Required)
       MAESTRO_ELASTICSEARCH_NODES: http://elasticsearch:9200
-      MAESTRO_ELASTICSEARCH_VERSION: "7"
-      MAESTRO_ELASTICSEARCH_INDEX_NAME: tabular-index
-      MAESTRO_ELASTICSEARCH_INDEX_ALIAS: tabular_centric
-      MAESTRO_ELASTICSEARCH_USER: elastic
-      MAESTRO_ELASTICSEARCH_PASSWORD: myelasticpassword
-      MAESTRO_ELASTICSEARCH_ANALYZER: maestro_analyzer
-      MAESTRO_ELASTICSEARCH_INDEX_MAPPING_NAME: metadata
-      # Spring Variables
-      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
-      SPRINGDOC_SWAGGERUI_PATH: /swagger-api
+      MAESTRO_ELASTICSEARCH_VERSION: 7
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_CLIENT_RETRY_MAX_ATTEMPTS: 3
+      MAESTRO_ELASTICSEARCH_CLIENT_RETRY_WAIT_DURATION_MILLIS: 500
+      MAESTRO_ELASTICSEARCH_CLIENT_DOCS_PER_BULK_REQ_MAX: 5000
+      MAESTRO_ELASTICSEARCH_CLIENT_CONNECTION_TIMEOUT: 5000
+      # Repository Configuration - Song
+      MAESTRO_REPOSITORIES_1_BASE_URL: http://song:8080
+      MAESTRO_REPOSITORIES_1_CODE: song.overture
+      MAESTRO_REPOSITORIES_1_NAME: Overture Song
+      MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_1_INDEX_NAME: file-index
+      MAESTRO_REPOSITORIES_1_TYPE: SONG
+      MAESTRO_REPOSITORIES_1_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
+      MAESTRO_REPOSITORIES_1_SONG_ANALYSIS_CENTRIC_ENABLED: true
+      MAESTRO_REPOSITORIES_1_SONG_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_1_SONG_COUNTRY: CA
     volumes:
-      - maestro-file-data:/app/app-data
+      - maestro-data:/app/app-data
     networks:
       - conductor-network
 
   # ================================================================================== #
   # ================================================================================== #
-  #                                    phase3:                                     #
+  #                                    phase3:                                         #
   #                          File data storage & submission                            #
   # ================================================================================== #
   # Here we will focus on implementing our back-end file management services which     #
@@ -723,61 +712,44 @@ services:
     networks:
       - conductor-network
 
-  # -----------------------------------------------------------------------------------#
-  # Maestro (File Data)                                                                #
-  # -----------------------------------------------------------------------------------#
-  # Indexs file data into Elasticsearch on publication                                 #
-  # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview  #
-  # -----------------------------------------------------------------------------------#
-  maestro-file:
-    profiles: ["phase3", "platform"]
-    image: ghcr.io/overture-stack/maestro:4.3.0
-    container_name: maestro-file
+  # ------------------------------------------------------------------------------------#
+  # Arranger-Server for our file data                                                   #
+  # ------------------------------------------------------------------------------------#
+  # Search API generation with compatible search UI components                          #
+  # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
+  # ------------------------------------------------------------------------------------#
+  arranger-file:
+    profiles: ["phase3", "stageDev", "platform"]
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-file
     platform: linux/amd64
     depends_on:
-      song:
-        condition: service_started
       conductor:
         condition: service_healthy
     ports:
-      - "11235:11235"
-    environment:
-      # Maestro Variables
-      MAESTRO_FAILURELOG_ENABLED: true
-      MAESTRO_FAILURELOG_DIR: app/logs/maestro
-      MAESTRO_LOGGING_LEVEL_ROOT: INFO
-      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
-      MAESTRO_DISABLEEVENTINDEXING: true
-      # Song Variables
-      MAESTRO_REPOSITORIES_0_CODE: song.overture
-      MAESTRO_REPOSITORIES_0_URL: http://song:8080
-      MAESTRO_REPOSITORIES_0_NAME: Overture
-      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
-      MAESTRO_REPOSITORIES_0_COUNTRY: CA
-      # Elasticsearch Variables
-      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
-      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
-      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: file-index
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: file_centric
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
-      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
-      # Spring Variables
-      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
-      SPRINGDOC_SWAGGERUI_PATH: /swagger-api
+      - "5050:5050"
     volumes:
-      - maestro-file-data:/app/app-data
+      - ./configs/arrangerConfigs/fileDataConfigs/base.json:/app/modules/server/configs/base.json
+      - ./configs/arrangerConfigs/fileDataConfigs/extended.json:/app/modules/server/configs/extended.json
+      - ./configs/arrangerConfigs/fileDataConfigs/facets.json:/app/modules/server/configs/facets.json
+      - ./configs/arrangerConfigs/fileDataConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+      - ./configs/arrangerConfigs/fileDataConfigs/table.json:/app/modules/server/configs/table.json
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: file_arranger_set
+      # Arranger Variables
+      DEBUG: false
+      ENABLE_LOGS: false
     networks:
       - conductor-network
 
 volumes:
   elasticsearch-data:
   stage-data:
-  maestro-file-data:
-  maestro-tabular-data:
+  maestro-data:
   song-db-data:
   lyric-db-data:
   lectern-db-data:

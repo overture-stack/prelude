@@ -31,6 +31,12 @@ register-dictionary:
 load-lyric:
 	PROFILE=loadLyric docker compose -f ./docker-compose.yml --profile loadLyric up --attach conductor
 
+index-tabular:
+	PROFILE=indexTabular docker compose -f ./docker-compose.yml --profile indexTabular up --attach conductor
+
+everything:
+	PROFILE=everything docker compose -f ./docker-compose.yml --profile everything up --attach conductor
+
 # Create a Song Study
 create-song-study:
 	PROFILE=createStudy docker compose -f ./docker-compose.yml --profile createStudy up --attach conductor

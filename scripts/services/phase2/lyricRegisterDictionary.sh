@@ -4,7 +4,7 @@
 CATEGORY_NAME=${CATEGORY_NAME:-"clinical"}
 DICTIONARY_NAME=${DICTIONARY_NAME:-"clinical_data_dictionary"}
 DICTIONARY_VERSION=${DICTIONARY_VERSION:-"1.0"}
-DEFAULT_CENTRIC_ENTITY=${DEFAULT_CENTRIC_ENTITY:-"patient"}
+DEFAULT_CENTRIC_ENTITY=${DEFAULT_CENTRIC_ENTITY:-"clinical_data"}
 
 # Check if LYRIC_URL environment variable is set
 if [ -z "$LYRIC_URL" ]; then

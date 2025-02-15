@@ -7,112 +7,107 @@
   },
   "mappings": {
     "properties": {
-      "program_id": {
-        "type": "keyword"
-      },
-      "submitter_donor_id": {
-        "type": "keyword"
-      },
-      "submitter_specimen_id": {
-        "type": "keyword"
-      },
-      "submitter_primary_diagnosis_id": {
-        "type": "keyword"
-      },
-      "pathological_tumour_staging_system": {
-        "type": "keyword"
-      },
-      "pathological_t_category": {
-        "type": "keyword"
-      },
-      "pathological_n_category": {
-        "type": "keyword"
-      },
-      "pathological_m_category": {
-        "type": "keyword"
-      },
-      "pathological_stage_group": {
-        "type": "keyword"
-      },
-      "specimen_acquisition_interval": {
-        "type": "integer"
-      },
-      "tumour_histological_type": {
-        "type": "keyword"
-      },
-      "specimen_anatomic_location": {
-        "type": "keyword"
-      },
-      "specimen_laterality": {
-        "type": "keyword",
-        "null_value": "No Data"
-      },
-      "specimen_processing": {
-        "type": "keyword",
-        "null_value": "No Data"
-      },
-      "specimen_storage": {
-        "type": "keyword",
-        "null_value": "No Data"
-      },
-      "reference_pathology_confirmed": {
-        "type": "keyword"
-      },
-      "tumour_grading_system": {
-        "type": "keyword"
-      },
-      "tumour_grade": {
-        "type": "keyword"
-      },
-      "percent_tumour_cells": {
-        "type": "float"
-      },
-      "percent_tumour_cells_measurement_method": {
-        "type": "keyword"
-      },
-      "percent_proliferating_cells": {
-        "type": "keyword",
-        "null_value": "No Data"
-      },
-      "percent_inflammatory_tissue": {
-        "type": "keyword",
-        "null_value": "No Data"
-      },
-      "percent_stromal_cells": {
-        "type": "keyword",
-        "null_value": "No Data"
-      },
-      "percent_necrosis": {
-        "type": "keyword",
-        "null_value": "No Data"
-      },
-      "submission_metadata": {
+      "data": {
         "type": "object",
         "properties": {
-          "submitter_id": {
-            "type": "keyword",
-            "null_value": "No Data"
+          "donor_id": {
+            "type": "keyword"
           },
-          "processing_started": {
-            "type": "date"
+          "gender": {
+            "type": "keyword"
           },
-          "processed_at": {
-            "type": "date"
+          "primary_site": {
+            "type": "keyword"
           },
-          "source_file": {
-            "type": "keyword",
-            "null_value": "No Data"
+          "vital_status": {
+            "type": "keyword"
           },
-          "record_number": {
+          "diagnosis_id": {
+            "type": "keyword"
+          },
+          "age_at_diagnosis": {
             "type": "integer"
           },
-          "hostname": {
-            "type": "keyword",
-            "null_value": "No Data"
+          "cancer_type": {
+            "type": "keyword"
           },
-          "username": {
-            "type": "keyword",
-            "null_value": "No Data"
+          "staging_system": {
+            "type": "keyword"
+          },
+          "stage": {
+            "type": "keyword"
+          },
+          "specimen_id": {
+            "type": "keyword"
+          },
+          "specimen_type": {
+            "type": "keyword"
+          },
+          "tissue_source": {
+            "type": "keyword"
+          },
+          "sample_id": {
+            "type": "keyword"
+          },
+          "sample_type": {
+            "type": "keyword"
+          },
+          "treatment_id": {
+            "type": "keyword"
+          },
+          "treatment_type": {
+            "type": "keyword"
+          },
+          "treatment_start": {
+            "type": "integer"
+          },
+          "treatment_duration": {
+            "type": "integer"
+          },
+          "treatment_response": {
+            "type": "keyword"
+          },
+          "drug_name": {
+            "type": "keyword"
+          },
+          "followup_id": {
+            "type": "keyword"
+          },
+          "followup_interval": {
+            "type": "integer"
+          },
+          "disease_status": {
+            "type": "keyword"
+          },
+          "submission_metadata": {
+            "type": "object",
+            "properties": {
+              "submitter_id": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "processing_started": {
+                "type": "date"
+              },
+              "processed_at": {
+                "type": "date"
+              },
+              "source_file": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "record_number": {
+                "type": "integer"
+              },
+              "hostname": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "username": {
+                "type": "keyword",
+                "null_value": "No Data"
+              }
+            }
           }
         }
       }

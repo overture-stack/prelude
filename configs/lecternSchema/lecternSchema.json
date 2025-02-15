@@ -4,12 +4,13 @@
   "version": "1.0",
   "schemas": [
     {
-      "name": "patient",
-      "description": "Clinical and demographic information about cancer patients",
+      "name": "clinical_data",
+      "description": "Combined schema for all clinical and demographic information about cancer patients",
       "fields": [
         {
           "meta": {
-            "displayName": "Donor ID"
+            "displayName": "Donor ID",
+            "category": "patient"
           },
           "name": "donor_id",
           "description": "Unique identifier for the patient/donor",
@@ -22,7 +23,8 @@
         },
         {
           "meta": {
-            "displayName": "Gender"
+            "displayName": "Gender",
+            "category": "patient"
           },
           "name": "gender",
           "description": "Patient's gender",
@@ -34,7 +36,8 @@
         },
         {
           "meta": {
-            "displayName": "Vital Status"
+            "displayName": "Vital Status",
+            "category": "patient"
           },
           "name": "vital_status",
           "description": "Current vital status of the patient",
@@ -43,28 +46,11 @@
             "codeList": ["Alive", "Deceased", "Unknown"]
           },
           "valueType": "string"
-        }
-      ]
-    },
-    {
-      "name": "diagnosis",
-      "description": "Cancer diagnosis information",
-      "fields": [
-        {
-          "meta": {
-            "displayName": "Donor ID"
-          },
-          "name": "donor_id",
-          "description": "Reference to the patient/donor",
-          "restrictions": {
-            "required": true,
-            "regex": "^DO\\d{4}$"
-          },
-          "valueType": "string"
         },
         {
           "meta": {
-            "displayName": "Diagnosis ID"
+            "displayName": "Diagnosis ID",
+            "category": "diagnosis"
           },
           "name": "diagnosis_id",
           "description": "Unique identifier for the diagnosis",
@@ -77,7 +63,8 @@
         },
         {
           "meta": {
-            "displayName": "Primary Site"
+            "displayName": "Primary Site",
+            "category": "diagnosis"
           },
           "name": "primary_site",
           "description": "Primary site of the cancer",
@@ -88,7 +75,8 @@
         },
         {
           "meta": {
-            "displayName": "Age at Diagnosis"
+            "displayName": "Age at Diagnosis",
+            "category": "diagnosis"
           },
           "name": "age_at_diagnosis",
           "description": "Patient's age at the time of diagnosis",
@@ -103,7 +91,8 @@
         },
         {
           "meta": {
-            "displayName": "Cancer Type"
+            "displayName": "Cancer Type",
+            "category": "diagnosis"
           },
           "name": "cancer_type",
           "description": "ICD-O-3 or ICD-10 cancer type code",
@@ -114,7 +103,8 @@
         },
         {
           "meta": {
-            "displayName": "Staging System"
+            "displayName": "Staging System",
+            "category": "diagnosis"
           },
           "name": "staging_system",
           "description": "Cancer staging system used",
@@ -122,33 +112,17 @@
         },
         {
           "meta": {
-            "displayName": "Stage"
+            "displayName": "Stage",
+            "category": "diagnosis"
           },
           "name": "stage",
           "description": "Cancer stage according to the specified staging system",
           "valueType": "string"
-        }
-      ]
-    },
-    {
-      "name": "specimen",
-      "description": "Biological specimen information",
-      "fields": [
-        {
-          "meta": {
-            "displayName": "Donor ID"
-          },
-          "name": "donor_id",
-          "description": "Reference to the patient/donor",
-          "restrictions": {
-            "required": true,
-            "regex": "^DO\\d{4}$"
-          },
-          "valueType": "string"
         },
         {
           "meta": {
-            "displayName": "Specimen ID"
+            "displayName": "Specimen ID",
+            "category": "specimen"
           },
           "name": "specimen_id",
           "description": "Unique identifier for the specimen",
@@ -161,7 +135,21 @@
         },
         {
           "meta": {
-            "displayName": "Specimen Type"
+            "displayName": "Sample ID",
+            "category": "specimen"
+          },
+          "name": "sample_id",
+          "description": "Identifier for the sample, derived from specimen",
+          "restrictions": {
+            "required": true,
+            "regex": "^SP\\d{6}$"
+          },
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Specimen Type",
+            "category": "specimen"
           },
           "name": "specimen_type",
           "description": "Type of specimen collected",
@@ -172,7 +160,8 @@
         },
         {
           "meta": {
-            "displayName": "Tissue Source"
+            "displayName": "Tissue Source",
+            "category": "specimen"
           },
           "name": "tissue_source",
           "description": "Source of the tissue specimen",
@@ -180,33 +169,17 @@
         },
         {
           "meta": {
-            "displayName": "Sample Type"
+            "displayName": "Sample Type",
+            "category": "specimen"
           },
           "name": "sample_type",
           "description": "Type of sample derived from the specimen",
           "valueType": "string"
-        }
-      ]
-    },
-    {
-      "name": "treatment",
-      "description": "Treatment information",
-      "fields": [
-        {
-          "meta": {
-            "displayName": "Donor ID"
-          },
-          "name": "donor_id",
-          "description": "Reference to the patient/donor",
-          "restrictions": {
-            "required": true,
-            "regex": "^DO\\d{4}$"
-          },
-          "valueType": "string"
         },
         {
           "meta": {
-            "displayName": "Treatment ID"
+            "displayName": "Treatment ID",
+            "category": "treatment"
           },
           "name": "treatment_id",
           "description": "Unique identifier for the treatment",
@@ -219,7 +192,8 @@
         },
         {
           "meta": {
-            "displayName": "Treatment Type"
+            "displayName": "Treatment Type",
+            "category": "treatment"
           },
           "name": "treatment_type",
           "description": "Type of treatment administered",
@@ -230,7 +204,8 @@
         },
         {
           "meta": {
-            "displayName": "Treatment Start"
+            "displayName": "Treatment Start",
+            "category": "treatment"
           },
           "name": "treatment_start",
           "description": "Days from diagnosis to treatment start",
@@ -243,7 +218,8 @@
         },
         {
           "meta": {
-            "displayName": "Treatment Duration"
+            "displayName": "Treatment Duration",
+            "category": "treatment"
           },
           "name": "treatment_duration",
           "description": "Duration of treatment in days",
@@ -256,7 +232,8 @@
         },
         {
           "meta": {
-            "displayName": "Treatment Response"
+            "displayName": "Treatment Response",
+            "category": "treatment"
           },
           "name": "treatment_response",
           "description": "Patient's response to the treatment",
@@ -264,33 +241,17 @@
         },
         {
           "meta": {
-            "displayName": "Drug Name"
+            "displayName": "Drug Name",
+            "category": "treatment"
           },
           "name": "drug_name",
           "description": "Name of drug used in treatment",
           "valueType": "string"
-        }
-      ]
-    },
-    {
-      "name": "followup",
-      "description": "Follow-up assessment information",
-      "fields": [
-        {
-          "meta": {
-            "displayName": "Donor ID"
-          },
-          "name": "donor_id",
-          "description": "Reference to the patient/donor",
-          "restrictions": {
-            "required": true,
-            "regex": "^DO\\d{4}$"
-          },
-          "valueType": "string"
         },
         {
           "meta": {
-            "displayName": "Follow-up ID"
+            "displayName": "Follow-up ID",
+            "category": "followup"
           },
           "name": "followup_id",
           "description": "Unique identifier for the follow-up",
@@ -303,7 +264,8 @@
         },
         {
           "meta": {
-            "displayName": "Follow-up Interval"
+            "displayName": "Follow-up Interval",
+            "category": "followup"
           },
           "name": "followup_interval",
           "description": "Days from diagnosis to follow-up",
@@ -316,7 +278,8 @@
         },
         {
           "meta": {
-            "displayName": "Disease Status"
+            "displayName": "Disease Status",
+            "category": "followup"
           },
           "name": "disease_status",
           "description": "Status of the disease at follow-up",

@@ -62,34 +62,39 @@ export function generateMapping(
     },
     mappings: {
       properties: {
-        ...properties,
-        submission_metadata: {
+        data: {
           type: 'object',
           properties: {
-            submitter_id: {
-              type: 'keyword',
-              null_value: 'No Data'
-            },
-            processing_started: {
-              type: 'date'
-            },
-            processed_at: {
-              type: 'date'
-            },
-            source_file: {
-              type: 'keyword',
-              null_value: 'No Data'
-            },
-            record_number: {
-              type: 'integer'
-            },
-            hostname: {
-              type: 'keyword',
-              null_value: 'No Data'
-            },
-            username: {
-              type: 'keyword',
-              null_value: 'No Data'
+            ...properties,
+            submission_metadata: {
+              type: 'object',
+              properties: {
+                submitter_id: {
+                  type: 'keyword',
+                  null_value: 'No Data'
+                },
+                processing_started: {
+                  type: 'date'
+                },
+                processed_at: {
+                  type: 'date'
+                },
+                source_file: {
+                  type: 'keyword',
+                  null_value: 'No Data'
+                },
+                record_number: {
+                  type: 'integer'
+                },
+                hostname: {
+                  type: 'keyword',
+                  null_value: 'No Data'
+                },
+                username: {
+                  type: 'keyword',
+                  null_value: 'No Data'
+                }
+              }
             }
           }
         }

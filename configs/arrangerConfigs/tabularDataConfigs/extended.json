@@ -1,128 +1,124 @@
 {
   "extended": [
     {
-      "displayName": "Program Id",
-      "fieldName": "program_id"
+      "displayName": "Data Donor Id",
+      "fieldName": "data.donor_id"
     },
     {
-      "displayName": "Submitter Donor Id",
-      "fieldName": "submitter_donor_id"
+      "displayName": "Data Gender",
+      "fieldName": "data.gender"
     },
     {
-      "displayName": "Submitter Specimen Id",
-      "fieldName": "submitter_specimen_id"
+      "displayName": "Data Primary Site",
+      "fieldName": "data.primary_site"
     },
     {
-      "displayName": "Submitter Primary Diagnosis Id",
-      "fieldName": "submitter_primary_diagnosis_id"
+      "displayName": "Data Vital Status",
+      "fieldName": "data.vital_status"
     },
     {
-      "displayName": "Pathological Tumour Staging System",
-      "fieldName": "pathological_tumour_staging_system"
+      "displayName": "Data Diagnosis Id",
+      "fieldName": "data.diagnosis_id"
     },
     {
-      "displayName": "Pathological T Category",
-      "fieldName": "pathological_t_category"
+      "displayName": "Data Age At Diagnosis",
+      "fieldName": "data.age_at_diagnosis"
     },
     {
-      "displayName": "Pathological N Category",
-      "fieldName": "pathological_n_category"
+      "displayName": "Data Cancer Type",
+      "fieldName": "data.cancer_type"
     },
     {
-      "displayName": "Pathological M Category",
-      "fieldName": "pathological_m_category"
+      "displayName": "Data Staging System",
+      "fieldName": "data.staging_system"
     },
     {
-      "displayName": "Pathological Stage Group",
-      "fieldName": "pathological_stage_group"
+      "displayName": "Data Stage",
+      "fieldName": "data.stage"
     },
     {
-      "displayName": "Specimen Acquisition Interval",
-      "fieldName": "specimen_acquisition_interval"
+      "displayName": "Data Specimen Id",
+      "fieldName": "data.specimen_id"
     },
     {
-      "displayName": "Tumour Histological Type",
-      "fieldName": "tumour_histological_type"
+      "displayName": "Data Specimen Type",
+      "fieldName": "data.specimen_type"
     },
     {
-      "displayName": "Specimen Anatomic Location",
-      "fieldName": "specimen_anatomic_location"
+      "displayName": "Data Tissue Source",
+      "fieldName": "data.tissue_source"
     },
     {
-      "displayName": "Specimen Laterality",
-      "fieldName": "specimen_laterality"
+      "displayName": "Data Sample Id",
+      "fieldName": "data.sample_id"
     },
     {
-      "displayName": "Specimen Processing",
-      "fieldName": "specimen_processing"
+      "displayName": "Data Sample Type",
+      "fieldName": "data.sample_type"
     },
     {
-      "displayName": "Specimen Storage",
-      "fieldName": "specimen_storage"
+      "displayName": "Data Treatment Id",
+      "fieldName": "data.treatment_id"
     },
     {
-      "displayName": "Reference Pathology Confirmed",
-      "fieldName": "reference_pathology_confirmed"
+      "displayName": "Data Treatment Type",
+      "fieldName": "data.treatment_type"
     },
     {
-      "displayName": "Tumour Grading System",
-      "fieldName": "tumour_grading_system"
+      "displayName": "Data Treatment Start",
+      "fieldName": "data.treatment_start"
     },
     {
-      "displayName": "Tumour Grade",
-      "fieldName": "tumour_grade"
+      "displayName": "Data Treatment Duration",
+      "fieldName": "data.treatment_duration"
     },
     {
-      "displayName": "Percent Tumour Cells",
-      "fieldName": "percent_tumour_cells"
+      "displayName": "Data Treatment Response",
+      "fieldName": "data.treatment_response"
     },
     {
-      "displayName": "Percent Tumour Cells Measurement Method",
-      "fieldName": "percent_tumour_cells_measurement_method"
+      "displayName": "Data Drug Name",
+      "fieldName": "data.drug_name"
     },
     {
-      "displayName": "Percent Proliferating Cells",
-      "fieldName": "percent_proliferating_cells"
+      "displayName": "Data Followup Id",
+      "fieldName": "data.followup_id"
     },
     {
-      "displayName": "Percent Inflammatory Tissue",
-      "fieldName": "percent_inflammatory_tissue"
+      "displayName": "Data Followup Interval",
+      "fieldName": "data.followup_interval"
     },
     {
-      "displayName": "Percent Stromal Cells",
-      "fieldName": "percent_stromal_cells"
+      "displayName": "Data Disease Status",
+      "fieldName": "data.disease_status"
     },
     {
-      "displayName": "Percent Necrosis",
-      "fieldName": "percent_necrosis"
+      "displayName": "Data Submission Metadata Submitter Id",
+      "fieldName": "data.submission_metadata.submitter_id"
     },
     {
-      "displayName": "Submission Metadata Submitter Id",
-      "fieldName": "submission_metadata.submitter_id"
+      "displayName": "Data Submission Metadata Processing Started",
+      "fieldName": "data.submission_metadata.processing_started"
     },
     {
-      "displayName": "Submission Metadata Processing Started",
-      "fieldName": "submission_metadata.processing_started"
+      "displayName": "Data Submission Metadata Processed At",
+      "fieldName": "data.submission_metadata.processed_at"
     },
     {
-      "displayName": "Submission Metadata Processed At",
-      "fieldName": "submission_metadata.processed_at"
+      "displayName": "Data Submission Metadata Source File",
+      "fieldName": "data.submission_metadata.source_file"
     },
     {
-      "displayName": "Submission Metadata Source File",
-      "fieldName": "submission_metadata.source_file"
+      "displayName": "Data Submission Metadata Record Number",
+      "fieldName": "data.submission_metadata.record_number"
     },
     {
-      "displayName": "Submission Metadata Record Number",
-      "fieldName": "submission_metadata.record_number"
+      "displayName": "Data Submission Metadata Hostname",
+      "fieldName": "data.submission_metadata.hostname"
     },
     {
-      "displayName": "Submission Metadata Hostname",
-      "fieldName": "submission_metadata.hostname"
-    },
-    {
-      "displayName": "Submission Metadata Username",
-      "fieldName": "submission_metadata.username"
+      "displayName": "Data Submission Metadata Username",
+      "fieldName": "data.submission_metadata.username"
     }
   ]
 }

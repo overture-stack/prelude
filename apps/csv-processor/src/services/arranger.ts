@@ -24,26 +24,33 @@ function formatDisplayName(fieldName: string): string {
     .join(' ');
 }
 
-// function generateJsonPathAndQuery(
-//   fieldName: string
-// ): { jsonPath: string; query: string } | undefined {
-//   // Only generate for nested fields
-//   if (!fieldName.includes('.')) {
-//     return undefined;
-//   }
+function generateJsonPathAndQuery(
+  fieldName: string
+): { jsonPath: string; query: string } | undefined {
+  // Only generate for nested fields
+  if (!fieldName.includes('.')) {
+    return undefined;
+  }
 
-//   const parts = fieldName.split('.');
-//   const jsonPath = `$.${parts.join('.hits.edges[*].node.')}`;
-//   const query =
-//     parts.map(part => `${part} { hits { edges { node {`).join(' ') +
-//     ` ${parts[parts.length - 1]} ` +
-//     '} } }'.repeat(parts.length);
+  const parts = fieldName.split('.');
+  const jsonPath = `$.${parts.join('.')}`;
 
-//   return {
-//     jsonPath,
-//     query
-//   };
-// }
+  // Properly close all nested field braces
+  const query =
+    parts
+      .map((part, index) => {
+        if (index === parts.length - 1) {
+          return `${part}`;
+        }
+        return `${part} {`;
+      })
+      .join(' ') + ' }'.repeat(parts.length - 1); // Adding the correct amount of closing braces
+
+  return {
+    jsonPath,
+    query
+  };
+}
 
 function processFields(
   properties: Record<string, ElasticsearchField>,
@@ -79,16 +86,16 @@ function processFields(
       const tableColumn: TableColumn = {
         canChangeShow: true,
         fieldName: formattedFieldName,
-        show: currentPath.length === 1, // Show only top-level fields by default
+        show: currentPath.length === 2,
         sortable: true
       };
 
       // Add jsonPath and query for nested fields
-      // const pathQuery = generateJsonPathAndQuery(formattedFieldName);
-      // if (pathQuery) {
-      //   tableColumn.jsonPath = pathQuery.jsonPath;
-      //   tableColumn.query = pathQuery.query;
-      // }
+      const pathQuery = generateJsonPathAndQuery(formattedFieldName);
+      if (pathQuery) {
+        tableColumn.jsonPath = pathQuery.jsonPath;
+        tableColumn.query = pathQuery.query;
+      }
 
       tableColumns.push(tableColumn);
 

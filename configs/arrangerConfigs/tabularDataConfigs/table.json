@@ -3,189 +3,243 @@
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "program_id",
+        "fieldName": "data.donor_id",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.donor_id",
+        "query": "data { donor_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submitter_donor_id",
+        "fieldName": "data.gender",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.gender",
+        "query": "data { gender }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submitter_specimen_id",
+        "fieldName": "data.primary_site",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.primary_site",
+        "query": "data { primary_site }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submitter_primary_diagnosis_id",
+        "fieldName": "data.vital_status",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.vital_status",
+        "query": "data { vital_status }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "pathological_tumour_staging_system",
+        "fieldName": "data.diagnosis_id",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.diagnosis_id",
+        "query": "data { diagnosis_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "pathological_t_category",
+        "fieldName": "data.age_at_diagnosis",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.age_at_diagnosis",
+        "query": "data { age_at_diagnosis }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "pathological_n_category",
+        "fieldName": "data.cancer_type",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.cancer_type",
+        "query": "data { cancer_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "pathological_m_category",
+        "fieldName": "data.staging_system",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.staging_system",
+        "query": "data { staging_system }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "pathological_stage_group",
+        "fieldName": "data.stage",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.stage",
+        "query": "data { stage }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "specimen_acquisition_interval",
+        "fieldName": "data.specimen_id",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.specimen_id",
+        "query": "data { specimen_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "tumour_histological_type",
+        "fieldName": "data.specimen_type",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.specimen_type",
+        "query": "data { specimen_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "specimen_anatomic_location",
+        "fieldName": "data.tissue_source",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.tissue_source",
+        "query": "data { tissue_source }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "specimen_laterality",
+        "fieldName": "data.sample_id",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.sample_id",
+        "query": "data { sample_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "specimen_processing",
+        "fieldName": "data.sample_type",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.sample_type",
+        "query": "data { sample_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "specimen_storage",
+        "fieldName": "data.treatment_id",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.treatment_id",
+        "query": "data { treatment_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "reference_pathology_confirmed",
+        "fieldName": "data.treatment_type",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.treatment_type",
+        "query": "data { treatment_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "tumour_grading_system",
+        "fieldName": "data.treatment_start",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.treatment_start",
+        "query": "data { treatment_start }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "tumour_grade",
+        "fieldName": "data.treatment_duration",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.treatment_duration",
+        "query": "data { treatment_duration }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "percent_tumour_cells",
+        "fieldName": "data.treatment_response",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.treatment_response",
+        "query": "data { treatment_response }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "percent_tumour_cells_measurement_method",
+        "fieldName": "data.drug_name",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.drug_name",
+        "query": "data { drug_name }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "percent_proliferating_cells",
+        "fieldName": "data.followup_id",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.followup_id",
+        "query": "data { followup_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "percent_inflammatory_tissue",
+        "fieldName": "data.followup_interval",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.followup_interval",
+        "query": "data { followup_interval }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "percent_stromal_cells",
+        "fieldName": "data.disease_status",
         "show": true,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.disease_status",
+        "query": "data { disease_status }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "percent_necrosis",
-        "show": true,
-        "sortable": true
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.submitter_id",
+        "fieldName": "data.submission_metadata.submitter_id",
         "show": false,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.submitter_id",
+        "query": "data { submission_metadata { submitter_id } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.processing_started",
+        "fieldName": "data.submission_metadata.processing_started",
         "show": false,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.processing_started",
+        "query": "data { submission_metadata { processing_started } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.processed_at",
+        "fieldName": "data.submission_metadata.processed_at",
         "show": false,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.processed_at",
+        "query": "data { submission_metadata { processed_at } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.source_file",
+        "fieldName": "data.submission_metadata.source_file",
         "show": false,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.source_file",
+        "query": "data { submission_metadata { source_file } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.record_number",
+        "fieldName": "data.submission_metadata.record_number",
         "show": false,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.record_number",
+        "query": "data { submission_metadata { record_number } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.hostname",
+        "fieldName": "data.submission_metadata.hostname",
         "show": false,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.hostname",
+        "query": "data { submission_metadata { hostname } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.username",
+        "fieldName": "data.submission_metadata.username",
         "show": false,
-        "sortable": true
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.username",
+        "query": "data { submission_metadata { username } }"
       }
     ]
   }
