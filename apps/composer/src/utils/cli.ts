@@ -1,10 +1,10 @@
 import { Command } from 'commander';
-import { Config } from '../types';
+import { Config } from '../types/processor';
 import * as path from 'path';
 
-type CLIMode = 'dictionary' | 'upload' | 'mapping' | 'arranger' | 'all';
+type CLIMode = 'dictionary' | 'song' | 'upload' | 'mapping' | 'arranger' | 'all';
 
-export function setupCLI(): {
+interface CLIOutput {
   config: Config;
   filePaths: string[];
   outputPath: string;
@@ -15,33 +15,41 @@ export function setupCLI(): {
     description: string;
     version: string;
   };
-} {
+  songConfig?: {
+    name: string;
+    fileTypes?: string[];
+  };
+}
+
+export function setupCLI(): CLIOutput {
   const program = new Command();
 
   // Configure the CLI application with name and description
   program
     .name('composer')
-    .description('Process CSV files into Dictionary or Elasticsearch')
+    .description('Process files into Dictionary, Song Schema, or Elasticsearch')
     .option(
       '-m, --mode <mode>',
-      'Operation mode: dictionary, upload, mapping, arranger, or all',
+      'Operation mode: dictionary, song, upload, mapping, arranger, or all',
       'upload'
     )
-    .requiredOption('-f, --files <paths...>', 'CSV file paths (space separated)')
+    .requiredOption('-f, --files <paths...>', 'Input file paths (space separated)')
     .option('-i, --index <name>', 'Elasticsearch index name', 'tabular-index')
-    .option('-o, --output <file>', 'Output file path for dictionary or mapping')
+    .option('-o, --output <file>', 'Output file path for generated schemas or mapping')
     .option(
       '--arranger-config-dir <path>',
       'Directory to output Arranger configuration files (required for arranger mode)'
     )
     // Dictionary specific options
-    .option('-n, --name <name>', 'Dictionary name (required for dictionary mode)')
+    .option('-n, --name <name>', 'Dictionary/Schema name (required for dictionary and song modes)')
     .option(
       '-d, --description <text>',
       'Dictionary description',
       'Generated dictionary from CSV files'
     )
     .option('-v, --version <version>', 'Dictionary version', '1.0.0')
+    // Song specific options
+    .option('--file-types <types...>', 'Allowed file types for Song schema (optional)')
     // Elasticsearch specific options
     .option('--url <url>', 'Elasticsearch URL', 'http://localhost:9200')
     .option('-u, --user <username>', 'Elasticsearch username', 'elastic')
@@ -61,6 +69,16 @@ export function setupCLI(): {
       }
       if (!options.output) {
         options.output = `./${options.name}-dictionary.json`;
+      }
+      break;
+
+    case 'song':
+      if (!options.name) {
+        console.error('Error: --name is required when using song mode');
+        process.exit(1);
+      }
+      if (!options.output) {
+        options.output = `./${options.name}-song-schema.json`;
       }
       break;
 
@@ -113,6 +131,14 @@ export function setupCLI(): {
             name: options.name,
             description: options.description,
             version: options.version
+          }
+        : undefined,
+    // Only include song config if in song mode
+    songConfig:
+      options.mode === 'song'
+        ? {
+            name: options.name,
+            fileTypes: options.fileTypes
           }
         : undefined
   };

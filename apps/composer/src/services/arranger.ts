@@ -1,4 +1,4 @@
-import type { ElasticsearchMapping, ElasticsearchField } from '../types/index';
+import type { ElasticsearchMapping, ElasticsearchField } from '../types/elasticsearch';
 import type {
   ArrangerBaseConfig,
   ExtendedField,
@@ -7,7 +7,7 @@ import type {
   ArrangerTableConfig,
   FacetAggregation,
   ArrangerFacetsConfig
-} from '../types/index';
+} from '../types/arranger';
 
 function formatFieldName(path: string[]): string {
   return path.join('.');

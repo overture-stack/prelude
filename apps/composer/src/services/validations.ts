@@ -1,10 +1,10 @@
 import { Client } from '@elastic/elasticsearch';
 import chalk from 'chalk';
 import * as fs from 'fs';
-import { Config } from '../types';
+import { Config } from '../types/processor';
 import { generateMapping } from './mapping';
 import { parseCSVLine } from '../utils/csv';
-import type { ElasticsearchMapping } from '../types/index';
+import type { ElasticsearchMapping } from '../types/elasticsearch';
 
 /**
  * Validation Utilities for CSV Processing Pipeline

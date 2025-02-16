@@ -8,12 +8,13 @@ import { validateAndGetMapping } from './services/validations';
 import { generateArrangerConfigs } from './services/arranger';
 import { parseCSVLine } from './utils/csv';
 import { generateDictionary, generateSchema } from './services/lectern';
-import { Config } from './types';
+import { generateSongSchema, validateSongSchema } from './services/song';
+import { Config } from './types/processor';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
 
-type Mode = 'dictionary' | 'upload' | 'mapping' | 'arranger' | 'all';
+type Mode = 'dictionary' | 'song' | 'upload' | 'mapping' | 'arranger' | 'all';
 
 // Helper function to validate CSV headers
 async function validateCSVHeaders(filePath: string, delimiter: string): Promise<boolean> {
@@ -159,6 +160,66 @@ async function handleDictionaryMode(
   console.log(chalk.green(`\n✓ Dictionary saved to ${outputPath}`));
 }
 
+// Song mode handler
+async function handleSongMode(
+  filePath: string,
+  outputPath: string,
+  songConfig?: { name: string; fileTypes?: string[] }
+) {
+  console.log(chalk.cyan('\nGenerating SONG schema...'));
+
+  try {
+    // Validate file exists
+    const fileValid = await validations.validateFile(filePath);
+    if (!fileValid) {
+      console.error(chalk.red(`Error: Invalid file ${filePath}`));
+      return;
+    }
+
+    // Read and parse the JSON file
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    let sampleData: Record<string, any>;
+
+    try {
+      sampleData = JSON.parse(fileContent);
+    } catch (error) {
+      console.error(chalk.red('Error: Invalid JSON file'));
+      return;
+    }
+
+    // Validate the JSON structure
+    if (!sampleData || !sampleData.experiment) {
+      console.error(chalk.red('Error: JSON must contain an experiment object'));
+      return;
+    }
+
+    // Generate SONG schema with provided configuration
+    const schemaName = songConfig?.name || path.basename(filePath, path.extname(filePath));
+    const songOptions = songConfig?.fileTypes ? { fileTypes: songConfig.fileTypes } : undefined;
+
+    const songSchema = generateSongSchema(sampleData, schemaName, songOptions);
+
+    // Validate the generated schema
+    const isValid = validateSongSchema(songSchema);
+    if (!isValid) {
+      console.error(chalk.red('Error: Generated schema validation failed'));
+      return;
+    }
+
+    // Write schema to output file
+    fs.writeFileSync(outputPath, JSON.stringify(songSchema, null, 2));
+    console.log(chalk.green(`✓ Song schema saved to ${outputPath}`));
+    console.log(
+      chalk.white(
+        `Tip: enums and required fields are not inferred, make sure to update your schema accordingly`
+      )
+    );
+  } catch (error) {
+    console.error(chalk.red('Error generating SONG schema:'), error);
+    throw error;
+  }
+}
+
 // Main function
 async function main() {
   try {
@@ -166,7 +227,8 @@ async function main() {
     console.log(chalk.bold.blue('      Composer Starting... 🚀'));
     console.log(chalk.blue('=============================================\n'));
 
-    const { config, filePaths, outputPath, mode, arrangerConfigDir, dictionaryConfig } = setupCLI();
+    const { config, filePaths, outputPath, mode, arrangerConfigDir, dictionaryConfig, songConfig } =
+      setupCLI();
 
     if (!filePaths || filePaths.length === 0) {
       console.error(chalk.red('Error: No input files specified'));
@@ -186,6 +248,15 @@ async function main() {
           process.exit(1);
         }
         await handleDictionaryMode(filePaths, dictionaryConfig, config.delimiter, outputPath);
+        break;
+      }
+
+      case 'song': {
+        if (!outputPath) {
+          console.error(chalk.red('Error: Output path is required for song mode'));
+          process.exit(1);
+        }
+        await handleSongMode(filePaths[0], outputPath, songConfig);
         break;
       }
 

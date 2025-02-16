@@ -1,7 +1,7 @@
 {
-  "name": "sampleSchema",
+  "name": "MySchema",
   "options": {
-    "fileTypes": ["VCF", "TBI", "BAM", "CRAM"]
+    "fileTypes": ["VCF"]
   },
   "schema": {
     "type": "object",
@@ -14,20 +14,25 @@
             "workflowShortName",
             "workflowVersion",
             "inputs",
-            "sessionId",
-            "runId"
+            "runId",
+            "sessionId"
           ]
         },
-        "required": ["workflowName", "inputs"],
+        "required": [
+          "workflowName",
+          "workflowShortName",
+          "workflowVersion",
+          "inputs",
+          "runId",
+          "sessionId"
+        ],
         "type": "object",
         "properties": {
           "workflowName": {
-            "type": "string",
-            "pattern": "^[a-zA-Z][a-zA-Z0-9 _\\-]+[a-zA-Z0-9]+$"
+            "type": "string"
           },
           "workflowShortName": {
-            "type": "string",
-            "pattern": "^[a-zA-Z][a-zA-Z0-9_\\-]+[a-zA-Z0-9]+$"
+            "type": "string"
           },
           "workflowVersion": {
             "type": "string"
@@ -35,26 +40,26 @@
           "inputs": {
             "type": "array",
             "items": {
+              "propertyNames": {
+                "enum": ["analysisType", "analysisId"]
+              },
+              "required": ["analysisType", "analysisId"],
               "type": "object",
               "properties": {
-                "analysisId": {
-                  "type": "string",
-                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{13}$"
-                },
                 "analysisType": {
+                  "type": "string"
+                },
+                "analysisId": {
                   "type": "string"
                 }
               }
-            },
-            "minItems": 1,
-            "maxItems": 2
+            }
           },
           "runId": {
             "type": "string"
           },
           "sessionId": {
-            "type": "string",
-            "pattern": "SI[0-9]{4}"
+            "type": "string"
           }
         }
       },
@@ -62,21 +67,20 @@
         "propertyNames": {
           "enum": ["platform", "experimentalStrategy", "sequencingCenter", "sequencingDate"]
         },
-        "required": ["platform", "experimentalStrategy"],
+        "required": ["platform", "experimentalStrategy", "sequencingCenter", "sequencingDate"],
         "type": "object",
         "properties": {
           "platform": {
-            "type": ["string", "null"]
+            "type": "string"
           },
           "experimentalStrategy": {
-            "type": ["string", "null"]
+            "type": "string"
           },
           "sequencingCenter": {
-            "type": ["string", "null"]
+            "type": "string"
           },
           "sequencingDate": {
-            "type": ["string", "null"],
-            "pattern": "^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$"
+            "type": "string"
           }
         }
       }

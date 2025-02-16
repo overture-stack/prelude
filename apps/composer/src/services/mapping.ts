@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import type { ElasticsearchMapping, ElasticsearchField } from '../types/index';
+import type { ElasticsearchMapping, ElasticsearchField } from '../types/elasticsearch';
 
 /**
  * Infers the Elasticsearch field type based on header name and sample value

@@ -1,159 +1,227 @@
 # Composer
 
-A command-line tool for processing CSV files into various formats:
+A versatile CLI tool for processing CSV and JSON files into various configuration files
 
-- Lectern Data Dictionaries
-- Elasticsearch Mappings
-- Arranger Configurations
-- Elasticsearch documents
+## Features
 
-The Composer is also able to upload processed elasticsearch documentents into Elasticsearch
+- Generate Lectern dictionaries from CSV files
+- Create Song schemas from JSON data
+- Upload CSV data to Elasticsearch
+- Generate Elasticsearch mappings
+- Create Arranger configurations
+- Support for multiple operation modes
 
 ## Installation
 
 ```bash
-npm install composer
+npm install
+npm run build
 ```
 
 ## Usage
 
-The Composer supports several modes of operation:
+The basic command structure is:
+
+```bash
+composer -m <mode> -f <files...> [options]
+```
+
+### Common Options
+
+- `-m, --mode <mode>` - Operation mode (default: "upload")
+  - Available modes: dictionary, Song, upload, mapping, arranger, all
+- `-f, --files <paths...>` - Input file paths (space separated) [required]
+- `-o, --output <file>` - Output file path for generated schemas or mappings
+- `--delimiter <char>` - CSV delimiter (default: ",")
+
+## Mode-Specific Operations
 
 ### Dictionary Mode
 
-Generate a Lectern data dictionary from one or more CSV files. Each CSV file becomes a schema in the dictionary.
+Generates a Lectern dictionary from CSV files.
 
 ```bash
-composer --mode dictionary \
-  --name my-dictionary \
-  --files data1.csv data2.csv \
-  --description "My data dictionary" \
-  --version 1.0.0 \
-  --output dictionary.json
+composer -m dictionary \
+  -f input1.csv input2.csv \
+  -n "My Dictionary" \
+  -d "Dictionary description" \
+  -v "1.0.0" \
+  -o dictionary.json
 ```
 
-### Mapping Mode
+#### Options
 
-Generate Elasticsearch mapping from CSV:
+- `-n, --name <name>` - Dictionary name [required]
+- `-d, --description <text>` - Dictionary description
+- `-v, --version <version>` - Dictionary version (default: "1.0.0")
+
+### Song Mode
+
+Generates a Song schema from a JSON file. The input JSON must contain an `experiment` object.
 
 ```bash
-composer --mode mapping \
-  --files data.csv \
-  --output mapping.json
+composer -m Song \
+  -f input.json \
+  -n "My Schema" \
+  --file-types BAM FASTQ \
+  -o schema.json
 ```
 
-### Arranger Mode
+#### Example Input JSON
 
-Generate Arranger configuration files:
-
-```bash
-composer --mode arranger \
-  --files data.csv \
-  --index my-index \
-  --arranger-config-dir ./arranger-config
+```json
+{
+  "experiment": {
+    "field1": "value1",
+    "field2": "value2"
+  }
+}
 ```
+
+#### Options
+
+- `-n, --name <name>` - Schema name [required]
+- `--file-types <types...>` - Allowed file types for Song schema
 
 ### Upload Mode
 
-Upload CSV data directly to Elasticsearch:
+Uploads CSV data to Elasticsearch.
 
 ```bash
-composer --mode upload \
-  --files data.csv \
-  --index my-index \
-  --url http://localhost:9200 \
-  --user elastic \
-  --password mypassword \
-  --batch-size 1000
+composer -m upload \
+  -f data.csv \
+  -i "my-index" \
+  --url "http://localhost:9200" \
+  -u "elastic" \
+  -p "password" \
+  -b 1000
 ```
 
-### Combined Mode
+#### Options
 
-Generate both mapping and Arranger configurations:
-
-```bash
-composer --mode all \
-  --files data.csv \
-  --index my-index \
-  --output mapping.json \
-  --arranger-config-dir ./arranger-config
-```
-
-## Options
-
-| Option                  | Description                                                             | Default                               |
-| ----------------------- | ----------------------------------------------------------------------- | ------------------------------------- |
-| `-m, --mode`            | Operation mode: 'dictionary', 'upload', 'mapping', 'arranger', or 'all' | 'upload'                              |
-| `-f, --files`           | CSV file paths (space separated)                                        | Required                              |
-| `-n, --name`            | Dictionary name (required for dictionary mode)                          |                                       |
-| `-d, --description`     | Dictionary description                                                  | "Generated dictionary from CSV files" |
-| `-v, --version`         | Dictionary version                                                      | "1.0.0"                               |
-| `-i, --index`           | Elasticsearch index name                                                | "tabular-index"                       |
-| `-o, --output`          | Output file path for dictionary or mapping                              |                                       |
-| `--arranger-config-dir` | Directory for Arranger configuration files                              |                                       |
-| `--url`                 | Elasticsearch URL                                                       | "http://localhost:9200"               |
-| `-u, --user`            | Elasticsearch username                                                  | "elastic"                             |
-| `-p, --password`        | Elasticsearch password                                                  | "myelasticpassword"                   |
-| `-b, --batch-size`      | Batch size for processing                                               | 1000                                  |
-| `--delimiter`           | CSV delimiter                                                           | ","                                   |
-
-## Examples
-
-### Creating a Dictionary from Multiple CSVs
-
-If you have clinical data split across multiple CSV files:
-
-```bash
-composer --mode dictionary \
-  --name clinical-dictionary \
-  --files patients.csv diagnoses.csv treatments.csv \
-  --description "Clinical data dictionary" \
-  --version 1.0.0 \
-  --output clinical-dictionary.json
-```
-
-### Uploading Large Dataset to Elasticsearch
-
-For large datasets, you can adjust the batch size:
-
-```bash
-composer --mode upload \
-  --files large-dataset.csv \
-  --index clinical-data \
-  --batch-size 5000 \
-  --url http://elasticsearch:9200
-```
-
-## Error Handling
-
-The tool provides detailed error messages and validation:
-
-- CSV file validation
-- Header validation
-- Schema generation validation
-- Elasticsearch connection testing
-- Data type inference
-
-## Output
-
-### Dictionary Mode
-
-- Generates a JSON file containing the Lectern dictionary
-- Each CSV becomes a schema within the dictionary
-- Infers data types from sample values
-- Includes metadata and descriptions
+- `-i, --index <name>` - Elasticsearch index name (default: "tabular-index")
+- `--url <url>` - Elasticsearch URL (default: "http://localhost:9200")
+- `-u, --user <username>` - Elasticsearch username (default: "elastic")
+- `-p, --password <password>` - Elasticsearch password
+- `-b, --batch-size <size>` - Batch size for processing (default: "1000")
 
 ### Mapping Mode
 
-- Creates an Elasticsearch mapping JSON file
-- Infers field types from data
-- Configures appropriate analyzers and settings
+Generates Elasticsearch mapping from a CSV file.
+
+```bash
+composer -m mapping \
+  -f data.csv \
+  -o mapping.json
+```
 
 ### Arranger Mode
 
-Generates four configuration files:
+Generates Arranger configurations from a CSV file.
 
-- base.json: Basic index configuration
-- extended.json: Extended field configurations
-- table.json: Table display settings
-- facets.json: Search facet configurations
+```bash
+composer -m arranger \
+  -f data.csv \
+  --arranger-config-dir ./config
+```
+
+#### Options
+
+- `--arranger-config-dir <path>` - Directory to output Arranger configuration files [required]
+
+### All Mode
+
+Generates both mapping and Arranger configurations.
+
+```bash
+composer -m all \
+  -f data.csv \
+  -o mapping.json \
+  --arranger-config-dir ./config
+```
+
+## CSV File Requirements
+
+- Files must be properly formatted CSVs
+- First row must contain headers
+- Headers must be unique
+- At least one data row is required
+- No empty columns in headers
+
+## Output Files
+
+Depending on the mode, the tool generates:
+
+- **Dictionary Mode**: JSON dictionary file
+- **Song Mode**: Song schema JSON file
+- **Mapping Mode**: Elasticsearch mapping JSON file
+- **Arranger Mode**: Configuration files:
+  - `base.json`
+  - `extended.json`
+  - `table.json`
+  - `facets.json`
+
+## Error Handling
+
+The tool provides detailed error messages for:
+
+- Invalid file formats
+- Missing required options
+- Connection issues
+- Validation failures
+- Processing errors
+
+## Examples
+
+### Generate a Dictionary with Multiple Files
+
+```bash
+composer -m dictionary \
+  -f samples.csv donors.csv \
+  -n "Clinical Dictionary" \
+  -d "Clinical data dictionary" \
+  -v "2.0.0" \
+  -o clinical-dictionary.json
+```
+
+### Generate a Song Schema
+
+```bash
+composer -m Song \
+  -f sequencing.json \
+  -n "DNA Sequencing" \
+  --file-types BAM FASTQ \
+  -o sequencing-schema.json
+```
+
+#### Example Input JSON
+
+```json
+{
+  "experiment": {
+    "study_id": "TEST-CA",
+    "sample_id": "SAM123",
+    "sequencing_platform": "ILLUMINA",
+    "data_type": "WGS"
+  }
+}
+```
+
+### Upload Data with Custom Batch Size
+
+```bash
+composer -m upload \
+  -f large-dataset.csv \
+  -i "clinical-data" \
+  -b 5000
+```
+
+### Generate All Configurations
+
+```bash
+composer -m all \
+  -f metadata.csv \
+  -i "metadata-index" \
+  -o mapping.json \
+  --arranger-config-dir ./arranger-config
+```

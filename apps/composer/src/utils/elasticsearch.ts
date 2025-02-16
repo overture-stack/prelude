@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { Config } from '../types';
+import { Config } from '../types/processor';
 import chalk from 'chalk';
 
 export function createClient(config: Config): Client {
@@ -7,8 +7,8 @@ export function createClient(config: Config): Client {
     node: config.elasticsearch.url,
     auth: {
       username: config.elasticsearch.user,
-      password: config.elasticsearch.password,
-    },
+      password: config.elasticsearch.password
+    }
   });
 }
 
@@ -23,7 +23,7 @@ export async function sendBulkWriteRequest(
 
     const { body: result } = await client.bulk({
       body,
-      refresh: true,
+      refresh: true
     });
 
     if (result.errors) {
@@ -35,7 +35,7 @@ export async function sendBulkWriteRequest(
           console.error({
             status: item.index.status,
             error: item.index.error,
-            document: item.index._id,
+            document: item.index._id
           });
         }
       });

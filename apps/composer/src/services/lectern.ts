@@ -11,7 +11,7 @@ import type {
   MetaData,
   MatchCase,
   CompareRelation
-} from '../types/index';
+} from '../types/lectern';
 
 /**
  * Infer the value type based on header name and sample value
