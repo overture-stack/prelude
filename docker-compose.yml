@@ -179,19 +179,19 @@ services:
   # ================================================================================== #
 
   # ------------------------------------------------------------------------------------#
-  # CSV-Processor                                                                       #
+  # Composer                                                                       #
   # ------------------------------------------------------------------------------------#
   # Tool for processing and uploading CSV files to Elasticsearch                        #
   # Documentation can be found from ./apps/readme.md & ./docs/phase1.md               #
   # ------------------------------------------------------------------------------------#
-  csv-processor:
+  composer:
     profiles: ["data", "config", "all", "platform"]
     image: node:18-alpine
     container_name: data-loader
     ports:
       - "9205:9205"
     volumes:
-      - ./apps/csv-processor:/csv-processor
+      - ./apps/composer:/composer
       - ./data:/data
       - ./configs/arrangerConfigs/tabularDataConfigs:/arrangerConfigs/tabularDataConfigs
       - ./configs/elasticsearchConfigs:/elasticsearchConfigs/

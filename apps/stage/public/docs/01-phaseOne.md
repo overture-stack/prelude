@@ -14,7 +14,7 @@ relevant documentation pages.
 
 | Component                                                                                              | Description                                                                                 |
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| CSV-Processor (Docs below)                                                                             | A command-line tool for processing CSV files into Elasticsearch.                            |
+| Composer (Docs below)                                                                                  | A command-line tool for processing CSV files into Elasticsearch.                            |
 | [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html) | A search and analytics engine used to help query massive datasets flexibly and efficiently. |
 | [Arranger](https://docs.overture.bio/docs/core-software/arranger/overview)                             | Our search API and search UI component generation service.                                  |
 | [Stage](https://docs.overture.bio/docs/core-software/stage/overview/)                                  | Our React-based user interface designed to allow easy deployment of data portals.           |
@@ -26,7 +26,7 @@ your project. Below are guidelines for data management:
 
 ### File Format
 
-- The csv-processor supports configurable delimiters, but CSV (Comma-Separated
+- The composer supports configurable delimiters, but CSV (Comma-Separated
   Values) is the recommended format for tabular data
 - Include headers in your CSV files for clear column identification; your
   Elasticsearch index mapping should match these field names
@@ -139,21 +139,21 @@ npm run dev
 
 The development server will be available at: http://localhost:3000
 
-## Step 4: Submit your data (CSV-Processor)
+## Step 4: Submit your data (Composer)
 
-The CSV-Processor is a Node.js command-line tool for processing and uploading
+The Composer is a Node.js command-line tool for processing and uploading
 CSV files to Elasticsearch, featuring validation, error handling, and mapping
 generation capabilities.
 
 ### Containerized Upload
 
-If you want to input data without locally installing the CSV-Processor, it can
+If you want to input data without locally installing the Composer, it can
 be run from the conductor container using the `make load-data` command. Make
 sure you have your desired data file within the `data` directory found at the
 root of the project. Additionally, ensure you update conductor's
 `TABULAR_DATA_FILE:` with the path to your desired data file.
 
-If you wish to install and run the CSV-Processor locally, then follow the steps
+If you wish to install and run the Composer locally, then follow the steps
 below:
 
 ### Installation
@@ -163,10 +163,10 @@ Ensure you have the following installed:
 - Node.js ≥ 14
 - npm or yarn package manager
 
-1. From the CSV-Processor directory, install dependencies:
+1. From the Composer directory, install dependencies:
 
 ```bash
-cd apps/csv-processor
+cd apps/composer
 npm install
 ```
 
@@ -183,7 +183,7 @@ npm install -g .
 ```
 
 Note: If you choose not to install globally, then you will need to run all
-upload commands directly from the CSV-Processor directory using either node or
+upload commands directly from the Composer directory using either node or
 the dist folder's `main.js`.
 
 ### Usage
@@ -191,7 +191,7 @@ the dist folder's `main.js`.
 Basic command structure:
 
 ```bash
-csv-processor -f <file-path> -i <index-name> [options]
+composer -f <file-path> -i <index-name> [options]
 ```
 
 #### Configuration Options
@@ -222,19 +222,19 @@ The tool supports two operating modes:
 Upload data to Elasticsearch:
 
 ```bash
-csv-processor -f data.csv -i my-index --url http://localhost:9200 -u elastic -p mypassword
+composer -f data.csv -i my-index --url http://localhost:9200 -u elastic -p mypassword
 ```
 
 Generate mapping file:
 
 ```bash
-csv-processor -m mapping -f data.csv -o mapping.json
+composer -m mapping -f data.csv -o mapping.json
 ```
 
 Custom delimiter and batch size:
 
 ```bash
-csv-processor -f data.csv -i my-index -d ";" -b 100
+composer -f data.csv -i my-index -d ";" -b 100
 ```
 
 ### Troubleshooting

@@ -3,9 +3,9 @@
 All localized applications are included in this folder, this includes:
 
 - Stage: A React-based UI scaffolding for data portals
-- CSV-processor: A command-line tool for processing CSV files into Elasticsearch
+- Composer: A command-line tool for processing CSV files into Elasticsearch
 
-## CSV-processor
+## Composer
 
 A Node.js command-line tool for processing and uploading CSV files to
 Elasticsearch, featuring validation, error handling, and mapping generation
@@ -41,7 +41,7 @@ npm install -g .
 Basic command structure:
 
 ```bash
-csv-processor -f <file-path> -i <index-name> [options]
+composer -f <file-path> -i <index-name> [options]
 ```
 
 #### Configuration Options
@@ -72,19 +72,19 @@ The tool supports two operating modes:
 Upload data to Elasticsearch:
 
 ```bash
-csv-processor -f data.csv -i my-index --url http://localhost:9200 -u elastic -p mypassword
+composer -f data.csv -i my-index --url http://localhost:9200 -u elastic -p mypassword
 ```
 
 Generate mapping file:
 
 ```bash
-csv-processor -m mapping -f data.csv -o mapping.json
+composer -m mapping -f data.csv -o mapping.json
 ```
 
 Custom delimiter and batch size:
 
 ```bash
-csv-processor -f data.csv -i my-index -d ";" -b 100
+composer -f data.csv -i my-index -d ";" -b 100
 ```
 
 ### Troubleshooting

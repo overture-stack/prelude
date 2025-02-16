@@ -5,7 +5,7 @@ for optimal data management:
 
 ## File Format
 
-- The csv-processor supports configurable delimiters, but CSV (Comma-Separated
+- The composer supports configurable delimiters, but CSV (Comma-Separated
   Values) is the recommended format for tabular data
 - Include headers in your CSV files for clear column identification your
   elasticsearch index mapping should match these field names

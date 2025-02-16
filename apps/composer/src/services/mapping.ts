@@ -35,6 +35,20 @@ export function inferFieldType(headerName: string, sampleValue: string): Elastic
     return { type: 'date' };
   }
 
+  // Check for boolean fields
+  const lowerValue = sampleValue.toLowerCase();
+  if (
+    lowerValue === 'true' ||
+    lowerValue === 'false' ||
+    lowerValue === 'yes' ||
+    lowerValue === 'no' ||
+    lowerValue === '0' ||
+    lowerValue === '1'
+  ) {
+    process.stdout.write(chalk.green(`✓ Detected boolean type\n`));
+    return { type: 'boolean' };
+  }
+
   // Default to keyword
   process.stdout.write(chalk.green(`✓ Using default keyword type\n`));
   return { type: 'keyword' };
