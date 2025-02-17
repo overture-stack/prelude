@@ -1,14 +1,14 @@
-import { Client } from '@elastic/elasticsearch';
-import { Config } from '../types/processor';
-import chalk from 'chalk';
+import { Client } from "@elastic/elasticsearch";
+import { Config } from "../types";
+import chalk from "chalk";
 
 export function createClient(config: Config): Client {
   return new Client({
     node: config.elasticsearch.url,
     auth: {
       username: config.elasticsearch.user,
-      password: config.elasticsearch.password
-    }
+      password: config.elasticsearch.password,
+    },
   });
 }
 
@@ -19,11 +19,14 @@ export async function sendBulkWriteRequest(
   onFailure: (count: number) => void
 ): Promise<void> {
   try {
-    const body = records.flatMap(doc => [{ index: { _index: indexName } }, doc]);
+    const body = records.flatMap((doc) => [
+      { index: { _index: indexName } },
+      doc,
+    ]);
 
     const { body: result } = await client.bulk({
       body,
-      refresh: true
+      refresh: true,
     });
 
     if (result.errors) {
@@ -31,11 +34,11 @@ export async function sendBulkWriteRequest(
       result.items.forEach((item: any) => {
         if (item.index?.error) {
           failureCount++;
-          process.stdout.write(chalk.red('\nError details:'));
+          process.stdout.write(chalk.red("\nError details:"));
           console.error({
             status: item.index.status,
             error: item.index.error,
-            document: item.index._id
+            document: item.index._id,
           });
         }
       });
@@ -43,7 +46,9 @@ export async function sendBulkWriteRequest(
     }
   } catch (error) {
     onFailure(records.length);
-    process.stdout.write(chalk.red('\nError sending to Elasticsearch: ') + error + '\n');
+    process.stdout.write(
+      chalk.red("\nError sending to Elasticsearch: ") + error + "\n"
+    );
     throw error;
   }
 }

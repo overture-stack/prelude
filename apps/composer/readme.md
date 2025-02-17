@@ -1,227 +1,246 @@
 # Composer
 
-A versatile CLI tool for processing CSV and JSON files into various configuration files
+Composer is used for generating a base set of configuration files for Overtures platform. It supports the generation of Song schemas, Lectern dictionaries, Elasticsearch mappings, and Arranger configurations.
 
 ## Features
 
-- Generate Lectern dictionaries from CSV files
-- Create Song schemas from JSON data
-- Upload CSV data to Elasticsearch
-- Generate Elasticsearch mappings
-- Create Arranger configurations
-- Support for multiple operation modes
+- Generate SONG schemas from JSON templates
+- Create Lectern dictionaries from CSV files
+- Generate Elasticsearch mappings from CSV or JSON data
+- Create Arranger configurations for data visualization
+- Comprehensive validation of input files and configurations
+- Support for multiple execution profiles
 
 ## Installation
 
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd composer
+
+# Install dependencies
 npm install
+
+# Build the project
 npm run build
 ```
 
 ## Usage
 
-The basic command structure is:
+Composer can be run in several different modes using either the command line directly or through Docker.
+
+### Command Line Usage
 
 ```bash
-composer -m <mode> -f <files...> [options]
+# Basic usage
+node dist/main.js --profile <profile> --files <file-paths> [options]
+
+# Generate Song schema
+node dist/main.js --profile songSchema -f data/sample.json -n "my-schema"
+
+# Generate Lectern dictionary
+node dist/main.js --profile generateLecternDictionary -f data/sample.csv -n "my-dictionary"
+
+# Generate Elasticsearch mapping
+node dist/main.js --profile generateElasticSearchMapping -f data/data.csv -i "my-index"
+
+# Generate Arranger configs
+node dist/main.js --profile generateArrangerConfigs -f data/data.csv --arranger-config-dir ./configs
 ```
 
-### Common Options
+### Docker Usage
 
-- `-m, --mode <mode>` - Operation mode (default: "upload")
-  - Available modes: dictionary, Song, upload, mapping, arranger, all
-- `-f, --files <paths...>` - Input file paths (space separated) [required]
-- `-o, --output <file>` - Output file path for generated schemas or mappings
-- `--delimiter <char>` - CSV delimiter (default: ",")
-
-## Mode-Specific Operations
-
-### Dictionary Mode
-
-Generates a Lectern dictionary from CSV files.
+The application can be run using Docker with the provided `docker-compose.yml` file.
 
 ```bash
-composer -m dictionary \
-  -f input1.csv input2.csv \
-  -n "My Dictionary" \
-  -d "Dictionary description" \
-  -v "1.0.0" \
-  -o dictionary.json
+# Basic usage
+docker compose --profile <profile-name> up composer
+
+# Example: Generate all configurations
+docker compose --profile generateConfigs up composer
+
+# Example: Generate only Song schema
+docker compose --profile generateSongSchema up composer
+
+Available profiles:
+- generateSongSchema
+- generateLecternDictionary
+- generateElasticSearchMapping
+- generateArrangerConfigs
+- generateConfigs (generates all configurations)
 ```
 
-#### Options
+#### Docker Volume Configuration
 
-- `-n, --name <name>` - Dictionary name [required]
-- `-d, --description <text>` - Dictionary description
-- `-v, --version <version>` - Dictionary version (default: "1.0.0")
+The `docker-compose.yml` file sets up the following volume mappings:
 
-### Song Mode
+```yaml
+volumes:
+  - ./apps/composer:/composer
+  - ./apps/conductor:/conductor
+  - ./data:/data
+  - ./docker-compose.yml:/docker-compose.yml
+```
 
-Generates a Song schema from a JSON file. The input JSON must contain an `experiment` object.
+#### Docker Environment Variables
+
+You can set environment variables either in the `docker-compose.yml` file or using a `.env` file:
+
+```yaml
+environment:
+  PROFILE: ${PROFILE:-default}
+  COMPOSER_PATH: /composer
+  TABULAR_DATA_FILE: ${TABULAR_DATA_FILE}
+  TABULAR_INDEX_NAME: ${TABULAR_INDEX_NAME}
+  FILE_METADATA_SAMPLE: /data/sampleData/fileMetadata.json
+  TABULAR_SAMPLE: /data/tabularData.csv
+  LYRIC_UPLOAD_DIRECTORY: /data/lyricUploads/
+  SONG_UPLOAD_DIRECTORY: /data/songUploads/
+  DEFAULT_STUDY_ID: demo
+  SONG_SCHEMA: /configs/songSchema
+  LECTERN_DICTIONARY: /configs/lecternDictionaries
+  ES_MAPPINGS: /configs/elasticsearchConfigs
+  ES_CONFIG_DIR: /es-config
+  ARRANGER_CONFIG_DIR: /arranger-config
+```
+
+### Environment Configuration
+
+Environment variables can be configured in multiple ways:
+
+1. Using a `.env` file in the project root:
 
 ```bash
-composer -m Song \
-  -f input.json \
-  -n "My Schema" \
-  --file-types BAM FASTQ \
-  -o schema.json
+# Required Variables
+PROFILE=generateConfigs
+TABULAR_DATA_FILE=./data/sample.csv
+TABULAR_INDEX_NAME=my-index
+
+# Optional Variables
+FILE_METADATA_SAMPLE=/data/sampleData/fileMetadata.json
+TABULAR_SAMPLE=/data/tabularData.csv
+DEFAULT_STUDY_ID=demo
 ```
 
-#### Example Input JSON
-
-```json
-{
-  "experiment": {
-    "field1": "value1",
-    "field2": "value2"
-  }
-}
-```
-
-#### Options
-
-- `-n, --name <name>` - Schema name [required]
-- `--file-types <types...>` - Allowed file types for Song schema
-
-### Upload Mode
-
-Uploads CSV data to Elasticsearch.
+2. Setting variables directly in your shell:
 
 ```bash
-composer -m upload \
-  -f data.csv \
-  -i "my-index" \
-  --url "http://localhost:9200" \
-  -u "elastic" \
-  -p "password" \
-  -b 1000
+export PROFILE=generateConfigs
+export TABULAR_DATA_FILE=./data/sample.csv
+export TABULAR_INDEX_NAME=my-index
+docker compose --profile $PROFILE up composer
 ```
 
-#### Options
-
-- `-i, --index <name>` - Elasticsearch index name (default: "tabular-index")
-- `--url <url>` - Elasticsearch URL (default: "http://localhost:9200")
-- `-u, --user <username>` - Elasticsearch username (default: "elastic")
-- `-p, --password <password>` - Elasticsearch password
-- `-b, --batch-size <size>` - Batch size for processing (default: "1000")
-
-### Mapping Mode
-
-Generates Elasticsearch mapping from a CSV file.
+3. Passing variables on the command line:
 
 ```bash
-composer -m mapping \
-  -f data.csv \
-  -o mapping.json
+PROFILE=generateConfigs TABULAR_DATA_FILE=./data/sample.csv docker compose up composer
 ```
 
-### Arranger Mode
-
-Generates Arranger configurations from a CSV file.
+Default paths in Docker container:
 
 ```bash
-composer -m arranger \
-  -f data.csv \
-  --arranger-config-dir ./config
+COMPOSER_PATH=/composer
+ES_CONFIG_DIR=/es-config
+ARRANGER_CONFIG_DIR=/arranger-config
+SONG_SCHEMA=/configs/songSchema
+LECTERN_DICTIONARY=/configs/lecternDictionaries
+ES_MAPPINGS=/configs/elasticsearchConfigs
 ```
 
-#### Options
-
-- `--arranger-config-dir <path>` - Directory to output Arranger configuration files [required]
-
-### All Mode
-
-Generates both mapping and Arranger configurations.
+## Command Line Options
 
 ```bash
-composer -m all \
-  -f data.csv \
-  -o mapping.json \
-  --arranger-config-dir ./config
+Options:
+  -p, --profile <profile>           Execution profile
+  -m, --mode <mode>                 Operation mode
+  -f, --files <paths...>           Input file paths (space separated)
+  -i, --index <name>               Elasticsearch index name
+  -o, --output <file>              Output file path
+  --arranger-config-dir <path>     Directory for Arranger configs
+  -n, --name <name>                Dictionary/Schema name
+  -d, --description <text>         Dictionary description
+  -v, --version <version>          Dictionary version
+  --file-types <types...>          Allowed file types for Song schema
+  --delimiter <char>               CSV delimiter (default: ",")
 ```
 
-## CSV File Requirements
+## Profiles
 
-- Files must be properly formatted CSVs
-- First row must contain headers
-- Headers must be unique
-- At least one data row is required
-- No empty columns in headers
+### songSchema
 
-## Output Files
+Generates a SONG schema from a JSON template file. The schema defines the structure and validation rules for submitting genomic data.
 
-Depending on the mode, the tool generates:
+### generateLecternDictionary
 
-- **Dictionary Mode**: JSON dictionary file
-- **Song Mode**: Song schema JSON file
-- **Mapping Mode**: Elasticsearch mapping JSON file
-- **Arranger Mode**: Configuration files:
-  - `base.json`
-  - `extended.json`
-  - `table.json`
-  - `facets.json`
+Creates a Lectern dictionary from CSV files. The dictionary defines the data model and validation rules for clinical data.
 
-## Error Handling
+### generateElasticSearchMapping
 
-The tool provides detailed error messages for:
+Generates Elasticsearch mapping from CSV data. The mapping defines how the data should be indexed and searched in Elasticsearch.
 
-- Invalid file formats
-- Missing required options
-- Connection issues
-- Validation failures
-- Processing errors
+### generateArrangerConfigs
+
+Creates Arranger configuration files for data visualization and querying. Includes configurations for:
+
+- Base configuration
+- Extended fields
+- Table layout
+- Facet configuration
+
+### generateConfigs
+
+Generates all configurations in one go. This includes:
+
+- SONG schema
+- Lectern dictionary
+- Elasticsearch mapping
+- Arranger configurations
+
+## File Validation
+
+Composer performs comprehensive validation of input files:
+
+- File existence and accessibility
+- CSV header structure and naming
+- Data types and formats
+- Required fields
+- Schema compliance
 
 ## Examples
 
-### Generate a Dictionary with Multiple Files
+### Generate Song Schema
 
 ```bash
-composer -m dictionary \
-  -f samples.csv donors.csv \
-  -n "Clinical Dictionary" \
+node dist/main.js \
+  --profile songSchema \
+  -f data/template.json \
+  -n "my-genomic-schema" \
+  --file-types BAM,FASTQ
+```
+
+### Generate Lectern Dictionary
+
+```bash
+node dist/main.js \
+  --profile generateLecternDictionary \
+  -f data/clinical.csv \
+  -n "clinical-dictionary" \
   -d "Clinical data dictionary" \
-  -v "2.0.0" \
-  -o clinical-dictionary.json
+  -v "1.0.0"
 ```
 
-### Generate a Song Schema
+### Generate All Configs
 
 ```bash
-composer -m Song \
-  -f sequencing.json \
-  -n "DNA Sequencing" \
-  --file-types BAM FASTQ \
-  -o sequencing-schema.json
+docker-compose --profile generateConfigs up composer
 ```
 
-#### Example Input JSON
+## Error Handling
 
-```json
-{
-  "experiment": {
-    "study_id": "TEST-CA",
-    "sample_id": "SAM123",
-    "sequencing_platform": "ILLUMINA",
-    "data_type": "WGS"
-  }
-}
-```
+The tool provides detailed error messages and validation feedback:
 
-### Upload Data with Custom Batch Size
-
-```bash
-composer -m upload \
-  -f large-dataset.csv \
-  -i "clinical-data" \
-  -b 5000
-```
-
-### Generate All Configurations
-
-```bash
-composer -m all \
-  -f metadata.csv \
-  -i "metadata-index" \
-  -o mapping.json \
-  --arranger-config-dir ./arranger-config
-```
+- File access errors
+- Invalid headers or data formats
+- Configuration errors
+- Processing failures

@@ -1,0 +1,70 @@
+services:
+  composer:
+    profiles:
+      [
+        "generateSongSchema",
+        "generateLecternDictionary",
+        "generateElasticSearchMapping",
+        "generateArrangerConfigs",
+        "generateConfigs",
+        "default",
+      ]
+    image: node:18-alpine
+    container_name: composer
+    ports:
+      - "9205:9205"
+    volumes:
+      - ./apps/composer:/composer
+      - ./apps/conductor:/conductor
+      - ./data:/data
+      - ./docker-compose.yml:/docker-compose.yml
+    environment:
+      PROFILE: ${PROFILE:-default}
+      # User Input Paths
+      COMPOSER_PATH: /composer
+      TABULAR_DATA_FILE: /data/tabularData.csv
+      TABULAR_INDEX_NAME: tabular-index
+      FILE_METADATA_SAMPLE: /data/sampleData/fileMetadata.json
+      TABULAR_SAMPLE: /data/tabularData.csv
+      LYRIC_UPLOAD_DIRECTORY: /data/lyricUploads/
+      SONG_UPLOAD_DIRECTORY: /data/songUploads/
+      DEFAULT_STUDY_ID: demo
+      # Output Directories
+      SONG_SCHEMA: /configs/songSchema
+      LECTERN_DICTIONARY: /configs/lecternDictionaries
+      ES_CONFIG_DIR: /configs/elasticsearchConfigs
+      ARRANGER_CONFIG_DIR: /configs/arrangerConfigs
+    working_dir: /composer
+    command: >
+      sh -c '
+        set -e
+        echo "Profile is set to: $PROFILE"
+        case "$PROFILE" in
+          "generateConfigs")
+            echo "Installing dependencies..." &&
+            npm install &&
+            npm run build &&
+            node dist/main.js \
+              --profile "$PROFILE" \
+              --f "${TABULAR_SAMPLE:-/data/tabularData.csv}" \
+              --f "${FILE_METADATA_SAMPLE:-/data/sampleData/fileMetadata.json}" \
+              --index "${TABULAR_INDEX_NAME:-tabular-index}" \
+              --output "${ES_CONFIG_DIR:-/configs/elasticsearchConfigs}" \
+              --arranger-config-dir "${ARRANGER_CONFIG_DIR:-/configs/arrangerConfigs}"
+            ;;
+          "default") 
+            echo "No profile set..."
+            ;;
+          *)
+            echo "Invalid profile specified."
+            exit 1
+            ;;
+        esac
+        exit 0
+      '
+    networks:
+      - conductor-network
+
+networks:
+  conductor-network:
+    name: conductor-network

@@ -16,63 +16,60 @@ services:
         "phase1",
         "phase2",
         "phase3",
-        "stageDev",
-        "clean",
-        "platform",
-        "loadLectern",
-        "registerDictionary",
-        "loadLyric",
-        "indexTabular",
+        "loadLecternDictionary",
+        "registerLyricDictionary",
+        "submitLyricData",
+        "indexLyricData",
         "loadSongSchema",
-        "createStudy",
-        "loadSongData",
-        "everything"
+        "createSongStudy",
+        "submitSongData",
+        "indexSongData",
+        "phaseOneSubmission",
+        "stageDev",
+        "default",
       ]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
       - "9204:9204"
     volumes:
-      - ./configs/elasticsearchConfigs/file_data_index_template.json:/usr/share/elasticsearch/file_data_index_template.json
-      - ./configs/elasticsearchConfigs/tabular_data_index_template.json:/usr/share/elasticsearch/tabular_data_index_template.json
-      - ./configs/lecternSchema/lecternSchema.json:/usr/share/lecternSchema/lecternSchema.json
-      - ./configs/songSchema/sampleSchema.json:/usr/share/songSchema/sampleSchema.json
-      - ./data:/usr/share/data/
-      - ./scripts:/scripts
+      - ./apps/composer/configs:/configs
+      - ./data:/data
+      - ./apps/conductor/scripts:/scripts
       - ./volumes/health:/health
     environment:
-      PROFILE: ${PROFILE:-platform}
-      DEBUG: false
-      # Arranger service script variables
-      ARRANGER_FILE_DATA_URL: http://arranger-file:5050/graphql
-      ARRANGER_TABULAR_DATA_URL: http://arranger-tabular:5051/graphql
+      PROFILE: ${PROFILE:-default}
+      # Output Directories
+      SONG_SCHEMA: /configs/songSchema
+      LECTERN_DICTIONARY: /configs/lecternDictionaries
+      ES_MAPPINGS: /configs/elasticsearchConfigs
+      ARRANGER_CONFIGS: /configs/arrangerConfigs
       # Elasticsearch service script variables
-      ES_URL: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
       FILE_INDEX_NAME: file-index
-      FILE_ES_TEMPLATE_FILE: /usr/share/elasticsearch/file_data_index_template.json
+      FILE_ES_TEMPLATE_FILE: /configs/elasticsearchConfigs/file_data_index_template.json
+      # File Metadata Mapping
       FILE_ES_TEMPLATE_NAME: file_template
       FILE_ES_ALIAS_NAME: file_centric
       TABULAR_INDEX_NAME: tabular-index
-      TABULAR_ES_TEMPLATE_FILE: /usr/share/elasticsearch/tabular_data_index_template.json
+      # Tabular Mapping
+      TABULAR_ES_TEMPLATE_FILE: /configs/elasticsearchConfigs/tabular_data_index_template.json
       TABULAR_ES_TEMPLATE_NAME: tabular_template
       TABULAR_ES_ALIAS_NAME: tabular_centric
-      # Stage service script variable
+      # Service Ports
       STAGE_URL: http://stage:3000
-      # phase2 healthcheck endpoints
-      LYRIC_URL: http://lyric:3030
       LECTERN_URL: http://lectern:3031
-      LECTERN_SCHEMA: /usr/share/lecternSchema/lecternSchema.json
-      MAESTRO_URL: http://maestro:11235
-      LYRIC_DATA: /usr/share/data/tabularData/
-      # phase3 healthcheck endpoints
+      ES_URL: http://elasticsearch:9200
+      LYRIC_URL: http://lyric:3030
       SONG_URL: http://song:8080
       SCORE_URL: http://score:8087
       OBJECT_STORAGE_URL: http://minio:9000
-      STUDY_ID: demo
-      SONG_SCHEMA: /usr/share/songSchema/sampleSchema.json
-      ANALYSIS_FILE: /usr/share/data/fileData/analysisFile.json
+      MAESTRO_URL: http://maestro:11235
+      ARRANGER_FILE_DATA_URL: http://arranger-file:5050/graphql
+      ARRANGER_TABULAR_DATA_URL: http://arranger-tabular:5051/graphql
+      # Troubleshooting
+      DEBUG: false
     command: >
       sh -c '
         set -e
@@ -93,67 +90,62 @@ services:
               chmod +x scripts/deployments/phase3.sh
               scripts/deployments/phase3.sh
               ;;
+            "loadLecternDictionary")
+              echo "Updating Lectern dictionary..."
+              chmod +x scripts/lecternSchemaUpload.sh
+              scripts/lecternSchemaUpload.sh
+              ;;
+            "registerLyricDictionary")
+              echo "Registering Lyric with a Lectern dictionary..."
+              chmod +x scripts/lyricRegisterDictionary.sh
+              scripts/lyricRegisterDictionary.sh
+              ;;
+            "submitLyricData")
+              echo "Uploading mock data to Lyric..."
+              chmod +x scripts/lyricDataUpload.sh
+              scripts/lyricDataUpload.sh
+              ;;
+            "indexLyricData")
+              echo "Indexing tabular data..."
+              chmod +x scripts/indexTabularData.sh
+              scripts/indexTabularData.sh
+              ;;
+            "loadSongSchema")
+              echo "Updating Song schema..."
+              chmod +x scripts/songSchemaUpload.sh
+              scripts/songSchemaUpload.sh
+              ;;
+            "createSongStudy")
+              echo "Updating Song with a StudyId..."
+              chmod +x scripts/songStudyCreation.sh
+              scripts/songStudyCreation.sh
+              ;;
+            "submitSongData")
+              echo "Loading Song data..."
+              chmod +x scripts/songDataUpload.sh
+              scripts/songDataUpload.sh
+              ;;
+            "indexSongData")
+              echo "Indexing Song data..."
+              chmod +x scripts/indexSongData.sh
+              scripts/indexSongData.sh
+              ;;
+            "phaseOneSubmission")
+              echo "Running tabular data submission..."
+              chmod +x scripts/submitLyricData.sh
+              scripts/submitLyricData.sh
+              ;;
             "stageDev")
               echo "Running Stage Dev deployment..."
               chmod +x scripts/deployments/stageDev.sh
               scripts/deployments/stageDev.sh
               ;;
-            "loadLectern")
-              echo "Updating Lectern dictionary..."
-              chmod +x scripts/services/phase2/lecternSchemaUpload.sh
-              scripts/services/phase2/lecternSchemaUpload.sh
-              ;;
-            "registerDictionary")
-              echo "Updating registering Lyric with a Lectern dictionary..."
-              chmod +x scripts/services/phase2/lyricRegisterDictionary.sh
-              scripts/services/phase2/lyricRegisterDictionary.sh
-              ;;
-            "loadLyric")
-              echo "Uploading mock data to Lyric..."
-              chmod +x scripts/services/phase2/lyricDataUpload.sh
-              scripts/services/phase2/lyricDataUpload.sh
-              ;;
-            "everything")
-              echo "Updating Lectern dictionary..."
-              chmod +x scripts/services/phase2/lecternSchemaUpload.sh
-              scripts/services/phase2/lecternSchemaUpload.sh
-              echo "Updating registering Lyric with a Lectern dictionary..."
-              chmod +x scripts/services/phase2/lyricRegisterDictionary.sh
-              scripts/services/phase2/lyricRegisterDictionary.sh
-              echo "Uploading mock data to Lyric..."
-              chmod +x scripts/services/phase2/lyricDataUpload.sh
-              scripts/services/phase2/lyricDataUpload.sh
-              echo "Uploading mock data to Lyric..."
-              chmod +x scripts/services/phase2/indexTabularData.sh
-              scripts/services/phase2/indexTabularData.sh
-              ;;
-            "indexTabular")
-              echo "Uploading mock data to Lyric..."
-              chmod +x scripts/services/phase2/indexTabularData.sh
-              scripts/services/phase2/indexTabularData.sh
-              ;;
-            "createStudy")
-              echo "Updating Song with a StudyId..."
-              chmod +x scripts/services/phase3/songStudyCreation.sh
-              scripts/services/phase3/songStudyCreation.sh
-              ;;
-            "loadSongSchema")
-              echo "Updating Songs Schema..."
-              chmod +x scripts/services/phase3/songSchemaUpload.sh
-              scripts/services/phase3/songSchemaUpload.sh
-              ;;
-            "loadSongData")
-              echo "Loading Song Data..."
-              chmod +x scripts/services/phase3/songDataUpload.sh
-              scripts/services/phase3/songDataUpload.sh
-              ;;
-            "clean")
-              echo "Removing data..."
-              chmod +x scripts/services/phase1/clearElasticsearchData.sh
-              scripts/services/phase1/clearElasticsearchData.sh
+            "default")
+              echo "No profile set..."
               ;;
             *)
-              echo "No profile set..."
+              echo "Invalid profile specified."
+              exit 1
               ;;
           esac
           exit 0
@@ -169,72 +161,14 @@ services:
 
   # ================================================================================== #
   # ================================================================================== #
-  #                                    phase1:                                       #
+  #                                    phase1:                                         #
   #                               Search & Discovery                                   #
   # ================================================================================== #
-  # phase1 focuses on how you want your data displayed in the front-end portal.      #
+  # phase1 focuses on how you want your data displayed in the front-end portal.        #
   # Here you want to figure out how many data tables (Arrangers) you want and how you  #
   # want them configured. This is also a good time to do any theming of your portal.   #
   # through Stage.                                                                     #
   # ================================================================================== #
-
-  # ------------------------------------------------------------------------------------#
-  # Composer                                                                       #
-  # ------------------------------------------------------------------------------------#
-  # Tool for processing and uploading CSV files to Elasticsearch                        #
-  # Documentation can be found from ./apps/readme.md & ./docs/phase1.md               #
-  # ------------------------------------------------------------------------------------#
-  composer:
-    profiles: ["data", "config", "all", "platform"]
-    image: node:18-alpine
-    container_name: data-loader
-    ports:
-      - "9205:9205"
-    volumes:
-      - ./apps/composer:/composer
-      - ./data:/data
-      - ./configs/arrangerConfigs/tabularDataConfigs:/arrangerConfigs/tabularDataConfigs
-      - ./configs/elasticsearchConfigs:/elasticsearchConfigs/
-      - ./scripts:/scripts
-    environment:
-      PROFILE: ${PROFILE:-data}
-      # Common variables
-      TABULAR_DATA_FILE: /data/tabularData/clinical_data.csv
-      TABULAR_INDEX_NAME: tabular-index
-      ES_URL: http://elasticsearch:9200
-      # Config directories
-      ES_CONFIG_DIR: /elasticsearchConfigs/tabular_data_index_template.json
-      ARRANGER_CONFIG_DIR: /arrangerConfigs/tabularDataConfigs
-    command: >
-      sh -c '
-        case "$PROFILE" in
-          "data")
-            echo "Running tabular data submission..."
-            chmod +x scripts/services/phase1/dataSubmission.sh
-            scripts/services/phase1/dataSubmission.sh
-            ;;
-          "config")
-            echo "Generating configurations..."
-            chmod +x scripts/services/phase1/generateConfigs.sh
-            scripts/services/phase1/generateConfigs.sh
-            ;;
-          "all")
-            echo "Generating configurations..."
-            chmod +x scripts/services/phase1/generateConfigs.sh
-            scripts/services/phase1/generateConfigs.sh
-            echo "Running tabular data submission..."
-            chmod +x scripts/services/phase1/dataSubmission.sh
-            scripts/services/phase1/dataSubmission.sh
-            ;;
-          *)
-            echo "Invalid profile specified"
-            exit 1
-            ;;
-        esac
-        exit 0
-       '
-    networks:
-      - conductor-network
 
   # --------------------------------------------------------------------------------------#
   # Elasticsearch                                                                         #
@@ -244,7 +178,7 @@ services:
   # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
   # --------------------------------------------------------------------------------------#
   elasticsearch:
-    profiles: ["phase1", "phase2", "phase3", "stageDev", "platform"]
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
     container_name: elasticsearch
     platform: linux/amd64
@@ -263,7 +197,7 @@ services:
         max-size: "50m"
         max-file: "10"
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/configs/elasticsearch/data
     healthcheck:
       test:
         "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
@@ -282,7 +216,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
   arranger-tabular:
-    profiles: ["phase1", "phase2", "phase3", "stageDev", "platform"]
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-tabular
     platform: linux/amd64
@@ -292,11 +226,7 @@ services:
     ports:
       - "5051:5051"
     volumes:
-      - ./configs/arrangerConfigs/tabularDataConfigs/base.json:/app/modules/server/configs/base.json
-      - ./configs/arrangerConfigs/tabularDataConfigs/extended.json:/app/modules/server/configs/extended.json
-      - ./configs/arrangerConfigs/tabularDataConfigs/facets.json:/app/modules/server/configs/facets.json
-      - ./configs/arrangerConfigs/tabularDataConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-      - ./configs/arrangerConfigs/tabularDataConfigs/table.json:/app/modules/server/configs/table.json
+      - ./apps/composer/configs/arrangerConfigs/tabularDataConfigs:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -317,7 +247,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Stage/overview     #
   # ------------------------------------------------------------------------------------#
   stage:
-    profiles: ["phase1", "phase2", "phase3", "platform"]
+    profiles: ["phase1", "phase2", "phase3", "default"]
     image: localstageimage:1.0
     container_name: stage
     pull_policy: never
@@ -378,7 +308,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/under-development/lectern/      #
   # -----------------------------------------------------------------------------------#
   lectern:
-    profiles: ["phase2", "phase3", "platform"]
+    profiles: ["phase2", "phase3", "default"]
     image: ghcr.io/overture-stack/lectern:2.0.0-beta.3
     container_name: lectern
     platform: linux/amd64
@@ -406,7 +336,7 @@ services:
   # Database used by Lectern to store its schemas.                                     #
   # -----------------------------------------------------------------------------------#
   lectern-db:
-    profiles: ["phase2", "phase3", "platform"]
+    profiles: ["phase2", "phase3", "default"]
     image: bitnami/mongodb:4.0
     container_name: lectern-db
     platform: linux/amd64
@@ -431,7 +361,7 @@ services:
           "-p",
           "admin123",
           "--eval",
-          "db.adminCommand('ping')"
+          "db.adminCommand('ping')",
         ]
       interval: 10s
       timeout: 10s
@@ -447,7 +377,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/under-development/lyric/        #
   # -----------------------------------------------------------------------------------#
   lyric:
-    profiles: ["phase2", "phase3", "platform"]
+    profiles: ["phase2", "phase3", "default"]
     image: ghcr.io/overture-stack/lyric:0.6.0
     container_name: lyric
     platform: linux/amd64
@@ -477,10 +407,10 @@ services:
   # -----------------------------------------------------------------------------------#
   # LyricDb                                                                            #
   # -----------------------------------------------------------------------------------#
-  # Database used by Lyric to store its tabular data.                                  #                                                               #
+  # Database used by Lyric to store its tabular data.                                  #
   # -----------------------------------------------------------------------------------#
   lyric-db:
-    profiles: ["phase2", phase3, "platform"]
+    profiles: ["phase2", phase3, "default"]
     image: postgres:15-alpine
     container_name: lyric-db
     platform: linux/amd64
@@ -505,13 +435,12 @@ services:
   # Maestro (Tabular Data)                                                             #
   # -----------------------------------------------------------------------------------#
   # Indexs tabular data into Elasticsearch on publication                              #
-  # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview
-  # Organization === study
-  # id === analysisId
+  # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview  #
+  # Organization === study                                                             #
+  # id === analysisId                                                                  #
   # -----------------------------------------------------------------------------------#
-  # One maestro
   maestro:
-    profiles: ["phase2", phase3, "platform"]
+    profiles: ["phase2", phase3, "default"]
     image: ghcr.io/overture-stack/maestro:e868d03
     container_name: maestro
     platform: linux/amd64
@@ -578,11 +507,11 @@ services:
   # -----------------------------------------------------------------------------------#
   # Song                                                                               #
   # -----------------------------------------------------------------------------------#
-  # Catalog and manage metadata associated to file data                                #                                                               #
+  # Catalog and manage metadata associated to file data                                #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Song/overview     #
   # -----------------------------------------------------------------------------------#
   song:
-    profiles: ["phase3", "platform"]
+    profiles: ["phase3", "default"]
     image: ghcr.io/overture-stack/song-server:a81a8e48
     container_name: song
     platform: linux/amd64
@@ -619,10 +548,10 @@ services:
   # -----------------------------------------------------------------------------------#
   # SongDb                                                                             #
   # -----------------------------------------------------------------------------------#
-  # Database used by Lyric to store its tabular data.                                  #                                                               #
+  # Database used by Lyric to store its tabular data.                                  #
   # -----------------------------------------------------------------------------------#
   song-db:
-    profiles: ["phase3", "platform"]
+    profiles: ["phase3", "default"]
     depends_on:
       - conductor
     image: postgres:11.1
@@ -650,10 +579,10 @@ services:
   # Score                                                                              #
   # -----------------------------------------------------------------------------------#
   # Transfer file data to and from any S3 object storage.                              #
-  # Documentation Link: https://docs.overture.bio/docs/core-software/Score/overview    #                                                            #
+  # Documentation Link: https://docs.overture.bio/docs/core-software/Score/overview    #
   # -----------------------------------------------------------------------------------#
   score:
-    profiles: ["phase3", "platform"]
+    profiles: ["phase3", "default"]
     image: ghcr.io/overture-stack/score-server:6c4a3a3c
     container_name: score
     platform: linux/amd64
@@ -692,7 +621,7 @@ services:
   # http://docs.overture.bio/guides/deployment-guide/data-management-&-storage         #
   # -----------------------------------------------------------------------------------#
   minio:
-    profiles: ["phase3", "platform"]
+    profiles: ["phase3", "default"]
     image: minio/minio:RELEASE.2018-05-11T00-29-24Z
     container_name: minio
     platform: linux/amd64
@@ -719,7 +648,7 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
   arranger-file:
-    profiles: ["phase3", "stageDev", "platform"]
+    profiles: ["phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-file
     platform: linux/amd64
@@ -729,11 +658,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./configs/arrangerConfigs/fileDataConfigs/base.json:/app/modules/server/configs/base.json
-      - ./configs/arrangerConfigs/fileDataConfigs/extended.json:/app/modules/server/configs/extended.json
-      - ./configs/arrangerConfigs/fileDataConfigs/facets.json:/app/modules/server/configs/facets.json
-      - ./configs/arrangerConfigs/fileDataConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-      - ./configs/arrangerConfigs/fileDataConfigs/table.json:/app/modules/server/configs/table.json
+      - ./apps/composer/configs/arrangerConfigs/fileDataConfigs:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200

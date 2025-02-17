@@ -1,145 +1,178 @@
-import { Command } from 'commander';
-import { Config } from '../types/processor';
-import * as path from 'path';
+import { Command } from "commander";
+import * as path from "path";
+import { Profile, CLIMode, CLIOutput, EnvConfig } from "../types";
+import {
+  validateEnvironment,
+  validateDependencies,
+} from "../services/validations";
+import chalk from "chalk";
+export { Profile, CLIMode };
 
-type CLIMode = 'dictionary' | 'song' | 'upload' | 'mapping' | 'arranger' | 'all';
-
-interface CLIOutput {
-  config: Config;
-  filePaths: string[];
-  outputPath: string;
-  mode: CLIMode;
-  arrangerConfigDir?: string;
-  dictionaryConfig?: {
-    name: string;
-    description: string;
-    version: string;
-  };
-  songConfig?: {
-    name: string;
-    fileTypes?: string[];
+function loadEnvironmentConfig(): EnvConfig {
+  return {
+    composerPath: process.env.COMPOSER_PATH || "/composer",
+    dataFile: process.env.TABULAR_DATA_FILE,
+    indexName: process.env.TABULAR_INDEX_NAME,
+    fileMetadataSample:
+      process.env.FILE_METADATA_SAMPLE || "/data/sampleData/fileMetadata.json",
+    tabularSample: process.env.TABULAR_SAMPLE || "/data/tabularData.csv",
+    lyricUploadDirectory:
+      process.env.LYRIC_UPLOAD_DIRECTORY || "/data/lyricUploads/",
+    songUploadDirectory:
+      process.env.SONG_UPLOAD_DIRECTORY || "/data/songUploads/",
+    defaultStudyId: process.env.DEFAULT_STUDY_ID || "demo",
+    songSchema: process.env.SONG_SCHEMA || "/configs/songSchema",
+    lecternDictionary:
+      process.env.LECTERN_DICTIONARY || "/configs/lecternDictionaries",
+    esConfigDir: process.env.ES_CONFIG_DIR || "/configs/elasticsearchConfigs",
+    arrangerConfigDir:
+      process.env.ARRANGER_CONFIG_DIR || "/configs/arrangerConfigs",
   };
 }
 
-export function setupCLI(): CLIOutput {
+export async function setupCLI(): Promise<CLIOutput> {
   const program = new Command();
 
-  // Configure the CLI application with name and description
+  // Load environment configuration
+  const envConfig = loadEnvironmentConfig();
+
+  // Validate environment and dependencies
+  const isEnvironmentValid = await validateEnvironment({
+    composerPath: envConfig.composerPath,
+    dataFile: envConfig.dataFile,
+    esConfigDir: envConfig.esConfigDir,
+    arrangerConfigDir: envConfig.arrangerConfigDir,
+    lecternDictionary: envConfig.lecternDictionary,
+    songSchema: envConfig.songSchema,
+  });
+
+  if (!isEnvironmentValid) {
+    console.error(chalk.red("Environment validation failed. Exiting..."));
+    process.exit(1);
+  }
+
+  const areDependenciesValid = await validateDependencies(
+    envConfig.composerPath
+  );
+  if (!areDependenciesValid) {
+    console.error(chalk.red("Dependencies validation failed. Exiting..."));
+    process.exit(1);
+  }
+
   program
-    .name('composer')
-    .description('Process files into Dictionary, Song Schema, or Elasticsearch')
+    .name("composer")
+    .description("Process files into Dictionary, Song Schema, or Elasticsearch")
     .option(
-      '-m, --mode <mode>',
-      'Operation mode: dictionary, song, upload, mapping, arranger, or all',
-      'upload'
+      "-p, --profile <profile>",
+      "Execution profile",
+      "default" as Profile
     )
-    .requiredOption('-f, --files <paths...>', 'Input file paths (space separated)')
-    .option('-i, --index <name>', 'Elasticsearch index name', 'tabular-index')
-    .option('-o, --output <file>', 'Output file path for generated schemas or mapping')
+    .requiredOption(
+      "-f, --files <paths...>",
+      "Input file paths (CSV or JSON, space separated)"
+    )
+    .option("-i, --index <name>", "Elasticsearch index name", "tabular-index")
     .option(
-      '--arranger-config-dir <path>',
-      'Directory to output Arranger configuration files (required for arranger mode)'
+      "-o, --output <file>",
+      "Output file path for generated schemas or mapping"
     )
-    // Dictionary specific options
-    .option('-n, --name <name>', 'Dictionary/Schema name (required for dictionary and song modes)')
     .option(
-      '-d, --description <text>',
-      'Dictionary description',
-      'Generated dictionary from CSV files'
+      "--arranger-config-dir <path>",
+      "Directory for Arranger configurations"
     )
-    .option('-v, --version <version>', 'Dictionary version', '1.0.0')
-    // Song specific options
-    .option('--file-types <types...>', 'Allowed file types for Song schema (optional)')
-    // Elasticsearch specific options
-    .option('--url <url>', 'Elasticsearch URL', 'http://localhost:9200')
-    .option('-u, --user <username>', 'Elasticsearch username', 'elastic')
-    .option('-p, --password <password>', 'Elasticsearch password', 'myelasticpassword')
-    .option('-b, --batch-size <size>', 'Batch size for processing', '1000')
-    .option('--delimiter <char>', 'CSV delimiter', ',');
+    .option("-n, --name <name>", "Dictionary/Schema name")
+    .option(
+      "-d, --description <text>",
+      "Dictionary description",
+      "Generated dictionary from CSV files"
+    )
+    .option("-v, --version <version>", "Dictionary version", "1.0.0")
+    .option("--file-types <types...>", "Allowed file types for Song schema")
+    .option("--delimiter <char>", "CSV delimiter", ",");
 
   program.parse();
   const options = program.opts();
 
-  // Validate mode-specific requirements
-  switch (options.mode as CLIMode) {
-    case 'dictionary':
-      if (!options.name) {
-        console.error('Error: --name is required when using dictionary mode');
-        process.exit(1);
-      }
-      if (!options.output) {
-        options.output = `./${options.name}-dictionary.json`;
-      }
-      break;
-
-    case 'song':
-      if (!options.name) {
-        console.error('Error: --name is required when using song mode');
-        process.exit(1);
-      }
-      if (!options.output) {
-        options.output = `./${options.name}-song-schema.json`;
-      }
-      break;
-
-    case 'upload':
-      // No special validation needed for upload mode
-      break;
-
-    case 'mapping':
-      if (!options.output) {
-        options.output = `./${options.index}-mapping.json`;
-      }
-      break;
-
-    case 'arranger':
-    case 'all':
-      if (!options.arrangerConfigDir) {
-        console.error('Error: --arranger-config-dir is required when using arranger or all mode');
-        process.exit(1);
-      }
-      if (!options.output) {
-        options.output = path.join(path.dirname(options.arrangerConfigDir), 'mapping.json');
-      }
-      break;
-
-    default:
-      console.error(`Error: Invalid mode '${options.mode}'`);
-      process.exit(1);
+  // Map profile to mode if not explicitly set
+  if (!options.mode) {
+    switch (options.profile as Profile) {
+      case "songSchema":
+        options.mode = "song";
+        break;
+      case "generateLecternDictionary":
+        options.mode = "dictionary";
+        break;
+      case "generateElasticSearchMapping":
+        options.mode = "mapping";
+        break;
+      case "generateArrangerConfigs":
+        options.mode = "arranger";
+        break;
+      case "generateConfigs":
+        options.mode = "all";
+        break;
+      default:
+        throw new Error("Invalid profile");
+    }
   }
 
-  // Return structured configuration
+  // Set default output paths based on profile
+  if (!options.output) {
+    switch (options.profile as Profile) {
+      case "songSchema":
+        options.output = path.join(envConfig.songSchema || "", "schema.json");
+        break;
+      case "generateLecternDictionary":
+        options.output = path.join(
+          envConfig.lecternDictionary || "",
+          "dictionary.json"
+        );
+        break;
+      case "generateElasticSearchMapping":
+        options.output = path.join(envConfig.esConfigDir || "", "mapping.json");
+        break;
+      case "generateArrangerConfigs":
+        options.arrangerConfigDir = envConfig.arrangerConfigDir;
+        options.output = path.join(
+          envConfig.arrangerConfigDir || "",
+          "mapping.json"
+        );
+        break;
+      case "generateConfigs":
+        options.arrangerConfigDir = envConfig.arrangerConfigDir;
+        options.output = envConfig.esConfigDir;
+        break;
+    }
+  }
+
   return {
     config: {
       elasticsearch: {
-        url: options.url,
-        index: options.index,
-        user: options.user,
-        password: options.password
+        index: options.index || envConfig.indexName || "your_index_name",
       },
-      batchSize: parseInt(options.batchSize),
-      delimiter: options.delimiter
+      batchSize: options.batchSize || 1000,
+      delimiter: options.delimiter || ",",
     },
+    profile: options.profile as Profile,
     filePaths: options.files,
     outputPath: options.output,
     mode: options.mode as CLIMode,
-    arrangerConfigDir: options.arrangerConfigDir,
-    // Only include dictionary config if in dictionary mode
+    envConfig,
+    arrangerConfigDir: options.arrangerConfigDir || envConfig.arrangerConfigDir,
     dictionaryConfig:
-      options.mode === 'dictionary'
+      options.mode === "dictionary"
         ? {
             name: options.name,
             description: options.description,
-            version: options.version
+            version: options.version,
           }
         : undefined,
-    // Only include song config if in song mode
     songConfig:
-      options.mode === 'song'
+      options.mode === "song"
         ? {
             name: options.name,
-            fileTypes: options.fileTypes
+            fileTypes: options.fileTypes,
           }
-        : undefined
+        : undefined,
   };
 }

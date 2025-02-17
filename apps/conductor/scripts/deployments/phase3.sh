@@ -84,7 +84,7 @@ rs "${P1_SCRIPT_DIR}/stageCheck.sh"
 
 # Check Arranger
 echo -e "\033[1;35m[12/13]\033[0m Checking Arranger"
-rs "${P1_SCRIPT_DIR}/arrangerCheck.sh"
+rs "${P3_SCRIPT_DIR}/arrangerCheck.sh"
 
 # Check Maestro
 echo -e "\033[1;35m[13/13]\033[0m Checking Maestro" 

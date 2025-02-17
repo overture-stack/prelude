@@ -11,7 +11,7 @@ import chalk from "chalk";
  * - Parsing individual CSV lines into arrays
  * - Converting CSV rows into structured records with proper type conversion
  *
- * Used by the Composer to prepare data for Elasticsearch ingestion.
+ * Used by the Conductor to prepare data for Elasticsearch ingestion.
  * Handles type conversion, null values, and submitter metadata.
  */
 
