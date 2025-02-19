@@ -122,7 +122,8 @@ export function inferFieldType(
  */
 export function generateMappingFromCSV(
   csvHeaders: string[],
-  sampleData: Record<string, string>
+  sampleData: Record<string, string>,
+  indexName: string // New parameter
 ): ElasticsearchMapping {
   try {
     process.stdout.write(chalk.cyan("\nGenerating Elasticsearch mapping...\n"));
@@ -133,11 +134,11 @@ export function generateMappingFromCSV(
       properties[header] = inferFieldType(header, sampleData[header]);
     });
 
-    // Create complete mapping with metadata
+    // Create complete mapping with dynamic index name
     const mapping: ElasticsearchMapping = {
-      index_patterns: ["tabular-*"],
+      index_patterns: [`${indexName}-*`],
       aliases: {
-        data_centric: {},
+        [`${indexName}_centric`]: {},
       },
       mappings: {
         properties: {
@@ -145,7 +146,6 @@ export function generateMappingFromCSV(
             type: "object",
             properties: {
               ...properties,
-              // Add standard submission metadata
               submission_metadata: {
                 type: "object",
                 properties: {
