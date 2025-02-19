@@ -9,7 +9,7 @@ services:
         "generateConfigs",
         "default",
       ]
-    image: node:18-alpine
+    image: node:22-alpine
     container_name: composer
     ports:
       - "9205:9205"
@@ -21,7 +21,6 @@ services:
     environment:
       PROFILE: ${PROFILE:-default}
       # User Input Paths
-      COMPOSER_PATH: /composer
       TABULAR_DATA_FILE: /data/tabularData.csv
       TABULAR_INDEX_NAME: tabular-index
       FILE_METADATA_SAMPLE: /data/sampleData/fileMetadata.json
@@ -39,28 +38,79 @@ services:
       sh -c '
         set -e
         echo "Profile is set to: $PROFILE"
+        
+        # Ensure output directories exist
+        mkdir -p /configs/songSchema \
+                 /configs/lecternDictionaries \
+                 /configs/elasticsearchConfigs \
+                 /configs/arrangerConfigs
+        
+        # Install dependencies and build
+        npm install
+        npm run build
+        npm install -g .
+        
         case "$PROFILE" in
+          "generateSongSchema")
+            echo "Generating Song Schema..." &&
+            npm run composer -- \
+              --profile generateSongSchema \
+              --files /data/sampleData/fileMetadata.json \
+              --output /configs/songSchema/schema.json \
+              --name "Study Song Schema"
+            ;;
+          
+          "generateLecternDictionary")
+            echo "Generating Lectern Dictionary..." &&
+            npm run composer -- \
+              --profile generateLecternDictionary \
+              --files /data/tabularData.csv \
+              --output /configs/lecternDictionaries/dictionary.json \
+              --name "Study Dictionary" \
+              --description "Dictionary generated from study data" \
+              --version "1.0.0"
+            ;;
+          
+          "generateElasticSearchMapping")
+            echo "Generating Elasticsearch Mapping..." &&
+            composer \
+              --profile generateElasticSearchMapping \
+              --files /data/tabularData.csv \
+              --output /configs/elasticsearchConfigs/mapping.json \
+              --index tabular-index \
+            ;;
+          
+          "generateArrangerConfigs")
+            echo "Generating Arranger Configs..." &&
+            npm run composer -- \
+              --profile generateArrangerConfigs \
+              --files /configs/elasticsearchConfigs/mapping.json \
+              --output /configs/arrangerConfigs \
+              --arranger-doc-type file
+            ;;
+          
           "generateConfigs")
-            echo "Installing dependencies..." &&
-            npm install &&
-            npm run build &&
-            node dist/main.js \
-              --profile "$PROFILE" \
-              --f "${TABULAR_SAMPLE:-/data/tabularData.csv}" \
-              --f "${FILE_METADATA_SAMPLE:-/data/sampleData/fileMetadata.json}" \
-              --index "${TABULAR_INDEX_NAME:-tabular-index}" \
-              --output "${ES_CONFIG_DIR:-/configs/elasticsearchConfigs}" \
-              --arranger-config-dir "${ARRANGER_CONFIG_DIR:-/configs/arrangerConfigs}"
+            echo "Generating All Configurations..." &&
+            npm run composer -- \
+              --profile generateConfigs \
+              --files /data/tabularData.csv /data/sampleData/fileMetadata.json \
+              --output /configs
             ;;
-          "default") 
-            echo "No profile set..."
+          
+          "default")
+            echo "No specific profile selected. Exiting..." &&
+            exit 0
             ;;
+          
           *)
-            echo "Invalid profile specified."
+            echo "Invalid profile specified: $PROFILE" &&
             exit 1
             ;;
         esac
-        exit 0
+        
+        # Verify generated configurations
+        echo "Generated Configurations:"
+        find /configs -type f
       '
     networks:
       - conductor-network

@@ -1,9 +1,12 @@
-/**
- * Arranger config definitions
- */
+export interface ArrangerConfig {
+  documentType: "file" | "analysis";
+  extendedFields?: string[];
+  tableColumns?: string[];
+  facetFields?: string[];
+}
 
 export interface ArrangerBaseConfig {
-  documentType: 'file' | 'analysis';
+  documentType: "file" | "analysis";
   index: string;
 }
 

@@ -1,4 +1,4 @@
-import type { ElasticsearchMapping, ElasticsearchField } from '../types/elasticsearch';
+import type { ElasticsearchMapping, ElasticsearchField } from "../types";
 import type {
   ArrangerBaseConfig,
   ExtendedField,
@@ -6,36 +6,56 @@ import type {
   TableColumn,
   ArrangerTableConfig,
   FacetAggregation,
-  ArrangerFacetsConfig
-} from '../types/arranger';
+  ArrangerFacetsConfig,
+} from "../types";
 
+// ---- Field Name Formatting Utilities ----
+
+/**
+ * Joins path segments with dots to create standard field names
+ * Example: ['data', 'user', 'name'] → 'data.user.name'
+ */
 function formatFieldName(path: string[]): string {
-  return path.join('.');
+  return path.join(".");
 }
 
+/**
+ * Joins path segments with double underscores for facet field names
+ * Example: ['data', 'user', 'name'] → 'data__user__name'
+ */
 function formatFacetFieldName(path: string[]): string {
-  return path.join('__');
+  return path.join("__");
 }
 
+/**
+ * Formats field names for display by capitalizing words and replacing separators
+ * Example: 'user.first_name' → 'User First Name'
+ */
 function formatDisplayName(fieldName: string): string {
   return fieldName
     .split(/[._]/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
+// ---- Path and Query Generation ----
+
+/**
+ * Generates JSON path and GraphQL query for nested fields
+ * Only generates for fields that contain dots (nested fields)
+ * Example: 'user.address.city' →
+ *   jsonPath: '$.user.address.city'
+ *   query: 'user { address { city } }'
+ */
 function generateJsonPathAndQuery(
   fieldName: string
 ): { jsonPath: string; query: string } | undefined {
-  // Only generate for nested fields
-  if (!fieldName.includes('.')) {
+  if (!fieldName.includes(".")) {
     return undefined;
   }
 
-  const parts = fieldName.split('.');
-  const jsonPath = `$.${parts.join('.')}`;
-
-  // Properly close all nested field braces
+  const parts = fieldName.split(".");
+  const jsonPath = `$.${parts.join(".")}`;
   const query =
     parts
       .map((part, index) => {
@@ -44,14 +64,20 @@ function generateJsonPathAndQuery(
         }
         return `${part} {`;
       })
-      .join(' ') + ' }'.repeat(parts.length - 1); // Adding the correct amount of closing braces
+      .join(" ") + " }".repeat(parts.length - 1);
 
-  return {
-    jsonPath,
-    query
-  };
+  return { jsonPath, query };
 }
 
+// ---- Field Processing ----
+
+/**
+ * Processes Elasticsearch mapping fields to generate Arranger configurations
+ * Handles nested fields recursively and generates:
+ * - Extended fields with display names
+ * - Table columns with visibility settings
+ * - Facet aggregations for keyword fields
+ */
 function processFields(
   properties: Record<string, ElasticsearchField>,
   parentPath: string[] = []
@@ -67,7 +93,7 @@ function processFields(
   for (const [fieldName, field] of Object.entries(properties)) {
     const currentPath = [...parentPath, fieldName];
 
-    if (field.type === 'object' && field.properties) {
+    if (field.type === "object" && field.properties) {
       // Recursively process nested fields
       const nestedResults = processFields(field.properties, currentPath);
       extendedFields.push(...nestedResults.extendedFields);
@@ -79,15 +105,15 @@ function processFields(
       // Add to extended fields
       extendedFields.push({
         displayName: formatDisplayName(formattedFieldName),
-        fieldName: formattedFieldName
+        fieldName: formattedFieldName,
       });
 
       // Add to table columns
       const tableColumn: TableColumn = {
         canChangeShow: true,
         fieldName: formattedFieldName,
-        show: currentPath.length === 2,
-        sortable: true
+        show: currentPath.length === 2, // Show by default if it's a top-level field
+        sortable: true,
       };
 
       // Add jsonPath and query for nested fields
@@ -100,11 +126,11 @@ function processFields(
       tableColumns.push(tableColumn);
 
       // Add to facet aggregations for keyword fields
-      if (field.type === 'keyword') {
+      if (field.type === "keyword") {
         facetAggregations.push({
           active: true,
           fieldName: formatFacetFieldName(currentPath),
-          show: true
+          show: true,
         });
       }
     }
@@ -113,6 +139,17 @@ function processFields(
   return { extendedFields, tableColumns, facetAggregations };
 }
 
+// ---- Main Config Generation ----
+
+/**
+ * Generates Arranger configurations from an Elasticsearch mapping
+ * Creates four configuration files:
+ * - base.json: Basic index configuration
+ * - extended.json: Field display names and metadata
+ * - table.json: Table column configuration
+ * - facets.json: Search facet configuration
+ *   TODO update documentType to be dynamic based in user input
+ */
 export function generateArrangerConfigs(
   mapping: ElasticsearchMapping,
   indexName: string
@@ -126,37 +163,28 @@ export function generateArrangerConfigs(
     mapping.mappings.properties
   );
 
-  const base: ArrangerBaseConfig = {
-    documentType: 'file',
-    index: indexName
-  };
-
-  const extended: ArrangerExtendedConfig = {
-    extended: extendedFields
-  };
-
-  const table: ArrangerTableConfig = {
-    table: {
-      columns: tableColumns
-    }
-  };
-
-  const facets: ArrangerFacetsConfig = {
-    facets: {
-      aggregations: facetAggregations
-    }
-  };
-
   return {
-    base,
-    extended,
-    table,
-    facets
+    base: {
+      documentType: "file",
+      index: indexName,
+    },
+    extended: {
+      extended: extendedFields,
+    },
+    table: {
+      table: {
+        columns: tableColumns,
+      },
+    },
+    facets: {
+      facets: {
+        aggregations: facetAggregations,
+      },
+    },
   };
 }
 
-// Example usage:
-/*
+/* Usage Example:
 const mapping = // Your Elasticsearch mapping
 const configs = generateArrangerConfigs(mapping, 'your-index-name');
 

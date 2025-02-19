@@ -4,6 +4,51 @@
 #                                                                                    #
 # ================================================================================== #
 
+help:
+	@echo "================ Conductor and Composer Makefile Commands ================"
+	@echo ""
+	@echo "Conductor Development Environments:"
+	@echo "  phase1         - Start Phase 1 development environment"
+	@echo "  phase2         - Start Phase 2 development environment"
+	@echo "  phase3         - Start Phase 3 development environment"
+	@echo "  stage-dev      - Start Stage development environment"
+	@echo ""
+	@echo "Conductor Data Loading and Management:"
+	@echo "  load-data               - Load sample data into Elasticsearch"
+	@echo "  load-lectern-schema     - Load dictionary schema to Lectern"
+	@echo "  register-dictionary     - Register dictionary in Lyric"
+	@echo "  load-lyric              - Submit tabular data to Lyric"
+	@echo "  index-lyric-data        - Index tabular data in Lyric"
+	@echo ""
+	@echo "Conductor Song-related Commands:"
+	@echo "  create-song-study       - Create a Song Study"
+	@echo "  load-song-schema        - Load a Song Schema"
+	@echo "  load-song-data          - Submit Song Data"
+	@echo "  index-song-data         - Index Song Data"
+	@echo ""
+	@echo "Conductor System Management:"
+	@echo "  down          - Gracefully shutdown all containers"
+	@echo "  reset         - DANGER: Remove all containers and volumes (DATA LOSS)"
+	@echo "  clean-data    - Remove all documents from Elasticsearch"
+	@echo ""
+	@echo "Composer Configuration Generation:"
+	@echo "  generate-song-schema           - Generate Song Schema configuration"
+	@echo "  generate-lectern-dictionary    - Generate Lectern Dictionary"
+	@echo "  generate-elasticsearch-mapping - Generate Elasticsearch Mapping"
+	@echo "  generate-arranger-configs      - Generate Arranger Configurations"
+	@echo "  generate-all-configs           - Generate All Configurations"
+	@echo "  run-default                    - Run default Composer profile"
+	@echo "  composer-clean                 - Remove Composer Docker containers and volumes"
+	@echo ""
+	@echo "General Usage:"
+	@echo "  make help     - Show this help message"
+	@echo "  make <command> - Run a specific command"
+	@echo ""
+	@echo "Notes:"
+	@echo "  - Always verify data-sensitive operations"
+	@echo "  - Use with caution when running reset or clean commands"
+	@echo "  - Ensure Docker is running before executing commands"
+	@echo "==============================================================="
 
 # Define all phony targets (targets that don't create files)
 .PHONY: dev-phase1 dev-phase2 dev-phase3 dev-stage clean-data reset-volumes load-data generate-configs setup-all down reset
@@ -105,31 +150,43 @@ clean-data:
 # ================================================================================== #
 
 # Define phony targets
-.PHONY: generate-song-schema generate-lectern-dictionary generate-elasticsearch-mapping generate-arranger-configs generate-all-configs run-default clean
+.PHONY: generate-song-schema generate-lectern-dictionary generate-elasticsearch-mapping \
+        generate-arranger-configs generate-all-configs run-default clean help
 
 # Generate Song schema
 generate-song-schema:
-	docker compose -f docker-composer.yml run --rm -e PROFILE=generateSongSchema composer
+	@echo "Generating Song Schema..."
+	@docker compose -f ./docker-composer.yml  run --rm -e PROFILE=generateSongSchema composer
 
 # Generate Lectern dictionary
 generate-lectern-dictionary:
-	docker compose -f docker-composer.yml run --rm -e PROFILE=generateLecternDictionary composer
+	@echo "Generating Lectern Dictionary..."
+	@docker compose -f ./docker-composer.yml run --rm -e PROFILE=generateLecternDictionary composer
 
 # Generate Elasticsearch mapping
 generate-elasticsearch-mapping:
-	docker compose -f docker-composer.yml run --rm -e PROFILE=generateElasticSearchMapping composer
+	@echo "Generating Elasticsearch Mapping..."
+	PROFILE=generateElasticSearchMapping docker compose -f ./docker-composer.yml --profile generateElasticSearchMapping up
 
 # Generate Arranger configurations
 generate-arranger-configs:
-	docker compose -f docker-composer.yml run --rm -e PROFILE=generateArrangerConfigs composer
+	@echo "Generating Arranger Configurations..."
+	@docker compose -f ./docker-composer.yml up
 
+# Generate all configurations
 generate-all-configs:
-	PROFILE=generateConfigs docker compose -f docker-composer.yml --profile generateConfigs up --attach composer
+	@echo "Generating All Configurations..."
+	PROFILE=generateConfigs docker compose -f ./docker-composer.yml up 
 
 # Run default profile
 run-default:
-	docker compose -f docker-composer.yml run --rm -e PROFILE=default composer
+	@echo "Running Default Composer Profile..."
+	@docker compose -f ./docker-composer.yml run --rm -e PROFILE=default composer
 
 # Clean up Docker containers and volumes
 clean:
-	docker compose -f docker-composer.yml down -v
+	@echo "Cleaning up Docker containers and volumes..."
+	@docker compose -f ./docker-composer.yml down -v --remove-orphans
+
+# Default target
+default: help

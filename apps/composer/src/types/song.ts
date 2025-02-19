@@ -1,7 +1,3 @@
-/**
- * Song analysis/schema definitions
- */
-
 export interface SongOptions {
   fileTypes?: string[];
   externalValidations?: Array<{
