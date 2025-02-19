@@ -76,7 +76,7 @@ function generateJsonPathAndQuery(
  * Handles nested fields recursively and generates:
  * - Extended fields with display names
  * - Table columns with visibility settings
- * - Facet aggregations for keyword fields
+ * - Facet aggregations for various field types
  */
 function processFields(
   properties: Record<string, ElasticsearchField>,
@@ -125,8 +125,14 @@ function processFields(
 
       tableColumns.push(tableColumn);
 
-      // Add to facet aggregations for keyword fields
-      if (field.type === "keyword") {
+      // Add to facet aggregations for various field types
+      if (
+        field.type === "keyword" ||
+        field.type === "text" ||
+        field.type === "integer" ||
+        field.type === "float" ||
+        field.type === "date"
+      ) {
         facetAggregations.push({
           active: true,
           fieldName: formatFacetFieldName(currentPath),
