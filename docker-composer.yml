@@ -1,0 +1,120 @@
+services:
+  composer:
+    profiles:
+      [
+        "generateSongSchema",
+        "generateLecternDictionary",
+        "generateElasticSearchMapping",
+        "generateArrangerConfigs",
+        "generateConfigs",
+        "default",
+      ]
+    image: node:22-alpine
+    container_name: composer
+    ports:
+      - "9205:9205"
+    volumes:
+      - ./apps/composer:/composer
+      - ./apps/conductor:/conductor
+      - ./data:/data
+      - ./docker-compose.yml:/docker-compose.yml
+    environment:
+      PROFILE: ${PROFILE:-default}
+      # User Input Paths
+      TABULAR_DATA_FILE: /data/tabularData.csv
+      TABULAR_INDEX_NAME: tabular-index
+      FILE_METADATA_SAMPLE: /data/sampleData/fileMetadata.json
+      TABULAR_SAMPLE: /data/tabularData.csv
+      LYRIC_UPLOAD_DIRECTORY: /data/lyricUploads/
+      SONG_UPLOAD_DIRECTORY: /data/songUploads/
+      DEFAULT_STUDY_ID: demo
+      # Output Directories
+      SONG_SCHEMA: /configs/songSchema
+      LECTERN_DICTIONARY: /configs/lecternDictionaries
+      ES_CONFIG_DIR: /configs/elasticsearchConfigs
+      ARRANGER_CONFIG_DIR: /configs/arrangerConfigs
+    working_dir: /composer
+    command: >
+      sh -c '
+        set -e
+        echo "Profile is set to: $PROFILE"
+        
+        # Ensure output directories exist
+        mkdir -p /configs/songSchema \
+                 /configs/lecternDictionaries \
+                 /configs/elasticsearchConfigs \
+                 /configs/arrangerConfigs
+        
+        # Install dependencies and build
+        npm install
+        npm run build
+        npm install -g .
+        
+        case "$PROFILE" in
+          "generateSongSchema")
+            echo "Generating Song Schema..." &&
+            npm run composer -- \
+              --profile generateSongSchema \
+              --files /data/sampleData/fileMetadata.json \
+              --output /configs/songSchema/schema.json \
+              --name "Study Song Schema"
+            ;;
+          
+          "generateLecternDictionary")
+            echo "Generating Lectern Dictionary..." &&
+            npm run composer -- \
+              --profile generateLecternDictionary \
+              --files /data/tabularData.csv \
+              --output /configs/lecternDictionaries/dictionary.json \
+              --name "Study Dictionary" \
+              --description "Dictionary generated from study data" \
+              --version "1.0.0"
+            ;;
+          
+          "generateElasticSearchMapping")
+            echo "Generating Elasticsearch Mapping..." &&
+            composer \
+              --profile generateElasticSearchMapping \
+              --files /data/tabularData.csv \
+              --output /configs/elasticsearchConfigs/mapping.json \
+              --index tabular-index \
+            ;;
+          
+          "generateArrangerConfigs")
+            echo "Generating Arranger Configs..." &&
+            npm run composer -- \
+              --profile generateArrangerConfigs \
+              --files /configs/elasticsearchConfigs/mapping.json \
+              --output /configs/arrangerConfigs \
+              --arranger-doc-type file
+            ;;
+          
+          "generateConfigs")
+            echo "Generating All Configurations..." &&
+            npm run composer -- \
+              --profile generateConfigs \
+              --files /data/tabularData.csv /data/sampleData/fileMetadata.json \
+              --output /configs
+            ;;
+          
+          "default")
+            echo "No specific profile selected. Exiting..." &&
+            exit 0
+            ;;
+          
+          *)
+            echo "Invalid profile specified: $PROFILE" &&
+            exit 1
+            ;;
+        esac
+        
+        # Verify generated configurations
+        echo "Generated Configurations:"
+        find /configs -type f
+      '
+    networks:
+      - conductor-network
+
+networks:
+  conductor-network:
+    name: conductor-network
