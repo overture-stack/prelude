@@ -191,7 +191,8 @@ export function inferFieldType(
  * }
  */
 export function generateMappingFromJson(
-  jsonFilePath: string
+  jsonFilePath: string,
+  indexName: string // New parameter
 ): ElasticsearchMapping {
   try {
     process.stdout.write(
@@ -222,11 +223,11 @@ export function generateMappingFromJson(
       properties[key] = inferFieldType(key, value);
     }
 
-    // Create complete mapping
+    // Create complete mapping with dynamic index name
     const mapping: ElasticsearchMapping = {
-      index_patterns: ["json-data-*"],
+      index_patterns: [`${indexName}-*`],
       aliases: {
-        data_centric: {},
+        [`${indexName}_centric`]: {},
       },
       mappings: {
         properties: {

@@ -70,6 +70,16 @@ export class MappingCommand extends Command {
         ErrorCodes.INVALID_FILE
       );
     }
+
+    // Validate index pattern if provided
+    if (cliOutput.config.elasticsearch?.index) {
+      if (!/^[a-z0-9][a-z0-9_-]*$/.test(cliOutput.config.elasticsearch.index)) {
+        throw new ComposerError(
+          "Invalid index pattern. Must start with a letter or number and contain only lowercase letters, numbers, hyphens, and underscores",
+          ErrorCodes.INVALID_ARGS
+        );
+      }
+    }
   }
 
   /**
@@ -86,16 +96,16 @@ export class MappingCommand extends Command {
     if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
       outputPath = path.join(outputPath, "mapping.json");
     } else if (!outputPath.endsWith(".json")) {
-      outputPath = path.join(outputPath, "mapping.json");
+      outputPath = outputPath + ".json";
     }
 
     console.log(chalk.cyan("\nGenerating Elasticsearch Mapping..."));
 
     try {
       const mappingOptions: MappingOptions = {
-        index_pattern: cliOutput.config.elasticsearch.index,
-        number_of_shards: cliOutput.config.elasticsearch.shards,
-        number_of_replicas: cliOutput.config.elasticsearch.replicas,
+        index_pattern: cliOutput.config.elasticsearch?.index || "default",
+        number_of_shards: cliOutput.config.elasticsearch?.shards,
+        number_of_replicas: cliOutput.config.elasticsearch?.replicas,
       };
 
       // Generate mapping based on file type
@@ -124,7 +134,6 @@ export class MappingCommand extends Command {
       // Log summary
       this.logMappingSummary(finalMapping);
 
-      // Return the generated mapping to satisfy the test
       return finalMapping;
     } catch (error) {
       if (error instanceof ComposerError) {
@@ -198,7 +207,11 @@ export class MappingCommand extends Command {
       });
     }
 
-    return generateMappingFromCSV(Array.from(allHeaders), sampleData);
+    return generateMappingFromCSV(
+      Array.from(allHeaders),
+      sampleData,
+      options.index_pattern || "default"
+    );
   }
 
   /**
@@ -213,12 +226,16 @@ export class MappingCommand extends Command {
     filePaths: string[],
     options: MappingOptions
   ) {
-    return generateMappingFromJson(filePaths[0]);
+    return generateMappingFromJson(
+      filePaths[0],
+      options.index_pattern || "default"
+    );
   }
 
   /**
    * Logs a summary of the generated mapping including:
    * - Index pattern
+   * - Aliases
    * - Number of fields
    * - Shard configuration
    * - Replica configuration
@@ -227,8 +244,13 @@ export class MappingCommand extends Command {
     console.log(chalk.cyan("\nMapping Summary:"));
     console.log(chalk.white(`Index Pattern: ${mapping.index_patterns[0]}`));
     console.log(
+      chalk.white(`Aliases: ${Object.keys(mapping.aliases).join(", ")}`)
+    );
+    console.log(
       chalk.white(
-        `Number of Fields: ${Object.keys(mapping.mappings.properties).length}`
+        `Number of Fields: ${
+          Object.keys(mapping.mappings.properties.data.properties).length
+        }`
       )
     );
     console.log(chalk.white(`Shards: ${mapping.settings.number_of_shards}`));
