@@ -28,33 +28,35 @@ services:
         "stageDev",
         "default",
       ]
-    image: alpine/curl:8.8.0
+    image: node:22-alpine
     container_name: conductor
     ports:
       - "9204:9204"
     volumes:
-      - ./apps/composer/configs:/configs
+      - ./apps/composer/:/composer
       - ./data:/data
-      - ./apps/conductor/scripts:/scripts
+      - ./apps/conductor/:/conductor
       - ./volumes/health:/health
     environment:
       PROFILE: ${PROFILE:-default}
+      # Input Directories
+      TABULAR_DATA_FILE: /data/tabularData.csv
       # Output Directories
-      SONG_SCHEMA: /configs/songSchema
-      LECTERN_DICTIONARY: /configs/lecternDictionaries
-      ES_MAPPINGS: /configs/elasticsearchConfigs
-      ARRANGER_CONFIGS: /configs/arrangerConfigs
+      SONG_SCHEMA: conductor/configs/songSchema
+      LECTERN_DICTIONARY: conductor/configs/lecternDictionaries
+      ES_MAPPINGS: conductor/configs/elasticsearchConfigs
+      ARRANGER_CONFIGS: conductor/configs/arrangerConfigs
       # Elasticsearch service script variables
       ES_USER: elastic
       ES_PASS: myelasticpassword
       FILE_INDEX_NAME: file-index
-      FILE_ES_TEMPLATE_FILE: /configs/elasticsearchConfigs/file_data_index_template.json
+      FILE_ES_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
       # File Metadata Mapping
       FILE_ES_TEMPLATE_NAME: file_template
       FILE_ES_ALIAS_NAME: file_centric
       TABULAR_INDEX_NAME: tabular-index
       # Tabular Mapping
-      TABULAR_ES_TEMPLATE_FILE: /configs/elasticsearchConfigs/tabular_data_index_template.json
+      TABULAR_ES_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
       TABULAR_ES_TEMPLATE_NAME: tabular_template
       TABULAR_ES_ALIAS_NAME: tabular_centric
       # Service Ports
@@ -73,72 +75,73 @@ services:
     command: >
       sh -c '
         set -e
+          apk add --no-cache curl
           echo "Profile is set to: $PROFILE"
           case "$PROFILE" in
             "phase1")
               echo "Running phase1 deployment..."
-              chmod +x scripts/deployments/phase1.sh
-              scripts/deployments/phase1.sh
+              chmod +x conductor/scripts/deployments/phase1.sh
+              conductor/scripts/deployments/phase1.sh
               ;;
             "phase2")
               echo "Running phase2 deployment..."
-              chmod +x scripts/deployments/phase2.sh
-              scripts/deployments/phase2.sh
+              chmod +x conductor/scripts/deployments/phase2.sh
+              conductor/scripts/deployments/phase2.sh
               ;;
             "phase3")
               echo "Running phase3 deployment ..."
-              chmod +x scripts/deployments/phase3.sh
-              scripts/deployments/phase3.sh
+              chmod +x conductor/scripts/deployments/phase3.sh
+              conductor/scripts/deployments/phase3.sh
               ;;
             "loadLecternDictionary")
               echo "Updating Lectern dictionary..."
-              chmod +x scripts/lecternSchemaUpload.sh
-              scripts/lecternSchemaUpload.sh
+              chmod +x conductor/scripts/lecternSchemaUpload.sh
+              conductor/scripts/lecternSchemaUpload.sh
               ;;
             "registerLyricDictionary")
               echo "Registering Lyric with a Lectern dictionary..."
-              chmod +x scripts/lyricRegisterDictionary.sh
-              scripts/lyricRegisterDictionary.sh
+              chmod +x conductor/scripts/lyricRegisterDictionary.sh
+              conductor/scripts/lyricRegisterDictionary.sh
               ;;
             "submitLyricData")
               echo "Uploading mock data to Lyric..."
-              chmod +x scripts/lyricDataUpload.sh
-              scripts/lyricDataUpload.sh
+              chmod +x conductor/scripts/lyricDataUpload.sh
+              conductor/scripts/lyricDataUpload.sh
               ;;
             "indexLyricData")
               echo "Indexing tabular data..."
-              chmod +x scripts/indexTabularData.sh
-              scripts/indexTabularData.sh
+              chmod +x conductor/scripts/indexTabularData.sh
+              conductor/scripts/indexTabularData.sh
               ;;
             "loadSongSchema")
               echo "Updating Song schema..."
-              chmod +x scripts/songSchemaUpload.sh
-              scripts/songSchemaUpload.sh
+              chmod +x conductor/scripts/songSchemaUpload.sh
+              conductor/scripts/songSchemaUpload.sh
               ;;
             "createSongStudy")
               echo "Updating Song with a StudyId..."
-              chmod +x scripts/songStudyCreation.sh
-              scripts/songStudyCreation.sh
+              chmod +x conductor/scripts/songStudyCreation.sh
+              conductor/scripts/songStudyCreation.sh
               ;;
             "submitSongData")
               echo "Loading Song data..."
-              chmod +x scripts/songDataUpload.sh
-              scripts/songDataUpload.sh
+              chmod +x conductor/scripts/songDataUpload.sh
+              conductor/scripts/songDataUpload.sh
               ;;
             "indexSongData")
               echo "Indexing Song data..."
-              chmod +x scripts/indexSongData.sh
-              scripts/indexSongData.sh
+              chmod +x conductor/scripts/indexSongData.sh
+              conductor/scripts/indexSongData.sh
               ;;
             "phaseOneSubmission")
               echo "Running tabular data submission..."
-              chmod +x scripts/submitLyricData.sh
-              scripts/submitLyricData.sh
+              chmod +x conductor/scripts/services/phase1/dataSubmission.sh
+              conductor/scripts/services/phase1/dataSubmission.sh
               ;;
             "stageDev")
               echo "Running Stage Dev deployment..."
-              chmod +x scripts/deployments/stageDev.sh
-              scripts/deployments/stageDev.sh
+              chmod +x conductor/scripts/deployments/stageDev.sh
+              conductor/scripts/deployments/stageDev.sh
               ;;
             "default")
               echo "No profile set..."
@@ -226,7 +229,7 @@ services:
     ports:
       - "5051:5051"
     volumes:
-      - ./apps/composer/configs/arrangerConfigs/tabularDataConfigs:/app/modules/server/configs
+      - ./apps/conductor/configs/arrangerConfigs/tabularDataConfigs:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -658,7 +661,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./apps/composer/configs/arrangerConfigs/fileDataConfigs:/app/modules/server/configs
+      - ./apps/conductor/configs/arrangerConfigs/fileDataConfigs:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200

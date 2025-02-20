@@ -1,7 +1,6 @@
-#!/bin/sh
 
 # Configuration
-CSV_PROCESSOR_PATH="${CSV_PROCESSOR_PATH:-/composer}"
+CONDUCTOR_PATH="${CONDUCTOR_PATH:-/conductor}"
 DATA_FILE="${TABULAR_DATA_FILE}"
 INDEX_NAME="${TABULAR_INDEX_NAME}"
 
@@ -15,7 +14,7 @@ echo -e "\033[1;36mComposer:\033[0m Setting up elasticsearch ETL utility"
 
 # Install dependencies and run
 echo -e "\033[1;35m[1/2]\033[0m Installing Composer dependencies"
-cd $CSV_PROCESSOR_PATH && npm install --silent || {
+cd $CONDUCTOR_PATH && npm install --silent || {
     echo -e "\033[1;31mError:\033[0m Failed to install dependencies"
     exit 1
 }

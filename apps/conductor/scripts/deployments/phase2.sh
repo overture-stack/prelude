@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Set the base directory for scripts
-P1_SCRIPT_DIR="/scripts/services/phase1"
-P2_SCRIPT_DIR="/scripts/services/phase2"
-P3_SCRIPT_DIR="/scripts/services/phase3"
+P1_SCRIPT_DIR="conductor/scripts/services/phase1"
+P2_SCRIPT_DIR="conductor/scripts/services/phase2"
+P3_SCRIPT_DIR="conductor/scripts/services/phase3"
 
 # Debug function for logging
 debug() {

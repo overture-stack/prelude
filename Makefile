@@ -66,7 +66,7 @@ stage-dev:
 # Load sample data into Elasticsearch
 load-data:
 	@echo "Loading sample data into Elasticsearch..."
-	PROFILE=phaseOneSubmission docker compose -f ./docker-compose.yml --profile phaseOneSubmission up --attach composer
+	PROFILE=phaseOneSubmission docker compose -f ./docker-compose.yml --profile phaseOneSubmission up --attach conductor
 
 # Load dictionary schema to Lectern
 load-lectern-schema:
