@@ -230,7 +230,7 @@ services:
     ports:
       - "5051:5051"
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/tabularDataConfigs:/app/modules/server/configs
+      - ./apps/conductor/configs/arrangerConfigs/tabular-index:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
