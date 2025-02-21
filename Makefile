@@ -138,3 +138,13 @@ clean-data:
 #                                    Composer:                                       #
 #                                                                                    #
 # ================================================================================== #
+
+
+# Generate Phase One Configurations (Elasticsearch Mapping and Arranger Configs)
+generate-phase-one-configs:
+	@echo "Generating Phase One Configurations..."
+	PROFILE=generatePhaseOneConfigs docker compose -f ./docker-composer.yml --profile generatePhaseOneConfigs up
+
+default:
+	@echo "Spinning up in default mode..."
+	PROFILE=default docker compose -f ./docker-composer.yml --profile default up

@@ -1,14 +1,6 @@
 services:
   composer:
-    profiles:
-      [
-        "generateSongSchema",
-        "generateLecternDictionary",
-        "generateElasticSearchMapping",
-        "generateArrangerConfigs",
-        "generateConfigs",
-        "default",
-      ]
+    profiles: ["generatePhaseOneConfigs", "default"]
     image: node:22-alpine
     container_name: composer
     ports:
@@ -21,96 +13,37 @@ services:
     environment:
       PROFILE: ${PROFILE:-default}
       # User Input Paths
-      TABULAR_DATA_FILE: /data/tabularData.csv
-      TABULAR_INDEX_NAME: tabular-index
-      FILE_METADATA_SAMPLE: /data/sampleData/fileMetadata.json
-      TABULAR_SAMPLE: /data/tabularData.csv
-      LYRIC_UPLOAD_DIRECTORY: /data/lyricUploads/
-      SONG_UPLOAD_DIRECTORY: /data/songUploads/
-      DEFAULT_STUDY_ID: demo
+      TABULAR_INDEX_NAMES: tabular-index
+      TABULAR_SAMPLE_DATA: /data/tabularData.csv
       # Output Directories
-      SONG_SCHEMA: /configs/songSchema
-      LECTERN_DICTIONARY: /configs/lecternDictionaries
-      ES_CONFIG_DIR: /configs/elasticsearchConfigs
-      ARRANGER_CONFIG_DIR: /configs/arrangerConfigs
+      ES_CONFIG_DIR: ../conductor/configs/elasticsearchConfigs
+      ARRANGER_CONFIG_DIR: ../conductor/configs/arrangerConfigs
     working_dir: /composer
     command: >
       sh -c '
         set -e
         echo "Profile is set to: $PROFILE"
-        
-        # Ensure output directories exist
-        mkdir -p /configs/songSchema \
-                 /configs/lecternDictionaries \
-                 /configs/elasticsearchConfigs \
-                 /configs/arrangerConfigs
-        
         # Install dependencies and build
         npm install
         npm run build
         npm install -g .
-        
         case "$PROFILE" in
-          "generateSongSchema")
-            echo "Generating Song Schema..." &&
-            npm run composer -- \
-              --profile generateSongSchema \
-              --files /data/sampleData/fileMetadata.json \
-              --output /configs/songSchema/schema.json \
-              --name "Study Song Schema"
-            ;;
-          
-          "generateLecternDictionary")
-            echo "Generating Lectern Dictionary..." &&
-            npm run composer -- \
-              --profile generateLecternDictionary \
-              --files /data/tabularData.csv \
-              --output /configs/lecternDictionaries/dictionary.json \
-              --name "Study Dictionary" \
-              --description "Dictionary generated from study data" \
-              --version "1.0.0"
-            ;;
-          
-          "generateElasticSearchMapping")
+          "generatePhaseOneConfigs")
             echo "Generating Elasticsearch Mapping..." &&
-            composer \
-              --profile generateElasticSearchMapping \
-              --files /data/tabularData.csv \
-              --output /configs/elasticsearchConfigs/mapping.json \
-              --index tabular-index \
+            chmod +x /composer/scripts/generateElasticSearchMapping.sh
+            /composer/scripts/generateElasticSearchMapping.sh
+            chmod +x /composer/scripts/generateArrangerConfigs.sh
+            /composer/scripts/generateArrangerConfigs.sh
             ;;
-          
-          "generateArrangerConfigs")
-            echo "Generating Arranger Configs..." &&
-            npm run composer -- \
-              --profile generateArrangerConfigs \
-              --files /configs/elasticsearchConfigs/mapping.json \
-              --output /configs/arrangerConfigs \
-              --arranger-doc-type file
-            ;;
-          
-          "generateConfigs")
-            echo "Generating All Configurations..." &&
-            npm run composer -- \
-              --profile generateConfigs \
-              --files /data/tabularData.csv /data/sampleData/fileMetadata.json \
-              --output /configs
-            ;;
-          
           "default")
             echo "No specific profile selected. Exiting..." &&
-            exit 0
+            tail -f /dev/null 
             ;;
-          
           *)
             echo "Invalid profile specified: $PROFILE" &&
-            exit 1
+            tail -f /dev/null 
             ;;
         esac
-        
-        # Verify generated configurations
-        echo "Generated Configurations:"
-        find /configs -type f
       '
     networks:
       - conductor-network
