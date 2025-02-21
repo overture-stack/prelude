@@ -15,7 +15,7 @@ import { parseCSVLine } from "./utils/csvParser";
 import { Config } from "./types";
 import chalk from "chalk";
 import * as fs from "fs";
-import { ComposerError, ErrorCodes, handleError } from "./utils/errors";
+import { ConductorError, ErrorCodes, handleError } from "./utils/errors";
 
 /**
  * Helper function to validate CSV headers.
@@ -30,7 +30,7 @@ async function validateCSVHeaders(
     const [headerLine] = fileContent.split("\n");
 
     if (!headerLine) {
-      throw new ComposerError(
+      throw new ConductorError(
         "CSV file is empty or has no headers",
         ErrorCodes.INVALID_FILE
       );
@@ -38,7 +38,7 @@ async function validateCSVHeaders(
 
     const parseResult = parseCSVLine(headerLine, delimiter, true);
     if (!parseResult || !parseResult[0]) {
-      throw new ComposerError(
+      throw new ConductorError(
         "Failed to parse CSV headers",
         ErrorCodes.PARSING_ERROR
       );
@@ -50,11 +50,11 @@ async function validateCSVHeaders(
     await validateCSVStructure(headers);
     return true;
   } catch (error) {
-    if (error instanceof ComposerError) {
-      // Just rethrow ComposerErrors which will be handled upstream
+    if (error instanceof ConductorError) {
+      // Just rethrow ConductorErrors which will be handled upstream
       throw error;
     }
-    throw new ComposerError(
+    throw new ConductorError(
       "Error validating CSV headers",
       ErrorCodes.VALIDATION_FAILED,
       error
@@ -107,7 +107,7 @@ async function main(): Promise<void> {
     const { config, filePaths, mode } = setupCLI();
 
     if (!filePaths || filePaths.length === 0) {
-      throw new ComposerError(
+      throw new ConductorError(
         "No input files specified",
         ErrorCodes.INVALID_ARGS
       );
@@ -123,7 +123,7 @@ async function main(): Promise<void> {
           await handleUploadMode(filePath, config);
         } catch (error) {
           // Log the error but continue to the next file
-          if (error instanceof ComposerError) {
+          if (error instanceof ConductorError) {
             console.error(chalk.red(`\nSkipping file '${filePath}':`));
             console.error(chalk.red(`Error [${error.code}]: ${error.message}`));
             if (error.details) {
@@ -142,7 +142,7 @@ async function main(): Promise<void> {
         }
       }
     } else {
-      throw new ComposerError(
+      throw new ConductorError(
         `Unsupported mode '${mode}' for this upload-only process`,
         ErrorCodes.INVALID_ARGS
       );

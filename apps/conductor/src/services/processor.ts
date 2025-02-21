@@ -13,7 +13,7 @@ import {
   formatDuration,
 } from "../utils/formatting";
 import { sendBulkWriteRequest } from "../utils/elasticsearch";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ConductorError, ErrorCodes } from "../utils/errors";
 import {
   validateCSVStructure,
   validateHeadersMatchMappings,
@@ -63,7 +63,7 @@ function createRecordMetadata(
  * @param filePath - Path to the CSV file to process
  * @param config - Configuration object containing processing settings
  * @param client - Elasticsearch client for indexing
- * @throws ComposerError for various processing failures
+ * @throws ConductorError for various processing failures
  */
 export async function processCSVFile(
   filePath: string,
@@ -112,7 +112,7 @@ export async function processCSVFile(
             headerResult[0].length === 0
           ) {
             rl.close();
-            throw new ComposerError(
+            throw new ConductorError(
               "Unable to parse CSV headers",
               ErrorCodes.PARSING_ERROR
             );
@@ -202,7 +202,7 @@ export async function processCSVFile(
           batchedRecords.length = 0;
         }
       } catch (error) {
-        if (error instanceof ComposerError) {
+        if (error instanceof ConductorError) {
           throw error;
         }
 
@@ -257,7 +257,7 @@ async function sendBatchToElasticsearch(
   try {
     await sendBulkWriteRequest(client, records, indexName, onFailure);
   } catch (error) {
-    throw new ComposerError(
+    throw new ConductorError(
       "Failed to send batch to Elasticsearch",
       ErrorCodes.CONNECTION_ERROR,
       error
@@ -362,10 +362,10 @@ function handleProcessingError(
     "4. Try opening and resaving the CSV file in a text editor\n"
   );
 
-  if (error instanceof ComposerError) {
+  if (error instanceof ConductorError) {
     throw error;
   } else {
-    throw new ComposerError(
+    throw new ConductorError(
       "CSV processing failed",
       ErrorCodes.PARSING_ERROR,
       error

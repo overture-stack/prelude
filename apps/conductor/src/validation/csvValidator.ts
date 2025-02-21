@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import chalk from "chalk";
 import { Client } from "@elastic/elasticsearch";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ConductorError, ErrorCodes } from "../utils/errors";
 import { parseCSVLine } from "../utils/csvParser";
 import { VALIDATION_CONSTANTS } from "./constants";
 
@@ -17,7 +17,7 @@ import { VALIDATION_CONSTANTS } from "./constants";
  * @param filePath - Path to the CSV file
  * @param delimiter - Character used to separate values in the CSV
  * @returns Promise resolving to true if headers are valid
- * @throws ComposerError if headers are invalid or file can't be read
+ * @throws ConductorError if headers are invalid or file can't be read
  */
 export async function validateCSVHeaders(
   filePath: string,
@@ -28,7 +28,7 @@ export async function validateCSVHeaders(
     const [headerLine] = fileContent.split("\n");
 
     if (!headerLine) {
-      throw new ComposerError(
+      throw new ConductorError(
         "CSV file is empty or has no headers",
         ErrorCodes.INVALID_FILE
       );
@@ -36,7 +36,7 @@ export async function validateCSVHeaders(
 
     const headers = parseCSVLine(headerLine, delimiter, true)[0];
     if (!headers) {
-      throw new ComposerError(
+      throw new ConductorError(
         "Failed to parse CSV headers",
         ErrorCodes.INVALID_FILE
       );
@@ -44,10 +44,10 @@ export async function validateCSVHeaders(
 
     return validateCSVStructure(headers);
   } catch (error) {
-    if (error instanceof ComposerError) {
+    if (error instanceof ConductorError) {
       throw error;
     }
-    throw new ComposerError(
+    throw new ConductorError(
       "Error validating CSV headers",
       ErrorCodes.VALIDATION_FAILED,
       error
@@ -66,7 +66,7 @@ export async function validateCSVHeaders(
  *
  * @param headers - Array of header strings to validate
  * @returns Promise resolving to true if all headers are valid
- * @throws ComposerError with details if validation fails
+ * @throws ConductorError with details if validation fails
  */
 export async function validateCSVStructure(
   headers: string[]
@@ -79,14 +79,14 @@ export async function validateCSVStructure(
 
     // Validate basic header presence
     if (cleanedHeaders.length === 0) {
-      throw new ComposerError(
+      throw new ConductorError(
         "No valid headers found in CSV file",
         ErrorCodes.VALIDATION_FAILED
       );
     }
 
     if (cleanedHeaders.length !== headers.length) {
-      throw new ComposerError(
+      throw new ConductorError(
         "Empty or whitespace-only headers detected",
         ErrorCodes.VALIDATION_FAILED
       );
@@ -109,7 +109,7 @@ export async function validateCSVStructure(
     });
 
     if (invalidHeaders.length > 0) {
-      throw new ComposerError(
+      throw new ConductorError(
         "Invalid header names detected",
         ErrorCodes.VALIDATION_FAILED,
         { invalidHeaders }
@@ -130,7 +130,7 @@ export async function validateCSVStructure(
       .map(([header]) => header);
 
     if (duplicates.length > 0) {
-      throw new ComposerError(
+      throw new ConductorError(
         "Duplicate headers found in CSV file",
         ErrorCodes.VALIDATION_FAILED,
         { duplicates, counts: headerCounts }
@@ -155,10 +155,10 @@ export async function validateCSVStructure(
     console.log(chalk.green("✓ CSV header structure is valid"));
     return true;
   } catch (error) {
-    if (error instanceof ComposerError) {
+    if (error instanceof ConductorError) {
       throw error;
     }
-    throw new ComposerError(
+    throw new ConductorError(
       "Error validating CSV structure",
       ErrorCodes.VALIDATION_FAILED,
       error
@@ -174,7 +174,7 @@ export async function validateCSVStructure(
  * @param headers - Array of CSV headers to validate
  * @param indexName - Target Elasticsearch index name
  * @returns Promise resolving to true if headers match mappings
- * @throws ComposerError if validation fails
+ * @throws ConductorError if validation fails
  */
 export async function validateHeadersMatchMappings(
   client: Client,
@@ -182,21 +182,31 @@ export async function validateHeadersMatchMappings(
   indexName: string
 ): Promise<boolean> {
   try {
-    const { body: mappingResponse } = await client.indices.getMapping({
+    // Explicitly type the response
+    const { body } = await client.indices.getMapping({
       index: indexName,
     });
 
-    const mappings = mappingResponse[indexName].mappings;
+    // Type-safe navigation
+    const mappings = body[indexName]?.mappings;
+    if (!mappings) {
+      throw new ConductorError(
+        "No mappings found for the specified index",
+        ErrorCodes.VALIDATION_FAILED
+      );
+    }
+
+    // Navigate to the nested properties
     const expectedFields = mappings.properties?.data?.properties
       ? Object.keys(mappings.properties.data.properties)
-      : Object.keys(mappings.properties || {});
+      : [];
 
     const cleanedHeaders = headers
       .map((header) => header.trim())
       .filter((header) => header !== "");
 
     if (cleanedHeaders.length === 0) {
-      throw new ComposerError(
+      throw new ConductorError(
         "No valid headers found",
         ErrorCodes.VALIDATION_FAILED
       );
@@ -212,7 +222,7 @@ export async function validateHeadersMatchMappings(
     );
 
     if (extraHeaders.length > 0 || missingRequiredFields.length > 0) {
-      throw new ComposerError(
+      throw new ConductorError(
         "Header/Field mismatch detected",
         ErrorCodes.VALIDATION_FAILED,
         {
@@ -229,13 +239,21 @@ export async function validateHeadersMatchMappings(
     console.log(chalk.green("✓ Headers validated against index mapping"));
     return true;
   } catch (error) {
-    if (error instanceof ComposerError) {
+    // Type-safe error handling
+    if (error instanceof ConductorError) {
       throw error;
     }
-    throw new ComposerError(
+
+    // Add more detailed error logging
+    console.error(chalk.red("Error in validateHeadersMatchMappings:"), error);
+
+    throw new ConductorError(
       "Error validating headers against index",
       ErrorCodes.VALIDATION_FAILED,
-      error
+      {
+        originalError: error instanceof Error ? error.message : String(error),
+        errorType: error instanceof Error ? error.name : "Unknown Error",
+      }
     );
   }
 }

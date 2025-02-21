@@ -4,7 +4,7 @@ import chalk from "chalk";
  * Custom error class for the application.
  * Provides structured error information including error code and optional details.
  */
-export class ComposerError extends Error {
+export class ConductorError extends Error {
   /**
    * @param message - Human-readable error message
    * @param code - Error code from ErrorCodes constant
@@ -12,7 +12,7 @@ export class ComposerError extends Error {
    */
   constructor(message: string, public code: string, public details?: any) {
     super(message);
-    this.name = "ComposerError";
+    this.name = "ConductorError";
   }
 }
 
@@ -68,12 +68,12 @@ export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 
 /**
  * Global error handler that formats error output and exits process.
- * Provides different formatting for ComposerError vs other errors.
+ * Provides different formatting for ConductorError vs other errors.
  *
  * @param error - Error to handle
  */
 export function handleError(error: unknown): never {
-  if (error instanceof ComposerError) {
+  if (error instanceof ConductorError) {
     console.error(chalk.red(`\n❌ Error [${error.code}]: ${error.message}`));
 
     if (error.details) {
@@ -147,7 +147,7 @@ export function handleError(error: unknown): never {
 export function logError(error: unknown, prefix?: string): void {
   const messagePrefix = prefix ? `${prefix}: ` : "";
 
-  if (error instanceof ComposerError) {
+  if (error instanceof ConductorError) {
     console.error(
       chalk.red(`\n⚠️ ${messagePrefix}[${error.code}] ${error.message}`)
     );

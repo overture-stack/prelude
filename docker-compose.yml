@@ -39,9 +39,10 @@ services:
       - ./volumes/health:/health
     environment:
       PROFILE: ${PROFILE:-default}
-      # Input Directories
-      TABULAR_DATA_FILE: /data/tabularData.csv
-      # Output Directories
+      # Inputs
+      DATA_FILES: /data/tabularData.csv
+      INDEX_NAMES: tabular-index
+      # Outputs
       SONG_SCHEMA: conductor/configs/songSchema
       LECTERN_DICTIONARY: conductor/configs/lecternDictionaries
       ES_MAPPINGS: conductor/configs/elasticsearchConfigs
@@ -75,7 +76,7 @@ services:
     command: >
       sh -c '
         set -e
-          apk add --no-cache curl
+          apk add --no-cache curl --quiet
           echo "Profile is set to: $PROFILE"
           case "$PROFILE" in
             "phase1")
@@ -135,8 +136,8 @@ services:
               ;;
             "phaseOneSubmission")
               echo "Running tabular data submission..."
-              chmod +x conductor/scripts/services/phase1/dataSubmission.sh
-              conductor/scripts/services/phase1/dataSubmission.sh
+              chmod +x conductor/scripts/services/phase1/phaseOneSubmission.sh
+              conductor/scripts/services/phase1/phaseOneSubmission.sh
               ;;
             "stageDev")
               echo "Running Stage Dev deployment..."
