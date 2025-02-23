@@ -1,0 +1,65 @@
+{
+  "index_patterns": [
+    "tabular-index-*"
+  ],
+  "aliases": {
+    "tabular-index_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "experiment": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "keyword"
+              },
+              "description": {
+                "type": "keyword"
+              },
+              "study_id": {
+                "type": "keyword"
+              }
+            }
+          },
+          "submission_metadata": {
+            "type": "object",
+            "properties": {
+              "submitter_id": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "processing_started": {
+                "type": "date"
+              },
+              "processed_at": {
+                "type": "date"
+              },
+              "source_file": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "record_number": {
+                "type": "integer"
+              },
+              "hostname": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "username": {
+                "type": "keyword",
+                "null_value": "No Data"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

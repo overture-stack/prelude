@@ -1,0 +1,46 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "object_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "study_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "file_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "file_access",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "file_autocomplete",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "dataCategory",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "jbrowseCoordinates",
+        "show": true
+      }
+    ]
+  }
+}

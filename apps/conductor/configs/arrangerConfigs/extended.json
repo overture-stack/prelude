@@ -1,0 +1,52 @@
+{
+  "extended": [
+    {
+      "displayName": "Object Id",
+      "fieldName": "object_id"
+    },
+    {
+      "displayName": "Study Id",
+      "fieldName": "study_id"
+    },
+    {
+      "displayName": "Data Type",
+      "fieldName": "data_type"
+    },
+    {
+      "displayName": "File Type",
+      "fieldName": "file_type"
+    },
+    {
+      "displayName": "File Access",
+      "fieldName": "file_access"
+    },
+    {
+      "displayName": "File Autocomplete",
+      "fieldName": "file_autocomplete"
+    },
+    {
+      "displayName": "Analysis",
+      "fieldName": "analysis"
+    },
+    {
+      "displayName": "File",
+      "fieldName": "file"
+    },
+    {
+      "displayName": "Repositories",
+      "fieldName": "repositories"
+    },
+    {
+      "displayName": "Donors",
+      "fieldName": "donors"
+    },
+    {
+      "displayName": "DataCategory",
+      "fieldName": "dataCategory"
+    },
+    {
+      "displayName": "JbrowseCoordinates",
+      "fieldName": "jbrowseCoordinates"
+    }
+  ]
+}

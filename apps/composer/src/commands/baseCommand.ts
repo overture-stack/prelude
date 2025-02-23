@@ -2,23 +2,25 @@ import { CLIOutput } from "../types";
 import { ComposerError, ErrorCodes, handleError } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import * as fs from "fs";
+import { validateFile, validateDelimiter } from "../validations/fileValidator";
 
 export abstract class Command {
   constructor(protected name: string) {}
 
   async run(cliOutput: CLIOutput): Promise<void> {
     try {
-      // Validate input before execution
-      this.validate(cliOutput);
+      // Add this at the start of run
+      if (cliOutput.debug) {
+        Logger.enableDebug();
+        Logger.debug(`Running ${this.name} command with debug enabled`);
+      }
 
-      // Display command header
-      Logger.header(`${this.name}`);
+      // Validate input before execution
+      await this.validate(cliOutput);
+      Logger.header(`Generating ${this.name} Configurations\n`);
 
       // Execute the specific command
       await this.execute(cliOutput);
-
-      // Print success message
-      Logger.success(`${this.name} command completed successfully`);
     } catch (error) {
       handleError(error);
     }
@@ -26,7 +28,7 @@ export abstract class Command {
 
   protected abstract execute(cliOutput: CLIOutput): Promise<void>;
 
-  protected validate(cliOutput: CLIOutput): void {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     if (!cliOutput.filePaths?.length) {
       throw new ComposerError(
         "No input files provided",
@@ -39,6 +41,16 @@ export abstract class Command {
         "No output path specified",
         ErrorCodes.INVALID_ARGS
       );
+    }
+
+    // Validate each input file
+    for (const filePath of cliOutput.filePaths) {
+      await validateFile(filePath);
+    }
+
+    // Validate delimiter if provided
+    if (cliOutput.delimiter) {
+      validateDelimiter(cliOutput.delimiter);
     }
   }
 

@@ -1,7 +1,7 @@
 import type { Profile } from "../types";
 import { Profiles } from "../types";
 import { Command } from "./baseCommand";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ComposerError, ErrorCodes, handleError } from "../utils/errors";
 import { Logger } from "../utils/logger";
 
 // Import individual commands
@@ -26,16 +26,26 @@ const PROFILE_TO_COMMAND: Partial<CommandMap> = {
 export class CommandFactory {
   static createCommand(profile: Profile): Command {
     Logger.debug(`Creating command for profile: ${profile}`);
-
     const CommandClass = PROFILE_TO_COMMAND[profile];
 
     if (!CommandClass) {
-      throw new ComposerError(
+      const availableProfiles = Object.keys(PROFILE_TO_COMMAND)
+        .map((profile) => `  ${profile}`)
+        .join("\n");
+
+      const error = new ComposerError(
         `Unsupported profile: ${profile}`,
         ErrorCodes.INVALID_ARGS
       );
+
+      handleError(error, () => {
+        Logger.info(`Available profiles:\n\n${availableProfiles}\n`);
+        Logger.showReferenceCommands();
+      });
     }
 
-    return new CommandClass();
+    const command = new CommandClass();
+    Logger.debug(`Created ${profile} command instance`);
+    return command;
   }
 }

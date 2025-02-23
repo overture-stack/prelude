@@ -1,6 +1,4 @@
 import { Logger } from "./logger";
-import chalk from "chalk";
-
 export class ComposerError extends Error {
   constructor(message: string, public code: string, public details?: any) {
     super(message);
@@ -42,9 +40,18 @@ function formatErrorDetails(details: any): string {
   }
 }
 
-export function handleError(error: unknown): never {
+// errors.ts
+export function handleError(
+  error: unknown,
+  showAvailableProfiles?: () => void
+): never {
   if (error instanceof ComposerError) {
-    Logger.error(`${chalk.bold.red(error.code)}: ${error.message}`);
+    Logger.error(`${error.code}: ${error.message}`);
+
+    // Call the callback function if provided
+    if (showAvailableProfiles) {
+      showAvailableProfiles();
+    }
 
     if (error.details) {
       const formattedDetails = formatErrorDetails(error.details);

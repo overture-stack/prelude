@@ -16,11 +16,13 @@ export interface Config {
 export interface CLIOutput {
   profile: Profile;
   mode: CLIMode;
+  debug?: boolean;
   filePaths: string[];
   config: Config;
   outputPath?: string;
   arrangerConfigDir?: string;
   envConfig: EnvConfig;
+  delimiter?: string;
   dictionaryConfig?: {
     name: string;
     description: string;

@@ -1,5 +1,5 @@
 export const Profiles = {
-  GENERATE_SONG_SCHEMA: "songSchema",
+  GENERATE_SONG_SCHEMA: "generateSongSchema",
   GENERATE_LECTERN_DICTIONARY: "generateLecternDictionary",
   GENERATE_ELASTICSEARCH_MAPPING: "generateElasticSearchMapping",
   GENERATE_ARRANGER_CONFIGS: "generateArrangerConfigs",

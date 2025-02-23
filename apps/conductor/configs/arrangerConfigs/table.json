@@ -1,0 +1,78 @@
+{
+  "table": {
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "object_id",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "study_id",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data_type",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file_type",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file_access",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file_autocomplete",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "repositories",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "donors",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "dataCategory",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "jbrowseCoordinates",
+        "show": false,
+        "sortable": true
+      }
+    ]
+  }
+}

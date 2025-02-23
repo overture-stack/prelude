@@ -1,1 +1,8 @@
-{"mappings":{"properties":{"field1":{"type":"keyword"},"field2":{"type":"integer"}}}}
+{
+  "mappings": {
+    "properties": {
+      "field1": { "type": "keyword" },
+      "field2": { "type": "integer" }
+    }
+  }
+}

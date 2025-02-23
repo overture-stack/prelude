@@ -180,17 +180,17 @@ export function generateArrangerConfigs(
   table: ArrangerTableConfig;
   facets: ArrangerFacetsConfig;
 } {
-  Logger.debug(`Generating Arranger configs for index: ${indexName}`);
-  Logger.debug(`Document type: ${documentType}`);
+  Logger.info(`Generating Arranger configs for index: ${indexName}`);
+  Logger.info(`Document type: ${documentType}`);
 
   try {
     const { extendedFields, tableColumns, facetAggregations } = processFields(
       mapping.mappings.properties
     );
 
-    Logger.debug(`Generated ${extendedFields.length} extended fields`);
-    Logger.debug(`Generated ${tableColumns.length} table columns`);
-    Logger.debug(`Generated ${facetAggregations.length} facet aggregations`);
+    Logger.info(`Generated ${extendedFields.length} extended fields`);
+    Logger.info(`Generated ${tableColumns.length} table columns`);
+    Logger.info(`Generated ${facetAggregations.length} facet aggregations`);
 
     const configs = {
       base: {
@@ -212,13 +212,12 @@ export function generateArrangerConfigs(
       },
     };
 
-    Logger.success("Arranger configurations generated successfully");
     Logger.debugObject("Configuration summary", configs);
-
+    Logger.success("Arranger configurations generated successfully");
     return configs;
   } catch (error) {
-    Logger.debug("Error generating Arranger configurations");
-    Logger.debugObject("Error details", error);
+    Logger.error("Error generating Arranger configurations");
+    Logger.error("Error details");
     throw error;
   }
 }
