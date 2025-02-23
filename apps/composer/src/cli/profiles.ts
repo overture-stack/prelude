@@ -1,10 +1,8 @@
 import * as path from "path";
 import { Profile, CLIMode, EnvConfig, Profiles } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
+import { Logger } from "../utils/logger";
 
-/**
- * Profile-specific default paths
- */
 export const DEFAULT_PATHS = {
   songSchema: "configs/songSchema/schema.json",
   lecternDictionary: "configs/lecternDictionaries/dictionary.json",
@@ -12,9 +10,6 @@ export const DEFAULT_PATHS = {
   arrangerConfigs: "configs/arrangerConfigs",
 } as const;
 
-/**
- * Profile descriptions for help text
- */
 export const PROFILE_DESCRIPTIONS = new Map([
   [Profiles.GENERATE_SONG_SCHEMA, "Generate SONG schema from JSON metadata"],
   [
@@ -33,51 +28,64 @@ export const PROFILE_DESCRIPTIONS = new Map([
   [Profiles.DEFAULT, "Default profile"],
 ]);
 
-/**
- * Determines the CLI mode based on the selected profile
- */
+const PROFILE_TO_MODE: Record<Profile, CLIMode> = {
+  [Profiles.GENERATE_SONG_SCHEMA]: "song",
+  [Profiles.GENERATE_LECTERN_DICTIONARY]: "dictionary",
+  [Profiles.GENERATE_ELASTICSEARCH_MAPPING]: "mapping",
+  [Profiles.GENERATE_ARRANGER_CONFIGS]: "arranger",
+  [Profiles.GENERATE_CONFIGS]: "all",
+  [Profiles.DEFAULT]: "all",
+} as const;
+
 export function determineMode(profile: Profile): CLIMode {
-  switch (profile) {
-    case Profiles.GENERATE_SONG_SCHEMA:
-      return "song";
-    case Profiles.GENERATE_LECTERN_DICTIONARY:
-      return "dictionary";
-    case Profiles.GENERATE_ELASTICSEARCH_MAPPING:
-      return "mapping";
-    case Profiles.GENERATE_ARRANGER_CONFIGS:
-      return "arranger";
-    case Profiles.GENERATE_CONFIGS:
-      return "all";
-    default:
-      throw new ComposerError(
-        `Invalid profile: ${profile}`,
-        ErrorCodes.INVALID_ARGS
-      );
+  Logger.debug(`Determining mode for profile: ${profile}`);
+
+  const mode = PROFILE_TO_MODE[profile];
+  if (!mode) {
+    throw new ComposerError(
+      `Invalid profile: ${profile}`,
+      ErrorCodes.INVALID_ARGS
+    );
   }
+
+  Logger.debug(`Selected mode: ${mode}`);
+  return mode;
 }
 
-/**
- * Gets the default output path for a given profile
- */
 export function getDefaultOutputPath(
   profile: Profile,
   envConfig: EnvConfig
 ): string {
+  Logger.debug(`Getting default output path for profile: ${profile}`);
+
+  let outputPath: string;
+
   switch (profile) {
     case Profiles.GENERATE_SONG_SCHEMA:
-      return path.join(envConfig.songSchema || "", "schema.json");
+      outputPath = path.join(envConfig.songSchema || "", "schema.json");
+      break;
     case Profiles.GENERATE_LECTERN_DICTIONARY:
-      return path.join(envConfig.lecternDictionary || "", "dictionary.json");
+      outputPath = path.join(
+        envConfig.lecternDictionary || "",
+        "dictionary.json"
+      );
+      break;
     case Profiles.GENERATE_ELASTICSEARCH_MAPPING:
-      return path.join(envConfig.esConfigDir || "", "mapping.json");
+      outputPath = path.join(envConfig.esConfigDir || "", "mapping.json");
+      break;
     case Profiles.GENERATE_ARRANGER_CONFIGS:
-      return path.join(envConfig.arrangerConfigDir || "", "configs");
+      outputPath = path.join(envConfig.arrangerConfigDir || "", "configs");
+      break;
     case Profiles.GENERATE_CONFIGS:
-      return envConfig.esConfigDir || "";
+      outputPath = envConfig.esConfigDir || "";
+      break;
     default:
       throw new ComposerError(
         `Cannot determine output path for profile: ${profile}`,
         ErrorCodes.INVALID_ARGS
       );
   }
+
+  Logger.debug(`Using default output path: ${outputPath}`);
+  return outputPath;
 }

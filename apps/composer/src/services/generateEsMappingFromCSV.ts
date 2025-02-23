@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 
@@ -21,8 +21,6 @@ const inferenceRules: InferenceRules = {
   booleanValues: ["true", "false", "yes", "no", "0", "1"],
   maxStringLength: 256,
 };
-
-// ---- Field Type Inference ----
 
 /**
  * Infers the Elasticsearch field type based on header name and sample value
@@ -47,16 +45,12 @@ export function inferFieldType(
   rules: InferenceRules = inferenceRules
 ): ElasticsearchField {
   try {
-    process.stdout.write(
-      chalk.cyan(`\nInferring type for field: ${headerName}\n`)
-    );
+    Logger.debug(`Inferring type for field: ${headerName}`);
 
     // Handle empty values
     if (!sampleValue || sampleValue.trim() === "") {
-      process.stdout.write(
-        chalk.yellow(
-          `⚠ Empty sample value detected, defaulting to keyword with null value\n`
-        )
+      Logger.debug(
+        "Empty sample value detected, defaulting to keyword with null value"
       );
       return { type: "keyword", null_value: "No Data" };
     }
@@ -64,10 +58,10 @@ export function inferFieldType(
     // Check for numeric fields
     if (!isNaN(Number(sampleValue))) {
       if (Number.isInteger(Number(sampleValue))) {
-        process.stdout.write(chalk.green(`✓ Detected integer type\n`));
+        Logger.debug("Detected integer type");
         return { type: "integer" };
       }
-      process.stdout.write(chalk.green(`✓ Detected float type\n`));
+      Logger.debug("Detected float type");
       return { type: "float" };
     }
 
@@ -76,27 +70,29 @@ export function inferFieldType(
       headerName.toLowerCase().includes(pattern)
     );
     if (isDateField) {
-      process.stdout.write(chalk.green(`✓ Detected date type\n`));
+      Logger.debug("Detected date type");
       return { type: "date" };
     }
 
     // Check for boolean fields
     const lowerValue = sampleValue.toLowerCase();
     if (rules.booleanValues.includes(lowerValue)) {
-      process.stdout.write(chalk.green(`✓ Detected boolean type\n`));
+      Logger.debug("Detected boolean type");
       return { type: "boolean" };
     }
 
     // Check string length for keyword vs text
     if (sampleValue.length > rules.maxStringLength) {
-      process.stdout.write(chalk.green(`✓ Detected text type (long string)\n`));
+      Logger.debug("Detected text type (long string)");
       return { type: "text" };
     }
 
     // Default to keyword for shorter strings
-    process.stdout.write(chalk.green(`✓ Using default keyword type\n`));
+    Logger.debug("Using default keyword type");
     return { type: "keyword" };
   } catch (error) {
+    Logger.debug("Error inferring field type");
+    Logger.debugObject("Error details", { headerName, sampleValue, error });
     throw new ComposerError(
       "Error inferring field type",
       ErrorCodes.GENERATION_FAILED,
@@ -104,8 +100,6 @@ export function inferFieldType(
     );
   }
 }
-
-// ---- Mapping Generation ----
 
 /**
  * Generates an Elasticsearch mapping from CSV headers and sample data
@@ -123,16 +117,21 @@ export function inferFieldType(
 export function generateMappingFromCSV(
   csvHeaders: string[],
   sampleData: Record<string, string>,
-  indexName: string // New parameter
+  indexName: string
 ): ElasticsearchMapping {
   try {
-    process.stdout.write(chalk.cyan("\nGenerating Elasticsearch mapping...\n"));
+    Logger.debug("Generating Elasticsearch mapping");
+    Logger.debug(`Index name: ${indexName}`);
+    Logger.debugObject("CSV Headers", csvHeaders);
 
     // Process CSV fields
     const properties: Record<string, ElasticsearchField> = {};
     csvHeaders.forEach((header) => {
       properties[header] = inferFieldType(header, sampleData[header]);
     });
+
+    Logger.debug("Processed field types");
+    Logger.debugObject("Field Properties", properties);
 
     // Create complete mapping with dynamic index name
     const mapping: ElasticsearchMapping = {
@@ -168,9 +167,12 @@ export function generateMappingFromCSV(
       },
     };
 
-    process.stdout.write(chalk.green(`✓ Mapping generated successfully\n`));
+    Logger.success("Mapping generated successfully");
+    Logger.debugObject("Generated Mapping", mapping);
     return mapping;
   } catch (error) {
+    Logger.debug("Error generating mapping from CSV");
+    Logger.debugObject("Error details", { csvHeaders, error });
     throw new ComposerError(
       "Error generating mapping from CSV",
       ErrorCodes.GENERATION_FAILED,

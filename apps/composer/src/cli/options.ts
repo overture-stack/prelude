@@ -2,6 +2,7 @@ import { Command, Option } from "commander";
 import { Profile, Profiles } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { PROFILE_DESCRIPTIONS } from "./profiles";
+import { Logger } from "../utils/logger";
 
 /**
  * Configures and returns the CLI command with all available options
@@ -52,5 +53,12 @@ export function configureCommandOptions(program: Command): Command {
     )
     .option("-v, --version <version>", "Dictionary version", "1.0.0")
     .option("--file-types <types...>", "Allowed file types for Song schema")
-    .option("--delimiter <char>", "CSV delimiter", ",");
+    .option("--delimiter <char>", "CSV delimiter", ",")
+    .option("--debug", "Enable debug logging")
+    .hook("preAction", (thisCommand) => {
+      if (thisCommand.opts().debug) {
+        Logger.enableDebug();
+        Logger.debug("Debug logging enabled");
+      }
+    });
 }

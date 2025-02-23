@@ -4,27 +4,13 @@ import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { generateArrangerConfigs } from "../services/generateArrangerConfigs";
-import { validateFile, validateEnvironment } from "../validations";
-import { Profiles } from "../types";
-import chalk from "chalk";
+import { Logger } from "../utils/logger";
 
-/**
- * Command for generating Arranger configurations from Elasticsearch mappings.
- * Handles file validation, configuration generation, and output management.
- */
 export class ArrangerCommand extends Command {
   constructor() {
     super("Arranger Configs");
   }
 
-  /**
-   * Validates command inputs and file types.
-   * Checks for:
-   * - Required output path
-   * - JSON file type
-   * - File accessibility
-   * - Valid Arranger document type
-   */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     await super.validate(cliOutput);
 
@@ -35,7 +21,6 @@ export class ArrangerCommand extends Command {
       );
     }
 
-    // Validate Arranger document type
     const validDocumentTypes = ["file", "analysis"];
     const documentType = cliOutput.arrangerConfig?.documentType;
 
@@ -58,56 +43,39 @@ export class ArrangerCommand extends Command {
       );
     }
 
-    // Validate file accessibility
-    const fileValid = await validateFile(filePath);
-    if (!fileValid) {
+    if (!fs.existsSync(filePath)) {
       throw new ComposerError(
-        `Invalid file ${filePath}`,
+        `File not found: ${filePath}`,
         ErrorCodes.INVALID_FILE
       );
     }
   }
 
-  /**
-   * Executes the Arranger configuration generation process:
-   * 1. Reads and validates the Elasticsearch mapping
-   * 2. Generates Arranger configurations
-   * 3. Saves configuration files to the specified output path
-   */
   protected async execute(cliOutput: CLIOutput): Promise<any> {
     const outputPath = cliOutput.outputPath!;
+    const filePath = cliOutput.filePaths[0];
 
-    console.log(chalk.cyan("\nGenerating Arranger Configurations..."));
+    Logger.header("Generating Arranger Configurations");
 
     try {
-      // Validate environment and ensure output directory exists
-      await validateEnvironment({
-        profile: Profiles.GENERATE_ARRANGER_CONFIGS,
-        outputPath: outputPath,
-      });
-
-      // Read and validate the mapping file
-      const filePath = cliOutput.filePaths[0];
+      Logger.info("Reading mapping file");
       const mappingContent = fs.readFileSync(filePath, "utf-8");
-      let mapping;
 
+      let mapping;
       try {
         mapping = JSON.parse(mappingContent);
       } catch (error) {
         throw new ComposerError(
           "Invalid JSON mapping file",
-          ErrorCodes.INVALID_FILE,
-          error
+          ErrorCodes.INVALID_FILE
         );
       }
 
-      // Generate Arranger configurations
       const configs = generateArrangerConfigs(
         mapping,
         cliOutput.config.elasticsearch.index
       );
 
-      // Write configuration files
       const configFiles = {
         "base.json": configs.base,
         "extended.json": configs.extended,
@@ -117,29 +85,25 @@ export class ArrangerCommand extends Command {
 
       for (const [filename, content] of Object.entries(configFiles)) {
         const filePath = path.join(outputPath, filename);
-
-        // Ensure output directory exists
         const dir = path.dirname(filePath);
+
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
         }
 
         fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
-        console.log(chalk.green(`✓ Generated ${filename}`));
+        Logger.success(`Created ${filename}`);
       }
 
-      console.log(
-        chalk.green(`\n✓ Arranger configurations saved to ${outputPath}`)
-      );
-
-      // Return the generated configs
+      Logger.success(`All configurations saved to ${outputPath}`);
       return configs;
     } catch (error) {
       if (error instanceof ComposerError) {
+        Logger.error(error.message);
         throw error;
       }
       throw new ComposerError(
-        "Error generating Arranger configurations",
+        "Failed to generate Arranger configurations",
         ErrorCodes.GENERATION_FAILED,
         error
       );

@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import { Logger } from "../utils/logger";
 import type { SongSchema, SongField, SongOptions } from "../types";
 
 // ---- Type Inference ----
@@ -21,24 +21,26 @@ export function inferSongType(
   propertyName: string,
   value: any
 ): string | string[] {
-  process.stdout.write(
-    chalk.cyan(`\nInferring type for field: ${propertyName}\n`)
-  );
+  Logger.debug(`Inferring type for field: ${propertyName}`);
 
   // Handle numeric values
   if (!isNaN(Number(value))) {
     if (Number.isInteger(Number(value))) {
+      Logger.debug("Detected integer type");
       return "integer";
     }
+    Logger.debug("Detected number type");
     return "number";
   }
 
   // Handle boolean values
   if (typeof value === "boolean" || value === "true" || value === "false") {
+    Logger.debug("Detected boolean type");
     return "boolean";
   }
 
   // Default to string
+  Logger.debug("Defaulting to string type");
   return "string";
 }
 
@@ -68,6 +70,7 @@ export function inferSongType(
 export function generateSongField(propertyName: string, value: any): SongField {
   // Handle arrays
   if (Array.isArray(value)) {
+    Logger.debug(`Generating field for array: ${propertyName}`);
     const itemType =
       value.length > 0
         ? generateSongField("arrayItem", value[0])
@@ -81,6 +84,7 @@ export function generateSongField(propertyName: string, value: any): SongField {
 
   // Handle objects
   if (typeof value === "object" && value !== null) {
+    Logger.debug(`Generating field for object: ${propertyName}`);
     const { fields, fieldNames } = generateSongFields(value);
 
     return {
@@ -94,6 +98,7 @@ export function generateSongField(propertyName: string, value: any): SongField {
   }
 
   // Handle primitive types
+  Logger.debug(`Generating field for primitive: ${propertyName}`);
   return {
     type: inferSongType(propertyName, value),
   };
@@ -107,7 +112,7 @@ export function generateSongFields(data: Record<string, any>): {
   fields: Record<string, SongField>;
   fieldNames: string[];
 } {
-  process.stdout.write(chalk.cyan("\nGenerating field definitions...\n"));
+  Logger.debug("Generating field definitions");
 
   const fields: Record<string, SongField> = {};
   const fieldNames: string[] = [];
@@ -116,9 +121,7 @@ export function generateSongFields(data: Record<string, any>): {
     const value = data[propertyName];
     fields[propertyName] = generateSongField(propertyName, value);
     fieldNames.push(propertyName);
-    process.stdout.write(
-      chalk.green(`✓ Generated field definition for: ${propertyName}\n`)
-    );
+    Logger.debug(`Generated field definition for: ${propertyName}`);
   }
 
   return { fields, fieldNames };
@@ -153,7 +156,8 @@ export function generateSongSchema(
   schemaName: string,
   options?: SongOptions
 ): SongSchema {
-  process.stdout.write(chalk.cyan("\nGenerating SONG schema...\n"));
+  Logger.debug("Generating SONG schema");
+  Logger.debug(`Schema name: ${schemaName}`);
 
   // Extract core sections
   const coreFields = {
@@ -163,7 +167,7 @@ export function generateSongSchema(
 
   const { fields, fieldNames } = generateSongFields(coreFields);
 
-  return {
+  const schema = {
     name: schemaName,
     ...(options?.fileTypes?.length && {
       options: { fileTypes: options.fileTypes },
@@ -174,6 +178,10 @@ export function generateSongSchema(
       properties: fields,
     },
   };
+
+  Logger.success("SONG schema generated successfully");
+  Logger.debugObject("Generated Schema", schema);
+  return schema;
 }
 
 // ---- Schema Validation ----
@@ -198,6 +206,8 @@ export function generateSongSchema(
  */
 export function validateSongSchema(schema: SongSchema): boolean {
   try {
+    Logger.debug("Validating SONG schema");
+
     // Validate schema name
     if (!schema.name) {
       throw new Error("Schema must have a name");
@@ -226,14 +236,13 @@ export function validateSongSchema(schema: SongSchema): boolean {
       throw new Error("Schema must have workflow and experiment sections");
     }
 
-    process.stdout.write(chalk.green("✓ Schema validation passed\n"));
+    Logger.success("Schema validation passed");
     return true;
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
-    process.stdout.write(
-      chalk.red(`Schema validation failed: ${errorMessage}\n`)
-    );
+
+    Logger.debug(`Schema validation failed: ${errorMessage}`);
     return false;
   }
 }

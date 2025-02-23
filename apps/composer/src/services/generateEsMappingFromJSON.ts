@@ -1,5 +1,5 @@
-import chalk from "chalk";
 import fs from "fs";
+import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 
@@ -24,8 +24,6 @@ const defaultRules: TypeInferenceRules = {
   excludePatterns: ["password", "secret", "key", "token"],
 };
 
-// ---- Helper Functions ----
-
 /**
  * Validates if a string represents a valid date
  */
@@ -33,8 +31,6 @@ function isValidDate(dateString: string): boolean {
   const date = new Date(dateString);
   return date instanceof Date && !isNaN(date.getTime());
 }
-
-// ---- Type Inference Logic ----
 
 /**
  * Infers Elasticsearch field types from JSON data
@@ -59,17 +55,11 @@ export function inferFieldType(
   rules: TypeInferenceRules = defaultRules
 ): ElasticsearchField {
   try {
-    process.stdout.write(
-      chalk.cyan(`\nInferring type for field: ${keyName}\n`)
-    );
+    Logger.debug(`Inferring type for field: ${keyName}`);
 
     // Handle null/undefined
     if (sampleValue === null || sampleValue === undefined) {
-      process.stdout.write(
-        chalk.yellow(
-          `⚠ Null/undefined value detected, defaulting to keyword with null value\n`
-        )
-      );
+      Logger.debug("Null/undefined value detected, defaulting to keyword");
       return { type: "keyword", null_value: "No Data" };
     }
 
@@ -79,14 +69,13 @@ export function inferFieldType(
         keyName.toLowerCase().includes(pattern)
       )
     ) {
-      process.stdout.write(
-        chalk.yellow(`⚠ Field matches exclude pattern, setting as keyword\n`)
-      );
+      Logger.debug("Field matches exclude pattern, setting as keyword");
       return { type: "keyword" };
     }
 
     // Handle nested objects
     if (typeof sampleValue === "object" && !Array.isArray(sampleValue)) {
+      Logger.debug(`Processing nested object for ${keyName}`);
       const properties: Record<string, ElasticsearchField> = {};
       for (const [key, value] of Object.entries(sampleValue)) {
         properties[key] = inferFieldType(key, value, rules);
@@ -96,6 +85,7 @@ export function inferFieldType(
 
     // Handle arrays
     if (Array.isArray(sampleValue)) {
+      Logger.debug(`Processing array for ${keyName}`);
       if (sampleValue.length === 0) {
         return { type: "keyword" };
       }
@@ -113,16 +103,16 @@ export function inferFieldType(
     // Handle numbers
     if (typeof sampleValue === "number") {
       if (Number.isInteger(sampleValue)) {
-        process.stdout.write(chalk.green(`✓ Detected integer type\n`));
+        Logger.debug("Detected integer type");
         return { type: "integer" };
       }
-      process.stdout.write(chalk.green(`✓ Detected float type\n`));
+      Logger.debug("Detected float type");
       return { type: "float" };
     }
 
     // Handle booleans
     if (typeof sampleValue === "boolean") {
-      process.stdout.write(chalk.green(`✓ Detected boolean type\n`));
+      Logger.debug("Detected boolean type");
       return { type: "boolean" };
     }
 
@@ -135,29 +125,27 @@ export function inferFieldType(
         )
       ) {
         if (isValidDate(sampleValue)) {
-          process.stdout.write(chalk.green(`✓ Detected date type\n`));
+          Logger.debug("Detected date type");
           return { type: "date" };
         }
       }
 
       // Handle long strings
       if (sampleValue.length > rules.maxTextLength) {
-        process.stdout.write(
-          chalk.green(`✓ Detected text type (long string)\n`)
-        );
+        Logger.debug("Detected text type (long string)");
         return { type: "text" };
       }
 
-      process.stdout.write(chalk.green(`✓ Detected keyword type\n`));
+      Logger.debug("Detected keyword type");
       return { type: "keyword" };
     }
 
     // Default fallback
-    process.stdout.write(
-      chalk.yellow(`⚠ Using default keyword type for unknown value type\n`)
-    );
+    Logger.debug("Using default keyword type for unknown value type");
     return { type: "keyword" };
   } catch (error) {
+    Logger.debug("Error inferring field type");
+    Logger.debugObject("Error details", { keyName, sampleValue, error });
     throw new ComposerError(
       "Error inferring field type",
       ErrorCodes.GENERATION_FAILED,
@@ -165,8 +153,6 @@ export function inferFieldType(
     );
   }
 }
-
-// ---- Mapping Generation ----
 
 /**
  * Generates Elasticsearch mapping from a JSON file
@@ -192,12 +178,12 @@ export function inferFieldType(
  */
 export function generateMappingFromJson(
   jsonFilePath: string,
-  indexName: string // New parameter
+  indexName: string
 ): ElasticsearchMapping {
   try {
-    process.stdout.write(
-      chalk.cyan("\nGenerating Elasticsearch mapping from JSON...\n")
-    );
+    Logger.debug("Generating Elasticsearch mapping from JSON");
+    Logger.debug(`Input file: ${jsonFilePath}`);
+    Logger.debug(`Index name: ${indexName}`);
 
     // Read and validate JSON
     const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, "utf8"));
@@ -257,9 +243,13 @@ export function generateMappingFromJson(
       },
     };
 
-    process.stdout.write(chalk.green(`✓ Mapping generated successfully\n`));
+    Logger.success("Mapping generated successfully");
+    Logger.debugObject("Generated Mapping", mapping);
     return mapping;
   } catch (error) {
+    Logger.debug("Error generating mapping from JSON");
+    Logger.debugObject("Error details", { filePath: jsonFilePath, error });
+
     if (error instanceof ComposerError) {
       throw error;
     }
@@ -271,8 +261,6 @@ export function generateMappingFromJson(
   }
 }
 
-// ---- Mapping Utilities ----
-
 /**
  * Merges two Elasticsearch mappings
  * Combines properties while preserving other configuration
@@ -282,18 +270,26 @@ export function mergeMappings(
   source: ElasticsearchMapping
 ): ElasticsearchMapping {
   try {
+    Logger.debug("Merging Elasticsearch mappings");
+
     const mergedProperties = {
       ...target.mappings.properties,
       ...source.mappings.properties,
     };
 
-    return {
+    const mergedMapping = {
       ...target,
       mappings: {
         properties: mergedProperties,
       },
     };
+
+    Logger.success("Mappings merged successfully");
+    Logger.debugObject("Merged Mapping", mergedMapping);
+    return mergedMapping;
   } catch (error) {
+    Logger.debug("Error merging mappings");
+    Logger.debugObject("Error details", error);
     throw new ComposerError(
       "Error merging mappings",
       ErrorCodes.GENERATION_FAILED,

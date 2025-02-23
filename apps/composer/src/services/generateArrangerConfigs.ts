@@ -1,4 +1,4 @@
-import type { ElasticsearchMapping, ElasticsearchField } from "../types";
+import { Logger } from "../utils/logger";
 import type {
   ArrangerBaseConfig,
   ExtendedField,
@@ -8,6 +8,7 @@ import type {
   FacetAggregation,
   ArrangerFacetsConfig,
 } from "../types";
+import type { ElasticsearchMapping, ElasticsearchField } from "../types";
 
 // ---- Field Name Formatting Utilities ----
 
@@ -86,6 +87,8 @@ function processFields(
   tableColumns: TableColumn[];
   facetAggregations: FacetAggregation[];
 } {
+  Logger.debug(`Processing fields with parent path: ${parentPath.join(".")}`);
+
   const extendedFields: ExtendedField[] = [];
   const tableColumns: TableColumn[] = [];
   const facetAggregations: FacetAggregation[] = [];
@@ -94,6 +97,10 @@ function processFields(
     const currentPath = [...parentPath, fieldName];
 
     if (field.type === "object" && field.properties) {
+      Logger.debug(
+        `Recursively processing nested object: ${currentPath.join(".")}`
+      );
+
       // Recursively process nested fields
       const nestedResults = processFields(field.properties, currentPath);
       extendedFields.push(...nestedResults.extendedFields);
@@ -103,10 +110,12 @@ function processFields(
       const formattedFieldName = formatFieldName(currentPath);
 
       // Add to extended fields
-      extendedFields.push({
+      const extendedField = {
         displayName: formatDisplayName(formattedFieldName),
         fieldName: formattedFieldName,
-      });
+      };
+      extendedFields.push(extendedField);
+      Logger.debug(`Added extended field: ${JSON.stringify(extendedField)}`);
 
       // Add to table columns
       const tableColumn: TableColumn = {
@@ -124,6 +133,7 @@ function processFields(
       }
 
       tableColumns.push(tableColumn);
+      Logger.debug(`Added table column: ${JSON.stringify(tableColumn)}`);
 
       // Add to facet aggregations for various field types
       if (
@@ -133,11 +143,15 @@ function processFields(
         field.type === "float" ||
         field.type === "date"
       ) {
-        facetAggregations.push({
+        const facetAggregation = {
           active: true,
           fieldName: formatFacetFieldName(currentPath),
           show: true,
-        });
+        };
+        facetAggregations.push(facetAggregation);
+        Logger.debug(
+          `Added facet aggregation: ${JSON.stringify(facetAggregation)}`
+        );
       }
     }
   }
@@ -158,36 +172,55 @@ function processFields(
  */
 export function generateArrangerConfigs(
   mapping: ElasticsearchMapping,
-  indexName: string
+  indexName: string,
+  documentType: "file" | "analysis" = "file"
 ): {
   base: ArrangerBaseConfig;
   extended: ArrangerExtendedConfig;
   table: ArrangerTableConfig;
   facets: ArrangerFacetsConfig;
 } {
-  const { extendedFields, tableColumns, facetAggregations } = processFields(
-    mapping.mappings.properties
-  );
+  Logger.debug(`Generating Arranger configs for index: ${indexName}`);
+  Logger.debug(`Document type: ${documentType}`);
 
-  return {
-    base: {
-      documentType: "file",
-      index: indexName,
-    },
-    extended: {
-      extended: extendedFields,
-    },
-    table: {
+  try {
+    const { extendedFields, tableColumns, facetAggregations } = processFields(
+      mapping.mappings.properties
+    );
+
+    Logger.debug(`Generated ${extendedFields.length} extended fields`);
+    Logger.debug(`Generated ${tableColumns.length} table columns`);
+    Logger.debug(`Generated ${facetAggregations.length} facet aggregations`);
+
+    const configs = {
+      base: {
+        documentType,
+        index: indexName,
+      },
+      extended: {
+        extended: extendedFields,
+      },
       table: {
-        columns: tableColumns,
+        table: {
+          columns: tableColumns,
+        },
       },
-    },
-    facets: {
       facets: {
-        aggregations: facetAggregations,
+        facets: {
+          aggregations: facetAggregations,
+        },
       },
-    },
-  };
+    };
+
+    Logger.success("Arranger configurations generated successfully");
+    Logger.debugObject("Configuration summary", configs);
+
+    return configs;
+  } catch (error) {
+    Logger.debug("Error generating Arranger configurations");
+    Logger.debugObject("Error details", error);
+    throw error;
+  }
 }
 
 /* Usage Example:

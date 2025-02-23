@@ -1,34 +1,47 @@
 import { Command } from "commander";
-import { Profile, CLIMode, CLIOutput } from "../types";
+import { Profile, CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { validateEnvironment } from "../validations";
 import { loadEnvironmentConfig } from "./environment";
 import { determineMode, getDefaultOutputPath } from "./profiles";
 import { validateCliOptions } from "./validation";
 import { configureCommandOptions } from "./options";
+import { Logger } from "../utils/logger";
 
-/**
- * Sets up and configures the CLI interface
- * Handles command parsing, validation, and configuration assembly
- */
 export async function setupCLI(): Promise<CLIOutput> {
   const program = new Command();
 
   try {
+    // Load environment and parse options
     const envConfig = loadEnvironmentConfig();
     configureCommandOptions(program);
-
     program.parse();
     const options = program.opts();
 
+    // Process profile and mode
     const profile = options.profile as Profile;
-    validateCliOptions(options, profile);
-
     const mode = determineMode(profile);
     const outputPath =
       options.output || getDefaultOutputPath(profile, envConfig);
 
-    // Validate environment with profile and outputPath
+    // Log consolidated configuration
+    Logger.debugObject("CLI Configuration", {
+      command: {
+        profile,
+        mode,
+        input: options.files,
+        output: outputPath,
+      },
+      directories: {
+        elasticsearch: envConfig.esConfigDir,
+        arranger: envConfig.arrangerConfigDir,
+        lectern: envConfig.lecternDictionary,
+        song: envConfig.songSchema,
+      },
+    });
+
+    // Validate options and environment
+    validateCliOptions(options, profile);
     await validateEnvironment({
       profile,
       dataFile: envConfig.dataFile,
@@ -39,6 +52,7 @@ export async function setupCLI(): Promise<CLIOutput> {
       outputPath,
     });
 
+    // Build CLI output
     const cliOutput: CLIOutput = {
       config: {
         elasticsearch: {
@@ -61,23 +75,19 @@ export async function setupCLI(): Promise<CLIOutput> {
         options.arrangerConfigDir || envConfig.arrangerConfigDir,
     };
 
-    // Add profile-specific configurations
+    // Add profile-specific config
     if (mode === "dictionary") {
       cliOutput.dictionaryConfig = {
         name: options.name,
         description: options.description,
         version: options.version,
       };
-    }
-
-    if (mode === "song") {
+    } else if (mode === "song") {
       cliOutput.songConfig = {
         name: options.name,
         fileTypes: options.fileTypes,
       };
-    }
-
-    if (mode === "arranger") {
+    } else if (mode === "arranger") {
       cliOutput.arrangerConfig = {
         documentType: options.arrangerDocType as "file" | "analysis",
       };
@@ -95,5 +105,3 @@ export async function setupCLI(): Promise<CLIOutput> {
     );
   }
 }
-
-export { Profile, CLIMode };

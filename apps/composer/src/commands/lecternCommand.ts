@@ -10,7 +10,7 @@ import {
 import { parseCSVLine } from "../utils/csvParser";
 import { validateCSVHeaders, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
-import chalk from "chalk";
+import { Logger } from "../utils/logger";
 
 export class DictionaryCommand extends Command {
   constructor() {
@@ -27,7 +27,7 @@ export class DictionaryCommand extends Command {
       );
     }
 
-    // Explicitly reject if dictionaryConfig is missing
+    // Validate dictionary config
     if (!cliOutput.dictionaryConfig) {
       throw new ComposerError(
         "Dictionary configuration is required",
@@ -35,7 +35,6 @@ export class DictionaryCommand extends Command {
       );
     }
 
-    // Ensure dictionaryConfig has required fields
     const config = cliOutput.dictionaryConfig;
     if (!config.name || !config.description || !config.version) {
       throw new ComposerError(
@@ -44,7 +43,7 @@ export class DictionaryCommand extends Command {
       );
     }
 
-    // Validate all input files are CSVs
+    // Validate all files are CSVs
     const invalidFiles = cliOutput.filePaths.filter(
       (filePath) => path.extname(filePath).toLowerCase() !== ".csv"
     );
@@ -57,7 +56,7 @@ export class DictionaryCommand extends Command {
       );
     }
 
-    // Validate CSV headers for all input files
+    // Validate CSV headers
     for (const filePath of cliOutput.filePaths) {
       const csvHeadersValid = await validateCSVHeaders(
         filePath,
@@ -76,10 +75,10 @@ export class DictionaryCommand extends Command {
     const { outputPath, dictionaryConfig } = cliOutput;
     const delimiter = cliOutput.config.delimiter;
 
-    console.log(chalk.cyan("\nGenerating Lectern dictionary..."));
+    Logger.header("Generating Lectern Dictionary");
 
     try {
-      // Validate environment and ensure output directory exists
+      // Validate environment
       await validateEnvironment({
         profile: Profiles.GENERATE_LECTERN_DICTIONARY,
         outputPath: outputPath,
@@ -111,13 +110,13 @@ export class DictionaryCommand extends Command {
             );
           }
 
-          // Get schema name from file name
+          // Generate schema name from file name
           const schemaName = path
             .basename(filePath, path.extname(filePath))
             .toLowerCase()
             .replace(/[^a-z0-9]/g, "_");
 
-          // Get sample data
+          // Process sample data
           const sampleData: Record<string, string> = {};
           if (sampleLine) {
             const sampleValues = parseCSVLine(sampleLine, delimiter, false)[0];
@@ -130,21 +129,17 @@ export class DictionaryCommand extends Command {
 
           const schema = generateSchema(schemaName, headers, sampleData);
           dictionary.schemas.push(schema);
-          console.log(chalk.green(`✓ Generated schema for ${schemaName}`));
+          Logger.success(`Generated schema for ${schemaName}`);
         } catch (error) {
-          console.error(
-            chalk.yellow(`⚠ Skipping ${filePath} due to error:`),
-            error
-          );
+          Logger.warn(`Skipping ${filePath} due to error: ${error}`);
           continue;
         }
       }
 
       // Write dictionary to file
       fs.writeFileSync(outputPath!, JSON.stringify(dictionary, null, 2));
-      console.log(chalk.green(`\n✓ Dictionary saved to ${outputPath}`));
+      Logger.success(`Dictionary saved to ${outputPath}`);
 
-      // Return the generated dictionary to satisfy the test
       return dictionary;
     } catch (error) {
       if (error instanceof ComposerError) {

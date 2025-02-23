@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import { Logger } from "../utils/logger";
 import type {
   LecternDictionary,
   LecternSchema,
@@ -28,15 +28,11 @@ export function inferValueType(
   headerName: string,
   sampleValue: string
 ): ValueType {
-  process.stdout.write(
-    chalk.cyan(`\nInferring type for field: ${headerName}\n`)
-  );
+  Logger.debug(`Inferring type for field: ${headerName}`);
 
   // Handle empty values
   if (!sampleValue || sampleValue.trim() === "") {
-    process.stdout.write(
-      chalk.yellow(`⚠ Empty sample value detected, defaulting to string type\n`)
-    );
+    Logger.debug("Empty sample value detected, defaulting to string type");
     return "string";
   }
 
@@ -44,22 +40,22 @@ export function inferValueType(
   const lowerValue = sampleValue.toLowerCase();
   const booleanValues = ["true", "false", "yes", "no", "0", "1"];
   if (booleanValues.includes(lowerValue)) {
-    process.stdout.write(chalk.green(`✓ Detected boolean type\n`));
+    Logger.debug("Detected boolean type");
     return "boolean";
   }
 
   // Check for numeric values
   if (!isNaN(Number(sampleValue))) {
     if (Number.isInteger(Number(sampleValue))) {
-      process.stdout.write(chalk.green(`✓ Detected integer type\n`));
+      Logger.debug("Detected integer type");
       return "integer";
     }
-    process.stdout.write(chalk.green(`✓ Detected number type\n`));
+    Logger.debug("Detected number type");
     return "number";
   }
 
   // Default to string type
-  process.stdout.write(chalk.green(`✓ Detected string type\n`));
+  Logger.debug("Detected string type");
   return "string";
 }
 
@@ -87,15 +83,22 @@ export function generateDictionary(
   description: string,
   version: string
 ): LecternDictionary {
-  process.stdout.write(chalk.cyan("\nGenerating Lectern dictionary...\n"));
+  Logger.debug("Generating Lectern dictionary");
+  Logger.debug(`Dictionary Name: ${dictionaryName}`);
+  Logger.debug(`Description: ${description}`);
+  Logger.debug(`Version: ${version}`);
 
-  return {
+  const dictionary = {
     name: dictionaryName,
     description: description,
     version: version,
     schemas: [],
     meta: {},
   };
+
+  Logger.success("Dictionary generated successfully");
+  Logger.debugObject("Dictionary Details", dictionary);
+  return dictionary;
 }
 
 // ---- Schema Generation ----
@@ -131,9 +134,8 @@ export function generateSchema(
   csvHeaders: string[],
   sampleData: Record<string, string>
 ): LecternSchema {
-  process.stdout.write(
-    chalk.cyan(`\nGenerating schema from CSV: ${schemaName}\n`)
-  );
+  Logger.debug(`Generating schema: ${schemaName}`);
+  Logger.debugObject("CSV Headers", csvHeaders);
 
   // Generate field definitions
   const fields: LecternField[] = csvHeaders.map((header) => {
@@ -150,9 +152,8 @@ export function generateSchema(
       },
     };
 
-    process.stdout.write(
-      chalk.green(`✓ Created field definition for: ${header}\n`)
-    );
+    Logger.debug(`Created field definition for: ${header}`);
+    Logger.debugObject(`Field Details for ${header}`, field);
     return field;
   });
 
@@ -166,9 +167,8 @@ export function generateSchema(
     },
   };
 
-  process.stdout.write(
-    chalk.green(`✓ Schema generation complete: ${schemaName}\n`)
-  );
+  Logger.success(`Schema generation complete: ${schemaName}`);
+  Logger.debugObject("Schema Details", schema);
   return schema;
 }
 

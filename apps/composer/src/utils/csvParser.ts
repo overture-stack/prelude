@@ -2,29 +2,16 @@ import * as fs from "fs";
 import { parse as csvParse } from "csv-parse/sync";
 import { ComposerError, ErrorCodes } from "./errors";
 import { CSVParseOptions } from "../types/validations";
+import { Logger } from "./logger";
 
-/**
- * Core CSV parsing utilities for processing CSV files.
- * Handles basic CSV operations like parsing lines, reading headers,
- * and inferring data types.
- */
-
-/**
- * Parses a single line of CSV data into an array of values.
- * Used for both header rows and data rows with special handling for headers.
- *
- * @param line - The CSV line to parse
- * @param delimiter - Character separating values (e.g., ',' or ';')
- * @param isHeaderRow - Whether this line contains column headers
- * @returns Array of string arrays (usually with just one inner array)
- * @throws ComposerError if parsing fails
- */
 export function parseCSVLine(
   line: string,
   delimiter: string,
   isHeaderRow: boolean = false
 ): string[][] {
   try {
+    Logger.debug(`Parsing CSV line${isHeaderRow ? " (headers)" : ""}`);
+
     const parseOptions: CSVParseOptions = {
       delimiter,
       trim: true,
@@ -32,12 +19,16 @@ export function parseCSVLine(
       relax_column_count: true,
     };
 
-    // Parse the CSV line using csv-parse library
+    Logger.debugObject("Parse options", parseOptions);
+
     const result = csvParse(line, parseOptions);
 
-    // For header rows, we only need the first line
     if (isHeaderRow) {
-      return result[0] ? [result[0]] : [];
+      const headers = result[0] ? [result[0]] : [];
+      if (headers.length > 0) {
+        Logger.debug(`Found ${headers[0].length} columns`);
+      }
+      return headers;
     }
 
     return result;
@@ -50,20 +41,14 @@ export function parseCSVLine(
   }
 }
 
-/**
- * Reads and processes the headers and first data line from a CSV file.
- * This is useful for understanding the structure of the CSV and inferring data types.
- *
- * @param filePath - Path to the CSV file
- * @param delimiter - Character separating values
- * @returns Object containing headers array and sample data object
- * @throws ComposerError if file reading or parsing fails
- */
 export function readCSVHeadersAndSample(
   filePath: string,
   delimiter: string
 ): { headers: string[]; sampleData: Record<string, string> } {
   try {
+    Logger.debug(`Reading CSV file: ${filePath}`);
+    Logger.debug(`Using delimiter: "${delimiter}"`);
+
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const [headerLine, sampleLine] = fileContent.split("\n");
 
@@ -82,12 +67,17 @@ export function readCSVHeadersAndSample(
       );
     }
 
+    Logger.debug(`Found headers: ${headers.join(", ")}`);
+
     const sampleData: Record<string, string> = {};
     if (sampleLine) {
       const sampleValues = parseCSVLine(sampleLine, delimiter, false)[0];
       if (sampleValues) {
         headers.forEach((header: string, index: number) => {
           sampleData[header] = sampleValues[index] || "";
+          Logger.debug(
+            `Column "${header}": ${inferValueType(sampleValues[index] || "")}`
+          );
         });
       }
     }
@@ -105,27 +95,17 @@ export function readCSVHeadersAndSample(
   }
 }
 
-/**
- * Determines the most appropriate data type for a given value.
- * Handles common data types found in CSV files:
- * - Boolean: true/false, yes/no, 1/0
- * - Number: Any valid numeric value
- * - Date: Any valid date string
- * - String: Default type for all other values
- *
- * @param value - String value to analyze
- * @returns Inferred type as a string
- */
 export function inferValueType(
   value: string
 ): "string" | "number" | "boolean" | "date" {
-  // Check for boolean values (includes common boolean representations)
   const lowerValue = value.toLowerCase().trim();
+
+  // Check for boolean values
   if (["true", "false", "yes", "no", "1", "0"].includes(lowerValue)) {
     return "boolean";
   }
 
-  // Check for numeric values (ensures non-empty string)
+  // Check for numeric values
   if (!isNaN(Number(value)) && value.toString().trim() !== "") {
     return "number";
   }
@@ -135,18 +115,10 @@ export function inferValueType(
     return "date";
   }
 
-  // Default to string type if no other type matches
+  // Default to string type
   return "string";
 }
 
-/**
- * Validates if a string represents a valid date.
- * Tests the string by attempting to create a Date object
- * and checking if it results in a valid timestamp.
- *
- * @param dateString - String to validate as a date
- * @returns boolean indicating if the string is a valid date
- */
 function isValidDate(dateString: string): boolean {
   const date = new Date(dateString);
   return date instanceof Date && !isNaN(date.getTime());

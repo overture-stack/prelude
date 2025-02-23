@@ -9,9 +9,6 @@ interface CLIOptions {
   [key: string]: any;
 }
 
-/**
- * Validates CLI options based on the selected profile
- */
 export function validateCliOptions(
   options: CLIOptions,
   profile: Profile
@@ -66,3 +63,5 @@ export function validateCliOptions(
     );
   }
 }
+
+export type { CLIOptions };

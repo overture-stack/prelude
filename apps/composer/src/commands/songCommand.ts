@@ -9,49 +9,27 @@ import {
 } from "../services/generateSongSchema";
 import { validateFile, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
-import chalk from "chalk";
+import { Logger } from "../utils/logger";
 
-/**
- * Command for generating SONG schemas from JSON sample data.
- * Handles schema name sanitization, file validation, and schema generation
- * with appropriate error handling throughout the process.
- */
 export class SongCommand extends Command {
   constructor() {
     super("Song Schema");
   }
 
-  /**
-   * Sanitizes a schema name by:
-   * - Replacing spaces with underscores
-   * - Removing special characters
-   * - Ensuring it starts with a letter
-   * - Providing a default if empty
-   *
-   * @param name - Raw schema name to sanitize
-   * @returns Sanitized schema name suitable for use
-   *
-   * @example
-   * sanitizeSchemaName("My Schema!") // Returns "My_Schema"
-   * sanitizeSchemaName("123schema") // Returns "schema"
-   * sanitizeSchemaName("") // Returns "schema"
-   */
   private sanitizeSchemaName(name: string): string {
-    return name
+    const sanitized = name
       .replace(/\s+/g, "_") // Replace spaces with underscores
       .replace(/[^\w-]/g, "") // Remove non-word chars (except hyphens)
       .replace(/^[^a-zA-Z]+/, "") // Remove leading non-letters
       .replace(/^$/, "schema"); // Use 'schema' if empty after sanitization
+
+    if (sanitized !== name) {
+      Logger.warn(`Schema name "${name}" will be sanitized to "${sanitized}"`);
+    }
+
+    return sanitized;
   }
 
-  /**
-   * Validates command inputs and file types.
-   * Checks for:
-   * - Required output path
-   * - Valid schema name
-   * - JSON file type
-   * - File accessibility
-   */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     await super.validate(cliOutput);
 
@@ -64,19 +42,10 @@ export class SongCommand extends Command {
 
     // Validate and sanitize schema name if provided
     if (cliOutput.songConfig?.name) {
-      const originalName = cliOutput.songConfig.name;
-      const sanitizedName = this.sanitizeSchemaName(originalName);
-
-      if (sanitizedName !== originalName) {
-        console.log(
-          chalk.yellow(
-            `Note: Schema name "${originalName}" will be sanitized to "${sanitizedName}"`
-          )
-        );
-      }
+      this.sanitizeSchemaName(cliOutput.songConfig.name);
     }
 
-    // Validate file type
+    // Validate file type and accessibility
     const filePath = cliOutput.filePaths[0];
     const fileExtension = path.extname(filePath).toLowerCase();
 
@@ -87,7 +56,6 @@ export class SongCommand extends Command {
       );
     }
 
-    // Validate file accessibility
     const fileValid = await validateFile(filePath);
     if (!fileValid) {
       throw new ComposerError(
@@ -97,21 +65,14 @@ export class SongCommand extends Command {
     }
   }
 
-  /**
-   * Executes the schema generation process:
-   * 1. Reads and validates input JSON
-   * 2. Generates schema with sanitized name
-   * 3. Validates generated schema
-   * 4. Saves to specified output path
-   */
   protected async execute(cliOutput: CLIOutput): Promise<void> {
     const outputPath = cliOutput.outputPath!;
     const filePath = cliOutput.filePaths[0];
 
-    console.log(chalk.cyan("\nGenerating SONG schema..."));
+    Logger.header("Generating SONG Schema");
 
     try {
-      // Read and validate JSON input
+      Logger.info("Reading JSON input file");
       const fileContent = fs.readFileSync(filePath, "utf-8");
       let sampleData: Record<string, any>;
 
@@ -140,18 +101,28 @@ export class SongCommand extends Command {
             path.basename(filePath, path.extname(filePath))
           );
 
+      Logger.debug(`Using schema name: ${schemaName}`);
+
       // Configure schema options
       const songOptions = cliOutput.songConfig?.fileTypes
         ? { fileTypes: cliOutput.songConfig.fileTypes }
         : undefined;
 
+      if (songOptions?.fileTypes) {
+        Logger.debug(
+          `Configured file types: ${songOptions.fileTypes.join(", ")}`
+        );
+      }
+
       // Generate and validate schema
+      Logger.info("Generating schema");
       const songSchema = generateSongSchema(
         sampleData,
         schemaName,
         songOptions
       );
 
+      Logger.info("Validating generated schema");
       if (!validateSongSchema(songSchema)) {
         throw new ComposerError(
           "Generated schema validation failed",
@@ -159,7 +130,7 @@ export class SongCommand extends Command {
         );
       }
 
-      // Ensure output directory exists using validation utility
+      // Ensure output directory exists
       await validateEnvironment({
         profile: Profiles.GENERATE_SONG_SCHEMA,
         outputPath: outputPath,
@@ -168,11 +139,9 @@ export class SongCommand extends Command {
       // Write schema to file
       fs.writeFileSync(outputPath, JSON.stringify(songSchema, null, 2));
 
-      console.log(chalk.green(`✓ Song schema saved to ${outputPath}`));
-      console.log(
-        chalk.white(
-          "Tip: enums and required fields are not inferred, make sure to update your schema accordingly"
-        )
+      Logger.success(`Schema saved to ${outputPath}`);
+      Logger.warn(
+        "Note: enums and required fields are not inferred, make sure to update your schema accordingly"
       );
     } catch (error) {
       if (error instanceof ComposerError) {

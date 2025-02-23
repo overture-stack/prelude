@@ -7,33 +7,20 @@ import { generateMappingFromCSV } from "../services/generateEsMappingFromCSV";
 import { generateMappingFromJson } from "../services/generateEsMappingFromJSON";
 import { validateCSVHeaders, validateEnvironment } from "../validations";
 import { parseCSVLine } from "../utils/csvParser";
-import chalk from "chalk";
 import { Profiles } from "../types";
+import { Logger } from "../utils/logger";
 
-/**
- * Options for configuring Elasticsearch mapping generation
- */
 interface MappingOptions {
-  index_pattern?: string; // Pattern for the index name
-  number_of_shards?: number; // Number of shards for the index
-  number_of_replicas?: number; // Number of replicas for the index
+  index_pattern?: string;
+  number_of_shards?: number;
+  number_of_replicas?: number;
 }
 
-/**
- * Command for generating Elasticsearch mappings from CSV or JSON files.
- * Supports multiple input files of the same type and provides validation
- * and error handling throughout the process.
- */
 export class MappingCommand extends Command {
   constructor() {
     super("Elasticsearch Mapping");
   }
 
-  /**
-   * Validates the command input parameters and file types.
-   * Ensures all input files are of the same type (CSV or JSON)
-   * and that required parameters are present.
-   */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     await super.validate(cliOutput);
 
@@ -59,19 +46,20 @@ export class MappingCommand extends Command {
       );
     }
 
-    // Ensure all files are of the same type
-    const extensions = cliOutput.filePaths.map((filePath) =>
-      path.extname(filePath).toLowerCase()
+    // Ensure all files are the same type
+    const extensions = new Set(
+      cliOutput.filePaths.map((filePath) =>
+        path.extname(filePath).toLowerCase()
+      )
     );
-
-    if (new Set(extensions).size > 1) {
+    if (extensions.size > 1) {
       throw new ComposerError(
         "All input files must be of the same type (either all CSV or all JSON)",
         ErrorCodes.INVALID_FILE
       );
     }
 
-    // Validate index pattern if provided
+    // Validate index pattern
     if (cliOutput.config.elasticsearch?.index) {
       if (!/^[a-z0-9][a-z0-9_-]*$/.test(cliOutput.config.elasticsearch.index)) {
         throw new ComposerError(
@@ -82,13 +70,6 @@ export class MappingCommand extends Command {
     }
   }
 
-  /**
-   * Executes the mapping generation process:
-   * 1. Determines appropriate output path
-   * 2. Processes input files (CSV or JSON)
-   * 3. Generates and saves the Elasticsearch mapping
-   * 4. Logs a summary of the generated mapping
-   */
   protected async execute(cliOutput: CLIOutput): Promise<any> {
     let outputPath = cliOutput.outputPath!;
 
@@ -96,10 +77,10 @@ export class MappingCommand extends Command {
     if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
       outputPath = path.join(outputPath, "mapping.json");
     } else if (!outputPath.endsWith(".json")) {
-      outputPath = outputPath + ".json";
+      outputPath += ".json";
     }
 
-    console.log(chalk.cyan("\nGenerating Elasticsearch Mapping..."));
+    Logger.header("Generating Elasticsearch Mapping");
 
     try {
       const mappingOptions: MappingOptions = {
@@ -108,18 +89,22 @@ export class MappingCommand extends Command {
         number_of_replicas: cliOutput.config.elasticsearch?.replicas,
       };
 
+      Logger.debugObject("Mapping options", mappingOptions);
+
       // Generate mapping based on file type
       const fileExtension = path.extname(cliOutput.filePaths[0]).toLowerCase();
-      const finalMapping =
-        fileExtension === ".csv"
-          ? await this.handleCSVMapping(
-              cliOutput.filePaths,
-              cliOutput.config.delimiter,
-              mappingOptions
-            )
-          : await this.handleJSONMapping(cliOutput.filePaths, mappingOptions);
+      const isCSV = fileExtension === ".csv";
 
-      // Ensure output directory exists using validation utility
+      Logger.info(`Processing ${isCSV ? "CSV" : "JSON"} files`);
+      const finalMapping = isCSV
+        ? await this.handleCSVMapping(
+            cliOutput.filePaths,
+            cliOutput.config.delimiter,
+            mappingOptions
+          )
+        : await this.handleJSONMapping(cliOutput.filePaths, mappingOptions);
+
+      // Ensure output directory exists
       await validateEnvironment({
         profile: Profiles.GENERATE_ELASTICSEARCH_MAPPING,
         outputPath: outputPath,
@@ -127,13 +112,9 @@ export class MappingCommand extends Command {
 
       // Write mapping to file
       fs.writeFileSync(outputPath, JSON.stringify(finalMapping, null, 2));
-      console.log(
-        chalk.green(`✓ Elasticsearch mapping saved to ${outputPath}`)
-      );
+      Logger.success(`Mapping saved to ${outputPath}`);
 
-      // Log summary
       this.logMappingSummary(finalMapping);
-
       return finalMapping;
     } catch (error) {
       if (error instanceof ComposerError) {
@@ -147,17 +128,6 @@ export class MappingCommand extends Command {
     }
   }
 
-  /**
-   * Processes CSV files to generate a mapping:
-   * - Validates headers in each file
-   * - Combines headers from all files
-   * - Collects sample data for type inference
-   *
-   * @param filePaths - Array of paths to CSV files
-   * @param delimiter - CSV delimiter character
-   * @param options - Mapping configuration options
-   * @returns Generated Elasticsearch mapping
-   */
   private async handleCSVMapping(
     filePaths: string[],
     delimiter: string,
@@ -167,6 +137,8 @@ export class MappingCommand extends Command {
     const sampleData: Record<string, string> = {};
 
     for (const filePath of filePaths) {
+      Logger.debug(`Processing CSV file: ${filePath}`);
+
       // Validate CSV structure
       const csvHeadersValid = await validateCSVHeaders(filePath, delimiter);
       if (!csvHeadersValid) {
@@ -205,8 +177,13 @@ export class MappingCommand extends Command {
           sampleData[header] = sampleValues[index]?.toString() || "";
         }
       });
+
+      Logger.debug(
+        `Found ${headers.length} fields in ${path.basename(filePath)}`
+      );
     }
 
+    Logger.info(`Total unique fields found: ${allHeaders.size}`);
     return generateMappingFromCSV(
       Array.from(allHeaders),
       sampleData,
@@ -214,48 +191,27 @@ export class MappingCommand extends Command {
     );
   }
 
-  /**
-   * Processes JSON files to generate a mapping.
-   * Currently only supports single file processing.
-   *
-   * @param filePaths - Array of paths to JSON files
-   * @param options - Mapping configuration options
-   * @returns Generated Elasticsearch mapping
-   */
   private async handleJSONMapping(
     filePaths: string[],
     options: MappingOptions
   ) {
+    Logger.debug(`Processing JSON file: ${filePaths[0]}`);
     return generateMappingFromJson(
       filePaths[0],
       options.index_pattern || "default"
     );
   }
 
-  /**
-   * Logs a summary of the generated mapping including:
-   * - Index pattern
-   * - Aliases
-   * - Number of fields
-   * - Shard configuration
-   * - Replica configuration
-   */
   private logMappingSummary(mapping: any): void {
-    console.log(chalk.cyan("\nMapping Summary:"));
-    console.log(chalk.white(`Index Pattern: ${mapping.index_patterns[0]}`));
-    console.log(
-      chalk.white(`Aliases: ${Object.keys(mapping.aliases).join(", ")}`)
+    Logger.info("Mapping Summary");
+    Logger.info(`Index Pattern: ${mapping.index_patterns[0]}`);
+    Logger.info(`Aliases: ${Object.keys(mapping.aliases).join(", ")}`);
+    Logger.info(
+      `Fields: ${
+        Object.keys(mapping.mappings.properties.data.properties).length
+      }`
     );
-    console.log(
-      chalk.white(
-        `Number of Fields: ${
-          Object.keys(mapping.mappings.properties.data.properties).length
-        }`
-      )
-    );
-    console.log(chalk.white(`Shards: ${mapping.settings.number_of_shards}`));
-    console.log(
-      chalk.white(`Replicas: ${mapping.settings.number_of_replicas}`)
-    );
+    Logger.info(`Shards: ${mapping.settings.number_of_shards}`);
+    Logger.info(`Replicas: ${mapping.settings.number_of_replicas}`);
   }
 }
