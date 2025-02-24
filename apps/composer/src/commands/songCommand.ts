@@ -10,10 +10,11 @@ import {
 import { validateFile, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
+import { CONFIG_PATHS } from "../utils/paths";
 
 export class SongCommand extends Command {
   constructor() {
-    super("Song Schema");
+    super("Song Schema", CONFIG_PATHS.song.dir);
   }
 
   private sanitizeSchemaName(name: string): string {
@@ -30,10 +31,35 @@ export class SongCommand extends Command {
     return sanitized;
   }
 
+  /**
+   * Override isUsingDefaultPath to handle Song schema-specific defaults
+   */
+  protected isUsingDefaultPath(cliOutput: CLIOutput): boolean {
+    return (
+      cliOutput.outputPath === CONFIG_PATHS.song.schema ||
+      cliOutput.outputPath ===
+        path.join(CONFIG_PATHS.song.dir, "songSchema.json") ||
+      super.isUsingDefaultPath(cliOutput)
+    );
+  }
+
   protected async validate(cliOutput: CLIOutput): Promise<void> {
+    Logger.debug("Starting SongCommand validation");
     await super.validate(cliOutput);
 
+    // Ensure only one JSON file is provided
+    if (cliOutput.filePaths.length !== 1) {
+      Logger.debug(
+        `Invalid number of JSON files: ${cliOutput.filePaths.length}`
+      );
+      throw new ComposerError(
+        "You must provide exactly one JSON file",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
     if (!cliOutput.outputPath) {
+      Logger.debug("Output path validation failed");
       throw new ComposerError(
         "Output path is required",
         ErrorCodes.INVALID_ARGS
@@ -48,8 +74,10 @@ export class SongCommand extends Command {
     // Validate file type and accessibility
     const filePath = cliOutput.filePaths[0];
     const fileExtension = path.extname(filePath).toLowerCase();
+    Logger.debug(`Validating file extension: ${fileExtension}`);
 
     if (fileExtension !== ".json") {
+      Logger.debug("File extension validation failed - not JSON");
       throw new ComposerError(
         "Song schema generation requires a JSON input file",
         ErrorCodes.INVALID_FILE
@@ -58,27 +86,30 @@ export class SongCommand extends Command {
 
     const fileValid = await validateFile(filePath);
     if (!fileValid) {
+      Logger.debug(`File not found or invalid: ${filePath}`);
       throw new ComposerError(
         `Invalid file ${filePath}`,
         ErrorCodes.INVALID_FILE
       );
     }
+
+    Logger.debug("SongCommand validation completed successfully");
   }
 
   protected async execute(cliOutput: CLIOutput): Promise<void> {
+    Logger.debug("Starting SongCommand execution");
     const outputPath = cliOutput.outputPath!;
     const filePath = cliOutput.filePaths[0];
 
-    Logger.header("Generating SONG Schema");
-
     try {
-      Logger.info("Reading JSON input file");
+      Logger.info(`Reading JSON input: ${path.basename(filePath)}`);
       const fileContent = fs.readFileSync(filePath, "utf-8");
       let sampleData: Record<string, any>;
 
       try {
         sampleData = JSON.parse(fileContent);
       } catch (error) {
+        Logger.debug(`JSON parsing failed: ${error}`);
         throw new ComposerError(
           "Invalid JSON file",
           ErrorCodes.INVALID_FILE,
@@ -88,6 +119,7 @@ export class SongCommand extends Command {
 
       // Validate JSON structure
       if (!sampleData || !sampleData.experiment) {
+        Logger.debug("Invalid JSON structure - missing experiment object");
         throw new ComposerError(
           "JSON must contain an experiment object",
           ErrorCodes.VALIDATION_FAILED
@@ -122,8 +154,9 @@ export class SongCommand extends Command {
         songOptions
       );
 
-      Logger.info("Validating generated schema");
+      Logger.debug("Validating generated schema");
       if (!validateSongSchema(songSchema)) {
+        Logger.debug("Generated schema validation failed");
         throw new ComposerError(
           "Generated schema validation failed",
           ErrorCodes.VALIDATION_FAILED
@@ -139,12 +172,14 @@ export class SongCommand extends Command {
       // Write schema to file
       fs.writeFileSync(outputPath, JSON.stringify(songSchema, null, 2));
 
-      Logger.success(`Schema saved to ${outputPath}`);
+      Logger.success(`Schema template saved to ${outputPath}`);
       Logger.warn(
-        "Note: enums and required fields are not inferred, make sure to update your schema accordingly"
+        "Enums and required fields are not inferred, make sure to update your schema accordingly, including fileTypes."
       );
     } catch (error) {
+      Logger.debug(`Error during execution: ${error}`);
       if (error instanceof ComposerError) {
+        Logger.error(error.message);
         throw error;
       }
       throw new ComposerError(

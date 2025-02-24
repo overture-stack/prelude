@@ -10,7 +10,7 @@
       "data": {
         "type": "object",
         "properties": {
-          "field1": {
+          "olla": {
             "type": "keyword"
           },
           "field2": {

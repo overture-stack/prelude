@@ -18,6 +18,9 @@ interface LoggerConfig {
 }
 
 export class Logger {
+  static askQuestion(arg0: string) {
+    throw new Error("Method not implemented.");
+  }
   private static config: LoggerConfig = {
     level: LogLevel.INFO,
     debug: false,
@@ -243,7 +246,7 @@ export class Logger {
       {
         title: "Generate Song Schema",
         command:
-          "composer -p generateSongSchema -f metadata.json -o schema.json --name 'My Schema' --file-types BAM FASTQ",
+          "composer -p generateSongSchema -f metadata.json -o songSchema.json --name 'My Schema' --file-types BAM FASTQ",
       },
       {
         title: "Generate Lectern Dictionary",

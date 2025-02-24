@@ -102,11 +102,15 @@ export abstract class Command {
 
   protected async checkForExistingFiles(outputPath: string): Promise<boolean> {
     let directoryPath = outputPath;
+    let outputFileName: string | undefined;
 
     if (path.extname(outputPath)) {
       Logger.debug(`Output path appears to be a file: ${outputPath}`);
       directoryPath = path.dirname(outputPath);
-      Logger.debug(`Using directory: ${directoryPath}`);
+      outputFileName = path.basename(outputPath);
+      Logger.debug(
+        `Using directory: ${directoryPath}, fileName: ${outputFileName}`
+      );
     }
 
     this.createDirectoryIfNotExists(directoryPath);
@@ -114,17 +118,31 @@ export abstract class Command {
     const existingEntries = fs.existsSync(directoryPath)
       ? fs.readdirSync(directoryPath)
       : [];
-    const existingFiles = existingEntries.filter((entry) =>
-      fs.statSync(path.join(directoryPath, entry)).isFile()
-    );
 
-    if (existingFiles.length === 0) {
+    // Filter existing files that would be overwritten
+    const filesToOverwrite = existingEntries.filter((entry) => {
+      const fullPath = path.join(directoryPath, entry);
+
+      // If specific file name is given, only check that exact file
+      if (outputFileName) {
+        return entry === outputFileName && fs.statSync(fullPath).isFile();
+      }
+
+      // If no specific file name, check if entry is a file and would match generated output
+      return (
+        fs.statSync(fullPath).isFile() &&
+        (entry.endsWith(".json") ||
+          entry.startsWith(this.defaultOutputFileName.split(".")[0]))
+      );
+    });
+
+    if (filesToOverwrite.length === 0) {
       return true;
     }
 
     Logger.fileList(
-      "⚠ Warn The following files in the output directory will be overwritten:",
-      existingFiles
+      "The following files in the output directory will be overwritten",
+      filesToOverwrite
     );
 
     const rl = readline.createInterface({

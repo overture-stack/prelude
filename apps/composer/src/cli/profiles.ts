@@ -65,7 +65,7 @@ export function getDefaultOutputPath(
   if (defaultPath) {
     switch (profile) {
       case Profiles.GENERATE_SONG_SCHEMA:
-        defaultPath = path.join(envConfig.songSchema || "", "schema.json");
+        defaultPath = path.join(envConfig.songSchema || "", "songSchema.json");
         break;
       case Profiles.GENERATE_LECTERN_DICTIONARY:
         defaultPath = path.join(

@@ -169,9 +169,11 @@ export function generateSongSchema(
 
   const schema = {
     name: schemaName,
-    ...(options?.fileTypes?.length && {
-      options: { fileTypes: options.fileTypes },
-    }),
+    options: {
+      fileTypes: options?.fileTypes?.length
+        ? options.fileTypes
+        : ["FILETYPE_0", "FILETYPE_1"],
+    },
     schema: {
       type: "object",
       required: fieldNames,
@@ -179,7 +181,7 @@ export function generateSongSchema(
     },
   };
 
-  Logger.success("SONG schema generated successfully");
+  Logger.debug("Song schema generated successfully");
   Logger.debugObject("Generated Schema", schema);
   return schema;
 }
@@ -236,7 +238,7 @@ export function validateSongSchema(schema: SongSchema): boolean {
       throw new Error("Schema must have workflow and experiment sections");
     }
 
-    Logger.success("Schema validation passed");
+    Logger.debug("Schema validation passed");
     return true;
   } catch (error: unknown) {
     const errorMessage =

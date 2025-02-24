@@ -17,7 +17,7 @@ type ConfigType = "song" | "lectern" | "elasticsearch" | "arranger";
 export const CONFIG_PATHS = {
   song: {
     dir: path.join(BASE_CONFIG_DIR, "songSchema"),
-    schema: path.join(BASE_CONFIG_DIR, "songSchema", "schema.json"),
+    schema: path.join(BASE_CONFIG_DIR, "songSchema", "songSchema.json"),
   },
   lectern: {
     dir: path.join(BASE_CONFIG_DIR, "lecternDictionaries"),
