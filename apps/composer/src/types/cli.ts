@@ -18,8 +18,10 @@ export interface CLIOutput {
   mode: CLIMode;
   debug?: boolean;
   filePaths: string[];
+  force?: boolean;
   config: Config;
   outputPath?: string;
+  outputPathProvided?: boolean; // Added this property
   arrangerConfigDir?: string;
   envConfig: EnvConfig;
   delimiter?: string;

@@ -20,7 +20,7 @@ export async function validateFile(filePath: string): Promise<boolean> {
 
     // Verify file existence
     if (!fs.existsSync(filePath)) {
-      Logger.debug(`File does not exist: ${filePath}`);
+      Logger.error(`File does not exist: ${filePath}`);
       throw new ComposerError(
         `File '${filePath}' does not exist`,
         ErrorCodes.FILE_NOT_FOUND
@@ -30,7 +30,7 @@ export async function validateFile(filePath: string): Promise<boolean> {
     // Verify parent directory existence
     const dirPath = path.dirname(filePath);
     if (!fs.existsSync(dirPath)) {
-      Logger.debug(`Directory does not exist: ${dirPath}`);
+      Logger.error(`Directory does not exist: ${dirPath}`);
       throw new ComposerError(
         `Directory does not exist: ${dirPath}`,
         ErrorCodes.FILE_NOT_FOUND
@@ -41,7 +41,7 @@ export async function validateFile(filePath: string): Promise<boolean> {
     try {
       fs.accessSync(filePath, fs.constants.R_OK);
     } catch (error) {
-      Logger.debug(`File is not readable: ${filePath}`);
+      Logger.error(`File is not readable: ${filePath}`);
       throw new ComposerError(
         `File '${filePath}' is not readable`,
         ErrorCodes.INVALID_FILE,
@@ -52,17 +52,16 @@ export async function validateFile(filePath: string): Promise<boolean> {
     // Verify file has content
     const stats = fs.statSync(filePath);
     if (stats.size === 0) {
-      Logger.debug(`File is empty: ${filePath}`);
+      Logger.error(`File is empty: ${filePath}`);
       throw new ComposerError(
         `File '${filePath}' is empty`,
         ErrorCodes.INVALID_FILE
       );
     }
-
-    Logger.success(`File '${filePath}' is valid and readable`);
+    Logger.debug(`File '${filePath}' is valid and readable`);
     return true;
   } catch (error) {
-    Logger.debug("Error during file validation");
+    Logger.error("Error during file validation");
     Logger.debugObject("Error details", error);
 
     if (error instanceof ComposerError) {
@@ -84,7 +83,7 @@ export async function validateFile(filePath: string): Promise<boolean> {
  * @throws ComposerError if delimiter is invalid
  */
 export function validateDelimiter(delimiter: string): boolean {
-  Logger.debug(`Validating delimiter: '${delimiter}'`);
+  Logger.info(`Validating delimiter: '${delimiter}'`);
 
   if (!delimiter || delimiter.length !== 1) {
     Logger.debug("Invalid delimiter: must be a single character");

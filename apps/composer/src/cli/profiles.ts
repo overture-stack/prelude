@@ -2,13 +2,7 @@ import * as path from "path";
 import { Profile, CLIMode, EnvConfig, Profiles } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { Logger } from "../utils/logger";
-
-export const DEFAULT_PATHS = {
-  songSchema: "configs/songSchema/schema.json",
-  lecternDictionary: "configs/lecternDictionaries/dictionary.json",
-  elasticsearchMapping: "configs/elasticsearchConfigs/mapping.json",
-  arrangerConfigs: "configs/arrangerConfigs",
-} as const;
+import { getDefaultOutputPathForProfile } from "../utils/paths";
 
 export const PROFILE_DESCRIPTIONS = new Map([
   [Profiles.GENERATE_SONG_SCHEMA, "Generate SONG schema from JSON metadata"],
@@ -55,37 +49,35 @@ export function determineMode(profile: Profile): CLIMode {
 export function getDefaultOutputPath(
   profile: Profile,
   envConfig: EnvConfig
-): string {
+): string | undefined {
   Logger.debug(`Getting default output path for profile: ${profile}`);
 
-  let outputPath: string;
-
-  switch (profile) {
-    case Profiles.GENERATE_SONG_SCHEMA:
-      outputPath = path.join(envConfig.songSchema || "", "schema.json");
-      break;
-    case Profiles.GENERATE_LECTERN_DICTIONARY:
-      outputPath = path.join(
-        envConfig.lecternDictionary || "",
-        "dictionary.json"
-      );
-      break;
-    case Profiles.GENERATE_ELASTICSEARCH_MAPPING:
-      outputPath = path.join(envConfig.esConfigDir || "", "mapping.json");
-      break;
-    case Profiles.GENERATE_ARRANGER_CONFIGS:
-      outputPath = path.join(envConfig.arrangerConfigDir || "", "configs");
-      break;
-    case Profiles.GENERATE_CONFIGS:
-      outputPath = envConfig.esConfigDir || "";
-      break;
-    default:
-      throw new ComposerError(
-        `Cannot determine output path for profile: ${profile}`,
-        ErrorCodes.INVALID_ARGS
-      );
+  // Handle special cases first
+  if (profile === Profiles.GENERATE_CONFIGS) {
+    return envConfig.esConfigDir || "";
   }
 
-  Logger.debug(`Using default output path: ${outputPath}`);
-  return outputPath;
+  // Get the standard output path
+  let defaultPath = getDefaultOutputPathForProfile(profile);
+
+  // Override with environment config if needed
+  if (defaultPath) {
+    switch (profile) {
+      case Profiles.GENERATE_SONG_SCHEMA:
+        defaultPath = path.join(envConfig.songSchema || "", "schema.json");
+        break;
+      case Profiles.GENERATE_LECTERN_DICTIONARY:
+        defaultPath = path.join(
+          envConfig.lecternDictionary || "",
+          "dictionary.json"
+        );
+        break;
+      case Profiles.GENERATE_ARRANGER_CONFIGS:
+        defaultPath = path.join(envConfig.arrangerConfigDir || "", "configs");
+        break;
+    }
+  }
+
+  Logger.debug(`Using default output path: ${defaultPath}`);
+  return defaultPath;
 }

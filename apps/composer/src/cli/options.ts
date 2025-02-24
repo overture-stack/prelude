@@ -41,7 +41,7 @@ export function configureCommandOptions(program: Command): Command {
       "-f, --files <paths...>",
       "Input file paths (CSV or JSON, space separated)"
     )
-    .option("-i, --index <name>", "Elasticsearch index name", "tabular-index")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
     .option("--shards <number>", "Number of Elasticsearch shards", "1")
     .option("--replicas <number>", "Number of Elasticsearch replicas", "1")
     .option(
@@ -90,7 +90,7 @@ export function parseCommandLineArgs(opts: any): CLIOutput {
     outputPath: opts.output,
     config: {
       elasticsearch: {
-        index: opts.index || "tabular-index",
+        index: opts.index || "data",
         shards: parseInt(opts.shards || "1", 10),
         replicas: parseInt(opts.replicas || "1", 10),
       },

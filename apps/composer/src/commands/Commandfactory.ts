@@ -16,6 +16,14 @@ type CommandMap = {
   [K in Profile]: CommandConstructor;
 };
 
+// Map of profile names to user-friendly display names
+const PROFILE_DISPLAY_NAMES: Record<string, string> = {
+  [Profiles.GENERATE_SONG_SCHEMA]: "Song Schema Generator",
+  [Profiles.GENERATE_LECTERN_DICTIONARY]: "Lectern Dictionary Generator",
+  [Profiles.GENERATE_ELASTICSEARCH_MAPPING]: "Elasticsearch Mapping Generator",
+  [Profiles.GENERATE_ARRANGER_CONFIGS]: "Arranger Configs Generator",
+};
+
 const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.GENERATE_SONG_SCHEMA]: SongCommand,
   [Profiles.GENERATE_LECTERN_DICTIONARY]: DictionaryCommand,
@@ -29,23 +37,31 @@ export class CommandFactory {
     const CommandClass = PROFILE_TO_COMMAND[profile];
 
     if (!CommandClass) {
-      const availableProfiles = Object.keys(PROFILE_TO_COMMAND)
-        .map((profile) => `  ${profile}`)
-        .join("\n");
-
       const error = new ComposerError(
         `Unsupported profile: ${profile}`,
         ErrorCodes.INVALID_ARGS
       );
 
       handleError(error, () => {
-        Logger.info(`Available profiles:\n\n${availableProfiles}\n`);
+        // Use the new section method for better organization
+        Logger.section("Available Profiles");
+
+        // List all available profiles with descriptions
+        Object.entries(PROFILE_TO_COMMAND).forEach(([profileName]) => {
+          const displayName = PROFILE_DISPLAY_NAMES[profileName] || profileName;
+          Logger.commandInfo(profileName, displayName);
+        });
+
+        // Show reference commands with improved formatting
+        Logger.header("Example Commands");
         Logger.showReferenceCommands();
       });
     }
 
     const command = new CommandClass();
-    Logger.debug(`Created ${profile} command instance`);
+    const displayName = PROFILE_DISPLAY_NAMES[profile] || profile;
+
+    Logger.debug(`Created ${displayName} command instance`);
     return command;
   }
 }

@@ -64,7 +64,7 @@ export async function validateEnvironment(
     if (dir && !fs.existsSync(dir)) {
       try {
         fs.mkdirSync(dir, { recursive: true });
-        Logger.success(`Created directory: ${dir}`);
+        Logger.info(`Created directory: ${dir}`);
       } catch (error) {
         throw new ComposerError(
           `Failed to create directory ${dir}`,

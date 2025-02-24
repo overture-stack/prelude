@@ -1,28 +1,20 @@
 {
   "index_patterns": [
-    "tabular-index-*"
+    "data-*"
   ],
   "aliases": {
-    "tabular-index_centric": {}
+    "data_centric": {}
   },
   "mappings": {
     "properties": {
       "data": {
         "type": "object",
         "properties": {
-          "experiment": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "keyword"
-              },
-              "description": {
-                "type": "keyword"
-              },
-              "study_id": {
-                "type": "keyword"
-              }
-            }
+          "field1": {
+            "type": "keyword"
+          },
+          "field2": {
+            "type": "keyword"
           },
           "submission_metadata": {
             "type": "object",

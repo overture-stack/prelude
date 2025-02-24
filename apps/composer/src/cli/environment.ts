@@ -1,15 +1,7 @@
 import { EnvConfig } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { Logger } from "../utils/logger";
-
-const DEFAULT_CONFIG = {
-  fileMetadataSample: "data/sampleData/fileMetadata.json",
-  tabularSample: "data/tabularData.csv",
-  songSchema: "configs/songSchema",
-  lecternDictionary: "configs/lecternDictionaries",
-  esConfigDir: "configs/elasticsearchConfigs",
-  arrangerConfigDir: "configs/arrangerConfigs",
-} as const;
+import { CONFIG_PATHS } from "../utils/paths";
 
 /**
  * Maps config key to environment variable name
@@ -39,14 +31,14 @@ export function loadEnvironmentConfig(): EnvConfig {
 
       // Variables with defaults
       fileMetadataSample:
-        process.env.FILE_METADATA_SAMPLE || DEFAULT_CONFIG.fileMetadataSample,
-      tabularSample: process.env.TABULAR_SAMPLE || DEFAULT_CONFIG.tabularSample,
-      songSchema: process.env.GENERATE_SONG_SCHEMA || DEFAULT_CONFIG.songSchema,
+        process.env.FILE_METADATA_SAMPLE || CONFIG_PATHS.samples.fileMetadata,
+      tabularSample: process.env.TABULAR_SAMPLE || CONFIG_PATHS.samples.tabular,
+      songSchema: process.env.GENERATE_SONG_SCHEMA || CONFIG_PATHS.song.dir,
       lecternDictionary:
-        process.env.LECTERN_DICTIONARY || DEFAULT_CONFIG.lecternDictionary,
-      esConfigDir: process.env.ES_CONFIG_DIR || DEFAULT_CONFIG.esConfigDir,
+        process.env.LECTERN_DICTIONARY || CONFIG_PATHS.lectern.dir,
+      esConfigDir: process.env.ES_CONFIG_DIR || CONFIG_PATHS.elasticsearch.dir,
       arrangerConfigDir:
-        process.env.ARRANGER_CONFIG_DIR || DEFAULT_CONFIG.arrangerConfigDir,
+        process.env.ARRANGER_CONFIG_DIR || CONFIG_PATHS.arranger.dir,
     };
 
     // Log overridden defaults

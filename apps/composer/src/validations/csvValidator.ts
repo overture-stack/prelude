@@ -193,7 +193,7 @@ export async function validateCSVStructure(
       );
     }
 
-    Logger.success("CSV header structure is valid");
+    Logger.debug("CSV header structure is valid");
     return true;
   } catch (error) {
     Logger.debug("Error during CSV structure validation");

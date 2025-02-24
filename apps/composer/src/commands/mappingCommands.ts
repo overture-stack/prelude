@@ -5,10 +5,11 @@ import { CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { generateMappingFromCSV } from "../services/generateEsMappingFromCSV";
 import { generateMappingFromJson } from "../services/generateEsMappingFromJSON";
-import { validateCSVHeaders, validateEnvironment } from "../validations";
+import { validateCSVHeaders } from "../validations";
 import { parseCSVLine } from "../utils/csvParser";
 import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
+import { CONFIG_PATHS } from "../utils/paths";
 
 interface MappingOptions {
   index_pattern?: string;
@@ -17,19 +18,29 @@ interface MappingOptions {
 }
 
 export class MappingCommand extends Command {
+  // Define mapping-specific defaults
+  protected readonly defaultOutputFileName = "mapping.json";
+
   constructor() {
-    super("Elasticsearch Mapping");
+    super("Elasticsearch Mapping", CONFIG_PATHS.elasticsearch.dir);
+    // Override the default filename from the base class
+    this.defaultOutputFileName = "mapping.json";
+  }
+
+  /**
+   * Override isUsingDefaultPath to handle mapping-specific defaults
+   */
+  protected isUsingDefaultPath(cliOutput: CLIOutput): boolean {
+    return (
+      cliOutput.outputPath === CONFIG_PATHS.elasticsearch.mapping ||
+      cliOutput.outputPath ===
+        path.join(CONFIG_PATHS.elasticsearch.dir, "mapping.json") ||
+      super.isUsingDefaultPath(cliOutput)
+    );
   }
 
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     await super.validate(cliOutput);
-
-    if (!cliOutput.outputPath) {
-      throw new ComposerError(
-        "Output path is required",
-        ErrorCodes.INVALID_ARGS
-      );
-    }
 
     // Validate file extensions
     const validExtensions = [".csv", ".json"];
@@ -54,8 +65,11 @@ export class MappingCommand extends Command {
     );
     if (extensions.size > 1) {
       throw new ComposerError(
-        "All input files must be of the same type (either all CSV or all JSON)",
-        ErrorCodes.INVALID_FILE
+        "For now all input files must be of the same type (either all CSV or all JSON)",
+        ErrorCodes.INVALID_FILE,
+        Logger.warn(
+          "Merging JSON and CSV data into a single mapping will part of a future release"
+        )
       );
     }
 
@@ -71,22 +85,27 @@ export class MappingCommand extends Command {
   }
 
   protected async execute(cliOutput: CLIOutput): Promise<any> {
+    // Start execution timing
+    const startTime = Date.now();
+
     let outputPath = cliOutput.outputPath!;
 
-    // Normalize output path
+    // Normalize output path for mapping files specifically
     if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
-      outputPath = path.join(outputPath, "mapping.json");
+      outputPath = path.join(outputPath, this.defaultOutputFileName);
+      Logger.debug(
+        `Output is a directory, will create ${this.defaultOutputFileName} inside it`
+      );
     } else if (!outputPath.endsWith(".json")) {
       outputPath += ".json";
+      Logger.info(`Adding .json extension to output path`);
     }
-
-    Logger.header("Generating Elasticsearch Mapping");
 
     try {
       const mappingOptions: MappingOptions = {
         index_pattern: cliOutput.config.elasticsearch?.index || "default",
-        number_of_shards: cliOutput.config.elasticsearch?.shards,
-        number_of_replicas: cliOutput.config.elasticsearch?.replicas,
+        number_of_shards: cliOutput.config.elasticsearch?.shards || 1,
+        number_of_replicas: cliOutput.config.elasticsearch?.replicas || 0,
       };
 
       Logger.debugObject("Mapping options", mappingOptions);
@@ -95,7 +114,6 @@ export class MappingCommand extends Command {
       const fileExtension = path.extname(cliOutput.filePaths[0]).toLowerCase();
       const isCSV = fileExtension === ".csv";
 
-      Logger.info(`Processing ${isCSV ? "CSV" : "JSON"} files`);
       const finalMapping = isCSV
         ? await this.handleCSVMapping(
             cliOutput.filePaths,
@@ -105,16 +123,19 @@ export class MappingCommand extends Command {
         : await this.handleJSONMapping(cliOutput.filePaths, mappingOptions);
 
       // Ensure output directory exists
-      await validateEnvironment({
-        profile: Profiles.GENERATE_ELASTICSEARCH_MAPPING,
-        outputPath: outputPath,
-      });
+      const outputDir = path.dirname(outputPath);
+      this.createDirectoryIfNotExists(outputDir);
 
       // Write mapping to file
       fs.writeFileSync(outputPath, JSON.stringify(finalMapping, null, 2));
-      Logger.success(`Mapping saved to ${outputPath}`);
 
-      this.logMappingSummary(finalMapping);
+      // Show summary
+      this.logMappingSummary(finalMapping, outputPath);
+
+      // Track total execution time
+      const executionTime = Date.now() - startTime;
+      Logger.timing("Execution completed in", executionTime);
+
       return finalMapping;
     } catch (error) {
       if (error instanceof ComposerError) {
@@ -136,8 +157,12 @@ export class MappingCommand extends Command {
     const allHeaders: Set<string> = new Set();
     const sampleData: Record<string, string> = {};
 
+    // Track per-file processing
+    let processedFileCount = 0;
+
     for (const filePath of filePaths) {
-      Logger.debug(`Processing CSV file: ${filePath}`);
+      const fileStartTime = Date.now();
+      Logger.info(`Processing CSV file: ${path.basename(filePath)}`);
 
       // Validate CSV structure
       const csvHeadersValid = await validateCSVHeaders(filePath, delimiter);
@@ -171,6 +196,7 @@ export class MappingCommand extends Command {
       }
 
       // Merge headers and sample data
+      const originalHeaderCount = allHeaders.size;
       headers.forEach((header: string, index: number) => {
         allHeaders.add(header);
         if (!sampleData[header]) {
@@ -178,12 +204,27 @@ export class MappingCommand extends Command {
         }
       });
 
+      const newHeaders = allHeaders.size - originalHeaderCount;
+      processedFileCount++;
+
       Logger.debug(
-        `Found ${headers.length} fields in ${path.basename(filePath)}`
+        `Found ${headers.length} fields in ${path.basename(
+          filePath
+        )} (${newHeaders} new fields)`
       );
+
+      // Show timing for large files
+      const fileEndTime = Date.now();
+      if (fileEndTime - fileStartTime > 500) {
+        // Only show timing if processing took over 500ms
+        Logger.timing(
+          `Processed file ${processedFileCount}/${filePaths.length}`,
+          fileEndTime - fileStartTime
+        );
+      }
     }
 
-    Logger.info(`Total unique fields found: ${allHeaders.size}`);
+    Logger.debug(`Total unique fields found: ${allHeaders.size}`);
     return generateMappingFromCSV(
       Array.from(allHeaders),
       sampleData,
@@ -195,23 +236,35 @@ export class MappingCommand extends Command {
     filePaths: string[],
     options: MappingOptions
   ) {
-    Logger.debug(`Processing JSON file: ${filePaths[0]}`);
+    const filePath = filePaths[0];
+    Logger.info(`Processing JSON file: ${path.basename(filePath)}`);
     return generateMappingFromJson(
-      filePaths[0],
+      filePath,
       options.index_pattern || "default"
     );
   }
 
-  private logMappingSummary(mapping: any): void {
-    Logger.info("Mapping Summary");
-    Logger.info(`Index Pattern: ${mapping.index_patterns[0]}`);
-    Logger.info(`Aliases: ${Object.keys(mapping.aliases).join(", ")}`);
-    Logger.info(
-      `Fields: ${
-        Object.keys(mapping.mappings.properties.data.properties).length
-      }`
-    );
+  private logMappingSummary(mapping: any, outputPath: string): void {
+    // Index pattern info
+    Logger.info(`Index Pattern created: ${mapping.index_patterns[0]}`);
+
+    // Aliases info
+    const aliasNames = Object.keys(mapping.aliases);
+    if (aliasNames.length > 0) {
+      Logger.info(`Alias(es) used: ${aliasNames.join(", ")}`);
+    } else {
+      Logger.info("No aliases defined");
+    }
+
+    // Fields info with count
+    const fieldCount = Object.keys(
+      mapping.mappings.properties.data.properties
+    ).length;
+    Logger.info(`Total Fields Generated: ${fieldCount}`);
+
+    // Shards and replicas
     Logger.info(`Shards: ${mapping.settings.number_of_shards}`);
     Logger.info(`Replicas: ${mapping.settings.number_of_replicas}`);
+    Logger.success(`Mapping template saved to: ${outputPath}`);
   }
 }

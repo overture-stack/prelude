@@ -7,6 +7,9 @@ export enum LogLevel {
   WARN = 3,
   ERROR = 4,
   HELP = 5,
+  GENERIC = 6,
+  SECTION = 7,
+  INPUT = 8,
 }
 
 interface LoggerConfig {
@@ -24,19 +27,25 @@ export class Logger {
     const icons = {
       [LogLevel.DEBUG]: "🔍",
       [LogLevel.INFO]: "▸",
-      [LogLevel.SUCCESS]: "\n✓",
+      [LogLevel.SUCCESS]: "✓",
       [LogLevel.WARN]: "⚠",
-      [LogLevel.ERROR]: "\n✗",
-      [LogLevel.HELP]: "\n💡",
+      [LogLevel.ERROR]: "✗",
+      [LogLevel.HELP]: "💡",
+      [LogLevel.GENERIC]: "",
+      [LogLevel.SECTION]: "",
+      [LogLevel.INPUT]: "❔",
     };
 
-    const colors = {
+    const colors: Record<LogLevel, (text: string) => string> = {
       [LogLevel.DEBUG]: chalk.bold.gray,
       [LogLevel.INFO]: chalk.bold.cyan,
       [LogLevel.SUCCESS]: chalk.bold.green,
       [LogLevel.WARN]: chalk.bold.yellow,
       [LogLevel.ERROR]: chalk.bold.red,
       [LogLevel.HELP]: chalk.bold.yellow,
+      [LogLevel.GENERIC]: chalk.white,
+      [LogLevel.SECTION]: chalk.bold.blue,
+      [LogLevel.INPUT]: chalk.bold.yellow,
     };
 
     const levelLabels = {
@@ -45,10 +54,33 @@ export class Logger {
       [LogLevel.SUCCESS]: "Success",
       [LogLevel.WARN]: "Warn",
       [LogLevel.ERROR]: "Error",
-      [LogLevel.HELP]: "Help\n",
+      [LogLevel.HELP]: "Help",
+      [LogLevel.GENERIC]: "",
+      [LogLevel.SECTION]: "",
+      [LogLevel.INPUT]: "User Input",
     };
 
-    return `${colors[level](
+    // Only add newlines for errors and warnings
+    const needsNewLine = [
+      LogLevel.ERROR,
+      LogLevel.INPUT,
+      LogLevel.WARN,
+      LogLevel.SUCCESS,
+    ].includes(level);
+
+    const prefix = needsNewLine ? "\n" : "";
+
+    // Special case for generic messages
+    if (level === LogLevel.GENERIC) {
+      return colors[level](message);
+    }
+
+    // Special case for section headers
+    if (level === LogLevel.SECTION) {
+      return `${prefix}${colors[level](`${icons[level]} ${message}`)}`;
+    }
+
+    return `${prefix}${colors[level](
       `${icons[level]} ${levelLabels[level]} `
     )}${message}`;
   }
@@ -97,8 +129,57 @@ export class Logger {
     console.log(this.formatMessage(message, LogLevel.HELP));
   }
 
+  static generic(message: string): void {
+    console.log(this.formatMessage(message, LogLevel.GENERIC));
+  }
+
+  static input(message: string): string {
+    return this.formatMessage(message, LogLevel.INPUT);
+  }
+
+  /**
+   * Creates a section header with a colored border and icon
+   */
+  static section(text: string): void {
+    console.log(this.formatMessage(text, LogLevel.SECTION));
+  }
+
+  /**
+   * Creates a major header with a full-width separator
+   * Used for main processing stages
+   */
   static header(text: string): void {
-    console.log(`\n${chalk.bold.cyan(text)}`);
+    const separator = "═".repeat(text.length + 6);
+    console.log(`\n${chalk.bold.magenta(separator)}`);
+    console.log(`${chalk.bold.magenta("  " + text + "  ")}`);
+    console.log(`${chalk.bold.magenta(separator)}\n`);
+  }
+
+  /**
+   * Outputs detailed information about a command or option
+   */
+  static commandInfo(command: string, description: string): void {
+    console.log(`${chalk.bold.blue(command)}: ${description}`);
+  }
+
+  /**
+   * Shows an info message with a hint about how to customize a default value
+   */
+  static defaultValueInfo(message: string, overrideCommand: string): void {
+    if (this.config.level <= LogLevel.INFO) {
+      console.log(this.formatMessage(message, LogLevel.INFO));
+      console.log(chalk.gray(`\n` + `   Override with: ${overrideCommand}\n`));
+    }
+  }
+
+  /**
+   * Shows a warning about using a default value
+   */
+  static defaultValueWarning(message: string, overrideCommand: string): void {
+    if (this.config.level <= LogLevel.WARN) {
+      console.warn(this.formatMessage(message, LogLevel.WARN));
+      console.log(chalk.gray(`\n` + `   Override with: ${overrideCommand}\n`));
+    }
   }
 
   static debugObject(label: string, obj: any): void {
@@ -115,7 +196,34 @@ export class Logger {
       this.enableDebug();
     }
   }
+
+  /**
+   * Displays a timing message for performance logging
+   */
+  static timing(label: string, timeMs: number): void {
+    const formattedTime =
+      timeMs < 1000
+        ? `${timeMs.toFixed(1)}ms`
+        : `${(timeMs / 1000).toFixed(2)}s`;
+
+    console.log(chalk.gray(`⏱ ${label}: ${formattedTime}`));
+  }
+
+  /**
+   * Shows a group of related files
+   */
+  static fileList(title: string, files: string[]): void {
+    if (files.length === 0) return;
+
+    Logger.warn(`${title}:\n`);
+    files.forEach((file) => {
+      console.log(chalk.gray(`  - ${file}`));
+    });
+  }
+
   static showReferenceCommands(): void {
+    this.header("Example Commands");
+
     const commands = [
       {
         title: "Generate Elasticsearch Mapping (from JSON)",
@@ -148,13 +256,9 @@ export class Logger {
       },
     ];
 
-    console.log(chalk.cyan.bold("\nExample Commands:\n"));
-
     commands.forEach(({ title, command }) => {
-      console.log(chalk.bold.yellow(`\n${title}:`));
+      console.log(chalk.bold.yellow(`${title}:`));
       console.log(chalk.gray(command));
     });
-
-    console.log("\n");
   }
 }

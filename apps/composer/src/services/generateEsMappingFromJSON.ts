@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
@@ -144,7 +145,7 @@ export function inferFieldType(
     Logger.debug("Using default keyword type for unknown value type");
     return { type: "keyword" };
   } catch (error) {
-    Logger.debug("Error inferring field type");
+    Logger.error("Error inferring field type");
     Logger.debugObject("Error details", { keyName, sampleValue, error });
     throw new ComposerError(
       "Error inferring field type",
@@ -181,12 +182,34 @@ export function generateMappingFromJson(
   indexName: string
 ): ElasticsearchMapping {
   try {
-    Logger.debug("Generating Elasticsearch mapping from JSON");
-    Logger.debug(`Input file: ${jsonFilePath}`);
-    Logger.debug(`Index name: ${indexName}`);
+    Logger.debug("generateEsMappingFromJSON running");
+    Logger.debug(
+      `Processing file: ${path.basename(
+        jsonFilePath
+      )} within generateEsMappingFromJSON function`
+    );
+
+    // Check if using default index name
+    if (indexName === "default" || indexName === "data") {
+      Logger.defaultValueWarning(
+        "No index name supplied, defaulting to: data",
+        "--index <name>"
+      );
+      indexName = "data";
+    } else {
+      Logger.info(`Using index name: ${indexName}`);
+    }
 
     // Read and validate JSON
+    const startTime = Date.now();
+
     const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, "utf8"));
+    const parseTime = Date.now() - startTime;
+
+    if (parseTime > 500) {
+      Logger.timing("JSON parsing", parseTime);
+    }
+
     if (typeof jsonData !== "object") {
       throw new ComposerError(
         "Invalid JSON: Expected an object or array of objects",
@@ -195,7 +218,15 @@ export function generateMappingFromJson(
     }
 
     // Get sample data (first object if array)
-    const sampleData = Array.isArray(jsonData) ? jsonData[0] : jsonData;
+    const isArray = Array.isArray(jsonData);
+    const sampleData = isArray ? jsonData[0] : jsonData;
+
+    if (isArray) {
+      Logger.info(
+        `JSON contains an array of ${jsonData.length} objects, using first object as sample`
+      );
+    }
+
     if (!sampleData || typeof sampleData !== "object") {
       throw new ComposerError(
         "Invalid JSON structure: No valid object found",
@@ -204,9 +235,37 @@ export function generateMappingFromJson(
     }
 
     // Generate field mappings
+    const fieldCount = Object.keys(sampleData).length;
+    Logger.info(`Analyzing ${fieldCount} fields for type inference`);
+
+    const typeInferenceStart = Date.now();
     const properties: Record<string, ElasticsearchField> = {};
+
+    let complexFieldCount = 0;
+
     for (const [key, value] of Object.entries(sampleData)) {
       properties[key] = inferFieldType(key, value);
+
+      // Count complex fields (objects, arrays)
+      if (
+        typeof value === "object" &&
+        (Array.isArray(value) ||
+          (value !== null && Object.keys(value).length > 0))
+      ) {
+        complexFieldCount++;
+      }
+    }
+
+    const typeInferenceTime = Date.now() - typeInferenceStart;
+    if (typeInferenceTime > 500) {
+      Logger.timing("Type inference", typeInferenceTime);
+    }
+
+    Logger.debug(`Field analysis complete`);
+    if (complexFieldCount > 0) {
+      Logger.debug(
+        `Detected ${complexFieldCount} complex field(s) (objects/arrays)`
+      );
     }
 
     // Create complete mapping with dynamic index name
@@ -243,12 +302,16 @@ export function generateMappingFromJson(
       },
     };
 
-    Logger.success("Mapping generated successfully");
+    Logger.debug("Mapping configuration generated successfully");
+
     Logger.debugObject("Generated Mapping", mapping);
     return mapping;
   } catch (error) {
-    Logger.debug("Error generating mapping from JSON");
-    Logger.debugObject("Error details", { filePath: jsonFilePath, error });
+    Logger.error("Error generating mapping from JSON");
+    Logger.debugObject("Error details", {
+      filePath: jsonFilePath,
+      error,
+    });
 
     if (error instanceof ComposerError) {
       throw error;
@@ -270,7 +333,14 @@ export function mergeMappings(
   source: ElasticsearchMapping
 ): ElasticsearchMapping {
   try {
-    Logger.debug("Merging Elasticsearch mappings");
+    Logger.section("Merging Mappings");
+    Logger.info("Combining multiple mapping configurations");
+
+    const targetFieldCount = Object.keys(target.mappings.properties).length;
+    const sourceFieldCount = Object.keys(source.mappings.properties).length;
+
+    Logger.info(`Target mapping has ${targetFieldCount} top-level properties`);
+    Logger.info(`Source mapping has ${sourceFieldCount} top-level properties`);
 
     const mergedProperties = {
       ...target.mappings.properties,
@@ -284,11 +354,15 @@ export function mergeMappings(
       },
     };
 
-    Logger.success("Mappings merged successfully");
+    const resultFieldCount = Object.keys(mergedProperties).length;
+    Logger.success(
+      `Mappings merged successfully (${resultFieldCount} total properties)`
+    );
+
     Logger.debugObject("Merged Mapping", mergedMapping);
     return mergedMapping;
   } catch (error) {
-    Logger.debug("Error merging mappings");
+    Logger.error("Error merging mappings");
     Logger.debugObject("Error details", error);
     throw new ComposerError(
       "Error merging mappings",
