@@ -1,8 +1,7 @@
-import { Profiles, CLIModes } from "./constants";
+import { Profiles } from "./constants";
 import { ArrangerConfig } from "./arranger";
 
 export type Profile = (typeof Profiles)[keyof typeof Profiles];
-export type CLIMode = (typeof CLIModes)[keyof typeof CLIModes];
 
 export interface Config {
   elasticsearch: {
@@ -15,7 +14,6 @@ export interface Config {
 
 export interface CLIOutput {
   profile: Profile;
-  mode: CLIMode;
   debug?: boolean;
   filePaths: string[];
   force?: boolean;

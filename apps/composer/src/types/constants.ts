@@ -6,11 +6,3 @@ export const Profiles = {
   GENERATE_CONFIGS: "generateConfigs",
   DEFAULT: "default",
 } as const;
-
-export const CLIModes = {
-  DICTIONARY: "dictionary",
-  SONG: "song",
-  MAPPING: "mapping",
-  ARRANGER: "arranger",
-  ALL: "all",
-} as const;

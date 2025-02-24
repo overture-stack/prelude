@@ -226,12 +226,12 @@ export class Logger {
 
     const commands = [
       {
-        title: "Generate Elasticsearch Mapping (from JSON)",
+        title: "Generate Elasticsearch Mapping (from JSON(s))",
         command:
-          "composer -p generateElasticsearchMapping -f mapping.json -o es-config.json --index my-index --shards 3 --replicas 2",
+          "composer -p generateElasticSearchMapping -f mapping.json -o es-config.json --index my-index --shards 3 --replicas 2",
       },
       {
-        title: "Generate Elasticsearch Mapping (from CSV)",
+        title: "Generate Elasticsearch Mapping (from CSV(s))",
         command:
           "composer -p generateElasticSearchMapping -f data.csv -o es-config.json --index my-index --delimiter ',' --shards 3 --replicas 2",
       },
@@ -257,8 +257,8 @@ export class Logger {
     ];
 
     commands.forEach(({ title, command }) => {
-      console.log(chalk.bold.yellow(`${title}:`));
-      console.log(chalk.gray(command));
+      console.log(chalk.bold.cyan(`${title}:`));
+      console.log(chalk.white(command + "\n"));
     });
   }
 }

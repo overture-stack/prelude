@@ -1,5 +1,5 @@
 import { Command, Option } from "commander";
-import { Profile, Profiles, CLIOutput, CLIMode } from "../types";
+import { Profile, Profiles, CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { PROFILE_DESCRIPTIONS } from "./profiles";
 import { Logger } from "../utils/logger";
@@ -84,7 +84,6 @@ export function parseCommandLineArgs(opts: any): CLIOutput {
 
   const output: CLIOutput = {
     profile: opts.profile || "default",
-    mode: opts.mode || "default",
     debug: opts.debug || false,
     filePaths: opts.files || [],
     outputPath: opts.output,

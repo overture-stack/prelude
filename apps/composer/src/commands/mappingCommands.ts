@@ -7,7 +7,6 @@ import { generateMappingFromCSV } from "../services/generateEsMappingFromCSV";
 import { generateMappingFromJson } from "../services/generateEsMappingFromJSON";
 import { validateCSVHeaders } from "../validations";
 import { parseCSVLine } from "../utils/csvParser";
-import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
 

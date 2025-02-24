@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Profile, CLIMode, EnvConfig, Profiles } from "../types";
+import { Profile, EnvConfig, Profiles } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import { getDefaultOutputPathForProfile } from "../utils/paths";
@@ -22,16 +22,17 @@ export const PROFILE_DESCRIPTIONS = new Map([
   [Profiles.DEFAULT, "Default profile"],
 ]);
 
-const PROFILE_TO_MODE: Record<Profile, CLIMode> = {
-  [Profiles.GENERATE_SONG_SCHEMA]: "song",
-  [Profiles.GENERATE_LECTERN_DICTIONARY]: "dictionary",
-  [Profiles.GENERATE_ELASTICSEARCH_MAPPING]: "mapping",
-  [Profiles.GENERATE_ARRANGER_CONFIGS]: "arranger",
-  [Profiles.GENERATE_CONFIGS]: "all",
-  [Profiles.DEFAULT]: "all",
+const PROFILE_TO_MODE: Record<Profile, Profile> = {
+  [Profiles.GENERATE_SONG_SCHEMA]: Profiles.GENERATE_SONG_SCHEMA,
+  [Profiles.GENERATE_LECTERN_DICTIONARY]: Profiles.GENERATE_LECTERN_DICTIONARY,
+  [Profiles.GENERATE_ELASTICSEARCH_MAPPING]:
+    Profiles.GENERATE_ELASTICSEARCH_MAPPING,
+  [Profiles.GENERATE_ARRANGER_CONFIGS]: Profiles.GENERATE_ARRANGER_CONFIGS,
+  [Profiles.GENERATE_CONFIGS]: Profiles.GENERATE_CONFIGS,
+  [Profiles.DEFAULT]: Profiles.DEFAULT,
 } as const;
 
-export function determineMode(profile: Profile): CLIMode {
+export function determineMode(profile: Profile): Profile {
   Logger.debug(`Determining mode for profile: ${profile}`);
 
   const mode = PROFILE_TO_MODE[profile];
