@@ -1,0 +1,12 @@
+{
+  "extended": [
+    {
+      "displayName": "Holla",
+      "fieldName": "holla"
+    },
+    {
+      "displayName": "Field2",
+      "fieldName": "field2"
+    }
+  ]
+}

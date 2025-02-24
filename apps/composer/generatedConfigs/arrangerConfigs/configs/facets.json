@@ -1,0 +1,16 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "holla",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "field2",
+        "show": true
+      }
+    ]
+  }
+}

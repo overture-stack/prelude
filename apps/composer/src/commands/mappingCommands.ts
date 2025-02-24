@@ -264,6 +264,7 @@ export class MappingCommand extends Command {
     // Shards and replicas
     Logger.info(`Shards: ${mapping.settings.number_of_shards}`);
     Logger.info(`Replicas: ${mapping.settings.number_of_replicas}`);
-    Logger.success(`Mapping template saved to: ${outputPath}`);
+    Logger.success(`Mapping template saved to:`);
+    Logger.generic(`    - ${outputPath}`);
   }
 }

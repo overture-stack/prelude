@@ -1,0 +1,18 @@
+{
+  "table": {
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "holla",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "field2",
+        "show": false,
+        "sortable": true
+      }
+    ]
+  }
+}

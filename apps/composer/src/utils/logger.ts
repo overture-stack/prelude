@@ -228,7 +228,7 @@ export class Logger {
       {
         title: "Generate Elasticsearch Mapping (from JSON(s))",
         command:
-          "composer -p generateElasticSearchMapping -f mapping.json -o es-config.json --index my-index --shards 3 --replicas 2",
+          "composer -p generateElasticearchMapping -f mapping.json -o es-config.json --index my-index --shards 3 --replicas 2",
       },
       {
         title: "Generate Elasticsearch Mapping (from CSV(s))",

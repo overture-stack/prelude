@@ -20,7 +20,7 @@ export async function validateFile(filePath: string): Promise<boolean> {
 
     // Verify file existence
     if (!fs.existsSync(filePath)) {
-      Logger.error(`File does not exist: ${filePath}`);
+      Logger.debug(`File does not exist: ${filePath}`);
       throw new ComposerError(
         `File '${filePath}' does not exist`,
         ErrorCodes.FILE_NOT_FOUND
@@ -61,7 +61,7 @@ export async function validateFile(filePath: string): Promise<boolean> {
     Logger.debug(`File '${filePath}' is valid and readable`);
     return true;
   } catch (error) {
-    Logger.error("Error during file validation");
+    Logger.debug("Error during file validation");
     Logger.debugObject("Error details", error);
 
     if (error instanceof ComposerError) {

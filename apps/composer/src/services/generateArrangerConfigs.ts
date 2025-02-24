@@ -213,7 +213,6 @@ export function generateArrangerConfigs(
     };
 
     Logger.debugObject("Configuration summary", configs);
-    Logger.success("Arranger configurations generated successfully");
     return configs;
   } catch (error) {
     Logger.error("Error generating Arranger configurations");

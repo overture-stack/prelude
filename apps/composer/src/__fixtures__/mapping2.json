@@ -1,7 +1,7 @@
 {
   "mappings": {
     "properties": {
-      "bonjour": { "type": "keyword" },
+      "holla": { "type": "keyword" },
       "field2": { "type": "integer" }
     }
   }
