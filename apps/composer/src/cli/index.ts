@@ -3,7 +3,7 @@ import { Profile, CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { validateEnvironment } from "../validations";
 import { loadEnvironmentConfig } from "./environment";
-import { determineMode, getDefaultOutputPath } from "./profiles";
+import { getDefaultOutputPath } from "./profiles";
 import { validateCliOptions } from "./validation";
 import { configureCommandOptions } from "./options";
 import { Logger } from "../utils/logger";
@@ -18,9 +18,8 @@ export async function setupCLI(): Promise<CLIOutput> {
     program.parse();
     const options = program.opts();
 
-    // Process profile and mode
+    // Process profile
     const profile = options.profile as Profile;
-    const mode = determineMode(profile);
     const outputPath =
       options.output || getDefaultOutputPath(profile, envConfig);
 
@@ -28,7 +27,6 @@ export async function setupCLI(): Promise<CLIOutput> {
     Logger.debugObject("CLI Configuration", {
       command: {
         profile,
-        mode,
         input: options.files,
         output: outputPath,
       },
@@ -67,7 +65,6 @@ export async function setupCLI(): Promise<CLIOutput> {
         delimiter: options.delimiter || ",",
       },
       profile,
-      mode,
       filePaths: options.files,
       outputPath,
       envConfig,
@@ -76,20 +73,21 @@ export async function setupCLI(): Promise<CLIOutput> {
     };
 
     // Add profile-specific config
-    if (mode === "dictionary") {
+    if (profile === "generateLecternDictionary") {
       cliOutput.dictionaryConfig = {
         name: options.name,
         description: options.description,
         version: options.version,
       };
-    } else if (mode === "song") {
+    } else if (profile === "generateSongSchema") {
       cliOutput.songConfig = {
         name: options.name,
         fileTypes: options.fileTypes,
       };
-    } else if (mode === "arranger") {
+    } else if (profile === "generateArrangerConfigs") {
       cliOutput.arrangerConfig = {
-        documentType: options.arrangerDocType as "file" | "analysis",
+        documentType:
+          (options.arrangerDocType as "file" | "analysis") || "file",
       };
     }
 
