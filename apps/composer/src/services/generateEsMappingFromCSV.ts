@@ -54,7 +54,7 @@ export function inferFieldType(
   rules: TypeInferenceRules = defaultRules
 ): ElasticsearchField {
   try {
-    Logger.debug(`Inferring type for field: ${headerName}`);
+    Logger.debug`Inferring type for field: ${headerName}`;
 
     // Handle empty values
     if (!sampleValue || sampleValue.trim() === "") {
@@ -153,7 +153,7 @@ export function generateMappingFromCSV(
 ): ElasticsearchMapping {
   try {
     Logger.debug("generateEsMappingFromCSV running");
-    Logger.debug(`Processing ${csvHeaders.length} CSV columns`);
+    Logger.debug`Processing ${csvHeaders.length} CSV columns`;
 
     // Check if using default index name
     if (indexName === "default" || indexName === "data") {
@@ -163,11 +163,11 @@ export function generateMappingFromCSV(
       );
       indexName = "data";
     } else {
-      Logger.info(`Using index name: ${indexName}`);
+      Logger.info`Using index name: ${indexName}`;
     }
 
     // Generate field mappings
-    Logger.info(`Analyzing ${csvHeaders.length} fields for type inference`);
+    Logger.info`Analyzing ${csvHeaders.length} fields for type inference`;
 
     const typeInferenceStart = Date.now();
     const properties: Record<string, ElasticsearchField> = {};
@@ -214,26 +214,26 @@ export function generateMappingFromCSV(
       Logger.timing("Type inference", typeInferenceTime);
     }
 
-    Logger.debug(`Field analysis complete`);
+    Logger.debug`Field analysis complete`;
 
     // Log field type distribution if debug enabled
     if (numericFieldCount > 0) {
-      Logger.debug(`Numeric fields: ${numericFieldCount}`);
+      Logger.debug`Numeric fields: ${numericFieldCount}`;
     }
     if (dateFieldCount > 0) {
-      Logger.debug(`Date fields: ${dateFieldCount}`);
+      Logger.debug`Date fields: ${dateFieldCount}`;
     }
     if (booleanFieldCount > 0) {
-      Logger.debug(`Boolean fields: ${booleanFieldCount}`);
+      Logger.debug`Boolean fields: ${booleanFieldCount}`;
     }
     if (textFieldCount > 0) {
-      Logger.debug(`Text fields: ${textFieldCount}`);
+      Logger.debug`Text fields: ${textFieldCount}`;
     }
     if (keywordFieldCount > 0) {
-      Logger.debug(`Keyword fields: ${keywordFieldCount}`);
+      Logger.debug`Keyword fields: ${keywordFieldCount}`;
     }
     if (complexFieldCount > 0) {
-      Logger.debug(`Complex fields: ${complexFieldCount}`);
+      Logger.debug`Complex fields: ${complexFieldCount}`;
     }
 
     // Create complete mapping with dynamic index name
@@ -298,8 +298,8 @@ export function mergeMappings(
     const targetFieldCount = Object.keys(target.mappings.properties).length;
     const sourceFieldCount = Object.keys(source.mappings.properties).length;
 
-    Logger.info(`Target mapping has ${targetFieldCount} top-level properties`);
-    Logger.info(`Source mapping has ${sourceFieldCount} top-level properties`);
+    Logger.info`Target mapping has ${targetFieldCount} top-level properties`;
+    Logger.info`Source mapping has ${sourceFieldCount} top-level properties`;
 
     const mergedProperties = {
       ...target.mappings.properties,

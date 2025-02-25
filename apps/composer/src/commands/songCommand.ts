@@ -25,7 +25,7 @@ export class SongCommand extends Command {
       .replace(/^$/, "schema"); // Use 'schema' if empty after sanitization
 
     if (sanitized !== name) {
-      Logger.warn(`Schema name "${name}" will be sanitized to "${sanitized}"`);
+      Logger.warn`Schema name "${name}" will be sanitized to "${sanitized}"`;
     }
 
     return sanitized;
@@ -74,7 +74,7 @@ export class SongCommand extends Command {
     // Validate file type and accessibility
     const filePath = cliOutput.filePaths[0];
     const fileExtension = path.extname(filePath).toLowerCase();
-    Logger.debug(`Validating file extension: ${fileExtension}`);
+    Logger.debug`Validating file extension: ${fileExtension}`;
 
     if (fileExtension !== ".json") {
       Logger.debug("File extension validation failed - not JSON");
@@ -86,7 +86,7 @@ export class SongCommand extends Command {
 
     const fileValid = await validateFile(filePath);
     if (!fileValid) {
-      Logger.debug(`File not found or invalid: ${filePath}`);
+      Logger.debug`File not found or invalid: ${filePath}`;
       throw new ComposerError(
         `Invalid file ${filePath}`,
         ErrorCodes.INVALID_FILE
@@ -102,14 +102,14 @@ export class SongCommand extends Command {
     const filePath = cliOutput.filePaths[0];
 
     try {
-      Logger.info(`Reading JSON input: ${path.basename(filePath)}`);
+      Logger.info`Reading JSON input: ${path.basename(filePath)}`;
       const fileContent = fs.readFileSync(filePath, "utf-8");
       let sampleData: Record<string, any>;
 
       try {
         sampleData = JSON.parse(fileContent);
       } catch (error) {
-        Logger.debug(`JSON parsing failed: ${error}`);
+        Logger.debug`JSON parsing failed: ${error}`;
         throw new ComposerError(
           "Invalid JSON file",
           ErrorCodes.INVALID_FILE,
@@ -133,7 +133,7 @@ export class SongCommand extends Command {
             path.basename(filePath, path.extname(filePath))
           );
 
-      Logger.debug(`Using schema name: ${schemaName}`);
+      Logger.debug`Using schema name: ${schemaName}`;
 
       // Configure schema options
       const songOptions = cliOutput.songConfig?.fileTypes
@@ -172,12 +172,12 @@ export class SongCommand extends Command {
       // Write schema to file
       fs.writeFileSync(outputPath, JSON.stringify(songSchema, null, 2));
 
-      Logger.success(`Schema template saved to ${outputPath}`);
+      Logger.success`Schema template saved to ${outputPath}`;
       Logger.warn(
         "Enums and required fields are not inferred, make sure to update your schema accordingly, including fileTypes."
       );
     } catch (error) {
-      Logger.debug(`Error during execution: ${error}`);
+      Logger.debug`Error during execution: ${error}`;
       if (error instanceof ComposerError) {
         Logger.error(error.message);
         throw error;

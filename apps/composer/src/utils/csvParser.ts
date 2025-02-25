@@ -10,7 +10,7 @@ export function parseCSVLine(
   isHeaderRow: boolean = false
 ): string[][] {
   try {
-    Logger.debug(`Parsing CSV line${isHeaderRow ? " (headers)" : ""}`);
+    Logger.debug`Parsing CSV line${isHeaderRow ? " (headers)" : ""}`;
 
     const parseOptions: CSVParseOptions = {
       delimiter,
@@ -26,7 +26,7 @@ export function parseCSVLine(
     if (isHeaderRow) {
       const headers = result[0] ? [result[0]] : [];
       if (headers.length > 0) {
-        Logger.debug(`Found ${headers[0].length} columns`);
+        Logger.debug`Found ${headers[0].length} columns`;
       }
       return headers;
     }
@@ -46,8 +46,8 @@ export function readCSVHeadersAndSample(
   delimiter: string
 ): { headers: string[]; sampleData: Record<string, string> } {
   try {
-    Logger.debug(`Reading CSV file: ${filePath}`);
-    Logger.debug(`Using delimiter: "${delimiter}"`);
+    Logger.debug`Reading CSV file: ${filePath}`;
+    Logger.debug`Using delimiter: "${delimiter}"`;
 
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const [headerLine, sampleLine] = fileContent.split("\n");
@@ -67,7 +67,7 @@ export function readCSVHeadersAndSample(
       );
     }
 
-    Logger.debug(`Found headers: ${headers.join(", ")}`);
+    Logger.debug`Found headers: ${headers.join(", ")}`;
 
     const sampleData: Record<string, string> = {};
     if (sampleLine) {

@@ -46,7 +46,7 @@ export function handleError(
   showAvailableProfiles?: () => void
 ): never {
   if (error instanceof ComposerError) {
-    Logger.error(`${error.code}: ${error.message}`);
+    Logger.error`${error.code}: ${error.message}`;
 
     // Call the callback function if provided
     if (showAvailableProfiles) {

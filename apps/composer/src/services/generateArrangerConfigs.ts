@@ -87,7 +87,7 @@ function processFields(
   tableColumns: TableColumn[];
   facetAggregations: FacetAggregation[];
 } {
-  Logger.debug(`Processing fields with parent path: ${parentPath.join(".")}`);
+  Logger.debug`Processing fields with parent path: ${parentPath.join(".")}`;
 
   const extendedFields: ExtendedField[] = [];
   const tableColumns: TableColumn[] = [];
@@ -115,7 +115,7 @@ function processFields(
         fieldName: formattedFieldName,
       };
       extendedFields.push(extendedField);
-      Logger.debug(`Added extended field: ${JSON.stringify(extendedField)}`);
+      Logger.debug`Added extended field: ${JSON.stringify(extendedField)}`;
 
       // Add to table columns
       const tableColumn: TableColumn = {
@@ -133,7 +133,7 @@ function processFields(
       }
 
       tableColumns.push(tableColumn);
-      Logger.debug(`Added table column: ${JSON.stringify(tableColumn)}`);
+      Logger.debug`Added table column: ${JSON.stringify(tableColumn)}`;
 
       // Add to facet aggregations for various field types
       if (
@@ -180,17 +180,17 @@ export function generateArrangerConfigs(
   table: ArrangerTableConfig;
   facets: ArrangerFacetsConfig;
 } {
-  Logger.info(`Generating Arranger configs for index: ${indexName}`);
-  Logger.info(`Document type: ${documentType}`);
+  Logger.info`Generating Arranger configs for index: ${indexName}`;
+  Logger.info`Document type: ${documentType}`;
 
   try {
     const { extendedFields, tableColumns, facetAggregations } = processFields(
       mapping.mappings.properties
     );
 
-    Logger.info(`Generated ${extendedFields.length} extended fields`);
-    Logger.info(`Generated ${tableColumns.length} table columns`);
-    Logger.info(`Generated ${facetAggregations.length} facet aggregations`);
+    Logger.info`Generated ${extendedFields.length} extended fields`;
+    Logger.info`Generated ${tableColumns.length} table columns`;
+    Logger.info`Generated ${facetAggregations.length} facet aggregations`;
 
     const configs = {
       base: {

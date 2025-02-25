@@ -1,4 +1,5 @@
 import { Logger } from "../utils/logger";
+import * as path from "path";
 import type {
   LecternDictionary,
   LecternSchema,
@@ -28,7 +29,7 @@ export function inferValueType(
   headerName: string,
   sampleValue: string
 ): ValueType {
-  Logger.debug(`Inferring type for field: ${headerName}`);
+  Logger.debug`Inferring type for field: ${headerName}`;
 
   // Handle empty values
   if (!sampleValue || sampleValue.trim() === "") {
@@ -83,10 +84,10 @@ export function generateDictionary(
   description: string,
   version: string
 ): LecternDictionary {
-  Logger.debug("Generating Lectern dictionary");
-  Logger.debug(`Dictionary Name: ${dictionaryName}`);
-  Logger.debug(`Description: ${description}`);
-  Logger.debug(`Version: ${version}`);
+  Logger.info("Generating Lectern dictionary");
+  Logger.info`Dictionary Name: ${dictionaryName}`;
+  Logger.info`Description: ${description}`;
+  Logger.info`Version: ${version}`;
 
   const dictionary = {
     name: dictionaryName,
@@ -96,7 +97,8 @@ export function generateDictionary(
     meta: {},
   };
 
-  Logger.info("Base dictionary generated");
+  Logger.debug`${dictionaryName} dictionary generated`;
+
   Logger.debugObject("Dictionary Details", dictionary);
   return dictionary;
 }
@@ -106,6 +108,7 @@ export function generateDictionary(
 /**
  * Generates a Lectern schema from CSV headers and sample data
  * Creates field definitions with inferred types and metadata
+ * Uses the input file name as the schema name
  *
  * Process:
  * 1. Maps each CSV header to a field definition
@@ -115,26 +118,32 @@ export function generateDictionary(
  *
  * @example
  * generateSchema(
- *   "patient_data",
+ *   "patient_data.csv",
  *   ["name", "age", "is_active"],
  *   { name: "John", age: "30", is_active: "true" }
  * ) → {
  *   name: "patient_data",
- *   description: "Schema generated from CSV headers",
+ *   description: "Schema generated from patient_data.csv",
  *   fields: [
  *     { name: "name", valueType: "string", ... },
  *     { name: "age", valueType: "integer", ... },
  *     { name: "is_active", valueType: "boolean", ... }
  *   ],
- *   meta: { createdAt: "..." }
+ *   meta: { createdAt: "...", filename: "patient_data.csv" }
  * }
  */
 export function generateSchema(
-  schemaName: string,
+  inputFilePath: string,
   csvHeaders: string[],
   sampleData: Record<string, string>
 ): LecternSchema {
-  Logger.debug(`Generating schema: ${schemaName}`);
+  // Generate schema name from file name
+  const schemaName = path
+    .basename(inputFilePath, path.extname(inputFilePath))
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "_");
+
+  Logger.info`Generating schema: ${schemaName} from file: ${inputFilePath}`;
   Logger.debugObject("CSV Headers", csvHeaders);
 
   // Generate field definitions
@@ -152,7 +161,7 @@ export function generateSchema(
       },
     };
 
-    Logger.debug(`Created field definition for: ${header}`);
+    Logger.debug`Created field definition for: ${header}`;
     Logger.debugObject(`Field Details for ${header}`, field);
     return field;
   });
@@ -160,14 +169,15 @@ export function generateSchema(
   // Create schema with metadata
   const schema: LecternSchema = {
     name: schemaName,
-    description: `Schema generated from CSV headers`,
+    description: `Schema generated from ${path.basename(inputFilePath)}`,
     fields: fields,
     meta: {
       createdAt: new Date().toISOString(),
+      sourceFile: path.basename(inputFilePath),
     },
   };
 
-  Logger.info(` ${schemaName} schema generated`);
+  Logger.info`${schemaName} schema added to dictionary`;
   Logger.debugObject("Schema Details", schema);
   return schema;
 }
@@ -177,12 +187,13 @@ export function generateSchema(
 const dictionary = generateDictionary("Patient Data", "Medical records schema", "1.0.0");
 
 // Generate schema from CSV data
+const filePath = "patient_data.csv";
 const headers = ["name", "age", "is_active"];
 const sampleData = {
   name: "John Doe",
   age: "30",
   is_active: "true"
 };
-const schema = generateSchema("patient_records", headers, sampleData);
+const schema = generateSchema(filePath, headers, sampleData);
 dictionary.schemas.push(schema);
 */

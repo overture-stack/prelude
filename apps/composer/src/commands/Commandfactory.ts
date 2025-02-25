@@ -33,7 +33,7 @@ const PROFILE_TO_COMMAND: Partial<CommandMap> = {
 
 export class CommandFactory {
   static createCommand(profile: Profile): Command {
-    Logger.debug(`Creating command for profile: ${profile}`);
+    Logger.debug`Creating command for profile: ${profile}`;
     const CommandClass = PROFILE_TO_COMMAND[profile];
 
     if (!CommandClass) {
@@ -53,7 +53,7 @@ export class CommandFactory {
         });
 
         // Show reference commands with improved formatting
-        Logger.header("Example Commands");
+        Logger.header(`Example Commands`);
         Logger.showReferenceCommands();
       });
     }
@@ -61,7 +61,7 @@ export class CommandFactory {
     const command = new CommandClass();
     const displayName = PROFILE_DISPLAY_NAMES[profile] || profile;
 
-    Logger.debug(`Created ${displayName} command instance`);
+    Logger.debug`Created ${displayName} command instance`;
     return command;
   }
 }

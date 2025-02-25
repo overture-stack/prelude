@@ -46,7 +46,7 @@ export function loadEnvironmentConfig(): EnvConfig {
       ([key, value]) => {
         const envVar = ENV_VAR_MAP[key];
         if (process.env[envVar]) {
-          Logger.debug(`Using custom ${key}: ${value}`);
+          Logger.debug`Using custom ${key}: ${value}`;
         }
       }
     );

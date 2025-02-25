@@ -21,7 +21,7 @@ export function inferSongType(
   propertyName: string,
   value: any
 ): string | string[] {
-  Logger.debug(`Inferring type for field: ${propertyName}`);
+  Logger.debug`Inferring type for field: ${propertyName}`;
 
   // Handle numeric values
   if (!isNaN(Number(value))) {
@@ -70,7 +70,7 @@ export function inferSongType(
 export function generateSongField(propertyName: string, value: any): SongField {
   // Handle arrays
   if (Array.isArray(value)) {
-    Logger.debug(`Generating field for array: ${propertyName}`);
+    Logger.debug`Generating field for array: ${propertyName}`;
     const itemType =
       value.length > 0
         ? generateSongField("arrayItem", value[0])
@@ -84,7 +84,7 @@ export function generateSongField(propertyName: string, value: any): SongField {
 
   // Handle objects
   if (typeof value === "object" && value !== null) {
-    Logger.debug(`Generating field for object: ${propertyName}`);
+    Logger.debug`Generating field for object: ${propertyName}`;
     const { fields, fieldNames } = generateSongFields(value);
 
     return {
@@ -98,7 +98,7 @@ export function generateSongField(propertyName: string, value: any): SongField {
   }
 
   // Handle primitive types
-  Logger.debug(`Generating field for primitive: ${propertyName}`);
+  Logger.debug`Generating field for primitive: ${propertyName}`;
   return {
     type: inferSongType(propertyName, value),
   };
@@ -121,7 +121,7 @@ export function generateSongFields(data: Record<string, any>): {
     const value = data[propertyName];
     fields[propertyName] = generateSongField(propertyName, value);
     fieldNames.push(propertyName);
-    Logger.debug(`Generated field definition for: ${propertyName}`);
+    Logger.debug`Generated field definition for: ${propertyName}`;
   }
 
   return { fields, fieldNames };
@@ -157,7 +157,7 @@ export function generateSongSchema(
   options?: SongOptions
 ): SongSchema {
   Logger.debug("Generating SONG schema");
-  Logger.debug(`Schema name: ${schemaName}`);
+  Logger.debug`Schema name: ${schemaName}`;
 
   // Extract core sections
   const coreFields = {
@@ -244,7 +244,7 @@ export function validateSongSchema(schema: SongSchema): boolean {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
 
-    Logger.debug(`Schema validation failed: ${errorMessage}`);
+    Logger.debug`Schema validation failed: ${errorMessage}`;
     return false;
   }
 }

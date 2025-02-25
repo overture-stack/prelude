@@ -123,7 +123,7 @@ export class DictionaryCommand extends Command {
       );
     } else if (!outputPath.endsWith(".json")) {
       outputPath += ".json";
-      Logger.info(`Adding .json extension to output path`);
+      Logger.info`Adding .json extension to output path`;
     }
 
     try {
@@ -159,12 +159,6 @@ export class DictionaryCommand extends Command {
             );
           }
 
-          // Generate schema name from file name
-          const schemaName = path
-            .basename(filePath, path.extname(filePath))
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, "_");
-
           // Process sample data
           const sampleData: Record<string, string> = {};
           if (sampleLine) {
@@ -176,11 +170,12 @@ export class DictionaryCommand extends Command {
             }
           }
 
-          const schema = generateSchema(schemaName, headers, sampleData);
+          // Pass the full file path to generateSchema to extract the schema name
+          const schema = generateSchema(filePath, headers, sampleData);
           dictionary.schemas.push(schema);
-          Logger.debug(`Generated schema for ${schemaName}`);
+          Logger.debug`Generated schema for ${schema.name}`;
         } catch (error) {
-          Logger.warn(`Skipping ${filePath} due to error: ${error}`);
+          Logger.warn`Skipping ${filePath} due to error: ${error}`;
           continue;
         }
       }
@@ -189,12 +184,12 @@ export class DictionaryCommand extends Command {
       const outputDir = path.dirname(outputPath);
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
-        Logger.debug(`Created output directory: ${outputDir}`);
+        Logger.debug`Created output directory: ${outputDir}`;
       }
 
       // Write dictionary to file
       fs.writeFileSync(outputPath, JSON.stringify(dictionary, null, 2));
-      Logger.success(`Dictionary saved to ${outputPath}`);
+      Logger.success`Dictionary saved to ${outputPath}`;
 
       return dictionary;
     } catch (error) {

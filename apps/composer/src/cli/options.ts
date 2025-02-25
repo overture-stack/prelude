@@ -21,9 +21,9 @@ export function configureCommandOptions(program: Command): Command {
         .choices(Object.keys(Profiles))
         .default("default")
         .argParser((value) => {
-          Logger.debug(`Parsing profile value: ${value}`);
+          Logger.debug`Parsing profile value: ${value}`;
           if (!Object.values(Profiles).includes(value as Profile)) {
-            Logger.debug(`Invalid profile detected: ${value}`);
+            Logger.debug`Invalid profile detected: ${value}`;
             throw new ComposerError(
               `Invalid profile: ${value}. Valid profiles are:\n${Array.from(
                 PROFILE_DESCRIPTIONS.entries()
@@ -33,7 +33,7 @@ export function configureCommandOptions(program: Command): Command {
               ErrorCodes.INVALID_ARGS
             );
           }
-          Logger.debug(`Profile validated: ${value}`);
+          Logger.debug`Profile validated: ${value}`;
           return value as Profile;
         })
     )
@@ -71,7 +71,7 @@ export function configureCommandOptions(program: Command): Command {
       const opts = thisCommand.opts();
       if (opts.debug) {
         Logger.enableDebug();
-        Logger.debug(`Full command options: ${JSON.stringify(opts, null, 2)}`);
+        Logger.debug`Full command options: ${JSON.stringify(opts, null, 2)}`;
       }
     });
 }
@@ -124,7 +124,7 @@ export function parseCommandLineArgs(opts: any): CLIOutput {
   };
 
   if (opts.debug) {
-    Logger.debug(`Parsed CLI output: ${JSON.stringify(output, null, 2)}`);
+    Logger.debug`Parsed CLI output: ${JSON.stringify(output, null, 2)}`;
   }
 
   return output;

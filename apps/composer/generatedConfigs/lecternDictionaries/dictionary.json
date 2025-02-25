@@ -5,7 +5,7 @@
   "schemas": [
     {
       "name": "data",
-      "description": "Schema generated from CSV headers",
+      "description": "Schema generated from data.csv",
       "fields": [
         {
           "name": "olla",
@@ -25,12 +25,13 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-02-25T00:14:25.266Z"
+        "createdAt": "2025-02-25T16:16:28.077Z",
+        "sourceFile": "data.csv"
       }
     },
     {
       "name": "data2",
-      "description": "Schema generated from CSV headers",
+      "description": "Schema generated from data2.csv",
       "fields": [
         {
           "name": "wolla",
@@ -50,7 +51,8 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-02-25T00:14:25.271Z"
+        "createdAt": "2025-02-25T16:16:28.080Z",
+        "sourceFile": "data2.csv"
       }
     }
   ],

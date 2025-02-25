@@ -33,7 +33,7 @@ const PROFILE_TO_MODE: Record<Profile, Profile> = {
 } as const;
 
 export function determineMode(profile: Profile): Profile {
-  Logger.debug(`Determining mode for profile: ${profile}`);
+  Logger.debug`Determining mode for profile: ${profile}`;
 
   const mode = PROFILE_TO_MODE[profile];
   if (!mode) {
@@ -43,7 +43,7 @@ export function determineMode(profile: Profile): Profile {
     );
   }
 
-  Logger.debug(`Selected mode: ${mode}`);
+  Logger.debug`Selected mode: ${mode}`;
   return mode;
 }
 
@@ -51,7 +51,7 @@ export function getDefaultOutputPath(
   profile: Profile,
   envConfig: EnvConfig
 ): string | undefined {
-  Logger.debug(`Getting default output path for profile: ${profile}`);
+  Logger.debug`Getting default output path for profile: ${profile}`;
 
   // Handle special cases first
   if (profile === Profiles.GENERATE_CONFIGS) {
@@ -79,6 +79,6 @@ export function getDefaultOutputPath(
     }
   }
 
-  Logger.debug(`Using default output path: ${defaultPath}`);
+  Logger.debug`Using default output path: ${defaultPath}`;
   return defaultPath;
 }

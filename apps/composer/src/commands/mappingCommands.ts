@@ -97,7 +97,7 @@ export class MappingCommand extends Command {
       );
     } else if (!outputPath.endsWith(".json")) {
       outputPath += ".json";
-      Logger.info(`Adding .json extension to output path`);
+      Logger.info`Adding .json extension to output path`;
     }
 
     try {
@@ -161,7 +161,7 @@ export class MappingCommand extends Command {
 
     for (const filePath of filePaths) {
       const fileStartTime = Date.now();
-      Logger.info(`Processing CSV file: ${path.basename(filePath)}`);
+      Logger.info`Processing CSV file: ${path.basename(filePath)}`;
 
       // Validate CSV structure
       const csvHeadersValid = await validateCSVHeaders(filePath, delimiter);
@@ -223,7 +223,7 @@ export class MappingCommand extends Command {
       }
     }
 
-    Logger.debug(`Total unique fields found: ${allHeaders.size}`);
+    Logger.debug`Total unique fields found: ${allHeaders.size}`;
     return generateMappingFromCSV(
       Array.from(allHeaders),
       sampleData,
@@ -236,7 +236,7 @@ export class MappingCommand extends Command {
     options: MappingOptions
   ) {
     const filePath = filePaths[0];
-    Logger.info(`Processing JSON file: ${path.basename(filePath)}`);
+    Logger.info`Processing JSON file: ${path.basename(filePath)}`;
     return generateMappingFromJson(
       filePath,
       options.index_pattern || "default"
@@ -245,12 +245,12 @@ export class MappingCommand extends Command {
 
   private logMappingSummary(mapping: any, outputPath: string): void {
     // Index pattern info
-    Logger.info(`Index Pattern created: ${mapping.index_patterns[0]}`);
+    Logger.info`Index Pattern created: ${mapping.index_patterns[0]}`;
 
     // Aliases info
     const aliasNames = Object.keys(mapping.aliases);
     if (aliasNames.length > 0) {
-      Logger.info(`Alias(es) used: ${aliasNames.join(", ")}`);
+      Logger.info`Alias(es) used: ${aliasNames.join(", ")}`;
     } else {
       Logger.info("No aliases defined");
     }
@@ -259,12 +259,12 @@ export class MappingCommand extends Command {
     const fieldCount = Object.keys(
       mapping.mappings.properties.data.properties
     ).length;
-    Logger.info(`Total Fields Generated: ${fieldCount}`);
+    Logger.info`Total Fields Generated: ${fieldCount}`;
 
     // Shards and replicas
-    Logger.info(`Shards: ${mapping.settings.number_of_shards}`);
-    Logger.info(`Replicas: ${mapping.settings.number_of_replicas}`);
-    Logger.success(`Mapping template saved to:`);
+    Logger.info`Shards: ${mapping.settings.number_of_shards}`;
+    Logger.info`Replicas: ${mapping.settings.number_of_replicas}`;
+    Logger.success`Mapping template saved to:`;
     Logger.generic(`    - ${outputPath}`);
   }
 }

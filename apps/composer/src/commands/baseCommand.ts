@@ -20,12 +20,12 @@ export abstract class Command {
     try {
       if (cliOutput.debug) {
         Logger.enableDebug();
-        Logger.debug(`Running ${this.name} command with debug enabled`);
+        Logger.debug`Running ${this.name} command with debug enabled`;
       }
 
       await this.validate(cliOutput);
 
-      Logger.debug(`Output path before check: ${cliOutput.outputPath}`);
+      Logger.debug`Output path before check: ${cliOutput.outputPath}`;
 
       let usingDefaultPath = false;
 
@@ -43,7 +43,7 @@ export abstract class Command {
           "Use -o or --output <path> to specify a different location"
         );
       } else {
-        Logger.info(`Output directory set to: ${cliOutput.outputPath}`);
+        Logger.info`Output directory set to: ${cliOutput.outputPath}`;
       }
 
       if (cliOutput.outputPath && cliOutput.force !== true) {
@@ -96,7 +96,7 @@ export abstract class Command {
   protected createDirectoryIfNotExists(dirPath: string): void {
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
-      Logger.info(`Created directory: ${dirPath}`);
+      Logger.info`Created directory: ${dirPath}`;
     }
   }
 
@@ -105,7 +105,7 @@ export abstract class Command {
     let outputFileName: string | undefined;
 
     if (path.extname(outputPath)) {
-      Logger.debug(`Output path appears to be a file: ${outputPath}`);
+      Logger.debug`Output path appears to be a file: ${outputPath}`;
       directoryPath = path.dirname(outputPath);
       outputFileName = path.basename(outputPath);
       Logger.debug(
@@ -162,6 +162,6 @@ export abstract class Command {
   }
 
   protected logGeneratedFile(filePath: string): void {
-    Logger.info(`Generated file: ${filePath}`);
+    Logger.info`Generated file: ${filePath}`;
   }
 }

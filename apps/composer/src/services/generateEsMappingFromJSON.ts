@@ -56,7 +56,7 @@ export function inferFieldType(
   rules: TypeInferenceRules = defaultRules
 ): ElasticsearchField {
   try {
-    Logger.debug(`Inferring type for field: ${keyName}`);
+    Logger.debug`Inferring type for field: ${keyName}`;
 
     // Handle null/undefined
     if (sampleValue === null || sampleValue === undefined) {
@@ -76,7 +76,7 @@ export function inferFieldType(
 
     // Handle nested objects
     if (typeof sampleValue === "object" && !Array.isArray(sampleValue)) {
-      Logger.debug(`Processing nested object for ${keyName}`);
+      Logger.debug`Processing nested object for ${keyName}`;
       const properties: Record<string, ElasticsearchField> = {};
       for (const [key, value] of Object.entries(sampleValue)) {
         properties[key] = inferFieldType(key, value, rules);
@@ -86,7 +86,7 @@ export function inferFieldType(
 
     // Handle arrays
     if (Array.isArray(sampleValue)) {
-      Logger.debug(`Processing array for ${keyName}`);
+      Logger.debug`Processing array for ${keyName}`;
       if (sampleValue.length === 0) {
         return { type: "keyword" };
       }
@@ -197,7 +197,7 @@ export function generateMappingFromJson(
       );
       indexName = "data";
     } else {
-      Logger.info(`Using index name: ${indexName}`);
+      Logger.info`Using index name: ${indexName}`;
     }
 
     // Read and validate JSON
@@ -236,7 +236,7 @@ export function generateMappingFromJson(
 
     // Generate field mappings
     const fieldCount = Object.keys(sampleData).length;
-    Logger.info(`Analyzing ${fieldCount} fields for type inference`);
+    Logger.info`Analyzing ${fieldCount} fields for type inference`;
 
     const typeInferenceStart = Date.now();
     const properties: Record<string, ElasticsearchField> = {};
@@ -261,7 +261,7 @@ export function generateMappingFromJson(
       Logger.timing("Type inference", typeInferenceTime);
     }
 
-    Logger.debug(`Field analysis complete`);
+    Logger.debug`Field analysis complete`;
     if (complexFieldCount > 0) {
       Logger.debug(
         `Detected ${complexFieldCount} complex field(s) (objects/arrays)`
@@ -339,8 +339,8 @@ export function mergeMappings(
     const targetFieldCount = Object.keys(target.mappings.properties).length;
     const sourceFieldCount = Object.keys(source.mappings.properties).length;
 
-    Logger.info(`Target mapping has ${targetFieldCount} top-level properties`);
-    Logger.info(`Source mapping has ${sourceFieldCount} top-level properties`);
+    Logger.info`Target mapping has ${targetFieldCount} top-level properties`;
+    Logger.info`Source mapping has ${sourceFieldCount} top-level properties`;
 
     const mergedProperties = {
       ...target.mappings.properties,

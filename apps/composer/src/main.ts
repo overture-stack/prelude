@@ -14,10 +14,10 @@ async function main() {
 
     const cliOutput = await setupCLI();
 
-    Logger.header(" ♬♪ Composer: Overture configurations generator");
-    console.log(chalk.grey.italic(`Version: 1.0.0-beta`));
-    console.log(chalk.grey.italic(`Profile: ${cliOutput.profile}`));
-    Logger.generic("");
+    Logger.header(` ♬♪ Composer: Overture configuration generation`);
+    console.log(chalk.grey.italic`  Version: 1.0.0-beta`);
+    console.log(chalk.grey.italic`  Profile: ${cliOutput.profile}`);
+    Logger.generic(" ");
 
     Logger.debug("Creating command instance");
     const command = CommandFactory.createCommand(cliOutput.profile);

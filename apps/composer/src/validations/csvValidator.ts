@@ -17,8 +17,8 @@ export async function validateCSVHeaders(
   delimiter: string
 ): Promise<boolean> {
   try {
-    Logger.debug(`Validating CSV headers for file: ${filePath}`);
-    Logger.debug(`Using delimiter: '${delimiter}'`);
+    Logger.debug`Validating CSV headers for file: ${filePath}`;
+    Logger.debug`Using delimiter: '${delimiter}'`;
 
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const [headerLine] = fileContent.split("\n");
@@ -40,7 +40,7 @@ export async function validateCSVHeaders(
       );
     }
 
-    Logger.debug(`Parsed headers: ${headers.join(", ")}`);
+    Logger.debug`Parsed headers: ${headers.join(", ")}`;
     return validateCSVStructure(headers);
   } catch (error) {
     Logger.debug("Error during CSV header validation");
