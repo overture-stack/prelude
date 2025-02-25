@@ -96,7 +96,7 @@ export function generateDictionary(
     meta: {},
   };
 
-  Logger.success("Dictionary generated successfully");
+  Logger.info("Base dictionary generated");
   Logger.debugObject("Dictionary Details", dictionary);
   return dictionary;
 }
@@ -167,7 +167,7 @@ export function generateSchema(
     },
   };
 
-  Logger.success(`Schema generation complete: ${schemaName}`);
+  Logger.info(` ${schemaName} schema generated`);
   Logger.debugObject("Schema Details", schema);
   return schema;
 }

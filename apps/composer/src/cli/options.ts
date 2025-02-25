@@ -109,19 +109,15 @@ export function parseCommandLineArgs(opts: any): CLIOutput {
         }
       : undefined,
     delimiter: opts.delimiter,
-    dictionaryConfig:
-      opts.name || opts.description || opts.version
-        ? {
-            name: opts.name || "",
-            description:
-              opts.description || "Generated dictionary from CSV files",
-            version: opts.version || "1.0.0",
-          }
-        : undefined,
+    dictionaryConfig: {
+      name: opts.name || "lectern_dictionary",
+      description: opts.description || "Generated dictionary from CSV files",
+      version: opts.version || "1.0.0",
+    },
     songConfig:
       opts.name || opts.fileTypes
         ? {
-            name: opts.name,
+            name: opts.name || `song_schema`,
             fileTypes: opts.fileTypes,
           }
         : undefined,

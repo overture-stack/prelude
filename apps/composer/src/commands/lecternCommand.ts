@@ -11,10 +11,28 @@ import { parseCSVLine } from "../utils/csvParser";
 import { validateCSVHeaders, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
+import { CONFIG_PATHS } from "../utils/paths";
 
 export class DictionaryCommand extends Command {
+  // Define dictionary-specific defaults
+  protected readonly defaultOutputFileName = "dictionary.json";
+
   constructor() {
-    super("Lectern Dictionary");
+    super("Lectern Dictionary", CONFIG_PATHS?.lectern?.dir);
+    // Override the default filename from the base class
+    this.defaultOutputFileName = "dictionary.json";
+  }
+
+  /**
+   * Override isUsingDefaultPath to handle dictionary-specific defaults
+   */
+  protected isUsingDefaultPath(cliOutput: CLIOutput): boolean {
+    return (
+      cliOutput.outputPath === CONFIG_PATHS?.lectern?.dictionary ||
+      cliOutput.outputPath ===
+        path.join(CONFIG_PATHS?.lectern?.dir || "", "dictionary.json") ||
+      super.isUsingDefaultPath(cliOutput)
+    );
   }
 
   protected async validate(cliOutput: CLIOutput): Promise<void> {
@@ -36,10 +54,29 @@ export class DictionaryCommand extends Command {
     }
 
     const config = cliOutput.dictionaryConfig;
-    if (!config.name || !config.description || !config.version) {
-      throw new ComposerError(
-        "Dictionary configuration must include name, description, and version",
-        ErrorCodes.INVALID_ARGS
+
+    if (!config.name) {
+      // Set a default value first
+      config.name = "lectern_dictionary";
+
+      Logger.defaultValueInfo(
+        `No dictionary name supplied, defaulting to: ${config.name}`,
+        "--name <name>"
+      );
+    }
+
+    // Similar fixes for description and version if needed
+    if (config.description === "Generated dictionary from CSV files") {
+      Logger.defaultValueInfo(
+        "No dictionary description supplied, using default description",
+        "--description <text>"
+      );
+    }
+
+    if (config.version === "1.0.0") {
+      Logger.defaultValueInfo(
+        "No dictionary version supplied, using default version: 1.0.0",
+        "--version <version>"
       );
     }
 
@@ -72,10 +109,22 @@ export class DictionaryCommand extends Command {
   }
 
   protected async execute(cliOutput: CLIOutput): Promise<any> {
-    const { outputPath, dictionaryConfig } = cliOutput;
+    const { dictionaryConfig } = cliOutput;
     const delimiter = cliOutput.config.delimiter;
 
-    Logger.header("Generating Lectern Dictionary");
+    // Get output path, similar to MappingCommand
+    let outputPath = cliOutput.outputPath!;
+
+    // Normalize output path for dictionary files specifically
+    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
+      outputPath = path.join(outputPath, this.defaultOutputFileName);
+      Logger.debug(
+        `Output is a directory, will create ${this.defaultOutputFileName} inside it`
+      );
+    } else if (!outputPath.endsWith(".json")) {
+      outputPath += ".json";
+      Logger.info(`Adding .json extension to output path`);
+    }
 
     try {
       // Validate environment
@@ -129,15 +178,22 @@ export class DictionaryCommand extends Command {
 
           const schema = generateSchema(schemaName, headers, sampleData);
           dictionary.schemas.push(schema);
-          Logger.success(`Generated schema for ${schemaName}`);
+          Logger.debug(`Generated schema for ${schemaName}`);
         } catch (error) {
           Logger.warn(`Skipping ${filePath} due to error: ${error}`);
           continue;
         }
       }
 
+      // Ensure output directory exists
+      const outputDir = path.dirname(outputPath);
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+        Logger.debug(`Created output directory: ${outputDir}`);
+      }
+
       // Write dictionary to file
-      fs.writeFileSync(outputPath!, JSON.stringify(dictionary, null, 2));
+      fs.writeFileSync(outputPath, JSON.stringify(dictionary, null, 2));
       Logger.success(`Dictionary saved to ${outputPath}`);
 
       return dictionary;

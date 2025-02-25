@@ -141,7 +141,7 @@ export abstract class Command {
     }
 
     Logger.fileList(
-      "The following files in the output directory will be overwritten",
+      "The following file(s) in the output directory will be overwritten",
       filesToOverwrite
     );
 

@@ -1,34 +1,20 @@
 {
   "name": "metadata",
   "options": {
-    "fileTypes": [
-      "FILETYPE_0",
-      "FILETYPE_1"
-    ]
+    "fileTypes": ["FILETYPE_0", "FILETYPE_1"]
   },
   "schema": {
     "type": "object",
-    "required": [
-      "workflow",
-      "experiment"
-    ],
+    "required": ["workflow", "experiment"],
     "properties": {
       "workflow": {
         "type": "string"
       },
       "experiment": {
         "propertyNames": {
-          "enum": [
-            "name",
-            "description",
-            "study_id"
-          ]
+          "enum": ["name", "description", "study_id"]
         },
-        "required": [
-          "name",
-          "description",
-          "study_id"
-        ],
+        "required": ["name", "description", "study_id"],
         "type": "object",
         "properties": {
           "name": {

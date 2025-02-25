@@ -16,12 +16,7 @@ export function validateCliOptions(
   try {
     switch (profile) {
       case Profiles.GENERATE_LECTERN_DICTIONARY:
-        if (!options.name) {
-          throw new ComposerError(
-            "Dictionary name is required for dictionary generation",
-            ErrorCodes.INVALID_ARGS
-          );
-        }
+        // Removed name requirement, as it will be auto-generated if not provided
         break;
 
       case Profiles.GENERATE_ELASTICSEARCH_MAPPING:
