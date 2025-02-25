@@ -1,9 +1,9 @@
 import * as fs from "fs";
-import chalk from "chalk";
 import { Client } from "@elastic/elasticsearch";
 import { ConductorError, ErrorCodes } from "../utils/errors";
-import { parseCSVLine } from "../utils/csvParser";
+import { parseCSVLine } from "../csvProcessor/csvParser";
 import { VALIDATION_CONSTANTS } from "./constants";
+import { Logger } from "../utils/logger";
 
 /**
  * Module for validating CSV files against structural and naming rules.
@@ -23,6 +23,8 @@ export async function validateCSVHeaders(
   filePath: string,
   delimiter: string
 ): Promise<boolean> {
+  Logger.debug`Validating CSV headers in ${filePath} with delimiter '${delimiter}'`;
+
   try {
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const [headerLine] = fileContent.split("\n");
@@ -34,19 +36,26 @@ export async function validateCSVHeaders(
       );
     }
 
-    const headers = parseCSVLine(headerLine, delimiter, true)[0];
-    if (!headers) {
+    const parseResult = parseCSVLine(headerLine, delimiter, true);
+    if (!parseResult || !parseResult[0]) {
       throw new ConductorError(
         "Failed to parse CSV headers",
         ErrorCodes.INVALID_FILE
       );
     }
 
+    const headers = parseResult[0];
+    Logger.debug`Found ${headers.length} headers in CSV file`;
+
     return validateCSVStructure(headers);
   } catch (error) {
     if (error instanceof ConductorError) {
+      Logger.error`CSV header validation failed: ${error.message}`;
       throw error;
     }
+    Logger.error`Error validating CSV headers: ${
+      error instanceof Error ? error.message : String(error)
+    }`;
     throw new ConductorError(
       "Error validating CSV headers",
       ErrorCodes.VALIDATION_FAILED,
@@ -71,6 +80,8 @@ export async function validateCSVHeaders(
 export async function validateCSVStructure(
   headers: string[]
 ): Promise<boolean> {
+  Logger.debug`Validating CSV structure with ${headers.length} headers`;
+
   try {
     // Clean and filter headers
     const cleanedHeaders = headers
@@ -86,6 +97,7 @@ export async function validateCSVStructure(
     }
 
     if (cleanedHeaders.length !== headers.length) {
+      Logger.warn`Empty or whitespace-only headers detected`;
       throw new ConductorError(
         "Empty or whitespace-only headers detected",
         ErrorCodes.VALIDATION_FAILED
@@ -109,6 +121,7 @@ export async function validateCSVStructure(
     });
 
     if (invalidHeaders.length > 0) {
+      Logger.error`Invalid header names detected: ${invalidHeaders.join(", ")}`;
       throw new ConductorError(
         "Invalid header names detected",
         ErrorCodes.VALIDATION_FAILED,
@@ -130,6 +143,9 @@ export async function validateCSVStructure(
       .map(([header]) => header);
 
     if (duplicates.length > 0) {
+      Logger.error`Duplicate headers found in CSV file: ${duplicates.join(
+        ", "
+      )}`;
       throw new ConductorError(
         "Duplicate headers found in CSV file",
         ErrorCodes.VALIDATION_FAILED,
@@ -145,19 +161,26 @@ export async function validateCSVStructure(
     );
 
     if (genericHeaders.length > 0) {
-      console.log(chalk.yellow("\n⚠️  Warning: Generic headers detected"));
+      Logger.warn`Generic headers detected:`;
       genericHeaders.forEach((header) => {
-        console.log(chalk.yellow(`├─ Generic header: "${header}"`));
+        Logger.warn`Generic header: "${header}"`;
       });
-      console.log(chalk.cyan("Consider using more descriptive column names\n"));
+      Logger.help`Consider using more descriptive column names`;
     }
 
-    console.log(chalk.green("✓ CSV header structure is valid"));
+    Logger.debug`CSV header structure matches valid`;
+
+    // Log all headers in debug mode
+    Logger.debugObject("CSV Headers", cleanedHeaders);
+
     return true;
   } catch (error) {
     if (error instanceof ConductorError) {
       throw error;
     }
+    Logger.error`Error validating CSV structure: ${
+      error instanceof Error ? error.message : String(error)
+    }`;
     throw new ConductorError(
       "Error validating CSV structure",
       ErrorCodes.VALIDATION_FAILED,
@@ -181,6 +204,8 @@ export async function validateHeadersMatchMappings(
   headers: string[],
   indexName: string
 ): Promise<boolean> {
+  Logger.debug`Validating headers against index ${indexName} mappings`;
+
   try {
     // Explicitly type the response
     const { body } = await client.indices.getMapping({
@@ -190,6 +215,7 @@ export async function validateHeadersMatchMappings(
     // Type-safe navigation
     const mappings = body[indexName]?.mappings;
     if (!mappings) {
+      Logger.error`No mappings found for index ${indexName}`;
       throw new ConductorError(
         "No mappings found for the specified index",
         ErrorCodes.VALIDATION_FAILED
@@ -201,11 +227,14 @@ export async function validateHeadersMatchMappings(
       ? Object.keys(mappings.properties.data.properties)
       : [];
 
+    Logger.debug`Found ${expectedFields.length} fields in index mapping`;
+
     const cleanedHeaders = headers
       .map((header) => header.trim())
       .filter((header) => header !== "");
 
     if (cleanedHeaders.length === 0) {
+      Logger.error`No valid headers found`;
       throw new ConductorError(
         "No valid headers found",
         ErrorCodes.VALIDATION_FAILED
@@ -221,7 +250,20 @@ export async function validateHeadersMatchMappings(
         field !== "submission_metadata" && !cleanedHeaders.includes(field)
     );
 
+    if (extraHeaders.length > 0) {
+      Logger.warn`Extra headers not in index mapping: ${extraHeaders.join(
+        ", "
+      )}`;
+    }
+
+    if (missingRequiredFields.length > 0) {
+      Logger.warn`Missing fields from index mapping: ${missingRequiredFields.join(
+        ", "
+      )}`;
+    }
+
     if (extraHeaders.length > 0 || missingRequiredFields.length > 0) {
+      Logger.error`Header/Field mismatch detected`;
       throw new ConductorError(
         "Header/Field mismatch detected",
         ErrorCodes.VALIDATION_FAILED,
@@ -236,7 +278,7 @@ export async function validateHeadersMatchMappings(
       );
     }
 
-    console.log(chalk.green("✓ Headers validated against index mapping"));
+    Logger.debug`Headers validated against index mapping`;
     return true;
   } catch (error) {
     // Type-safe error handling
@@ -245,7 +287,12 @@ export async function validateHeadersMatchMappings(
     }
 
     // Add more detailed error logging
-    console.error(chalk.red("Error in validateHeadersMatchMappings:"), error);
+    Logger.error`Error validating headers against index: ${
+      error instanceof Error ? error.message : String(error)
+    }`;
+    Logger.debug`Error details: ${
+      error instanceof Error ? error.stack : "No stack trace available"
+    }`;
 
     throw new ConductorError(
       "Error validating headers against index",

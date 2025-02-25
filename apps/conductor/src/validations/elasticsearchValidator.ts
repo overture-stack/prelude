@@ -27,7 +27,7 @@ export async function validateElasticsearchConnection(
     const response = await client.ping();
     const responseTime = Date.now() - startTime;
 
-    Logger.success`Connected to Elasticsearch successfully in ${responseTime}ms`;
+    Logger.info`Connected to Elasticsearch successfully in ${responseTime}ms`;
 
     return {
       valid: true,
@@ -63,7 +63,7 @@ export async function validateIndex(
     if (!exists) {
       Logger.warn`Index ${indexName} does not exist. Will be created automatically.`;
     } else {
-      Logger.success`Index ${indexName} exists`;
+      Logger.info`Index ${indexName} exists`;
     }
 
     return {

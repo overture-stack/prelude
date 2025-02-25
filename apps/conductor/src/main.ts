@@ -9,18 +9,17 @@ import chalk from "chalk";
 async function main() {
   try {
     // Initialize logger first thing
-    Logger.initialize();
-    Logger.debug`Starting CLI setup`;
-
     const cliOutput = await setupCLI();
 
     Logger.header(`Conductor: Data Processing Pipeline`);
     console.log(chalk.grey.italic`  Version: 1.0.0`);
-    console.log(chalk.grey.italic`  Mode: ${cliOutput.mode}`);
+    console.log(chalk.grey.italic`  Profile: ${cliOutput.profile}`);
     Logger.generic(" ");
+    Logger.initialize();
+    Logger.debug`Starting CLI setup`;
 
     Logger.debug`Creating command instance`;
-    const command = CommandFactory.createCommand(cliOutput.mode);
+    const command = CommandFactory.createCommand(cliOutput.profile);
 
     Logger.debug`Running command`;
     await command.run(cliOutput);

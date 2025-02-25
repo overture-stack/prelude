@@ -1,30 +1,25 @@
-import { validateBatchSize } from "../validations/elasticsearchValidator";
-import { validateDelimiter } from "../validations/utils";
 /**
  * Upload Command
  *
  * Command implementation for uploading CSV data to Elasticsearch.
  */
 
+import { validateBatchSize } from "../validations/elasticsearchValidator";
+import { validateDelimiter } from "../validations/utils";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../cli";
 import { Logger } from "../utils/logger";
-import {
-  ConductorError,
-  ErrorCodes,
-  createValidationError,
-} from "../utils/errors";
-import { createClient } from "../utils/elasticsearch";
-import { processCSVFile } from "../services/processor";
+import { ConductorError, ErrorCodes } from "../utils/errors";
+import { createClient } from "../csvProcessor/elasticsearch";
+import { processCSVFile } from "../csvProcessor/index";
 import {
   validateCSVStructure,
   validateElasticsearchConnection,
   validateIndex,
   validateFiles,
 } from "../validations";
-import { parseCSVLine } from "../utils/csvParser";
+import { parseCSVLine } from "../csvProcessor/csvParser";
 import * as fs from "fs";
-import chalk from "chalk";
 
 export class UploadCommand implements Command {
   /**
@@ -33,10 +28,13 @@ export class UploadCommand implements Command {
    */
   async run(cliOutput: CLIOutput): Promise<void> {
     const { config, filePaths } = cliOutput;
-    const startTime = process.hrtime();
 
-    Logger.section("Starting upload process");
-    Logger.info`Files to process: ${filePaths.length}`;
+    Logger.infofileList(
+      `Input files specified: ${filePaths.length}`,
+      filePaths
+    );
+
+    // List all input files using the dedicated method
 
     // Validate common settings before processing files
     this.validateCommonSettings(config);
@@ -46,11 +44,11 @@ export class UploadCommand implements Command {
     let failureCount = 0;
 
     for (const filePath of filePaths) {
-      Logger.section(`Processing file: ${filePath}`);
+      Logger.debug(`Processing File: ${filePath}`);
 
       try {
         await this.processFile(filePath, config);
-        Logger.success`Successfully processed ${filePath}`;
+        Logger.debug`Successfully processed ${filePath}`;
         successCount++;
       } catch (error) {
         failureCount++;
@@ -67,20 +65,6 @@ export class UploadCommand implements Command {
         }
       }
     }
-
-    // Log summary
-    const hrEnd = process.hrtime(startTime);
-    const timeMs = hrEnd[0] * 1000 + hrEnd[1] / 1000000;
-
-    Logger.section("Upload process complete");
-    Logger.info`Files processed: ${filePaths.length}`;
-    Logger.success`Successful: ${successCount}`;
-
-    if (failureCount > 0) {
-      Logger.error`Failed: ${failureCount}`;
-    }
-
-    Logger.timing("Total processing time", timeMs);
   }
 
   /**

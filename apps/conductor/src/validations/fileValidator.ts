@@ -17,7 +17,7 @@ import { ALLOWED_EXTENSIONS } from "./constants";
 export async function validateFiles(
   filePaths: string[]
 ): Promise<ValidationResult> {
-  Logger.section("File Validation");
+  Logger.debug("fileValidator: File Validation");
 
   if (!filePaths || filePaths.length === 0) {
     return {
@@ -48,7 +48,7 @@ export async function validateFiles(
   if (notFoundFiles.length > 0) {
     errors.push(`Files not found: ${notFoundFiles.join(", ")}`);
     Logger.error`Files not found: ${notFoundFiles.length} files`;
-    Logger.fileList("Missing files", notFoundFiles);
+    Logger.warnfileList("Missing files", notFoundFiles);
   }
 
   if (invalidExtensions.length > 0) {
@@ -56,13 +56,13 @@ export async function validateFiles(
       `Invalid file extensions. Allowed: ${ALLOWED_EXTENSIONS.join(", ")}`
     );
     Logger.error`Invalid file extensions: ${invalidExtensions.length} files`;
-    Logger.fileList("Files with invalid extensions", invalidExtensions);
+    Logger.warnfileList("Files with invalid extensions", invalidExtensions);
   }
 
   const valid = errors.length === 0;
 
   if (valid) {
-    Logger.success`All files valid (${filePaths.length} files)`;
+    Logger.debug`All files valid (${filePaths.length} files)`;
   }
 
   return { valid, errors };

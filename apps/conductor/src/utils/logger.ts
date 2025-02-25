@@ -44,7 +44,7 @@ export class Logger {
       [LogLevel.ERROR]: chalk.bold.red,
       [LogLevel.HELP]: chalk.bold.yellow,
       [LogLevel.GENERIC]: chalk.white,
-      [LogLevel.SECTION]: chalk.bold.blue,
+      [LogLevel.SECTION]: chalk.bold.green,
       [LogLevel.INPUT]: chalk.bold.yellow,
     };
 
@@ -74,7 +74,7 @@ export class Logger {
     }
 
     if (level === LogLevel.SECTION) {
-      return `${prefix}${colors[level](`${icons[level]} ${message}`)}`;
+      return `${prefix}\n${colors[level](`\n${icons[level]} ${message}\n`)}`;
     }
 
     return `${prefix}${colors[level](
@@ -89,7 +89,7 @@ export class Logger {
   static enableDebug(): void {
     this.config.debug = true;
     this.config.level = LogLevel.DEBUG;
-    console.log(chalk.gray("🔍 **Debug mode enabled**"));
+    console.log(chalk.gray("🔍 **Debug profile enabled**"));
   }
 
   /**
@@ -221,9 +221,17 @@ export class Logger {
     console.log(chalk.gray`⏱ ${label}: ${formattedTime}`);
   }
 
-  static fileList(title: string, files: string[]): void {
+  static warnfileList(title: string, files: string[]): void {
     if (files.length === 0) return;
-    Logger.warn`${title}:\n`;
+    Logger.warn`${title}:`;
+    files.forEach((file) => {
+      console.log(chalk.gray`  - ${file}`);
+    });
+  }
+
+  static infofileList(title: string, files: string[]): void {
+    if (files.length === 0) return;
+    Logger.info`${title}:`;
     files.forEach((file) => {
       console.log(chalk.gray`  - ${file}`);
     });
@@ -275,7 +283,7 @@ export class Logger {
         description: "Specify an output path for logs or results",
       },
       {
-        title: "Debug Mode",
+        title: "Debug Profile",
         command: "conductor -f data.csv --debug",
         description: "Enable detailed debug logging",
       },

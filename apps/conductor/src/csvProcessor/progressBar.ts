@@ -13,13 +13,13 @@ import chalk from "chalk";
  */
 
 export function formatDuration(ms: number): string {
-  if (!isFinite(ms) || ms < 0) return "Invalid duration";
+  if (!isFinite(ms) || ms < 0) return chalk.red("Invalid duration");
 
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
 
-  return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+  return chalk.magenta(`${hours}h ${minutes % 60}m ${seconds % 60}s`);
 }
 
 export function calculateETA(
@@ -29,11 +29,11 @@ export function calculateETA(
 ): string {
   // Validate inputs
   if (!isFinite(processed) || !isFinite(total) || !isFinite(elapsedSeconds)) {
-    return "Invalid calculation";
+    return chalk.yellow("Invalid calculation");
   }
 
   if (processed <= 0 || total <= 0 || elapsedSeconds <= 0) {
-    return "Calculating...";
+    return chalk.cyan("Calculating...");
   }
 
   try {
@@ -42,12 +42,12 @@ export function calculateETA(
     const remainingSeconds = remainingRecords / recordsPerSecond;
 
     if (!isFinite(remainingSeconds) || remainingSeconds < 0) {
-      return "Calculating...";
+      return chalk.cyan("Calculating...");
     }
 
     return formatDuration(remainingSeconds * 1000);
   } catch (error) {
-    return "ETA calculation error";
+    return chalk.red("ETA calculation error");
   }
 }
 
@@ -73,13 +73,13 @@ export function createProgressBar(
     const emptyWidth = normalizedWidth - filledWidth;
 
     // Create bar segments with boundary checks
-    const filledBar = "█".repeat(Math.max(0, filledWidth));
-    const emptyBar = "░".repeat(Math.max(0, emptyWidth));
+    const filledBar = chalk.green("█").repeat(Math.max(0, filledWidth));
+    const emptyBar = chalk.gray("░").repeat(Math.max(0, emptyWidth));
 
     // Return formatted progress bar
-    return `${chalk.green(filledBar)}${chalk.gray(
-      emptyBar
-    )} ${normalizedProgress.toFixed(1)}%`;
+    return `${filledBar}${emptyBar} ${chalk.green(
+      normalizedProgress.toFixed(1) + "%"
+    )}`;
   } catch (error) {
     return chalk.yellow("[Progress calculation error]");
   }

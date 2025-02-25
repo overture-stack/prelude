@@ -104,7 +104,7 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "analysis.experiment.model",
+        "fieldName": "analysis.experiment.profilel",
         "show": false,
         "sortable": true
       },

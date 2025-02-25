@@ -11,7 +11,7 @@ import { Logger } from "../utils/logger";
  * Validates that required CLI options are provided and have valid values
  */
 export function validateCliOptions(options: any): void {
-  Logger.section("CLI Options Validation");
+  Logger.debug("CLI Options Validation");
 
   // Validate that files are provided
   if (!options.files || options.files.length === 0) {
@@ -20,7 +20,14 @@ export function validateCliOptions(options: any): void {
       { parameter: "files", expected: "at least one file path" }
     );
   }
-  Logger.success`Input files specified: ${options.files.length} file(s)`;
+
+  // Log the number of files
+  Logger.debug`Input files specified: ${options.files.length} file(s)`;
+
+  // List all input files
+  if (options.files.length > 0) {
+    Logger.debug("Input files", options.files);
+  }
 
   // Validate batch size if provided
   if (options.batchSize) {
@@ -32,7 +39,7 @@ export function validateCliOptions(options: any): void {
         expected: "positive number",
       });
     }
-    Logger.success`Batch size is valid: ${batchSize}`;
+    Logger.info`Batch size is valid: ${batchSize}`;
   }
 
   // Validate delimiter if provided

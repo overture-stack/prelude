@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { Config } from "../types";
+import { Config } from "../types/config";
 import {
   ConductorError,
   ErrorCodes,
@@ -12,12 +12,12 @@ import { validateCliOptions } from "./validation";
 import { configureCommandOptions } from "./options";
 import { Logger, LogLevel } from "../utils/logger";
 
-export type CLIMode = "upload";
+export type CLIprofile = "upload";
 
 export interface CLIOutput {
   config: Config;
   filePaths: string[];
-  mode: CLIMode;
+  profile: CLIprofile;
   outputPath?: string;
   envConfig: any;
 }
@@ -27,7 +27,7 @@ export async function setupCLI(): Promise<CLIOutput> {
   const startTime = process.hrtime();
 
   try {
-    Logger.header("Conductor CLI");
+    Logger.debug("Conductor CLI");
 
     // Load environment and parse options
     const envConfig = loadEnvironmentConfig();
@@ -42,14 +42,14 @@ export async function setupCLI(): Promise<CLIOutput> {
       Logger.initialize();
     }
 
-    // Process mode
-    const mode = "upload" as CLIMode;
+    // Process profile
+    const profile = "upload" as CLIprofile;
     const outputPath = options.output;
 
     // Log consolidated configuration
     Logger.debugObject("CLI Configuration", {
       command: {
-        mode,
+        profile,
         input: options.files,
         output: outputPath,
       },
@@ -88,7 +88,7 @@ export async function setupCLI(): Promise<CLIOutput> {
         batchSize: parseInt(options.batchSize, 10) || 1000,
         delimiter: options.delimiter || ",",
       },
-      mode,
+      profile,
       filePaths: options.files,
       outputPath,
       envConfig,
@@ -108,9 +108,5 @@ export async function setupCLI(): Promise<CLIOutput> {
       ErrorCodes.CLI_ERROR,
       error
     );
-  } finally {
-    const hrEnd = process.hrtime(startTime);
-    const timeMs = hrEnd[0] * 1000 + hrEnd[1] / 1000000;
-    Logger.timing("CLI setup completed in", timeMs);
   }
 }

@@ -41,7 +41,7 @@
           "experiment": {
             "properties": {
               "experimentalStrategy": { "type": "keyword" },
-              "model": { "type": "keyword" },
+              "profilel": { "type": "keyword" },
               "platform": { "type": "keyword" },
               "sequencingCenter": { "type": "keyword" },
               "sequencingDate": { "type": "date" }

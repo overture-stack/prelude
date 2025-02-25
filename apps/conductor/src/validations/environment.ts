@@ -18,7 +18,7 @@ interface EnvironmentValidationParams {
 export async function validateEnvironment(
   params: EnvironmentValidationParams
 ): Promise<void> {
-  Logger.section("Environment Validation");
+  Logger.debug("Environment Validation");
 
   // Validate Elasticsearch URL is provided
   if (!params.elasticsearchUrl) {
@@ -27,9 +27,9 @@ export async function validateEnvironment(
       expected: "valid URL",
     });
   }
-  Logger.success`Elasticsearch URL is provided: ${params.elasticsearchUrl}`;
+  Logger.debug`Elasticsearch URL is provided: ${params.elasticsearchUrl}`;
 
   // Add additional environment validations as needed
 
-  Logger.success`Environment validation passed`;
+  Logger.debug`Environment validation passed`;
 }

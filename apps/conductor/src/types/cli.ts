@@ -7,9 +7,9 @@
 import { Config, EnvConfig } from "./config";
 
 /**
- * Supported CLI operation modes
+ * Supported CLI operation profiles
  */
-export type CLIMode = "upload";
+export type CLIprofile = "upload";
 
 /**
  * Output from CLI parsing and setup
@@ -21,8 +21,8 @@ export interface CLIOutput {
   /** Paths to input files */
   filePaths: string[];
 
-  /** Operation mode */
-  mode: CLIMode;
+  /** Operation profile */
+  profile: CLIprofile;
 
   /** Output path for logs or results */
   outputPath?: string;
@@ -59,6 +59,6 @@ export interface CLIOptions {
   /** CSV delimiter character */
   delimiter?: string;
 
-  /** Whether debug mode is enabled */
+  /** Whether debug profile is enabled */
   debug?: boolean;
 }

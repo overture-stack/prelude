@@ -22,29 +22,23 @@ export const PROFILE_DESCRIPTIONS = new Map([
   [Profiles.DEFAULT, "Default profile"],
 ]);
 
-const PROFILE_TO_MODE: Record<Profile, Profile> = {
-  [Profiles.GENERATE_SONG_SCHEMA]: Profiles.GENERATE_SONG_SCHEMA,
-  [Profiles.GENERATE_LECTERN_DICTIONARY]: Profiles.GENERATE_LECTERN_DICTIONARY,
-  [Profiles.GENERATE_ELASTICSEARCH_MAPPING]:
-    Profiles.GENERATE_ELASTICSEARCH_MAPPING,
-  [Profiles.GENERATE_ARRANGER_CONFIGS]: Profiles.GENERATE_ARRANGER_CONFIGS,
-  [Profiles.GENERATE_CONFIGS]: Profiles.GENERATE_CONFIGS,
-  [Profiles.DEFAULT]: Profiles.DEFAULT,
-} as const;
+// Get all valid profiles
+const VALID_PROFILES = Object.values(Profiles);
 
-export function determineMode(profile: Profile): Profile {
-  Logger.debug`Determining mode for profile: ${profile}`;
+export function validateProfile(profile: Profile): Profile {
+  Logger.debug`Validating profile: ${profile}`;
 
-  const mode = PROFILE_TO_MODE[profile];
-  if (!mode) {
+  if (!VALID_PROFILES.includes(profile)) {
     throw new ComposerError(
-      `Invalid profile: ${profile}`,
+      `Invalid profile: ${profile}. Valid profiles are: ${VALID_PROFILES.join(
+        ", "
+      )}`,
       ErrorCodes.INVALID_ARGS
     );
   }
 
-  Logger.debug`Selected mode: ${mode}`;
-  return mode;
+  Logger.debug`Profile validated: ${profile}`;
+  return profile;
 }
 
 export function getDefaultOutputPath(

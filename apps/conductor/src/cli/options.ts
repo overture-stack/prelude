@@ -22,7 +22,7 @@ export function configureCommandOptions(program: Command): void {
     .option("-p, --password <password>", "Elasticsearch password")
     .option("-b, --batch-size <size>", "Batch size for processing")
     .option("--delimiter <char>", "CSV delimiter")
-    .option("--debug", "Enable debug mode")
+    .option("--debug", "Enable debug profile")
     .helpOption("-h, --help", "Display help for command")
     .addHelpText("after", () => {
       Logger.showReferenceCommands();
