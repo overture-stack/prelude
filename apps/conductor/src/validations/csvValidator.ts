@@ -165,7 +165,7 @@ export async function validateCSVStructure(
       genericHeaders.forEach((header) => {
         Logger.warn`Generic header: "${header}"`;
       });
-      Logger.help`Consider using more descriptive column names`;
+      Logger.tip`Consider using more descriptive column names`;
     }
 
     Logger.debug`CSV header structure matches valid`;

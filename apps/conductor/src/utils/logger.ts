@@ -6,7 +6,7 @@ export enum LogLevel {
   SUCCESS = 2,
   WARN = 3,
   ERROR = 4,
-  HELP = 5,
+  TIP = 5,
   GENERIC = 6,
   SECTION = 7,
   INPUT = 8,
@@ -30,7 +30,7 @@ export class Logger {
       [LogLevel.SUCCESS]: "✓",
       [LogLevel.WARN]: "⚠",
       [LogLevel.ERROR]: "✗",
-      [LogLevel.HELP]: "💡",
+      [LogLevel.TIP]: "\n💡",
       [LogLevel.GENERIC]: "",
       [LogLevel.SECTION]: "",
       [LogLevel.INPUT]: "❔",
@@ -42,7 +42,7 @@ export class Logger {
       [LogLevel.SUCCESS]: chalk.bold.green,
       [LogLevel.WARN]: chalk.bold.yellow,
       [LogLevel.ERROR]: chalk.bold.red,
-      [LogLevel.HELP]: chalk.bold.yellow,
+      [LogLevel.TIP]: chalk.bold.yellow,
       [LogLevel.GENERIC]: chalk.white,
       [LogLevel.SECTION]: chalk.bold.green,
       [LogLevel.INPUT]: chalk.bold.yellow,
@@ -54,7 +54,7 @@ export class Logger {
       [LogLevel.SUCCESS]: "Success",
       [LogLevel.WARN]: "Warn",
       [LogLevel.ERROR]: "Error",
-      [LogLevel.HELP]: "Help",
+      [LogLevel.TIP]: "Tip",
       [LogLevel.GENERIC]: "",
       [LogLevel.SECTION]: "",
       [LogLevel.INPUT]: "User Input",
@@ -156,8 +156,8 @@ export class Logger {
     this.log(LogLevel.ERROR, strings, ...values);
   }
 
-  static help(strings: TemplateStringsArray | string, ...values: any[]): void {
-    this.log(LogLevel.HELP, strings, ...values);
+  static tip(strings: TemplateStringsArray | string, ...values: any[]): void {
+    this.log(LogLevel.TIP, strings, ...values);
   }
 
   static generic(message: string): void {
@@ -190,9 +190,9 @@ export class Logger {
     }
   }
 
-  static defaultValueWarning(message: string, overrideCommand: string): void {
-    if (this.config.level <= LogLevel.WARN) {
-      console.warn(this.formatMessage(message, LogLevel.WARN));
+  static defaultValueTip(message: string, overrideCommand: string): void {
+    if (this.config.level <= LogLevel.TIP) {
+      console.log(this.formatMessage(message, LogLevel.TIP));
       console.log(chalk.gray`   Override with: ${overrideCommand}\n`);
     }
   }

@@ -54,14 +54,14 @@ export class UploadCommand implements Command {
         failureCount++;
         // Log the error but continue to the next file
         if (error instanceof ConductorError) {
-          Logger.error`Skipping file '${filePath}': [${error.code}] ${error.message}`;
+          Logger.debug`Skipping file '${filePath}': [${error.code}] ${error.message}`;
           if (error.details) {
             Logger.debug`Error details: ${JSON.stringify(error.details)}`;
           }
         } else if (error instanceof Error) {
-          Logger.error`Skipping file '${filePath}': ${error.message}`;
+          Logger.debug`Skipping file '${filePath}': ${error.message}`;
         } else {
-          Logger.error`Skipping file '${filePath}' due to an error`;
+          Logger.debug`Skipping file '${filePath}' due to an error`;
         }
       }
     }

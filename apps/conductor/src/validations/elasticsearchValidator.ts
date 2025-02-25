@@ -16,6 +16,9 @@ import { ConnectionValidationResult, IndexValidationResult } from "../types";
 /**
  * Validates Elasticsearch connection by making a ping request
  */
+/**
+ * Validates Elasticsearch connection by making a ping request
+ */
 export async function validateElasticsearchConnection(
   client: Client,
   config: any
@@ -36,7 +39,15 @@ export async function validateElasticsearchConnection(
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Log the error message
     Logger.error`Failed to connect to Elasticsearch: ${errorMessage}`;
+
+    // Add a warning with the override command info
+    Logger.defaultValueTip(
+      "Check Elasticsearch is running and that the correct URL and auth params are in use",
+      "--url <elasticsearch-url> -u <username> -p <password>"
+    );
 
     throw new ConductorError(
       `Failed to connect to Elasticsearch at ${config.elasticsearch.url}`,

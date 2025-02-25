@@ -79,7 +79,7 @@ export class CSVProcessingErrorHandler {
     }
 
     // Possible solutions
-    Logger.help("Possible solutions:");
+    Logger.tip("Possible solutions:");
     Logger.generic(" ▸ 1. Check if the file is a valid CSV");
     Logger.generic(
       ` ▸ 2. Verify the delimiter is correct (current: ${delimiter})`

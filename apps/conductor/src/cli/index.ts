@@ -1,3 +1,4 @@
+// In your CLI (cli/index.ts)
 import { Command } from "commander";
 import { Config } from "../types/config";
 import {
@@ -10,7 +11,7 @@ import { validateEnvironment } from "../validations/environment";
 import { loadEnvironmentConfig } from "./environment";
 import { validateCliOptions } from "./validation";
 import { configureCommandOptions } from "./options";
-import { Logger, LogLevel } from "../utils/logger";
+import { Logger } from "../utils/logger";
 
 export type CLIprofile = "upload";
 
@@ -42,11 +43,10 @@ export async function setupCLI(): Promise<CLIOutput> {
       Logger.initialize();
     }
 
-    // Process profile
+    // Process profile and output
     const profile = "upload" as CLIprofile;
     const outputPath = options.output;
 
-    // Log consolidated configuration
     Logger.debugObject("CLI Configuration", {
       command: {
         profile,
@@ -62,13 +62,27 @@ export async function setupCLI(): Promise<CLIOutput> {
     // Validate options and environment
     validateCliOptions(options);
 
-    // Validate files
+    // Validate files and log details in validator style
     const fileValidation = await validateFiles(options.files);
     if (!fileValidation.valid) {
-      throw createValidationError(
-        `File validation failed: ${fileValidation.errors.join("; ")}`,
-        { validationErrors: fileValidation.errors }
-      );
+      fileValidation.errors.forEach((errorMsg) => {
+        if (errorMsg.startsWith("Files not found:")) {
+          const missingFiles = errorMsg
+            .replace("Files not found:", "")
+            .split(",")
+            .map((s) => s.trim());
+          Logger.error`Files not found: ${missingFiles.length} file(s)`;
+          Logger.warnfileList("Missing files", missingFiles);
+        } else if (errorMsg.startsWith("Invalid file extensions.")) {
+          Logger.error`${errorMsg}`;
+        } else {
+          Logger.error`${errorMsg}`;
+        }
+      });
+      // Throw error with a cleaner message by joining the errors directly
+      throw createValidationError(fileValidation.errors.join("; "), {
+        validationErrors: fileValidation.errors,
+      });
     }
 
     // Validate environment
@@ -97,7 +111,7 @@ export async function setupCLI(): Promise<CLIOutput> {
     return cliOutput;
   } catch (error) {
     if (error instanceof ConductorError) {
-      Logger.error`${error.message}`;
+      // The error has already been logged in the validation step, so simply rethrow it.
       throw error;
     }
     Logger.error`Unexpected error: ${
