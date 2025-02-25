@@ -59,6 +59,15 @@ export const ErrorCodes = {
 
   /** Error during data transformation */
   TRANSFORM_ERROR: "TRANSFORM_ERROR",
+
+  /** CLI setup error */
+  CLI_ERROR: "CLI_ERROR",
+
+  /** CSV processing error */
+  CSV_ERROR: "CSV_ERROR",
+
+  /** Elasticsearch operation error */
+  ES_ERROR: "ES_ERROR",
 } as const;
 
 /**
@@ -120,6 +129,21 @@ export function handleError(error: unknown): never {
           )
         );
         break;
+      case ErrorCodes.CLI_ERROR:
+        console.error(
+          chalk.cyan("\nTip: Run with --help to see command options")
+        );
+        break;
+      case ErrorCodes.ES_ERROR:
+        console.error(
+          chalk.cyan("\nTip: Check Elasticsearch is running and accessible")
+        );
+        break;
+      case ErrorCodes.CSV_ERROR:
+        console.error(
+          chalk.cyan("\nTip: Validate your CSV format and try again")
+        );
+        break;
     }
   } else {
     console.error(chalk.red("\n❌ Unexpected error:"));
@@ -161,4 +185,74 @@ export function logError(error: unknown, prefix?: string): void {
   } else {
     console.error(chalk.red(`\n⚠️ ${messagePrefix}${String(error)}`));
   }
+}
+
+/**
+ * Creates a user-friendly error message for common file operations.
+ *
+ * @param operation - The operation being performed (e.g., "reading", "writing")
+ * @param filePath - Path to the file
+ * @param originalError - The original error that occurred
+ * @returns A ConductorError with appropriate code and context
+ */
+export function createFileError(
+  operation: string,
+  filePath: string,
+  originalError: unknown
+): ConductorError {
+  // Determine the most appropriate error code
+  let code: ErrorCode = ErrorCodes.FILE_ERROR;
+  let message = `Error ${operation} file: ${filePath}`;
+
+  if (originalError instanceof Error) {
+    if (
+      originalError.message.includes("no such file") ||
+      originalError.message.includes("ENOENT")
+    ) {
+      code = ErrorCodes.FILE_NOT_FOUND as ErrorCode;
+      message = `File not found: ${filePath}`;
+    } else if (
+      originalError.message.includes("permission denied") ||
+      originalError.message.includes("EACCES")
+    ) {
+      code = ErrorCodes.FILE_ERROR;
+      message = `Permission denied ${operation} file: ${filePath}`;
+    } else if (operation === "writing") {
+      code = ErrorCodes.FILE_WRITE_ERROR as ErrorCode;
+    }
+  }
+
+  return new ConductorError(message, code, originalError);
+}
+
+/**
+ * Creates an appropriate validation error with context.
+ *
+ * @param message - The validation error message
+ * @param details - Validation details or context
+ * @returns A ConductorError with the validation failed code
+ */
+export function createValidationError(
+  message: string,
+  details?: any
+): ConductorError {
+  return new ConductorError(message, ErrorCodes.VALIDATION_FAILED, details);
+}
+
+/**
+ * Creates an appropriate connection error with context.
+ *
+ * @param service - The service name (e.g., "Elasticsearch")
+ * @param details - Connection details or context
+ * @returns A ConductorError with the connection error code
+ */
+export function createConnectionError(
+  service: string,
+  details?: any
+): ConductorError {
+  return new ConductorError(
+    `Failed to connect to ${service}`,
+    ErrorCodes.CONNECTION_ERROR,
+    details
+  );
 }

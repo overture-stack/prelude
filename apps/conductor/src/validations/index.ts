@@ -15,10 +15,17 @@
  * @module validation
  */
 
+// Export from main validators
 export * from "./csvValidator";
 export * from "./elasticsearchValidator";
 export * from "./fileValidator";
-export * from "./types";
+export * from "./environment";
+
+// Export specific utilities
+export { validateDelimiter } from "./utils";
+
+// Export types and constants
+export * from "../types/validations";
 export * from "./constants";
 
 // Re-export specific types for convenience
@@ -28,4 +35,4 @@ export type {
   CSVValidationResult,
   IndexValidationResult,
   ConnectionValidationResult,
-} from "./types";
+} from "../types/validations";

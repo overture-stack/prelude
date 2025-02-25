@@ -17,7 +17,7 @@ import { ConductorError, ErrorCodes } from "../utils/errors";
 import {
   validateCSVStructure,
   validateHeadersMatchMappings,
-} from "../validation";
+} from "../validations";
 
 /**
  * Generates a unique submission ID for record tracking.

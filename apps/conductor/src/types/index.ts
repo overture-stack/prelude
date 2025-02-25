@@ -1,26 +1,13 @@
-export interface SubmissionMetadata {
-  submitter_id: string;
-  processing_started: string;
-  processed_at: string;
-  source_file: string;
-  record_number: number;
-  hostname: string;
-  username: string;
-}
+/**
+ * Types Module
+ *
+ * Export all type definitions used across the application.
+ * This file serves as the central hub for all shared types.
+ */
 
-// Renamed from Record to DataRecord to avoid conflict with TypeScript's Record type
-export interface DataRecord {
-  submission_metadata: SubmissionMetadata;
-  [key: string]: any; // Allow any string key with any value type
-}
-
-export interface Config {
-  elasticsearch: {
-    url: string;
-    index: string;
-    user: string;
-    password: string;
-  };
-  batchSize: number;
-  delimiter: string;
-}
+// Export all other types
+export * from "./cli";
+export * from "./config";
+export * from "./elasticsearch";
+export * from "./validations";
+export * from "./processor";

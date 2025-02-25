@@ -3,13 +3,19 @@ import { Config } from "../types";
 import chalk from "chalk";
 
 export function createClient(config: Config): Client {
-  return new Client({
+  const clientConfig: any = {
     node: config.elasticsearch.url,
-    auth: {
+  };
+
+  // Only add auth if both username and password are provided
+  if (config.elasticsearch.user && config.elasticsearch.password) {
+    clientConfig.auth = {
       username: config.elasticsearch.user,
       password: config.elasticsearch.password,
-    },
-  });
+    };
+  }
+
+  return new Client(clientConfig);
 }
 
 export async function sendBulkWriteRequest(
