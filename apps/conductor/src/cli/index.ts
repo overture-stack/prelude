@@ -1,4 +1,3 @@
-// In your CLI (cli/index.ts)
 import { Command } from "commander";
 import { Config } from "../types/config";
 import {

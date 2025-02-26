@@ -1,5 +1,5 @@
 /**
- * Command Factory
+ * Command Factory (Not yet in use)
  *
  * Creates appropriate command instances based on the CLI profile.
  * Follows the Factory Method pattern.

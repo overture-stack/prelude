@@ -53,7 +53,7 @@ export function handleError(
 ): never {
   if (error instanceof ConductorError) {
     // Just output the code and message without any prefix
-    // Your Logger.error already adds the "✗ Error" prefix
+    // Logger.error already adds the "✗ Error" prefix
     Logger.error(`${error.code}: ${error.message}`);
 
     if (showAvailableProfiles) {

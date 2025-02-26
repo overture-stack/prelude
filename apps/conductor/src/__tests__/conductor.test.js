@@ -35,7 +35,7 @@ describe("Conductor CLI Tests", () => {
     test("Malformed CSV should have appropriate output", async () => {
       const result = await execConductor(`-f ${FIXTURES_DIR}/malformed.csv`);
       // Check that there's error information in the output or stderr
-      // Your app might not return non-zero code, so just check for error messages
+      // app might may not return non-zero code, so just check for error messages
       const hasErrorInfo =
         result.stderr.includes("Error") ||
         result.stdout.includes("Error") ||

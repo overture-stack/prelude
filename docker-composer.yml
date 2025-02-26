@@ -1,6 +1,17 @@
 services:
+  # ================================================================================== #
+  #  This docker-"composer" provides accessilbe configuration generation functionality #
+  #  If you wish to run composer outside of docker:                                    #
+  #      1. cd ./apps/composer                                                         #
+  #      2. npm install && npm run build && npm install -g                             #
+  # ================================================================================== #
   composer:
-    profiles: ["generatePhaseOneConfigs", "default"]
+    profiles:
+      [
+        "generatePhaseOneConfigs",
+        "generatePhaseTwoConfigs",
+        "generatePhaseThreeConfigs",
+      ]
     image: node:22-alpine
     container_name: composer
     ports:
@@ -12,12 +23,13 @@ services:
       - ./docker-compose.yml:/docker-compose.yml
     environment:
       PROFILE: ${PROFILE:-default}
-      # User Input Paths
-      TABULAR_INDEX_NAMES: tabular-index
-      TABULAR_SAMPLE_DATA: /data/tabularData.csv
-      # Output Directories
-      ES_CONFIG_DIR: ../conductor/configs/elasticsearchConfigs
-      ARRANGER_CONFIG_DIR: ../conductor/configs/arrangerConfigs
+      # User Input Path
+      CSV_FILE(S):
+      JSON_FILE(S):
+      # Future input path
+      COMPOSITION_FILE:
+      # Output Directory
+      CONFIG_DIR: ../conductor/configs/
     working_dir: /composer
     command: >
       sh -c '
@@ -29,19 +41,17 @@ services:
         npm install -g .
         case "$PROFILE" in
           "generatePhaseOneConfigs")
-            echo "Generating Elasticsearch Mapping..." &&
-            chmod +x /composer/scripts/generateElasticSearchMapping.sh
-            /composer/scripts/generateElasticSearchMapping.sh
-            chmod +x /composer/scripts/generateArrangerConfigs.sh
-            /composer/scripts/generateArrangerConfigs.sh
+            composer -p generateElasticsearchMapping -f $CSV_FILE(S) $JSON_FILE(S) -o $CONFIG_DIR 
+            composer -p generateArrangerSchema -f $CONFIG_DIR/mapping.json -o $CONFIG_DIR 
             ;;
-          "default")
-            echo "No specific profile selected. Exiting..." &&
-            tail -f /dev/null 
+          "generatePhaseTwoConfigs")
+            composer -p generateLecternSchema -f $CSV_FILE(S) -o $CONFIG_DIR 
+            ;;
+          "generatePhaseThreeConfigs")
+            composer -p generateSongSchema -f $JSON_METADATA -o $CONFIG_DIR 
             ;;
           *)
             echo "Invalid profile specified: $PROFILE" &&
-            tail -f /dev/null 
             ;;
         esac
       '

@@ -1,10 +1,5 @@
 services:
   # ================================================================================== #
-  # ================================================================================== #
-  #                                                                                    #
-  #                                    Prelude:                                        #
-  #                                                                                    #
-  # ================================================================================== #
   #  This compose breaks down data portal deployment into three phased steps such that #
   #  teams can systematically verify requirements and user workflows while minimizing  #
   #  technical overhead. The conductor service below manages all deployments using     #
