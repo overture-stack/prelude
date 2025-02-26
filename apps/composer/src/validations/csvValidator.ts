@@ -159,7 +159,7 @@ export async function validateCSVStructure(
 
     if (invalidHeaders.length > 0) {
       Logger.debug("Invalid headers detected");
-      Logger.debugObject("Invalid headers", { invalidHeaders });
+      Logger.fileList("The following header(s) are invalid", invalidHeaders);
       throw new ComposerError(
         "Invalid header names detected",
         ErrorCodes.VALIDATION_FAILED,

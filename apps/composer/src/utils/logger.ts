@@ -228,6 +228,13 @@ export class Logger {
       console.log(chalk.gray`  - ${file}`);
     });
   }
+  static errorfileList(title: string, files: string[]): void {
+    if (files.length === 0) return;
+    Logger.error`${title}:\n`;
+    files.forEach((file) => {
+      console.log(chalk.gray`  - ${file}`);
+    });
+  }
 
   static showReferenceCommands(): void {
     this.header("Example Commands");
