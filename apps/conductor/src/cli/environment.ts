@@ -44,8 +44,8 @@ export function loadEnvironmentConfig(): EnvironmentConfig {
       elasticsearchUrl:
         process.env.ELASTICSEARCH_URL || "http://localhost:9200",
       indexName: process.env.ELASTICSEARCH_INDEX,
-      esUser: process.env.ELASTICSEARCH_USER,
-      esPassword: process.env.ELASTICSEARCH_PASSWORD,
+      esUser: process.env.ELASTICSEARCH_USER || "elastic",
+      esPassword: process.env.ELASTICSEARCH_PASSWORD || "myelasticpassword",
       logLevel: process.env.LOG_LEVEL || "info",
     };
 

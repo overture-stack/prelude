@@ -1,7 +1,7 @@
 import * as fs from "fs"; // File system operations
 import * as readline from "readline"; // Reading files line by line
 import { parse as csvParse } from "csv-parse/sync"; // CSV parsing functionality
-import { Logger } from "../utils/logger";
+import { Logger } from "../../utils/logger";
 
 /**
  * CSV Processing utility

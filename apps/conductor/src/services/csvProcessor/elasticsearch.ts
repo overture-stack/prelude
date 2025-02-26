@@ -1,7 +1,7 @@
 import { Client } from "@elastic/elasticsearch";
-import { Config } from "../types";
-import { Logger } from "../utils/logger";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { Config } from "../../types";
+import { Logger } from "../../utils/logger";
+import { ConductorError, ErrorCodes } from "../../utils/errors";
 
 /**
  * Creates an Elasticsearch client using the provided configuration.

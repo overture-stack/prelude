@@ -1,14 +1,14 @@
 import * as fs from "fs";
 import * as readline from "readline";
 import { Client } from "@elastic/elasticsearch";
-import { Config } from "../types";
+import { Config } from "../../types";
 import { countFileLines, parseCSVLine } from "./csvParser";
-import { Logger } from "../utils/logger";
+import { Logger } from "../../utils/logger";
 import {
   validateCSVStructure,
   validateHeadersMatchMappings,
-} from "../validations";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+} from "../../validations";
+import { ConductorError, ErrorCodes } from "../../utils/errors";
 import { CSVProcessingErrorHandler } from "./logHandler";
 import { sendBulkWriteRequest } from "./elasticsearch";
 import { formatDuration, calculateETA, createProgressBar } from "./progressBar";

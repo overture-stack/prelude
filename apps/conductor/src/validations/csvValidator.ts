@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { Client } from "@elastic/elasticsearch";
 import { ConductorError, ErrorCodes } from "../utils/errors";
-import { parseCSVLine } from "../csvProcessor/csvParser";
+import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import { VALIDATION_CONSTANTS } from "./constants";
 import { Logger } from "../utils/logger";
 

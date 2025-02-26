@@ -10,15 +10,15 @@ import { Command } from "./baseCommand";
 import { CLIOutput } from "../cli";
 import { Logger } from "../utils/logger";
 import { ConductorError, ErrorCodes } from "../utils/errors";
-import { createClient } from "../csvProcessor/elasticsearch";
-import { processCSVFile } from "../csvProcessor/index";
+import { createClient } from "../services/csvProcessor/elasticsearch";
+import { processCSVFile } from "../services/csvProcessor/index";
 import {
   validateCSVStructure,
   validateElasticsearchConnection,
   validateIndex,
   validateFiles,
 } from "../validations";
-import { parseCSVLine } from "../csvProcessor/csvParser";
+import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import * as fs from "fs";
 
 export class UploadCommand implements Command {
