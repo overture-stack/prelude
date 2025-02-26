@@ -36,6 +36,34 @@ export async function validateCSVHeaders(
       );
     }
 
+    // Check if the headerLine contains the delimiter
+    if (!headerLine.includes(delimiter)) {
+      Logger.error`CSV header does not contain the specified delimiter '${delimiter}'`;
+      Logger.info`First 50 characters of header: ${headerLine.substring(
+        0,
+        50
+      )}...`;
+      Logger.tip`If your data is not properly delimited, try reformatting your CSV file or check if the correct delimiter is specified`;
+
+      // Try to guess potential delimiters
+      const potentialDelimiters = [",", ";", "\t", "|"];
+      const foundDelimiters = potentialDelimiters.filter((d: string) =>
+        headerLine.includes(d)
+      );
+
+      if (foundDelimiters.length > 0) {
+        Logger.tip`Potential delimiters found in the header: ${foundDelimiters.join(
+          ", "
+        )}`;
+        Logger.tip`Try using one of these with the --delimiter flag`;
+      }
+
+      throw new ConductorError(
+        `CSV header is not properly delimited with '${delimiter}'`,
+        ErrorCodes.INVALID_FILE
+      );
+    }
+
     const parseResult = parseCSVLine(headerLine, delimiter, true);
     if (!parseResult || !parseResult[0]) {
       throw new ConductorError(
@@ -47,8 +75,18 @@ export async function validateCSVHeaders(
     const headers = parseResult[0];
     Logger.debug`Found ${headers.length} headers in CSV file`;
 
+    // Check for suspiciously long headers that might indicate parsing issues
+    const longHeaders = headers.filter((h: string) => h.length > 30);
+    if (longHeaders.length > 0) {
+      Logger.warn`Detected unusually long header names which may indicate parsing issues:`;
+      longHeaders.forEach((header: string) => {
+        Logger.warn`Long header: "${header}"`;
+      });
+      Logger.tip`Check if your CSV is using the correct delimiter`;
+    }
+
     return validateCSVStructure(headers);
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof ConductorError) {
       Logger.error`CSV header validation failed: ${error.message}`;
       throw error;
@@ -207,7 +245,7 @@ export async function validateHeadersMatchMappings(
   Logger.debug`Validating headers against index ${indexName} mappings`;
 
   try {
-    // Explicitly type the response
+    // Try to get mappings from the existing index
     const { body } = await client.indices.getMapping({
       index: indexName,
     });
@@ -227,11 +265,12 @@ export async function validateHeadersMatchMappings(
       ? Object.keys(mappings.properties.data.properties)
       : [];
 
-    Logger.debug`Found ${expectedFields.length} fields in index mapping`;
+    Logger.debug`Found ${expectedFields.length} fields in existing index mapping`;
 
+    // Clean up headers for comparison
     const cleanedHeaders = headers
-      .map((header) => header.trim())
-      .filter((header) => header !== "");
+      .map((header: string) => header.trim())
+      .filter((header: string) => header !== "");
 
     if (cleanedHeaders.length === 0) {
       Logger.error`No valid headers found`;
@@ -241,31 +280,40 @@ export async function validateHeadersMatchMappings(
       );
     }
 
+    // Check for extra headers not in the mapping
     const extraHeaders = cleanedHeaders.filter(
-      (header) => !expectedFields.includes(header)
+      (header: string) => !expectedFields.includes(header)
     );
 
+    // Check for fields in the mapping that aren't in the headers
     const missingRequiredFields = expectedFields.filter(
-      (field) =>
+      (field: string) =>
         field !== "submission_metadata" && !cleanedHeaders.includes(field)
     );
 
+    // Log appropriate warnings
     if (extraHeaders.length > 0) {
       Logger.warn`Extra headers not in index mapping: ${extraHeaders.join(
         ", "
       )}`;
+      Logger.tip`These fields will be added to documents but may not be properly indexed`;
     }
 
     if (missingRequiredFields.length > 0) {
       Logger.warn`Missing fields from index mapping: ${missingRequiredFields.join(
         ", "
       )}`;
+      Logger.tip`Data for these fields will be null in the indexed documents`;
     }
 
-    if (extraHeaders.length > 0 || missingRequiredFields.length > 0) {
-      Logger.error`Header/Field mismatch detected`;
+    // Raise error if there's a significant mismatch between the headers and mapping
+    if (
+      extraHeaders.length > expectedFields.length * 0.5 ||
+      missingRequiredFields.length > expectedFields.length * 0.5
+    ) {
+      Logger.error`Significant header/field mismatch detected`;
       throw new ConductorError(
-        "Header/Field mismatch detected",
+        "Significant header/field mismatch detected - the CSV structure doesn't match the index mapping",
         ErrorCodes.VALIDATION_FAILED,
         {
           extraHeaders,
@@ -280,8 +328,21 @@ export async function validateHeadersMatchMappings(
 
     Logger.debug`Headers validated against index mapping`;
     return true;
-  } catch (error) {
-    // Type-safe error handling
+  } catch (error: any) {
+    // If the index doesn't exist, provide a clear error
+    if (
+      error.meta &&
+      error.meta.body &&
+      error.meta.body.error.type === "index_not_found_exception"
+    ) {
+      Logger.error`Index ${indexName} does not exist`;
+      throw new ConductorError(
+        `Index ${indexName} does not exist - create it first or use a different index name`,
+        ErrorCodes.INDEX_NOT_FOUND
+      );
+    }
+
+    // Type-safe error handling for other errors
     if (error instanceof ConductorError) {
       throw error;
     }

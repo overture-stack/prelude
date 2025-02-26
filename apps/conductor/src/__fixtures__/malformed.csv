@@ -1,0 +1,6 @@
+donor_id gender primary_site vital_status diagnosis_id age_at_diagnosis cancer_type staging_system stage
+DO0599 Female Breast Alive PD059901 52 C50.1 AJCC 8th edition Stage IIA
+DO0600 Male Prostate gland Alive PD059902 68 C61 Gleason grade group system Grade Group 2
+DO0601 Female Ovary Deceased PD059903 59 C56 FIGO staging system Stage IIIC
+DO0602 Male Lung Alive PD059904 64 C34.1 AJCC 8th edition Stage IIB
+DO0603 Female Thyroid gland Alive PD059905 45 C73 AJCC 8th edition Stage I

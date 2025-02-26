@@ -51,11 +51,15 @@ export async function validateFiles(
 
   // Log missing extension files as warnings
   if (missingExtensions.length > 0) {
-    Logger.warn`Missing file extension for: ${missingExtensions.join(
-      ", "
-    )}. Allowed extensions: ${ALLOWED_EXTENSIONS.join(", ")}`;
+    Logger.warn(
+      `Missing file extension for: ${missingExtensions.join(
+        ", "
+      )}. Allowed extensions: ${ALLOWED_EXTENSIONS.join(", ")}`
+    );
   }
 
+  // Only generate the error messages but don't log them directly
+  // Let the error handling system do the logging
   if (invalidExtensions.length > 0) {
     errors.push(
       `Invalid file extensions: ${invalidExtensions.join(

@@ -1,0 +1,4 @@
+patient_number,sex,tumor_location,status,case_number,years_old,icd_code,staging_method,tumor_grade,biopsy_id,sample_origin,material_type,biospecimen_id
+DO0599,Female,Breast,Alive,PD059901,52,C50.1,AJCC 8th edition,Stage IIA,SP0599,Primary tumour,Solid tissue,SA0599
+DO0600,Male,Prostate gland,Alive,PD059902,68,C61,Gleason grade group system,Grade Group 2,SP0600,Primary tumour,Solid tissue,SA0600
+DO0601,Female,Ovary,Deceased,PD059903,59,C56,FIGO staging system,Stage IIIC,SP0601,Primary tumour,Solid tissue,SA0601

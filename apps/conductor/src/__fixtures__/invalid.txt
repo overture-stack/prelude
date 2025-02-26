@@ -1,0 +1,2 @@
+This is not a CSV file, but a plain text file.
+It should trigger an invalid file extension error when used with the conductor CLI.

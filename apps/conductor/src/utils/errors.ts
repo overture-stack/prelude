@@ -19,7 +19,6 @@ export const ErrorCodes = {
   INVALID_FILE: "[INVALID_FILE]",
   VALIDATION_FAILED: "[VALIDATION_FAILED]",
   ENV_ERROR: "[ENV_ERROR]",
-  GENERATION_FAILED: "[GENERATION_FAILED]",
   PARSING_ERROR: "[PARSING_ERROR]",
   FILE_ERROR: "[FILE_ERROR]",
   FILE_WRITE_ERROR: "[FILE_WRITE_ERROR]",
@@ -53,7 +52,9 @@ export function handleError(
   showAvailableProfiles?: () => void
 ): never {
   if (error instanceof ConductorError) {
-    Logger.error`${error.code}: ${error.message}`;
+    // Just output the code and message without any prefix
+    // Your Logger.error already adds the "✗ Error" prefix
+    Logger.error(`${error.code}: ${error.message}`);
 
     if (showAvailableProfiles) {
       showAvailableProfiles();
@@ -68,8 +69,7 @@ export function handleError(
     Logger.debug("Stack trace:");
     Logger.debug(error.stack || "No stack trace available");
   } else {
-    Logger.error("Unexpected error occurred");
-
+    // For unexpected errors, just output the message
     if (error instanceof Error) {
       Logger.error(error.message);
       Logger.debug("Stack trace:");

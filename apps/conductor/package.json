@@ -5,9 +5,9 @@
   "scripts": {
     "start": "ts-node src/main.ts",
     "build": "tsc",
-    "test": "node --loader ts-node/esm --test src/**/__tests__/*.test.ts",
-    "test:watch": "node --loader ts-node/esm --test --watch src/**/__tests__/*.test.ts",
-    "test:coverage": "node --loader ts-node/esm --test --experimental-test-coverage src/**/__tests__/*.test.ts"
+    "test": "node --test src/__tests__/*.test.js",
+    "test:watch": "node --test --watch src/__tests__/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage src/__tests__/*.test.js"
   },
   "bin": {
     "conductor": "./dist/main.js"

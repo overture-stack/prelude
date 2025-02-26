@@ -1,79 +1,161 @@
-# Conductor: CSV-to-Elasticsearch ETL processing
+# Complete Conductor CLI Testing Commands
 
-This command-line tool processes CSV files and uploads their data to an Elasticsearch index. It was designed to handle large CSV files by reading them line-by-line, validating and enriching each record, batching the records, and sending them to Elasticsearch for indexing. The tool provides detailed progress updates, error handling, and performance metrics.
+## Basic File Format Tests
 
-## Features
-
-- **File Validation:** Ensures that the CSV file exists, is readable, and is not empty.
-- **CSV Header Validation:** Checks the header row for duplicates, invalid characters, and compliance with the index mapping being uploaded to.
-- **Batch Processing:** Processes records in configurable batches for optimal performance.
-- **Elasticsearch Upload:** Connects to an Elasticsearch instance and uploads data in bulk.
-- **Real-Time Progress Reporting:** Displays a progress bar, estimated time remaining (ETA), and rows processed per second.
-
-## Installation
-
-1. **Install dependencies:**
+1. **Valid CSV:**
 
    ```bash
-   npm install
+   conductor -f ./data/valid.csv
    ```
 
-2. **Build the project:**
+2. **Malformed CSV:**
 
    ```bash
-   npm run build
+   conductor -f ./data/malformed.csv
    ```
 
-3. **Install globally (optional):**
+3. **Semicolon Delimiter Without Flag:**
 
    ```bash
-   npm install -g .
+   conductor -f ./data/semicolon.csv
    ```
 
-## Usage
+4. **Semicolon Delimiter With Flag:**
 
-This tool operates in **upload** mode only.
+   ```bash
+   conductor -f ./data/semicolon.csv --delimiter ";"
+   ```
 
-### Command Line Options
+5. **Empty File:**
 
-```bash
-Usage: conductor [options]
+   ```bash
+   conductor -f ./data/empty.csv
+   ```
 
-Options:
-  -f, --files <paths...>      Input CSV file paths (space separated) [required]
-  -i, --index <name>          Elasticsearch index name (default: tabular-index)
-  --url <url>                 Elasticsearch URL (default: http://localhost:9200)
-  -u, --user <username>       Elasticsearch username (default: elastic)
-  -p, --password <password>   Elasticsearch password (default: myelasticpassword)
-  -b, --batch-size <size>     Batch size for processing (default: 1000)
-  --delimiter <char>          CSV delimiter (default: ,)
-  -h, --help                  Display help for command
-```
+6. **Headers Only:**
 
-### Examples
+   ```bash
+   conductor -f ./data/headers_only.csv
+   ```
 
-#### Upload a Single CSV File
+7. **Invalid Headers:**
 
-```bash
-conductor -f ./data/tabularData/clinical_data.csv --index tabular-index --url http://localhost:9200 -u elastic -p myelasticpassword -b 500
-```
+   ```bash
+   conductor -f ./data/invalid_headers.csv
+   ```
 
-#### Upload Multiple CSV Files
+8. **Large Dataset:**
+   ```bash
+   conductor -f ./data/large.csv
+   ```
 
-```bash
-conductor --files ./data/file1.csv ./data/file2.csv --index my-index
-```
+## Configuration Options
 
-## Configuration
+9. **Custom Index:**
 
-The tool uses a configuration object (`Config`) that includes:
+   ```bash
+   conductor -f ./data/valid.csv -i custom-index
+   ```
 
-- **elasticsearch:**
-  - `url`: URL of your Elasticsearch instance.
-  - `index`: Target Elasticsearch index.
-  - `user`: Elasticsearch username.
-  - `password`: Elasticsearch password.
-- **batchSize:** Number of records processed per batch.
-- **delimiter:** Character used as the CSV delimiter.
+10. **Output Logs:**
 
-These are set via the command-line options.
+    ```bash
+    conductor -f ./data/valid.csv -o ./logs/test-output.log
+    ```
+
+11. **Custom Elasticsearch URL:**
+
+    ```bash
+    conductor -f ./data/valid.csv --url http://localhost:9200
+    ```
+
+12. **With Authentication:**
+
+    ```bash
+    conductor -f ./data/valid.csv -u elastic -p password
+    ```
+
+13. **Full Connection Settings:**
+
+    ```bash
+    conductor -f ./data/valid.csv --url http://localhost:9200 -u elastic -p password -i test-index
+    ```
+
+14. **Custom Batch Size:**
+
+    ```bash
+    conductor -f ./data/valid.csv -b 500
+    ```
+
+15. **Debug Mode:**
+    ```bash
+    conductor -f ./data/valid.csv --debug
+    ```
+
+## Error Cases
+
+16. **Multiple Files (Valid):**
+
+    ```bash
+    conductor -f ./data/valid.csv ./data/headers_only.csv
+    ```
+
+17. **Multiple Files (Mixed Valid/Invalid):**
+
+    ```bash
+    conductor -f ./data/valid.csv ./data/invalid.txt
+    ```
+
+18. **Missing Required Arguments:**
+
+    ```bash
+    conductor
+    ```
+
+19. **Invalid File Extensions:**
+
+    ```bash
+    conductor -f ./data/valid.csv.txt
+    ```
+
+20. **File Not Found:**
+
+    ```bash
+    conductor -f ./data/nonexistent.csv
+    ```
+
+21. **Invalid Connection:**
+
+    ```bash
+    conductor -f ./data/valid.csv --url http://wronghost:9200
+    ```
+
+22. **Authentication Error:**
+
+    ```bash
+    conductor -f ./data/valid.csv -u wronguser -p wrongpass
+    ```
+
+23. **Invalid Index Name:**
+
+    ```bash
+    conductor -f ./data/valid.csv -i "invalid%index"
+    ```
+
+24. **Invalid Batch Size:**
+
+    ```bash
+    conductor -f ./data/valid.csv -b -1
+    ```
+
+25. **Invalid Batch Size (Non-Numeric):**
+    ```bash
+    conductor -f ./data/valid.csv -b xyz
+    ```
+
+## Help Command
+
+26. **Help Command:**
+    ```bash
+    conductor --help
+    ```

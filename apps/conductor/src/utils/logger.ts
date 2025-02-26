@@ -190,7 +190,7 @@ export class Logger {
     }
   }
 
-  static defaultValueTip(message: string, overrideCommand: string): void {
+  static commandValueTip(message: string, overrideCommand: string): void {
     if (this.config.level <= LogLevel.TIP) {
       console.log(this.formatMessage(message, LogLevel.TIP));
       console.log(chalk.gray`   Override with: ${overrideCommand}\n`);

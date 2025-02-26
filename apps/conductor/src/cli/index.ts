@@ -62,25 +62,11 @@ export async function setupCLI(): Promise<CLIOutput> {
     // Validate options and environment
     validateCliOptions(options);
 
-    // Validate files and log details in validator style
+    // Validate files but don't log errors directly - THE KEY CHANGE
     const fileValidation = await validateFiles(options.files);
     if (!fileValidation.valid) {
-      fileValidation.errors.forEach((errorMsg) => {
-        if (errorMsg.startsWith("Files not found:")) {
-          const missingFiles = errorMsg
-            .replace("Files not found:", "")
-            .split(",")
-            .map((s) => s.trim());
-          Logger.error`Files not found: ${missingFiles.length} file(s)`;
-          Logger.warnfileList("Missing files", missingFiles);
-        } else if (errorMsg.startsWith("Invalid file extensions.")) {
-          Logger.error`${errorMsg}`;
-        } else {
-          Logger.error`${errorMsg}`;
-        }
-      });
-      // Throw error with a cleaner message by joining the errors directly
-      throw createValidationError(fileValidation.errors.join("; "), {
+      // Don't log errors here - let the error handler do it
+      throw createValidationError(fileValidation.errors[0], {
         validationErrors: fileValidation.errors,
       });
     }
@@ -110,17 +96,7 @@ export async function setupCLI(): Promise<CLIOutput> {
 
     return cliOutput;
   } catch (error) {
-    if (error instanceof ConductorError) {
-      // The error has already been logged in the validation step, so simply rethrow it.
-      throw error;
-    }
-    Logger.error`Unexpected error: ${
-      error instanceof Error ? error.message : String(error)
-    }`;
-    throw new ConductorError(
-      "Error setting up CLI",
-      ErrorCodes.CLI_ERROR,
-      error
-    );
+    // Just rethrow without logging
+    throw error;
   }
 }

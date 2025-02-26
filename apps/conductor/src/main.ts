@@ -24,19 +24,11 @@ async function main() {
     Logger.debug`Running command`;
     await command.run(cliOutput);
   } catch (error) {
+    // Let the handleError function handle this error
     handleError(error);
+    // This line will never be reached due to process.exit in handleError
   }
 }
 
-main().catch((error) => {
-  console.error(chalk.red("Fatal error:"));
-  if (error instanceof Error) {
-    console.error(chalk.red(error.message));
-    if (error.stack) {
-      console.error(chalk.gray(error.stack));
-    }
-  } else {
-    console.error(chalk.red(String(error)));
-  }
-  process.exit(1);
-});
+// Replace the catch with a simpler approach that defers to handleError
+main().catch(handleError);
