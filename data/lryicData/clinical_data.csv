@@ -1,0 +1,6 @@
+donor_id,gender,vital_status,diagnosis_id,primary_site,age_at_diagnosis,cancer_type,staging_system,stage,specimen_id,sample_id,specimen_type,tissue_source,sample_type,treatment_id,treatment_type,treatment_start,treatment_duration,treatment_response,drug_name,followup_id,followup_interval,disease_status
+DO0001,Female,Alive,PD000001,Breast,45,C50.9,TNM,IIA,SP000001,SP000001,Tissue Biopsy,Breast,Primary Tumor,TR000001,Chemotherapy,30,180,Partial Response,Paclitaxel,FO000001,365,No Evidence of Disease
+DO0002,Male,Deceased,PD000002,Lung,62,C34.90,TNM,IIIB,SP000002,SP000002,Surgical Specimen,Right Lung,Metastatic,TR000002,Radiation,45,60,Stable Disease,,FO000002,540,Progression
+DO0003,Male,Alive,PD000003,Prostate,55,C61,Gleason,7,SP000003,SP000003,Needle Biopsy,Prostate Gland,Primary Tumor,TR000003,Surgery,0,30,Complete Response,,FO000003,720,No Evidence of Disease
+DO0004,Female,Alive,PD000004,Colorectal,38,C18.9,TNM,II,SP000004,SP000004,Tissue Sample,Colon,Primary Tumor,TR000004,Combined Modality,15,210,Partial Response,5-Fluorouracil,FO000004,540,Remission
+DO0005,Other,Unknown,PD000005,Pancreas,70,C25.9,TNM,IV,SP000005,SP000005,Biopsy,Pancreatic Tail,Metastatic,TR000005,Palliative Care,60,90,No Response,,FO000005,180,Terminal

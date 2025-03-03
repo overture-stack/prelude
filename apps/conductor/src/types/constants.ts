@@ -18,7 +18,11 @@ export const Profiles = {
   /** Upload schema to Lectern server */
   LECTERN_UPLOAD: "lecternUpload",
 
+  /** Register a Lectern dictionary with Lyric */
   LYRIC_REGISTER: "lyricRegister",
+
+  /** Load data into Lyric service */
+  LYRIC_DATA: "lyricData",
 } as const;
 
 /**
@@ -29,6 +33,7 @@ export const ProfileDescriptions = {
   [Profiles.INDEX_MANAGEMENT]: "Setup Elasticsearch indices and templates",
   [Profiles.LECTERN_UPLOAD]: "Upload schema to Lectern server",
   [Profiles.LYRIC_REGISTER]: "Register a Lectern dictionary with Lyric",
+  [Profiles.LYRIC_DATA]: "Load data into Lyric service",
 };
 
 /**
@@ -43,4 +48,16 @@ export const Defaults = {
 
   /** Default delimiter for CSV files */
   DELIMITER: ",",
+
+  /** Default max retries for Lyric operations */
+  MAX_RETRIES: 10,
+
+  /** Default retry delay in milliseconds */
+  RETRY_DELAY: 20000,
+
+  /** Default category ID for Lyric */
+  CATEGORY_ID: "1",
+
+  /** Default organization name */
+  ORGANIZATION: "OICR",
 };

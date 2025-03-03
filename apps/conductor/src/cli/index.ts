@@ -43,7 +43,8 @@ export type CLIprofile =
   | "upload"
   | "indexManagement"
   | "lecternUpload"
-  | "lyricRegister";
+  | "lyricRegister"
+  | "lyricData";
 
 /**
  * Standardized output from the CLI parsing process.
@@ -121,6 +122,9 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "lyricRegister":
         profile = Profiles.LYRIC_REGISTER;
         break;
+      case "lyricData":
+        profile = Profiles.LYRIC_DATA;
+        break;
       case "indexManagement":
         profile = Profiles.INDEX_MANAGEMENT;
         break;
@@ -130,7 +134,8 @@ export async function setupCLI(): Promise<CLIOutput> {
     // Skip Elasticsearch validation for Lectern and Lyric operations
     if (
       profile !== Profiles.LECTERN_UPLOAD &&
-      profile !== Profiles.LYRIC_REGISTER
+      profile !== Profiles.LYRIC_REGISTER &&
+      profile !== Profiles.LYRIC_DATA
     ) {
       await validateEnvironment({
         elasticsearchUrl: options.url || envConfig.elasticsearchUrl,

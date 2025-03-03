@@ -1,5 +1,5 @@
 /**
- * CLI Options Module
+ * CLI Options Module - Updated with Lyric Data Loading
  *
  * This module configures the command-line options for the Conductor CLI.
  * It sets up the available commands, their options, and handles parsing arguments.
@@ -78,7 +78,7 @@ export function configureCommandOptions(program: Command): void {
     .option(
       "-u, --lectern-url <url>",
       "Lectern server URL",
-      "http://localhost:3031"
+      process.env.LECTERN_URL || "http://localhost:3031"
     )
     .option("-t, --auth-token <token>", "Authentication token", "")
     .option("-o, --output <path>", "Output directory for response logs")
@@ -121,6 +121,51 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+
+  // Lyric data loading command
+  program
+    .command("lyricData")
+    .description("Load data into Lyric service")
+    .option(
+      "-u, --lyric-url <url>",
+      "Lyric server URL",
+      process.env.LYRIC_URL || "http://localhost:3030"
+    )
+    .option(
+      "-l, --lectern-url <url>",
+      "Lectern server URL",
+      process.env.LECTERN_URL || "http://localhost:3031"
+    )
+    .option(
+      "-d, --data-directory <path>",
+      "Directory containing CSV data files",
+      process.env.LYRIC_DATA
+    )
+    .option(
+      "-c, --category-id <id>",
+      "Category ID",
+      process.env.CATEGORY_ID || "1"
+    )
+    .option(
+      "-g, --organization <name>",
+      "Organization name",
+      process.env.ORGANIZATION || "OICR"
+    )
+    .option(
+      "-m, --max-retries <number>",
+      "Maximum number of retry attempts",
+      process.env.MAX_RETRIES || "10"
+    )
+    .option(
+      "-r, --retry-delay <milliseconds>",
+      "Delay between retry attempts in milliseconds",
+      process.env.RETRY_DELAY || "20000"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
 }
 
 /**
@@ -130,8 +175,27 @@ export function configureCommandOptions(program: Command): void {
  * @returns A CLIOutput object for command execution
  */
 export function parseCommandLineArgs(options: any): CLIOutput {
+  // Log raw options for debugging
+  Logger.debug(`Raw options: ${JSON.stringify(options)}`);
+  Logger.debug(`Process argv: ${process.argv.join(" ")}`);
+
   // Determine the profile from options
   let profile = options.profile || Profiles.UPLOAD;
+
+  // Special handling for lyricData command to ensure data directory is captured
+  if (profile === Profiles.LYRIC_DATA) {
+    // Check for a positional argument that might be the data directory
+    const positionalArgs = process.argv
+      .slice(3)
+      .filter((arg) => !arg.startsWith("-"));
+
+    if (positionalArgs.length > 0 && !options.dataDirectory) {
+      options.dataDirectory = positionalArgs[0];
+      Logger.debug(
+        `Captured data directory from positional argument: ${options.dataDirectory}`
+      );
+    }
+  }
 
   // Parse file paths
   const filePaths = Array.isArray(options.file)
@@ -186,10 +250,29 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         options.defaultCentricEntity ||
         process.env.DEFAULT_CENTRIC_ENTITY ||
         "clinical_data",
+      // Data loading specific options
+      dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
+      categoryId: options.categoryId || process.env.CATEGORY_ID || "1",
+      organization: options.organization || process.env.ORGANIZATION || "OICR",
+      maxRetries: options.maxRetries
+        ? parseInt(options.maxRetries)
+        : process.env.MAX_RETRIES
+        ? parseInt(process.env.MAX_RETRIES)
+        : 10,
+      retryDelay: options.retryDelay
+        ? parseInt(options.retryDelay)
+        : process.env.RETRY_DELAY
+        ? parseInt(process.env.RETRY_DELAY)
+        : 20000,
     },
     batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
     delimiter: options.delimiter || ",",
   };
+
+  // Additional logging for Lyric data directory
+  if (profile === Profiles.LYRIC_DATA) {
+    Logger.debug(`Final data directory: ${config.lyric.dataDirectory}`);
+  }
 
   // Build the standardized CLI output
   return {
