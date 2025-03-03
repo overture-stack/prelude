@@ -39,7 +39,11 @@ import { Logger } from "../utils/logger";
  * Type definition for supported CLI profiles.
  * This should match the available profiles in the Profiles enum.
  */
-export type CLIprofile = "upload" | "indexManagement" | "lecternUpload";
+export type CLIprofile =
+  | "upload"
+  | "indexManagement"
+  | "lecternUpload"
+  | "lyricRegister";
 
 /**
  * Standardized output from the CLI parsing process.
@@ -114,14 +118,20 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "lecternUpload":
         profile = Profiles.LECTERN_UPLOAD;
         break;
+      case "lyricRegister":
+        profile = Profiles.LYRIC_REGISTER;
+        break;
       case "indexManagement":
         profile = Profiles.INDEX_MANAGEMENT;
         break;
     }
 
     // Validate options and environment if needed
-    // For Lectern upload, you might want to skip Elasticsearch-specific validations
-    if (profile !== Profiles.LECTERN_UPLOAD) {
+    // Skip Elasticsearch validation for Lectern and Lyric operations
+    if (
+      profile !== Profiles.LECTERN_UPLOAD &&
+      profile !== Profiles.LYRIC_REGISTER
+    ) {
       await validateEnvironment({
         elasticsearchUrl: options.url || envConfig.elasticsearchUrl,
       });

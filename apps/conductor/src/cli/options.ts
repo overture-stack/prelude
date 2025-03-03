@@ -86,6 +86,41 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+
+  // Lyric dictionary registration command
+  program
+    .command("lyricRegister")
+    .description("Register a dictionary with Lyric service")
+    .option(
+      "-u, --lyric-url <url>",
+      "Lyric server URL",
+      process.env.LYRIC_URL || "http://localhost:3030"
+    )
+    .option(
+      "-c, --category-name <name>",
+      "Category name",
+      process.env.CATEGORY_NAME || "clinical"
+    )
+    .option(
+      "-d, --dictionary-name <name>",
+      "Dictionary name",
+      process.env.DICTIONARY_NAME || "clinical_data_dictionary"
+    )
+    .option(
+      "-v, --dictionary-version <version>",
+      "Dictionary version",
+      process.env.DICTIONARY_VERSION || "1.0"
+    )
+    .option(
+      "-e, --default-centric-entity <entity>",
+      "Default centric entity",
+      process.env.DEFAULT_CENTRIC_ENTITY || "clinical_data"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
 }
 
 /**
@@ -118,7 +153,7 @@ export function parseCommandLineArgs(options: any): CLIOutput {
   Logger.debug(`Parsed profile: ${profile}`);
   Logger.debug(`Parsed file paths: ${filePaths.join(", ")}`);
 
-  // Create config object with support for Lectern-specific configurations
+  // Create config object with support for Lectern and Lyric specific configurations
   const config = {
     elasticsearch: {
       url:
@@ -131,8 +166,26 @@ export function parseCommandLineArgs(options: any): CLIOutput {
       alias: options.aliasName,
     },
     lectern: {
-      url: options.lecternUrl || "http://localhost:3031",
-      authToken: options.authToken || "",
+      url:
+        options.lecternUrl ||
+        process.env.LECTERN_URL ||
+        "http://localhost:3031",
+      authToken: options.authToken || process.env.LECTERN_AUTH_TOKEN || "",
+    },
+    lyric: {
+      url: options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
+      categoryName:
+        options.categoryName || process.env.CATEGORY_NAME || "clinical",
+      dictionaryName:
+        options.dictionaryName ||
+        process.env.DICTIONARY_NAME ||
+        "clinical_data_dictionary",
+      dictionaryVersion:
+        options.dictionaryVersion || process.env.DICTIONARY_VERSION || "1.0",
+      defaultCentricEntity:
+        options.defaultCentricEntity ||
+        process.env.DEFAULT_CENTRIC_ENTITY ||
+        "clinical_data",
     },
     batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
     delimiter: options.delimiter || ",",
@@ -151,6 +204,7 @@ export function parseCommandLineArgs(options: any): CLIOutput {
       esPassword: config.elasticsearch.password,
       indexName: config.elasticsearch.index,
       lecternUrl: config.lectern.url,
+      lyricUrl: config.lyric.url,
     },
   };
 }

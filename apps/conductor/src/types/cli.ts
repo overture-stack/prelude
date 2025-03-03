@@ -32,6 +32,7 @@ export interface EnvConfig {
   esPassword?: string;
   indexName?: string;
   lecternUrl?: string;
+  lyricUrl?: string;
 }
 export interface UploadOptions {
   files: string[];

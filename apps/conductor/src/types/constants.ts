@@ -17,6 +17,8 @@ export const Profiles = {
 
   /** Upload schema to Lectern server */
   LECTERN_UPLOAD: "lecternUpload",
+
+  LYRIC_REGISTER: "lyricRegister",
 } as const;
 
 /**
@@ -26,6 +28,7 @@ export const ProfileDescriptions = {
   [Profiles.UPLOAD]: "Upload data to Elasticsearch",
   [Profiles.INDEX_MANAGEMENT]: "Setup Elasticsearch indices and templates",
   [Profiles.LECTERN_UPLOAD]: "Upload schema to Lectern server",
+  [Profiles.LYRIC_REGISTER]: "Register a Lectern dictionary with Lyric",
 };
 
 /**

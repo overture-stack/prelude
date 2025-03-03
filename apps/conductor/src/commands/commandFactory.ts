@@ -28,6 +28,7 @@ import { Logger } from "../utils/logger";
 import { UploadCommand } from "./uploadCommand";
 import { IndexManagementCommand } from "./indexManagementCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
+import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
 
 /**
  * Type definition for command class constructors.
@@ -54,6 +55,7 @@ const PROFILE_DISPLAY_NAMES: Record<string, string> = {
   [Profiles.UPLOAD]: "CSV Upload",
   [Profiles.INDEX_MANAGEMENT]: "Elasticsearch Indices Management",
   [Profiles.LECTERN_UPLOAD]: "Lectern Schema Upload",
+  [Profiles.LYRIC_REGISTER]: "Lyric Dictionary Registration",
 };
 
 /**
@@ -71,6 +73,7 @@ const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.UPLOAD]: UploadCommand,
   [Profiles.INDEX_MANAGEMENT]: IndexManagementCommand,
   [Profiles.LECTERN_UPLOAD]: LecternUploadCommand,
+  [Profiles.LYRIC_REGISTER]: LyricRegistrationCommand,
 } as const;
 
 /**

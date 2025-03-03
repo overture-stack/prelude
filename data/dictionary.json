@@ -1,5 +1,5 @@
 {
-  "name": "clinical_data_dictionary4",
+  "name": "clinical_data_dictionary",
   "description": "dictionary for describing clinical cancer patient data including demographics, diagnoses, specimens, treatments, and follow-ups",
   "version": "1.1",
   "schemas": [
