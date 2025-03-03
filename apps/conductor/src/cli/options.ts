@@ -20,7 +20,13 @@ export function configureCommandOptions(program: Command): void {
   program
     .version("1.0.0")
     .description("Conductor: Data Processing Pipeline")
-    .option("-d, --debug", "Enable debug mode");
+    .option("-d, --debug", "Enable debug mode")
+    // Add a custom action for the help option
+    .addHelpCommand("help [command]", "Display help for a specific command")
+    .on("--help", () => {
+      // Call the reference commands after the default help
+      Logger.showReferenceCommands();
+    });
 
   // Upload command
   program

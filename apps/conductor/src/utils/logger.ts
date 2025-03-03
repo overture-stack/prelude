@@ -242,16 +242,13 @@ export class Logger {
 
     // Common options displayed at the top
     this.generic(chalk.bold.yellow("Common Options (all commands):"));
-    this.generic(chalk.gray("--url <url>       Elasticsearch URL"));
-    this.generic(chalk.gray("-u, --user <user> Elasticsearch username"));
-    this.generic(chalk.gray("-p, --pass <pass> Elasticsearch password"));
     this.generic(chalk.gray("--debug           Enable detailed debug logging"));
     this.generic(chalk.gray("--config <path>   Use configuration file"));
     this.generic("");
 
     // Upload commands
     this.generic(chalk.bold.magenta("Upload Commands:"));
-    this.generic(chalk.white("conductor -f data.csv"));
+    this.generic(chalk.white("conductor upload -f data.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray("-f, --files <paths...>  CSV files to upload (required)")
@@ -268,7 +265,7 @@ export class Logger {
     this.generic(chalk.gray("-o, --output <path>     Output path for logs"));
     this.generic("");
     this.generic(
-      chalk.gray("Example: conductor -f data.csv -i my-index -b 2000")
+      chalk.gray("Example: conductor upload -f data.csv -i my-index -b 2000")
     );
     this.generic("");
 
@@ -299,6 +296,32 @@ export class Logger {
       chalk.gray(
         "Example: conductor indexManagement -t mapping.json -n my_template -i my_index -a my_alias"
       )
+    );
+    this.generic("");
+
+    // Lectern Upload commands
+    this.generic(chalk.bold.magenta("Lectern Schema Upload Commands:"));
+    this.generic(chalk.white("conductor lecternUpload -s dictionary.json"));
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray(
+        "-s, --schema-file <path>  Schema JSON file to upload (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-u, --lectern-url <url>   Lectern server URL (default: http://localhost:3031)"
+      )
+    );
+    this.generic(
+      chalk.gray("-t, --auth-token <token>  Authentication token (optional)")
+    );
+    this.generic(
+      chalk.gray("-o, --output <path>    Output directory for logs")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray("Example: conductor lecternUpload -s data-dictionary.json")
     );
   }
 }
