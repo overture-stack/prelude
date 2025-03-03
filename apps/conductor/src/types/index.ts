@@ -7,7 +7,7 @@
 
 // Export all other types
 export * from "./cli";
-export * from "./config";
+export * from "./constants";
 export * from "./elasticsearch";
 export * from "./validations";
 export * from "./processor";

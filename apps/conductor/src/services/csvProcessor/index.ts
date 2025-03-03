@@ -10,7 +10,7 @@ import {
 } from "../../validations";
 import { ConductorError, ErrorCodes } from "../../utils/errors";
 import { CSVProcessingErrorHandler } from "./logHandler";
-import { sendBulkWriteRequest } from "./elasticsearch";
+import { sendBulkWriteRequest } from "../elasticsearch";
 import { formatDuration, calculateETA, createProgressBar } from "./progressBar";
 import { createRecordMetadata } from "./metadata";
 

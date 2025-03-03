@@ -6,13 +6,41 @@
 
 import { createValidationError } from "../utils/errors";
 import { Logger } from "../utils/logger";
+import { CLIprofile } from "./index";
 
 /**
  * Validates that required CLI options are provided and have valid values
+ * @param options The CLI options to validate
+ * @param profile The command profile being executed
  */
-export function validateCliOptions(options: any): void {
+export function validateCliOptions(
+  options: any,
+  profile: CLIprofile = "upload"
+): void {
   Logger.debug("CLI Options Validation");
 
+  // Validate based on command profile
+  switch (profile) {
+    case "upload":
+      validateUploadOptions(options);
+      break;
+    case "indexManagement":
+      validateSetupIndicesOptions(options);
+      break;
+    default:
+      // By default, use upload validation for backward compatibility
+      validateUploadOptions(options);
+  }
+
+  // Log all validated options
+  Logger.debug`All CLI options are valid`;
+  Logger.debugObject("Validated CLI options", options);
+}
+
+/**
+ * Validates options specific to the upload command
+ */
+function validateUploadOptions(options: any): void {
   // Validate that files are provided
   if (!options.files || options.files.length === 0) {
     throw createValidationError(
@@ -50,8 +78,27 @@ export function validateCliOptions(options: any): void {
       expected: "single character",
     });
   }
+}
 
-  // Log all validated options
-  Logger.debug`All CLI options are valid`;
-  Logger.debugObject("Validated CLI options", options);
+/**
+ * Validates options specific to the setupIndices command
+ */
+function validateSetupIndicesOptions(options: any): void {
+  // No template file validation here - we'll check existence in the command
+  // Just log the options for debugging purposes
+  if (options.templateFile) {
+    Logger.debug`Template file specified: ${options.templateFile}`;
+  }
+
+  if (options.templateName) {
+    Logger.debug`Template name specified: ${options.templateName}`;
+  }
+
+  if (options.indexName) {
+    Logger.debug`Index name specified: ${options.indexName}`;
+  }
+
+  if (options.aliasName) {
+    Logger.debug`Alias name specified: ${options.aliasName}`;
+  }
 }

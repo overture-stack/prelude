@@ -6,12 +6,15 @@
 
 import { validateBatchSize } from "../validations/elasticsearchValidator";
 import { validateDelimiter } from "../validations/utils";
-import { Command } from "./baseCommand";
+import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../cli";
 import { Logger } from "../utils/logger";
 import { ConductorError, ErrorCodes } from "../utils/errors";
-import { createClient } from "../services/csvProcessor/elasticsearch";
-import { processCSVFile } from "../services/csvProcessor/index";
+import {
+  createClientFromConfig,
+  validateConnection,
+} from "../services/elasticsearch";
+import { processCSVFile } from "../services/csvProcessor";
 import {
   validateCSVStructure,
   validateElasticsearchConnection,
@@ -21,20 +24,24 @@ import {
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import * as fs from "fs";
 
-export class UploadCommand implements Command {
+export class UploadCommand extends Command {
   /**
-   * Runs the upload process for all specified files
-   * @param cliOutput The CLI configuration and inputs
+   * Creates a new UploadCommand instance.
    */
-  async run(cliOutput: CLIOutput): Promise<void> {
+  constructor() {
+    super("upload");
+    this.defaultOutputFileName = "upload-results.json";
+  }
+
+  /**
+   * Executes the upload process for all specified files
+   * @param cliOutput The CLI configuration and inputs
+   * @returns Promise<CommandResult> with success/failure information
+   */
+  protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config, filePaths } = cliOutput;
 
-    Logger.infofileList(
-      `Input files specified: ${filePaths.length}`,
-      filePaths
-    );
-
-    // List all input files using the dedicated method
+    Logger.info(`Input files specified: ${filePaths.length}`, filePaths);
 
     // Validate common settings before processing files
     this.validateCommonSettings(config);
@@ -42,28 +49,69 @@ export class UploadCommand implements Command {
     // Process each file
     let successCount = 0;
     let failureCount = 0;
+    const failureDetails: Record<string, any> = {};
 
     for (const filePath of filePaths) {
       Logger.debug(`Processing File: ${filePath}`);
 
       try {
         await this.processFile(filePath, config);
-        Logger.debug`Successfully processed ${filePath}`;
+        Logger.debug(`Successfully processed ${filePath}`);
         successCount++;
       } catch (error) {
         failureCount++;
         // Log the error but continue to the next file
         if (error instanceof ConductorError) {
-          Logger.debug`Skipping file '${filePath}': [${error.code}] ${error.message}`;
+          Logger.debug(
+            `Skipping file '${filePath}': [${error.code}] ${error.message}`
+          );
           if (error.details) {
-            Logger.debug`Error details: ${JSON.stringify(error.details)}`;
+            Logger.debug(`Error details: ${JSON.stringify(error.details)}`);
           }
+          failureDetails[filePath] = {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+          };
         } else if (error instanceof Error) {
-          Logger.debug`Skipping file '${filePath}': ${error.message}`;
+          Logger.debug(`Skipping file '${filePath}': ${error.message}`);
+          failureDetails[filePath] = {
+            message: error.message,
+          };
         } else {
-          Logger.debug`Skipping file '${filePath}' due to an error`;
+          Logger.debug(`Skipping file '${filePath}' due to an error`);
+          failureDetails[filePath] = {
+            message: "Unknown error",
+          };
         }
       }
+    }
+
+    // Return the CommandResult
+    if (failureCount === 0) {
+      return {
+        success: true,
+        details: {
+          filesProcessed: successCount,
+        },
+      };
+    } else if (successCount === 0) {
+      return {
+        success: false,
+        errorMessage: `Failed to process all ${failureCount} files`,
+        errorCode: ErrorCodes.VALIDATION_FAILED,
+        details: failureDetails,
+      };
+    } else {
+      // Partial success
+      return {
+        success: true,
+        details: {
+          filesProcessed: successCount,
+          filesFailed: failureCount,
+          failureDetails,
+        },
+      };
     }
   }
 
@@ -84,13 +132,13 @@ export class UploadCommand implements Command {
     await this.validateCSVHeaders(filePath, config.delimiter);
 
     // Set up Elasticsearch client
-    const client = createClient(config);
+    const client = createClientFromConfig(config);
 
     // Validate Elasticsearch connection and index
-    await validateElasticsearchConnection(client, config);
+    await validateConnection(client);
     await validateIndex(client, config.elasticsearch.index);
 
-    // Process the file - your existing processor already has progress monitoring
+    // Process the file
     await processCSVFile(filePath, config, client);
   }
 

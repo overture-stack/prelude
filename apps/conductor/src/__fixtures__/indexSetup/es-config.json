@@ -1,0 +1,11 @@
+{
+  "elasticsearch": {
+    "url": "http://localhost:9200",
+    "user": "elastic",
+    "password": "myelasticpassword",
+    "index": "tabular-index",
+    "alias": "tabular",
+    "templateFile": "./mapping.json",
+    "templateName": "./"
+  }
+}

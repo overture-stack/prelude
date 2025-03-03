@@ -238,67 +238,67 @@ export class Logger {
   }
 
   static showReferenceCommands(): void {
-    this.header("Example Commands");
+    this.header("Command Examples");
 
-    const commands = [
-      {
-        title: "Basic Usage",
-        command: "conductor -f data.csv",
-        description:
-          "Upload a single CSV file to the default Elasticsearch index",
-      },
-      {
-        title: "Multiple Files",
-        command: "conductor -f file1.csv file2.csv file3.csv",
-        description: "Process multiple CSV files in sequence",
-      },
-      {
-        title: "Specify Index",
-        command: "conductor -f data.csv -i my-custom-index",
-        description: "Upload to a specific Elasticsearch index",
-      },
-      {
-        title: "Specify Elasticsearch URL",
-        command: "conductor -f data.csv --url https://es-server:9200",
-        description: "Connect to a specific Elasticsearch instance",
-      },
-      {
-        title: "Authentication",
-        command: "conductor -f data.csv -u elastic -p mypassword",
-        description: "Connect with username and password authentication",
-      },
-      {
-        title: "Custom Batch Size",
-        command: "conductor -f data.csv -b 5000",
-        description: "Process records in larger batches (default: 1000)",
-      },
-      {
-        title: "TSV Files",
-        command: "conductor -f data.tsv --delimiter '\\t'",
-        description: "Process tab-separated files or other delimiters",
-      },
-      {
-        title: "Output Path",
-        command: "conductor -f data.csv -o ./logs/process.log",
-        description: "Specify an output path for logs or results",
-      },
-      {
-        title: "Debug Profile",
-        command: "conductor -f data.csv --debug",
-        description: "Enable detailed debug logging",
-      },
-      {
-        title: "Complete Example",
-        command:
-          "conductor -f data.csv -i my-index --url https://localhost:9200 -u elastic -p password -b 2000 --debug",
-        description: "Combining multiple options for a complete configuration",
-      },
-    ];
+    // Common options displayed at the top
+    this.generic(chalk.bold.yellow("Common Options (all commands):"));
+    this.generic(chalk.gray("--url <url>       Elasticsearch URL"));
+    this.generic(chalk.gray("-u, --user <user> Elasticsearch username"));
+    this.generic(chalk.gray("-p, --pass <pass> Elasticsearch password"));
+    this.generic(chalk.gray("--debug           Enable detailed debug logging"));
+    this.generic(chalk.gray("--config <path>   Use configuration file"));
+    this.generic("");
 
-    commands.forEach(({ title, command, description }) => {
-      console.log(chalk.bold.cyan`${title}:`);
-      console.log(chalk.white(command));
-      console.log(chalk.gray`${description}\n`);
-    });
+    // Upload commands
+    this.generic(chalk.bold.magenta("Upload Commands:"));
+    this.generic(chalk.white("conductor -f data.csv"));
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-f, --files <paths...>  CSV files to upload (required)")
+    );
+    this.generic(
+      chalk.gray("-i, --index <name>      Target Elasticsearch index")
+    );
+    this.generic(
+      chalk.gray("-b, --batch-size <n>    Batch size (default: 1000)")
+    );
+    this.generic(
+      chalk.gray("--delimiter <char>      CSV delimiter (default: ,)")
+    );
+    this.generic(chalk.gray("-o, --output <path>     Output path for logs"));
+    this.generic("");
+    this.generic(
+      chalk.gray("Example: conductor -f data.csv -i my-index -b 2000")
+    );
+    this.generic("");
+
+    // Setup Indices commands
+    this.generic(chalk.bold.magenta("Setup Indices Commands:"));
+    this.generic(
+      chalk.white(
+        "conductor setupIndices -t template.json -n template_name -i index_name"
+      )
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray(
+        "-t, --template-file <path>  Template JSON file path (required)"
+      )
+    );
+    this.generic(
+      chalk.gray("-n, --template-name <name>  Template name (required)")
+    );
+    this.generic(
+      chalk.gray("-i, --index-name <name>     Index name (required)")
+    );
+    this.generic(
+      chalk.gray("-a, --alias-name <name>     Alias name (optional)")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor setupIndices -t mapping.json -n my_template -i my_index -a my_alias"
+      )
+    );
   }
 }

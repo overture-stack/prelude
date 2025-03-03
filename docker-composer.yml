@@ -41,8 +41,8 @@ services:
         npm install -g .
         case "$PROFILE" in
           "generatePhaseOneConfigs")
-            composer -p generateElasticsearchMapping -f $CSV_FILE(S) $JSON_FILE(S) -o $CONFIG_DIR 
-            composer -p generateArrangerSchema -f $CONFIG_DIR/mapping.json -o $CONFIG_DIR 
+            composer -p generateElasticsearchMapping -f $CSV_FILE $JSON_FILE -o $CONFIG_DIR 
+            composer -p generateArrangerSchema -f CONFIG_DIR/mapping.json -o $CONFIG_DIR 
             ;;
           "generatePhaseTwoConfigs")
             composer -p generateLecternSchema -f $CSV_FILE(S) -o $CONFIG_DIR 

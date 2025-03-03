@@ -44,6 +44,10 @@ help:
 .PHONY: dev-phase1 dev-phase2 dev-phase3 dev-stage clean-data reset-volumes load-data generate-configs setup-all down reset
 
 # Start Phase One development environment
+default:
+	PROFILE=default docker compose -f ./docker-compose.yml --profile default up --attach conductor 
+
+# Start Phase One development environment
 phase1:
 	@echo "Starting Phase 1 development environment..."
 	PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach conductor 
@@ -140,10 +144,20 @@ clean-data:
 # ================================================================================== #
 
 
-# Generate Phase One Configurations (Elasticsearch Mapping and Arranger Configs)
+# Generate Phase One Configurations 
 generate-phase-one-configs:
 	@echo "Generating Phase One Configurations..."
-	PROFILE=generatePhaseOneConfigs docker compose -f ./docker-composer.yml --profile generatePhaseOneConfigs up
+	PROFILE=generatePhaseOneConfigs docker compose -f ./docker-composer.yml --profile generatePhaseOneConfigs up --attach composer
+
+# Generate Phase Two Configurations 
+generate-phase-two-configs:
+	@echo "Generating Phase One Configurations..."
+	PROFILE=generatePhaseOneConfigs docker compose -f ./docker-composer.yml --profile generatePhaseOneConfigs up --attach composer
+
+# Generate Phase Three Configurations 
+generate-phase-three-configs:
+	@echo "Generating Phase One Configurations..."
+	PROFILE=generatePhaseOneConfigs docker compose -f ./docker-composer.yml --profile generatePhaseOneConfigs up --attach composer
 
 default:
 	@echo "Spinning up in default mode..."

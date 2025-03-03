@@ -140,7 +140,8 @@ services:
               conductor/scripts/deployments/stageDev.sh
               ;;
             "default")
-              echo "No profile set..."
+              echo "Holla..."
+              tail -f /dev/null
               ;;
             *)
               echo "Invalid profile specified."
