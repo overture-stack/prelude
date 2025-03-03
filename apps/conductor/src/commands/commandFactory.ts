@@ -11,11 +11,6 @@
  * 3. Easy addition of new commands without modifying existing code (Open/Closed Principle)
  * 4. Validation of profiles and helpful error messages
  *
- * Note on Command Types:
- * This factory supports two types of command implementations:
- * 1. Classes that fully extend the abstract Command class (with all helper methods)
- * 2. Classes that implement just the Command interface (with only the run method)
- *
  * Related files:
  * - baseCommand.ts: Defines the abstract Command class and interface
  * - types/cli.ts: Contains CLI argument interfaces and type definitions
@@ -32,6 +27,7 @@ import { Logger } from "../utils/logger";
 // Import individual commands
 import { UploadCommand } from "./uploadCommand";
 import { IndexManagementCommand } from "./indexManagementCommand";
+import { LecternUploadCommand } from "./lecternUploadCommand";
 
 /**
  * Type definition for command class constructors.
@@ -56,7 +52,8 @@ type CommandMap = {
  */
 const PROFILE_DISPLAY_NAMES: Record<string, string> = {
   [Profiles.UPLOAD]: "CSV Upload",
-  [Profiles.INDEX_MANAGEMENT]: "Elasticsearch Indices Setup",
+  [Profiles.INDEX_MANAGEMENT]: "Elasticsearch Indices Management",
+  [Profiles.LECTERN_UPLOAD]: "Lectern Schema Upload",
 };
 
 /**
@@ -73,6 +70,7 @@ const PROFILE_DISPLAY_NAMES: Record<string, string> = {
 const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.UPLOAD]: UploadCommand,
   [Profiles.INDEX_MANAGEMENT]: IndexManagementCommand,
+  [Profiles.LECTERN_UPLOAD]: LecternUploadCommand,
 } as const;
 
 /**
@@ -98,7 +96,7 @@ export class CommandFactory {
   static createCommand(
     profile: Profile
   ): Command | { run(cliOutput: any): Promise<any> } {
-    Logger.debug`Creating command for profile: ${profile}`;
+    Logger.debug(`Creating command for profile: ${profile}`);
     const CommandClass = PROFILE_TO_COMMAND[profile];
 
     if (!CommandClass) {
@@ -122,13 +120,17 @@ export class CommandFactory {
         Logger.header(`Example Commands`);
         Logger.showReferenceCommands();
       });
+
+      // This will never be reached if handleError works as expected,
+      // but we add it for type safety
+      throw error;
     }
 
     // Instantiate the command and return it
     const command = new CommandClass();
     const displayName = PROFILE_DISPLAY_NAMES[profile] || profile;
 
-    Logger.debug`Created ${displayName} command instance`;
+    Logger.debug(`Created ${displayName} command instance`);
     return command;
   }
 }

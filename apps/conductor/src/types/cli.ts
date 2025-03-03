@@ -31,6 +31,7 @@ export interface EnvConfig {
   esUser?: string;
   esPassword?: string;
   indexName?: string;
+  lecternUrl?: string;
 }
 export interface UploadOptions {
   files: string[];
@@ -39,7 +40,7 @@ export interface UploadOptions {
   delimiter?: string;
 }
 
-export interface SetupIndicesOptions {
+export interface indexManagementOptions {
   templateFile: string;
   templateName: string;
   indexName: string;

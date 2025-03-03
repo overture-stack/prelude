@@ -3,7 +3,7 @@
 #### 1. Basic Test Command
 
 ```bash
-conductor setupIndices \
+conductor indexManagement \
   --url "http://localhost:9200" \
   --user "elastic" \
   --password "changeme" \
@@ -16,13 +16,13 @@ conductor setupIndices \
 #### 2. Using Config File from Fixtures
 
 ```bash
-conductor setupIndices --config "./src/__fixtures__/indexSetup/es-config.json"
+conductor indexManagement --config "./src/__fixtures__/indexSetup/es-config.json"
 ```
 
 #### 3. Test with Debug Output
 
 ```bash
-conductor setupIndices \
+conductor indexManagement \
   --url "http://localhost:9200" \
   -t "./src/__fixtures__/indexSetup/mapping.json" \
   -n "tabular_template" \
@@ -33,11 +33,11 @@ conductor setupIndices \
 #### 4. Test with Minimal Options (showing required fields)
 
 ```bash
-conductor setupIndices \
+conductor indexManagement \
   --url "http://localhost:9200" \
   -t "./src/__fixtures__/indexSetup/mapping.json" \
   -n "tabular_template" \
   -i "tabular_data"
 ```
 
-These commands use the actual fixture paths in your project structure, making them ready to use for testing your implementation of the `setupIndices` command.
+These commands use the actual fixture paths in your project structure, making them ready to use for testing your implementation of the `indexManagement` command.

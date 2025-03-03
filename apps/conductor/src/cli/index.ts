@@ -27,20 +27,19 @@
  */
 
 import { Command } from "commander";
-import { Config, CLIOutput as CLIOutputType } from "../types/cli";
+import { Config } from "../types/cli";
 import { Profiles } from "../types/constants";
 import { parseCommandLineArgs } from "./options";
 import { configureCommandOptions } from "./options";
 import { loadEnvironmentConfig } from "./environment";
 import { validateEnvironment } from "../validations/environment";
 import { Logger } from "../utils/logger";
-import { validateProfile } from "./profiles";
 
 /**
  * Type definition for supported CLI profiles.
  * This should match the available profiles in the Profiles enum.
  */
-export type CLIprofile = "upload" | "indexManagement";
+export type CLIprofile = "upload" | "indexManagement" | "lecternUpload";
 
 /**
  * Standardized output from the CLI parsing process.
@@ -65,9 +64,6 @@ export interface CLIOutput {
 
   /** Raw command options for command-specific handling */
   options: any;
-
-  /** Debug flag */
-  debug?: boolean;
 }
 
 /**
@@ -100,19 +96,6 @@ export async function setupCLI(): Promise<CLIOutput> {
     // Get the command
     const commandName = program.args[0];
 
-    // Map command name to profile
-    let profile;
-    if (commandName === "upload") {
-      profile = Profiles.UPLOAD;
-    } else if (commandName === "indexManagement") {
-      profile = Profiles.INDEX_MANAGEMENT;
-    } else {
-      throw new Error(`Unrecognized command: ${commandName}`);
-    }
-
-    // Validate the profile
-    validateProfile(profile);
-
     // Get the specific command
     const command = program.commands.find((cmd) => cmd.name() === commandName);
 
@@ -122,15 +105,34 @@ export async function setupCLI(): Promise<CLIOutput> {
     console.log("Parsed options:", options);
     console.log("Remaining arguments:", program.args);
 
-    // Validate options and environment
-    await validateEnvironment({
-      elasticsearchUrl: options.url || envConfig.elasticsearchUrl,
-    });
+    // Determine the profile based on the command name
+    let profile: CLIprofile = Profiles.INDEX_MANAGEMENT;
+    switch (commandName) {
+      case "upload":
+        profile = Profiles.UPLOAD;
+        break;
+      case "lecternUpload":
+        profile = Profiles.LECTERN_UPLOAD;
+        break;
+      case "indexManagement":
+        profile = Profiles.INDEX_MANAGEMENT;
+        break;
+    }
+
+    // Validate options and environment if needed
+    // For Lectern upload, you might want to skip Elasticsearch-specific validations
+    if (profile !== Profiles.LECTERN_UPLOAD) {
+      await validateEnvironment({
+        elasticsearchUrl: options.url || envConfig.elasticsearchUrl,
+      });
+    }
 
     // Parse command-line arguments into CLIOutput
     const cliOutput = parseCommandLineArgs({
       ...options,
-      profile: profile, // Use the determined profile instead of hardcoded value
+      profile,
+      // Ensure schema file is added to filePaths for Lectern upload
+      ...(options.schemaFile ? { file: options.schemaFile } : {}),
     });
 
     return cliOutput;

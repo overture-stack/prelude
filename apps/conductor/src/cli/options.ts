@@ -1,102 +1,150 @@
 /**
  * CLI Options Module
  *
- * This module defines and configures command-line options for the Conductor CLI
- * using the Commander.js library. It also handles parsing of these options into
- * a standardized CLIOutput format.
+ * This module configures the command-line options for the Conductor CLI.
+ * It sets up the available commands, their options, and handles parsing arguments.
  */
 
 import { Command } from "commander";
-import { Config } from "../types/cli";
-import { CLIOutput } from "./index";
+import { Profiles } from "../types/constants";
+import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 
 /**
- * Configures command-line options for the Conductor CLI.
+ * Configures the command-line options for the Conductor CLI
  *
- * @param program The Commander.js program instance to configure
+ * @param program - The Commander.js program instance
  */
 export function configureCommandOptions(program: Command): void {
-  program.version("1.0.0").description("Conductor: Data Processing Pipeline");
+  // Global options
+  program
+    .version("1.0.0")
+    .description("Conductor: Data Processing Pipeline")
+    .option("-d, --debug", "Enable debug mode");
 
   // Upload command
-  const uploadCommand = program
+  program
     .command("upload")
-    .description("Upload CSV files to Elasticsearch")
-    .option("-f, --files <files...>", "Input CSV files to process")
-    .option("-d, --delimiter <delimiter>", "CSV delimiter", ",")
-    .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
-    .option("-u, --url <url>", "Elasticsearch URL (overrides env config)")
-    .option("-i, --index <index>", "Elasticsearch index name")
-    .option("--username <username>", "Elasticsearch username", "elastic")
+    .description("Upload data to Elasticsearch")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-i, --index <name>", "Elasticsearch index name")
+    .option("-b, --batch-size <size>", "Batch size for uploads")
+    .option("-d, --delimiter <char>", "CSV delimiter character")
+    .option("-o, --output <path>", "Output directory for generated files")
+    .option("--force", "Force overwrite of existing files")
+    .option("--url <url>", "Elasticsearch URL")
+    .option("--user <username>", "Elasticsearch username", "elastic")
     .option(
       "--password <password>",
       "Elasticsearch password",
       "myelasticpassword"
     )
-    .option("--force", "Force operation without confirmation", false)
-    .option("-o, --output <path>", "Output directory for results")
-    .option("--debug", "Enable debug logging", false);
+    .action(() => {
+      /* Handled by main.ts */
+    });
 
-  // Index Management command
-  const indexManagementCommand = program
+  // Setup indices command
+  program
     .command("indexManagement")
-    .description("Manage Elasticsearch indices and templates")
-    .option("-t, --template-file <file>", "Template configuration file")
+    .description("Set up Elasticsearch indices and templates")
+    .option("-t, --template-file <path>", "Template JSON file")
     .option("-n, --template-name <name>", "Template name")
-    .option("-i, --index-name <name>", "Index name to create")
-    .option("-a, --alias <name>", "Alias name for the index")
-    .option("-u, --url <url>", "Elasticsearch URL (overrides env config)")
-    .option("--username <username>", "Elasticsearch username", "elastic")
+    .option("-i, --index-name <name>", "Index name")
+    .option("-a, --alias-name <name>", "Alias name")
+    .option("-o, --output <path>", "Output directory for generated files")
+    .option("--force", "Force overwrite of existing files")
+    .option("--url <url>", "Elasticsearch URL")
+    .option("--user <username>", "Elasticsearch username", "elastic")
     .option(
       "--password <password>",
       "Elasticsearch password",
       "myelasticpassword"
     )
-    .option("--force", "Force operation without confirmation", false)
-    .option("-o, --output <path>", "Output directory for results")
-    .option("--debug", "Enable debug logging", false);
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // Lectern schema upload command
+  program
+    .command("lecternUpload")
+    .description("Upload schema to Lectern server")
+    .option("-s, --schema-file <path>", "Schema JSON file to upload")
+    .option(
+      "-u, --lectern-url <url>",
+      "Lectern server URL",
+      "http://localhost:3031"
+    )
+    .option("-t, --auth-token <token>", "Authentication token", "")
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
 }
 
 /**
- * Parses command-line arguments and options into a standardized CLIOutput object.
+ * Parses command-line arguments into a standardized CLIOutput object
  *
- * @param options The parsed command-line options from Commander.js
- * @returns A standardized CLIOutput object for command execution
+ * @param options - Parsed command-line options
+ * @returns A CLIOutput object for command execution
  */
 export function parseCommandLineArgs(options: any): CLIOutput {
-  Logger.debug("Parsing command-line arguments", options);
+  // Determine the profile from options
+  let profile = options.profile || Profiles.UPLOAD;
 
-  // Handle file paths
-  let filePaths: string[] = [];
-  if (options.files) {
-    filePaths = Array.isArray(options.files) ? options.files : [options.files];
-  } else if (options.templateFile) {
-    filePaths = [options.templateFile];
+  // Parse file paths
+  const filePaths = Array.isArray(options.file)
+    ? options.file
+    : options.file
+    ? [options.file]
+    : [];
+
+  // Add template file to filePaths if present
+  if (options.templateFile && !filePaths.includes(options.templateFile)) {
+    filePaths.push(options.templateFile);
   }
 
-  // Create configuration object
-  const config: Config = {
-    delimiter: options.delimiter || ",",
-    batchSize: parseInt(options.batchSize || "1000", 10),
+  // Add schema file to filePaths if present for Lectern upload
+  if (options.schemaFile && !filePaths.includes(options.schemaFile)) {
+    filePaths.push(options.schemaFile);
+  }
+
+  Logger.debug(`Parsed profile: ${profile}`);
+  Logger.debug(`Parsed file paths: ${filePaths.join(", ")}`);
+
+  // Create config object with support for Lectern-specific configurations
+  const config = {
     elasticsearch: {
-      url: options.url,
-      index: options.index || options.indexName, // Support both formats
+      url:
+        options.url || process.env.ELASTICSEARCH_URL || "http://localhost:9200",
+      user: options.user || process.env.ELASTICSEARCH_USER,
+      password: options.password || process.env.ELASTICSEARCH_PASSWORD,
+      index: options.index || options.indexName || "conductor-data",
+      templateFile: options.templateFile,
       templateName: options.templateName,
-      alias: options.alias,
-      user: options.username, // Added username
-      password: options.password, // Added password
+      alias: options.aliasName,
     },
+    lectern: {
+      url: options.lecternUrl || "http://localhost:3031",
+      authToken: options.authToken || "",
+    },
+    batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
+    delimiter: options.delimiter || ",",
   };
 
-  // Construct and return the CLI output
+  // Build the standardized CLI output
   return {
-    config,
+    profile,
     filePaths,
-    profile: options.profile,
     outputPath: options.output,
-    envConfig: {},
+    config,
     options,
-    debug: options.debug || false,
+    envConfig: {
+      elasticsearchUrl: config.elasticsearch.url,
+      esUser: config.elasticsearch.user,
+      esPassword: config.elasticsearch.password,
+      indexName: config.elasticsearch.index,
+      lecternUrl: config.lectern.url,
+    },
   };
 }

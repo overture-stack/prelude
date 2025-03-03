@@ -11,3 +11,4 @@ export * from "./constants";
 export * from "./elasticsearch";
 export * from "./validations";
 export * from "./processor";
+export * from "./lectern";

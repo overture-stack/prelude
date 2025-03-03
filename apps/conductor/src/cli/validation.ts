@@ -25,7 +25,7 @@ export function validateCliOptions(
       validateUploadOptions(options);
       break;
     case "indexManagement":
-      validateSetupIndicesOptions(options);
+      validateindexManagementOptions(options);
       break;
     default:
       // By default, use upload validation for backward compatibility
@@ -81,9 +81,9 @@ function validateUploadOptions(options: any): void {
 }
 
 /**
- * Validates options specific to the setupIndices command
+ * Validates options specific to the indexManagement command
  */
-function validateSetupIndicesOptions(options: any): void {
+function validateindexManagementOptions(options: any): void {
   // No template file validation here - we'll check existence in the command
   // Just log the options for debugging purposes
   if (options.templateFile) {

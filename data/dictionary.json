@@ -1,0 +1,291 @@
+{
+  "name": "clinical_data_dictionary4",
+  "description": "dictionary for describing clinical cancer patient data including demographics, diagnoses, specimens, treatments, and follow-ups",
+  "version": "1.1",
+  "schemas": [
+    {
+      "name": "clinical_data",
+      "description": "Combined schema for all clinical and demographic information about cancer patients",
+      "fields": [
+        {
+          "meta": {
+            "displayName": "Donor ID",
+            "category": "patient"
+          },
+          "name": "donor_id",
+          "description": "Unique identifier for the patient/donor",
+          "restrictions": {
+            "required": true,
+            "regex": "^DO\\d{4}$"
+          },
+          "valueType": "string",
+          "unique": true
+        },
+        {
+          "meta": {
+            "displayName": "Gender",
+            "category": "patient"
+          },
+          "name": "gender",
+          "description": "Patient's gender",
+          "restrictions": {
+            "required": true,
+            "codeList": ["Male", "Female", "Other", "Unknown"]
+          },
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Vital Status",
+            "category": "patient"
+          },
+          "name": "vital_status",
+          "description": "Current vital status of the patient",
+          "restrictions": {
+            "required": true,
+            "codeList": ["Alive", "Deceased", "Unknown"]
+          },
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Diagnosis ID",
+            "category": "diagnosis"
+          },
+          "name": "diagnosis_id",
+          "description": "Unique identifier for the diagnosis",
+          "restrictions": {
+            "required": true,
+            "regex": "^PD\\d{6}$"
+          },
+          "valueType": "string",
+          "unique": true
+        },
+        {
+          "meta": {
+            "displayName": "Primary Site",
+            "category": "diagnosis"
+          },
+          "name": "primary_site",
+          "description": "Primary site of the cancer",
+          "valueType": "string",
+          "restrictions": {
+            "required": true
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Age at Diagnosis",
+            "category": "diagnosis"
+          },
+          "name": "age_at_diagnosis",
+          "description": "Patient's age at the time of diagnosis",
+          "valueType": "integer",
+          "restrictions": {
+            "required": true,
+            "range": {
+              "min": 0,
+              "max": 120
+            }
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Cancer Type",
+            "category": "diagnosis"
+          },
+          "name": "cancer_type",
+          "description": "ICD-O-3 or ICD-10 cancer type code",
+          "valueType": "string",
+          "restrictions": {
+            "required": true
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Staging System",
+            "category": "diagnosis"
+          },
+          "name": "staging_system",
+          "description": "Cancer staging system used",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Stage",
+            "category": "diagnosis"
+          },
+          "name": "stage",
+          "description": "Cancer stage according to the specified staging system",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Specimen ID",
+            "category": "specimen"
+          },
+          "name": "specimen_id",
+          "description": "Unique identifier for the specimen",
+          "restrictions": {
+            "required": true,
+            "regex": "^SP\\d{6}$"
+          },
+          "valueType": "string",
+          "unique": true
+        },
+        {
+          "meta": {
+            "displayName": "Sample ID",
+            "category": "specimen"
+          },
+          "name": "sample_id",
+          "description": "Identifier for the sample, derived from specimen",
+          "restrictions": {
+            "required": true,
+            "regex": "^SP\\d{6}$"
+          },
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Specimen Type",
+            "category": "specimen"
+          },
+          "name": "specimen_type",
+          "description": "Type of specimen collected",
+          "valueType": "string",
+          "restrictions": {
+            "required": true
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Tissue Source",
+            "category": "specimen"
+          },
+          "name": "tissue_source",
+          "description": "Source of the tissue specimen",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Sample Type",
+            "category": "specimen"
+          },
+          "name": "sample_type",
+          "description": "Type of sample derived from the specimen",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Treatment ID",
+            "category": "treatment"
+          },
+          "name": "treatment_id",
+          "description": "Unique identifier for the treatment",
+          "restrictions": {
+            "required": true,
+            "regex": "^TR\\d{6}$"
+          },
+          "valueType": "string",
+          "unique": true
+        },
+        {
+          "meta": {
+            "displayName": "Treatment Type",
+            "category": "treatment"
+          },
+          "name": "treatment_type",
+          "description": "Type of treatment administered",
+          "valueType": "string",
+          "restrictions": {
+            "required": true
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Treatment Start",
+            "category": "treatment"
+          },
+          "name": "treatment_start",
+          "description": "Days from diagnosis to treatment start",
+          "valueType": "integer",
+          "restrictions": {
+            "range": {
+              "min": 0
+            }
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Treatment Duration",
+            "category": "treatment"
+          },
+          "name": "treatment_duration",
+          "description": "Duration of treatment in days",
+          "valueType": "integer",
+          "restrictions": {
+            "range": {
+              "min": 0
+            }
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Treatment Response",
+            "category": "treatment"
+          },
+          "name": "treatment_response",
+          "description": "Patient's response to the treatment",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Drug Name",
+            "category": "treatment"
+          },
+          "name": "drug_name",
+          "description": "Name of drug used in treatment",
+          "valueType": "string"
+        },
+        {
+          "meta": {
+            "displayName": "Follow-up ID",
+            "category": "followup"
+          },
+          "name": "followup_id",
+          "description": "Unique identifier for the follow-up",
+          "restrictions": {
+            "required": true,
+            "regex": "^FO\\d{6}$"
+          },
+          "valueType": "string",
+          "unique": true
+        },
+        {
+          "meta": {
+            "displayName": "Follow-up Interval",
+            "category": "followup"
+          },
+          "name": "followup_interval",
+          "description": "Days from diagnosis to follow-up",
+          "valueType": "integer",
+          "restrictions": {
+            "range": {
+              "min": 0
+            }
+          }
+        },
+        {
+          "meta": {
+            "displayName": "Disease Status",
+            "category": "followup"
+          },
+          "name": "disease_status",
+          "description": "Status of the disease at follow-up",
+          "valueType": "string"
+        }
+      ]
+    }
+  ]
+}

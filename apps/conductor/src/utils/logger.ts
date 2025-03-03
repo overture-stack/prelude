@@ -276,7 +276,7 @@ export class Logger {
     this.generic(chalk.bold.magenta("Setup Indices Commands:"));
     this.generic(
       chalk.white(
-        "conductor setupIndices -t template.json -n template_name -i index_name"
+        "conductor indexManagement -t template.json -n template_name -i index_name"
       )
     );
     this.generic(chalk.gray("Options:"));
@@ -297,7 +297,7 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: conductor setupIndices -t mapping.json -n my_template -i my_index -a my_alias"
+        "Example: conductor indexManagement -t mapping.json -n my_template -i my_index -a my_alias"
       )
     );
   }
