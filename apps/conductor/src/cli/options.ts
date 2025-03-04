@@ -1,5 +1,5 @@
 /**
- * CLI Options Module - Updated with Lyric Data Loading
+ * CLI Options Module - Updated with SONG Analysis Submission
  *
  * This module configures the command-line options for the Conductor CLI.
  * It sets up the available commands, their options, and handles parsing arguments.
@@ -12,7 +12,6 @@ import { Logger } from "../utils/logger";
 
 /**
  * Configures the command-line options for the Conductor CLI
- *
  * @param program - The Commander.js program instance
  */
 export function configureCommandOptions(program: Command): void {
@@ -166,6 +165,90 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+
+  // SONG schema upload command
+  program
+    .command("songUploadSchema")
+    .description("Upload schema to SONG server")
+    .option("-s, --schema-file <path>", "Schema JSON file to upload")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // SONG study creation command
+  program
+    .command("songCreateStudy")
+    .description("Create study in SONG server")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
+    .option(
+      "-n, --study-name <name>",
+      "Study name",
+      process.env.STUDY_NAME || "string"
+    )
+    .option(
+      "-g, --organization <name>",
+      "Organization name",
+      process.env.ORGANIZATION || "string"
+    )
+    .option(
+      "-d, --description <text>",
+      "Study description",
+      process.env.DESCRIPTION || "string"
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force creation even if study exists", false)
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // SONG analysis submission command
+  program
+    .command("songSubmitAnalysis")
+    .description("Submit analysis to SONG server")
+    .option("-a, --analysis-file <path>", "Analysis JSON file to submit")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
+    .option("--allow-duplicates", "Allow duplicate analysis submissions", false)
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option(
+      "--force",
+      "Force studyId from command line instead of from file",
+      false
+    )
+    .action(() => {
+      /* Handled by main.ts */
+    });
 }
 
 /**
@@ -209,15 +292,20 @@ export function parseCommandLineArgs(options: any): CLIOutput {
     filePaths.push(options.templateFile);
   }
 
-  // Add schema file to filePaths if present for Lectern upload
+  // Add schema file to filePaths if present for Lectern or SONG upload
   if (options.schemaFile && !filePaths.includes(options.schemaFile)) {
     filePaths.push(options.schemaFile);
+  }
+
+  // Add analysis file to filePaths if present for SONG analysis submission
+  if (options.analysisFile && !filePaths.includes(options.analysisFile)) {
+    filePaths.push(options.analysisFile);
   }
 
   Logger.debug(`Parsed profile: ${profile}`);
   Logger.debug(`Parsed file paths: ${filePaths.join(", ")}`);
 
-  // Create config object with support for Lectern and Lyric specific configurations
+  // Create config object with support for all services
   const config = {
     elasticsearch: {
       url:
@@ -265,14 +353,24 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         ? parseInt(process.env.RETRY_DELAY)
         : 20000,
     },
+    song: {
+      url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
+      authToken: options.authToken || process.env.AUTH_TOKEN || "123",
+      schemaFile: options.schemaFile || process.env.SONG_SCHEMA,
+      studyId: options.studyId || process.env.STUDY_ID || "demo",
+      studyName: options.studyName || process.env.STUDY_NAME || "string",
+      organization:
+        options.organization || process.env.ORGANIZATION || "string",
+      description: options.description || process.env.DESCRIPTION || "string",
+      analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
+      allowDuplicates:
+        options.allowDuplicates ||
+        process.env.ALLOW_DUPLICATES === "true" ||
+        false,
+    },
     batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
     delimiter: options.delimiter || ",",
   };
-
-  // Additional logging for Lyric data directory
-  if (profile === Profiles.LYRIC_DATA) {
-    Logger.debug(`Final data directory: ${config.lyric.dataDirectory}`);
-  }
 
   // Build the standardized CLI output
   return {
@@ -288,6 +386,7 @@ export function parseCommandLineArgs(options: any): CLIOutput {
       indexName: config.elasticsearch.index,
       lecternUrl: config.lectern.url,
       lyricUrl: config.lyric.url,
+      songUrl: config.song.url,
     },
   };
 }

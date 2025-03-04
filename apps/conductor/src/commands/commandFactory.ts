@@ -30,6 +30,9 @@ import { IndexManagementCommand } from "./indexManagementCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
 import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
 import { LyricUploadCommand } from "./lyricUploadCommand";
+import { SongUploadSchemaCommand } from "./songUploadSchemaCommand";
+import { SongCreateStudyCommand } from "./songCreateStudyCommand";
+import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand";
 
 /**
  * Type definition for command class constructors.
@@ -58,6 +61,9 @@ const PROFILE_DISPLAY_NAMES: Record<string, string> = {
   [Profiles.LECTERN_UPLOAD]: "Lectern Schema Upload",
   [Profiles.LYRIC_REGISTER]: "Lyric Dictionary Registration",
   [Profiles.LYRIC_DATA]: "Lyric Data Loading",
+  [Profiles.song_upload_schema]: "SONG Schema Upload",
+  [Profiles.song_create_study]: "SONG Study Creation",
+  [Profiles.song_submit_analysis]: "SONG Analysis Submission",
 };
 
 /**
@@ -77,6 +83,9 @@ const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.LECTERN_UPLOAD]: LecternUploadCommand,
   [Profiles.LYRIC_REGISTER]: LyricRegistrationCommand,
   [Profiles.LYRIC_DATA]: LyricUploadCommand,
+  [Profiles.song_upload_schema]: SongUploadSchemaCommand,
+  [Profiles.song_create_study]: SongCreateStudyCommand,
+  [Profiles.song_submit_analysis]: SongSubmitAnalysisCommand,
 } as const;
 
 /**

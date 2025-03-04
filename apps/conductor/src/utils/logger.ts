@@ -323,5 +323,35 @@ export class Logger {
     this.generic(
       chalk.gray("Example: conductor lecternUpload -s data-dictionary.json")
     );
+    this.generic("");
+
+    // SONG Upload commands
+    this.generic(chalk.bold.magenta("SONG Schema Upload Commands:"));
+    this.generic(chalk.white("conductor songUploadSchema -s schema.json"));
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray(
+        "-s, --schema-file <path>  Schema JSON file to upload (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-t, --auth-token <token>  Authentication token (default: 123)"
+      )
+    );
+    this.generic(
+      chalk.gray("-o, --output <path>    Output directory for logs")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor songUploadSchema -s analysis-schema.json -u http://song-api:8080"
+      )
+    );
   }
 }

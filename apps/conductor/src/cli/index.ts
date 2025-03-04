@@ -44,7 +44,10 @@ export type CLIprofile =
   | "indexManagement"
   | "lecternUpload"
   | "lyricRegister"
-  | "lyricData";
+  | "lyricData"
+  | "songUploadSchema"
+  | "songCreateStudy"
+  | "songSubmitAnalysis";
 
 /**
  * Standardized output from the CLI parsing process.
@@ -125,17 +128,29 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "lyricData":
         profile = Profiles.LYRIC_DATA;
         break;
+      case "songUploadSchema":
+        profile = Profiles.song_upload_schema;
+        break;
+      case "songCreateStudy":
+        profile = Profiles.song_create_study;
+        break;
+      case "songSubmitAnalysis":
+        profile = Profiles.song_submit_analysis;
+        break;
       case "indexManagement":
         profile = Profiles.INDEX_MANAGEMENT;
         break;
     }
 
     // Validate options and environment if needed
-    // Skip Elasticsearch validation for Lectern and Lyric operations
+    // Skip Elasticsearch validation for Lectern, Lyric, and SONG operations
     if (
       profile !== Profiles.LECTERN_UPLOAD &&
       profile !== Profiles.LYRIC_REGISTER &&
-      profile !== Profiles.LYRIC_DATA
+      profile !== Profiles.LYRIC_DATA &&
+      profile !== Profiles.song_upload_schema &&
+      profile !== Profiles.song_create_study &&
+      profile !== Profiles.song_submit_analysis
     ) {
       await validateEnvironment({
         elasticsearchUrl: options.url || envConfig.elasticsearchUrl,
@@ -146,8 +161,10 @@ export async function setupCLI(): Promise<CLIOutput> {
     const cliOutput = parseCommandLineArgs({
       ...options,
       profile,
-      // Ensure schema file is added to filePaths for Lectern upload
+      // Ensure schema file is added to filePaths for Lectern and SONG upload
       ...(options.schemaFile ? { file: options.schemaFile } : {}),
+      // Ensure analysis file is added to filePaths for SONG analysis upload
+      ...(options.analysisFile ? { file: options.analysisFile } : {}),
     });
 
     return cliOutput;

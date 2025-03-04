@@ -28,6 +28,17 @@ export interface Config {
     maxRetries?: number;
     retryDelay?: number;
   };
+  song?: {
+    url?: string;
+    authToken?: string;
+    schemaFile?: string;
+    studyId?: string;
+    studyName?: string;
+    organization?: string;
+    description?: string;
+    analysisFile?: string;
+    allowDuplicates?: boolean;
+  };
   batchSize: number;
   delimiter: string;
 }
@@ -49,6 +60,7 @@ export interface EnvConfig {
   indexName?: string;
   lecternUrl?: string;
   lyricUrl?: string;
+  songUrl?: string;
   lyricData?: string;
   categoryId?: string;
   organization?: string;
@@ -76,4 +88,23 @@ export interface LyricDataOptions {
   organization?: string;
   maxRetries?: number;
   retryDelay?: number;
+}
+
+export interface SongStudyOptions {
+  songUrl?: string;
+  studyId?: string;
+  studyName?: string;
+  organization?: string;
+  description?: string;
+  authToken?: string;
+  force?: boolean;
+}
+
+export interface SongAnalysisOptions {
+  songUrl?: string;
+  analysisFile: string;
+  studyId?: string;
+  allowDuplicates?: boolean;
+  authToken?: string;
+  force?: boolean;
 }
