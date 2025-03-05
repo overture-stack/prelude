@@ -545,6 +545,25 @@ services:
     networks:
       - conductor-network
 
+  song-client:
+    profiles: ["phase3", "default"]
+    image: ghcr.io/overture-stack/song-client:d7e5cb61
+    container_name: song-client
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    environment:
+      ACCESSTOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
+      CLIENT_STUDY_ID: demo
+      CLIENT_SERVER_URL: http://song:8080
+    networks:
+      - conductor-network
+    command: tail -f /dev/null
+
   # -----------------------------------------------------------------------------------#
   # SongDb                                                                             #
   # -----------------------------------------------------------------------------------#
@@ -600,7 +619,8 @@ services:
       # Score Variables
       SERVER_SSL_ENABLED: "false"
       # Object Storage Variables
-      S3_ENDPOINT: http://host.docker.internal:9000
+      S3_ENDPOINT: http://minio:9000
+      S3_PRESIGNEDURL_BASEURL: http://localhost:9000
       S3_ACCESSKEY: admin
       S3_SECRETKEY: admin123
       S3_SIGV4ENABLED: true
@@ -612,6 +632,25 @@ services:
       UPLOAD_CONNECTION_TIMEOUT: 1200000
     networks:
       - conductor-network
+
+  score-client:
+    profiles: ["phase3", "default"]
+    image: ghcr.io/overture-stack/score:6c4a3a3c
+    container_name: score-client
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    environment:
+      ACCESSTOKEN: 68fb42b4-f1ed-4e8c-beab-3724b99fe528
+      STORAGE_URL: http://score:8087
+      METADATA_URL: http://song:8080
+    networks:
+      - conductor-network
+    command: tail -f /dev/null
 
   # -----------------------------------------------------------------------------------#
   # Minio                                                                              #
@@ -632,7 +671,7 @@ services:
       MINIO_SECRET_KEY: admin123
     command: server /data
     volumes:
-      - ./volumes/data-minio:/data
+      - ./data/data-minio:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s

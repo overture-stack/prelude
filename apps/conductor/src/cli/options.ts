@@ -1,5 +1,5 @@
 /**
- * CLI Options Module - Updated with SONG Analysis Submission
+ * CLI Options Module - Updated with Score Manifest Upload and Song Publish Analysis Commands
  *
  * This module configures the command-line options for the Conductor CLI.
  * It sets up the available commands, their options, and handles parsing arguments.
@@ -7,7 +7,11 @@
 
 import { Command } from "commander";
 import { Profiles } from "../types/constants";
-import { CLIOutput } from "../types/cli";
+import {
+  CLIOutput,
+  ScoreManifestOptions,
+  SongPublishOptions,
+} from "../types/cli";
 import { Logger } from "../utils/logger";
 
 /**
@@ -249,6 +253,70 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+
+  // Score manifest upload command
+  program
+    .command("scoreManifestUpload")
+    .description("Generate manifest and upload files with Score")
+    .option("-a, --analysis-id <id>", "Analysis ID from Song submission")
+    .option(
+      "-d, --data-dir <path>",
+      "Directory containing data files",
+      process.env.DATA_DIR || "./data"
+    )
+    .option(
+      "-o, --output-dir <path>",
+      "Directory for manifest file output",
+      process.env.OUTPUT_DIR || "./output"
+    )
+    .option(
+      "-m, --manifest-file <path>",
+      "Path for manifest file",
+      process.env.MANIFEST_FILE
+    )
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option(
+      "-s, --score-url <url>",
+      "Score server URL",
+      process.env.SCORE_URL || "http://localhost:8087"
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // Song publish analysis command
+  program
+    .command("songPublishAnalysis")
+    .description("Publish analysis in SONG server")
+    .option("-a, --analysis-id <id>", "Analysis ID to publish")
+    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option(
+      "--ignore-undefined-md5",
+      "Ignore files with undefined MD5 checksums",
+      false
+    )
+    .action(() => {
+      /* Handled by main.ts */
+    });
 }
 
 /**
@@ -367,6 +435,18 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         options.allowDuplicates ||
         process.env.ALLOW_DUPLICATES === "true" ||
         false,
+      ignoreUndefinedMd5:
+        options.ignoreUndefinedMd5 ||
+        process.env.IGNORE_UNDEFINED_MD5 === "true" ||
+        false,
+    },
+    score: {
+      url: options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
+      authToken: options.authToken || process.env.AUTH_TOKEN || "123",
+      analysisId: options.analysisId || process.env.ANALYSIS_ID,
+      dataDir: options.dataDir || process.env.DATA_DIR || "./data",
+      outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
+      manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
     },
     batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
     delimiter: options.delimiter || ",",
@@ -387,6 +467,7 @@ export function parseCommandLineArgs(options: any): CLIOutput {
       lecternUrl: config.lectern.url,
       lyricUrl: config.lyric.url,
       songUrl: config.song.url,
+      scoreUrl: config.score.url,
     },
   };
 }

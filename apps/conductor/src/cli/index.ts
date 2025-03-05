@@ -47,7 +47,9 @@ export type CLIprofile =
   | "lyricData"
   | "songUploadSchema"
   | "songCreateStudy"
-  | "songSubmitAnalysis";
+  | "songSubmitAnalysis"
+  | "scoreManifestUpload"
+  | "songPublishAnalysis";
 
 /**
  * Standardized output from the CLI parsing process.
@@ -137,6 +139,12 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "songSubmitAnalysis":
         profile = Profiles.song_submit_analysis;
         break;
+      case "scoreManifestUpload":
+        profile = Profiles.score_manifest_upload;
+        break;
+      case "songPublishAnalysis":
+        profile = Profiles.song_publish_analysis;
+        break;
       case "indexManagement":
         profile = Profiles.INDEX_MANAGEMENT;
         break;
@@ -150,7 +158,9 @@ export async function setupCLI(): Promise<CLIOutput> {
       profile !== Profiles.LYRIC_DATA &&
       profile !== Profiles.song_upload_schema &&
       profile !== Profiles.song_create_study &&
-      profile !== Profiles.song_submit_analysis
+      profile !== Profiles.song_submit_analysis &&
+      profile !== Profiles.score_manifest_upload &&
+      profile !== Profiles.song_publish_analysis
     ) {
       await validateEnvironment({
         elasticsearchUrl: options.url || envConfig.elasticsearchUrl,

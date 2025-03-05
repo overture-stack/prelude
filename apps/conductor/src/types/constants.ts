@@ -32,6 +32,12 @@ export const Profiles = {
 
   /** Submit analysis to SONG server */
   song_submit_analysis: "songSubmitAnalysis",
+
+  /** Generate manifest and upload with Score */
+  score_manifest_upload: "scoreManifestUpload",
+
+  /** Publish analysis in SONG server */
+  song_publish_analysis: "songPublishAnalysis",
 } as const;
 
 /**
@@ -46,6 +52,9 @@ export const ProfileDescriptions = {
   [Profiles.song_upload_schema]: "Upload schema to SONG server",
   [Profiles.song_create_study]: "Create study in SONG server",
   [Profiles.song_submit_analysis]: "Submit analysis to SONG server",
+  [Profiles.score_manifest_upload]:
+    "Generate manifest and upload files with Score",
+  [Profiles.song_publish_analysis]: "Publish analysis in SONG server",
 };
 
 /**

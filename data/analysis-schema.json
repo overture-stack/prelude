@@ -1,8 +1,8 @@
 {
-  "name": "MyNewShema",
+  "name": "MyNewSchema",
   "version": "1",
   "options": {
-    "fileTypes": ["string"]
+    "fileTypes": ["VCF", "TBI"]
   },
   "schema": {
     "type": "object",

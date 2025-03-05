@@ -38,6 +38,15 @@ export interface Config {
     description?: string;
     analysisFile?: string;
     allowDuplicates?: boolean;
+    ignoreUndefinedMd5?: boolean;
+  };
+  score?: {
+    url?: string;
+    authToken?: string;
+    analysisId?: string;
+    dataDir?: string;
+    outputDir?: string;
+    manifestFile?: string;
   };
   batchSize: number;
   delimiter: string;
@@ -61,6 +70,7 @@ export interface EnvConfig {
   lecternUrl?: string;
   lyricUrl?: string;
   songUrl?: string;
+  scoreUrl?: string;
   lyricData?: string;
   categoryId?: string;
   organization?: string;
@@ -107,4 +117,22 @@ export interface SongAnalysisOptions {
   allowDuplicates?: boolean;
   authToken?: string;
   force?: boolean;
+}
+
+export interface ScoreManifestOptions {
+  analysisId: string;
+  dataDir?: string;
+  outputDir?: string;
+  manifestFile?: string;
+  songUrl?: string;
+  scoreUrl?: string;
+  authToken?: string;
+}
+
+export interface SongPublishOptions {
+  analysisId: string;
+  studyId?: string;
+  songUrl?: string;
+  authToken?: string;
+  ignoreUndefinedMd5?: boolean;
 }
