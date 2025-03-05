@@ -1,3 +1,0 @@
-2438abed-a9d3-4da4-b8ab-eda9d3eda42b		
-5c6f4238-1ff2-5338-9afb-a30d60b924f3	/data/fileData/SP059902.snv.vcf.gz.tbi	f5cca6ace25d076d1f76cebf4ce3defd
-ff8af86d-dda4-52c8-91cf-d0d545839836	/data/fileData/SP059902.snv.vcf.gz	94b790078d8e98ad08ffc42389e2fa68

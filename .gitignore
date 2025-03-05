@@ -3,6 +3,5 @@
 node_modules
 __MACOSX
 
-volumes
 node_modules
 dist
