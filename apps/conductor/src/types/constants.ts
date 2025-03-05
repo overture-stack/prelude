@@ -38,6 +38,9 @@ export const Profiles = {
 
   /** Publish analysis in SONG server */
   song_publish_analysis: "songPublishAnalysis",
+
+  /** Combined SONG/SCORE workflow */
+  song_score_submit: "songScoreSubmit",
 } as const;
 
 /**
@@ -55,6 +58,7 @@ export const ProfileDescriptions = {
   [Profiles.score_manifest_upload]:
     "Generate manifest and upload files with Score",
   [Profiles.song_publish_analysis]: "Publish analysis in SONG server",
+  [Profiles.song_score_submit]: "End-to-end SONG/SCORE workflow",
 };
 
 /**

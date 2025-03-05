@@ -35,6 +35,7 @@ import { SongCreateStudyCommand } from "./songCreateStudyCommand";
 import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand";
 import { ScoreManifestUploadCommand } from "./scoreManifestUploadCommand";
 import { SongPublishAnalysisCommand } from "./songPublishAnalysisCommand";
+import { SongScoreSubmitCommand } from "./songScoreSubmitCommand";
 
 /**
  * Type definition for command class constructors.
@@ -68,6 +69,7 @@ const PROFILE_DISPLAY_NAMES: Record<string, string> = {
   [Profiles.song_submit_analysis]: "SONG Analysis Submission",
   [Profiles.score_manifest_upload]: "Score Manifest Upload",
   [Profiles.song_publish_analysis]: "SONG Analysis Publication",
+  [Profiles.song_score_submit]: "SONG/SCORE End-to-End Workflow",
 };
 
 /**
@@ -92,6 +94,7 @@ const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.song_submit_analysis]: SongSubmitAnalysisCommand,
   [Profiles.score_manifest_upload]: ScoreManifestUploadCommand,
   [Profiles.song_publish_analysis]: SongPublishAnalysisCommand,
+  [Profiles.song_score_submit]: SongScoreSubmitCommand,
 } as const;
 
 /**

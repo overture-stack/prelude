@@ -37,6 +37,7 @@ export interface Config {
     organization?: string;
     description?: string;
     analysisFile?: string;
+    analysisPath?: string;
     allowDuplicates?: boolean;
     ignoreUndefinedMd5?: boolean;
   };
@@ -83,7 +84,7 @@ export interface UploadOptions {
   delimiter?: string;
 }
 
-export interface indexManagementOptions {
+export interface IndexManagementOptions {
   templateFile: string;
   templateName: string;
   indexName: string;
@@ -133,6 +134,18 @@ export interface SongPublishOptions {
   analysisId: string;
   studyId?: string;
   songUrl?: string;
+  authToken?: string;
+  ignoreUndefinedMd5?: boolean;
+}
+
+export interface SongScoreSubmitOptions {
+  analysisPath: string;
+  studyId?: string;
+  dataDir?: string;
+  outputDir?: string;
+  manifestFile?: string;
+  songUrl?: string;
+  scoreUrl?: string;
   authToken?: string;
   ignoreUndefinedMd5?: boolean;
 }

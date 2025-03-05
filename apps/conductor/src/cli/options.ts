@@ -1,5 +1,5 @@
 /**
- * CLI Options Module - Updated with Score Manifest Upload and Song Publish Analysis Commands
+ * CLI Options Module
  *
  * This module configures the command-line options for the Conductor CLI.
  * It sets up the available commands, their options, and handles parsing arguments.
@@ -317,6 +317,57 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+
+  // Combined SONG/SCORE submission command
+  program
+    .command("songScoreSubmit")
+    .description(
+      "End-to-end workflow: Submit analysis to SONG, upload to SCORE, and publish"
+    )
+    .option(
+      "-p, --analysis-path <path>",
+      "Path to analysis JSON file",
+      process.env.ANALYSIS_PATH || "./analysis.json"
+    )
+    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option(
+      "-s, --score-url <url>",
+      "Score server URL",
+      process.env.SCORE_URL || "http://localhost:8087"
+    )
+    .option(
+      "-d, --data-dir <path>",
+      "Directory containing data files",
+      process.env.DATA_DIR || "./data/fileData"
+    )
+    .option(
+      "-o, --output-dir <path>",
+      "Directory for manifest file output",
+      process.env.OUTPUT_DIR || "./output"
+    )
+    .option(
+      "-m, --manifest-file <path>",
+      "Path for manifest file",
+      process.env.MANIFEST_FILE
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option(
+      "--ignore-undefined-md5",
+      "Ignore files with undefined MD5 checksums",
+      false
+    )
+    .action(() => {
+      /* Handled by main.ts */
+    });
 }
 
 /**
@@ -368,6 +419,11 @@ export function parseCommandLineArgs(options: any): CLIOutput {
   // Add analysis file to filePaths if present for SONG analysis submission
   if (options.analysisFile && !filePaths.includes(options.analysisFile)) {
     filePaths.push(options.analysisFile);
+  }
+
+  // Add analysis path to filePaths if present for songScoreSubmit command
+  if (options.analysisPath && !filePaths.includes(options.analysisPath)) {
+    filePaths.push(options.analysisPath);
   }
 
   Logger.debug(`Parsed profile: ${profile}`);
@@ -431,6 +487,7 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         options.organization || process.env.ORGANIZATION || "string",
       description: options.description || process.env.DESCRIPTION || "string",
       analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
+      analysisPath: options.analysisPath || process.env.ANALYSIS_PATH,
       allowDuplicates:
         options.allowDuplicates ||
         process.env.ALLOW_DUPLICATES === "true" ||
