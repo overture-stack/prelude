@@ -4,13 +4,10 @@ import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
 import { ConductorError, ErrorCodes } from "../utils/errors";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execPromise = promisify(exec);
 
 /**
  * Command for publishing a Song analysis after file upload
+ * Uses the SONG REST API directly based on the Swagger spec
  */
 export class SongPublishAnalysisCommand extends Command {
   private readonly MAX_RETRIES = 1;
@@ -46,45 +43,22 @@ export class SongPublishAnalysisCommand extends Command {
         );
       }
 
-      // Publish the analysis
+      // Log publication details
       Logger.info(`\x1b[1;36mPublishing Analysis:\x1b[0m`);
       Logger.info(`Analysis ID: ${analysisId}`);
       Logger.info(`Study ID: ${studyId}`);
       Logger.info(`Song URL: ${songUrl}`);
 
-      let publishResult;
-      try {
-        // Check if we should use the Docker Song Client or the REST API directly
-        const useDocker = await this.checkIfDockerSongClientAvailable();
+      // Publish the analysis via REST API
+      const publishResult = await this.publishAnalysisViaAPI(
+        studyId,
+        analysisId,
+        songUrl,
+        authToken,
+        ignoreUndefinedMd5
+      );
 
-        if (useDocker) {
-          // Use the Song Client via Docker to publish
-          publishResult = await this.publishWithSongClient(
-            studyId,
-            analysisId,
-            songUrl,
-            authToken,
-            ignoreUndefinedMd5
-          );
-        } else {
-          // Use direct REST API call to publish
-          publishResult = await this.publishWithRestApi(
-            studyId,
-            analysisId,
-            songUrl,
-            authToken,
-            ignoreUndefinedMd5
-          );
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        throw new ConductorError(
-          `Failed to publish analysis: ${errorMessage}`,
-          ErrorCodes.CONNECTION_ERROR
-        );
-      }
-
+      // Log success
       Logger.success(`Analysis published successfully`);
       Logger.generic(" ");
       Logger.generic(chalk.gray(`    - Analysis ID: ${analysisId}`));
@@ -131,7 +105,8 @@ export class SongPublishAnalysisCommand extends Command {
   }
 
   /**
-   * Publishes an analysis using the Song client via Docker
+   * Publishes an analysis using the SONG REST API
+   * Based on the SONG Swagger specification for the publish endpoint
    *
    * @param studyId - Study ID
    * @param analysisId - Analysis ID to publish
@@ -140,136 +115,109 @@ export class SongPublishAnalysisCommand extends Command {
    * @param ignoreUndefinedMd5 - Whether to ignore undefined MD5 checksums
    * @returns Object with the publish result
    */
-  private async publishWithSongClient(
+  private async publishAnalysisViaAPI(
     studyId: string,
     analysisId: string,
     songUrl: string,
     authToken: string,
     ignoreUndefinedMd5: boolean
   ): Promise<{ message: string }> {
-    Logger.info("Using Song client to publish analysis");
+    Logger.info("Using SONG REST API to publish analysis");
 
-    const ignoreFlag = ignoreUndefinedMd5 ? " --ignore-undefined-md5" : "";
-
-    const command = `docker exec -e CLIENT_ACCESS_TOKEN=${authToken} -e CLIENT_SERVER_URL=${songUrl} song-client sh -c "sing publish -a ${analysisId}${ignoreFlag}"`;
-
-    Logger.debug(`Executing command: ${command}`);
-
-    try {
-      const { stdout, stderr } = await execPromise(command, {
-        timeout: this.TIMEOUT,
-      });
-
-      if (stderr && stderr.trim() !== "") {
-        Logger.warn(`Song client warning: ${stderr}`);
-      }
-
-      // Try to parse the JSON response if possible
-      try {
-        const response = JSON.parse(stdout);
-        return { message: response.message || "Successfully published" };
-      } catch (e) {
-        // If we can't parse it, just return the raw output
-        return { message: stdout.trim() };
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      throw new ConductorError(
-        `Failed to publish with Song client: ${errorMessage}`,
-        ErrorCodes.CONNECTION_ERROR,
-        error
-      );
-    }
-  }
-
-  /**
-   * Publishes an analysis using direct REST API calls
-   *
-   * @param studyId - Study ID
-   * @param analysisId - Analysis ID to publish
-   * @param songUrl - Song server URL
-   * @param authToken - Authorization token
-   * @param ignoreUndefinedMd5 - Whether to ignore undefined MD5 checksums
-   * @returns Object with the publish result
-   */
-  private async publishWithRestApi(
-    studyId: string,
-    analysisId: string,
-    songUrl: string,
-    authToken: string,
-    ignoreUndefinedMd5: boolean
-  ): Promise<{ message: string }> {
-    Logger.info("Using REST API to publish analysis");
-
-    // Normalize URL
+    // Normalize URL by removing trailing slash if present
     const baseUrl = songUrl.endsWith("/") ? songUrl.slice(0, -1) : songUrl;
+
+    // Construct the publish endpoint URL
+    // Format: /studies/{studyId}/analysis/publish/{analysisId}
     const publishUrl = `${baseUrl}/studies/${studyId}/analysis/publish/${analysisId}`;
 
+    // Set up headers with authorization
     const headers = {
+      Accept: "application/json",
       Authorization: authToken.startsWith("Bearer ")
         ? authToken
         : `Bearer ${authToken}`,
-      "Content-Type": "application/json",
     };
 
-    const params = ignoreUndefinedMd5 ? { ignoreUndefinedMd5: true } : {};
+    // Add the ignoreUndefinedMd5 query parameter if needed
+    const params: Record<string, any> = {};
+    if (ignoreUndefinedMd5) {
+      params.ignoreUndefinedMd5 = true;
+    }
 
     Logger.debug(`Making PUT request to: ${publishUrl}`);
+    Logger.debug(`Headers: ${JSON.stringify(headers)}`);
+    Logger.debug(`Params: ${JSON.stringify(params)}`);
 
     try {
+      // Make the PUT request
+      // According to the SONG API Swagger spec, the publish endpoint is a PUT request
+      // with no request body, and optional ignoreUndefinedMd5 query parameter
       const response = await axios.put(publishUrl, null, {
         headers,
         params,
         timeout: this.TIMEOUT,
       });
 
+      Logger.debug(`Publish response: ${JSON.stringify(response.data)}`);
+
+      // Return the response message
+      // Fixed type checking error by properly handling different response types
       return {
-        message: (response.data as any)?.message || "Successfully published",
+        message:
+          typeof response.data === "object" &&
+          response.data !== null &&
+          "message" in response.data
+            ? String(response.data.message)
+            : "Successfully published",
       };
     } catch (error: any) {
-      // Extract error details from Axios response if available
+      // Extract detailed error information if available
       if (error.response) {
         const status = error.response.status;
         const data = error.response.data;
 
+        Logger.error(`API error ${status}: ${JSON.stringify(data)}`);
+
+        // For common status codes, provide more helpful error messages
+        if (status === 401 || status === 403) {
+          throw new ConductorError(
+            `Authentication failed: Invalid or expired token`,
+            ErrorCodes.CONNECTION_ERROR,
+            { status, responseData: data }
+          );
+        } else if (status === 404) {
+          throw new ConductorError(
+            `Analysis not found: Check that analysis ${analysisId} exists in study ${studyId}`,
+            ErrorCodes.FILE_NOT_FOUND,
+            { status, responseData: data }
+          );
+        } else if (status === 409) {
+          throw new ConductorError(
+            `Conflict: The analysis may already be published or in an invalid state`,
+            ErrorCodes.VALIDATION_FAILED,
+            { status, responseData: data }
+          );
+        }
+
+        // Generic error with the available details
         throw new ConductorError(
           `Publishing failed with status ${status}: ${
-            data?.message || "Unknown error"
+            typeof data === "object" && data !== null && "message" in data
+              ? String(data.message)
+              : "Unknown error"
           }`,
           ErrorCodes.CONNECTION_ERROR,
-          {
-            status,
-            responseData: data,
-          }
+          { status, responseData: data }
         );
       }
 
+      // Network errors, timeouts, etc.
       throw new ConductorError(
-        `Failed to publish with REST API: ${error.message}`,
+        `Failed to connect to SONG API: ${error.message}`,
         ErrorCodes.CONNECTION_ERROR,
         error
       );
-    }
-  }
-
-  /**
-   * Checks if the Docker Song client is available
-   *
-   * @returns Promise<boolean> indicating if the Docker Song client is available
-   */
-  private async checkIfDockerSongClientAvailable(): Promise<boolean> {
-    try {
-      // Check if Docker is available
-      await execPromise("docker --version");
-
-      // Check if song-client container is running
-      await execPromise("docker ps -q -f name=song-client");
-
-      return true;
-    } catch (error) {
-      Logger.debug("Docker Song client not detected, will use REST API");
-      return false;
     }
   }
 

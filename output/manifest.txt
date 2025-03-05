@@ -1,3 +1,3 @@
-f931427d-a51a-4aac-b142-7da51afaac03		
-7e4f316a-6a2e-5c42-bf4c-43cf9d11ff85	/data/fileData/SP059902.snv.vcf.gz.tbi	f5cca6ace25d076d1f76cebf4ce3defd
-94779b09-20f4-5f0e-81f8-2bf46992d072	/data/fileData/SP059902.snv.vcf.gz	94b790078d8e98ad08ffc42389e2fa68
+8d623667-e483-4477-a236-67e48384777e		
+0c05a225-c4ce-59c0-8975-fe56728dec2a	/data/fileData/SP059902.snv.vcf.gz.tbi	f5cca6ace25d076d1f76cebf4ce3defd
+4eb26b7c-f842-526d-9deb-53a0a2b23f9e	/data/fileData/SP059902.snv.vcf.gz	94b790078d8e98ad08ffc42389e2fa68
