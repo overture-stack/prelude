@@ -1,10 +1,18 @@
 services:
   conductor:
-    profiles: ["platform", "songDev", "scoreDev", "maestroDev", "arrangerDev", "stageDev"]
+    profiles:
+      [
+        "platform",
+        "songDev",
+        "scoreDev",
+        "maestroDev",
+        "arrangerDev",
+        "stageDev",
+      ]
     image: alpine/curl:8.8.0
     container_name: conductor
     ports:
-      - "9204:9204" 
+      - "9204:9204"
     volumes:
       - ./persistentStorage/data-keycloak-db:/keycloak/db-folder-init
       - ./persistentStorage/data-song-db:/song/db-folder-init
@@ -66,7 +74,7 @@ services:
   # ==================================================================================
   # OAuth (KeyCloak)
   # ==================================================================================
-  
+
   # ======================================
   # Keycloak Database
   # --------------------------------------
@@ -74,7 +82,7 @@ services:
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-the-keycloak-database
   # --------------------------------------
   keycloak-db:
-    profiles: ["platform", "songDev" , "scoreDev" ,"maestroDev", "stageDev"]
+    profiles: ["platform", "songDev", "scoreDev", "maestroDev", "stageDev"]
     depends_on:
       - conductor
     image: postgres:14
@@ -92,11 +100,11 @@ services:
       timeout: 10s
       retries: 10
       start_period: 20s
-   
+
   # ==========================
-  # Keycloak 
+  # Keycloak
   # ==========================
-  # Authorization and authentication service 
+  # Authorization and authentication service
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/oauth/#setting-up-keycloak
   # --------------------------------------
   keycloak:
@@ -119,7 +127,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin123
       KC_HOSTNAME: localhost
-      KC_HEALTH_ENABLED: true 
+      KC_HEALTH_ENABLED: true
     volumes:
       - ./configurationFiles/keycloakConfigs/keycloak-apikeys-1.0.1.jar:/opt/keycloak/providers/keycloak-apikeys.jar
       - ./configurationFiles/keycloakConfigs/myrealm-realm.json:/opt/keycloak/data/import/myrealm-realm.json
@@ -128,72 +136,72 @@ services:
       start-dev
       --import-realm
       --hostname-port=8180
-   
+
   # ==================================================================================
   # File Management (Song, Score, Kafka, Minio)
   # ==================================================================================
- 
+
   # ======================================
-  # Kafka 
+  # Kafka
   # ======================================
   # Messaging system for Song and Maestro, used to orchestrate asynchronous communication, job execution, queuing, and processing.
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#running-kafka
   # --------------------------------------
   kafka:
-      profiles: ["platform", "maestroDev"]
-      image: confluentinc/cp-kafka:7.6.1
-      container_name: kafka
-      platform: linux/amd64
-      ports:
-        - "9092:9092"
-        - "29092:29092"
-      volumes:
-        - ./conductorScripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
-      environment:
-        # Core Kafka Configuration
-        KAFKA_PROCESS_ROLES: broker,controller
-        KAFKA_NODE_ID: 1
-        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
-        KAFKA_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://kafka:9093
-        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
-        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-        KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-        KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-        # Storage Configuration
-        KAFKA_LOG_DIRS: /var/lib/kafka/data
-        KAFKA_LOG_RETENTION_HOURS: 168  # 7 days
-        KAFKA_LOG_RETENTION_BYTES: -1   # Unlimited size
-        # Topic Configuration
-        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-        KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
-        KAFKA_NUM_PARTITIONS: 1
-        KAFKA_DEFAULT_REPLICATION_FACTOR: 1
-        KAFKA_MIN_INSYNC_REPLICAS: 1
-        # Performance Tuning
-        KAFKA_MESSAGE_MAX_BYTES: 5242880  # 5MB max message size
-        KAFKA_REPLICA_FETCH_MAX_BYTES: 5242880
-        # Logging Configuration
-        KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
-        # Cluster Configuration
-        CLUSTER_ID: "q1Sh-9_ISia_zwGINzRvyQ" 
-      command: >
-        sh -c '
-          echo "Setting up Kafka..."
-          chmod +x /scripts/kafkaSetup.sh
-          /scripts/kafkaSetup.sh &
-          
-          # Start Kafka broker
-          /etc/confluent/docker/run
-        '
-      healthcheck:
-        test: 
-          - "CMD-SHELL"
-          - >
-            /bin/kafka-topics --bootstrap-server kafka:9092 --list
-        interval: 10s
-        timeout: 5s
-        retries: 10
+    profiles: ["platform", "maestroDev"]
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    platform: linux/amd64
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    volumes:
+      - ./conductorScripts/services/kafkaSetup.sh:/scripts/kafkaSetup.sh
+    environment:
+      # Core Kafka Configuration
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # Storage Configuration
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 168 # 7 days
+      KAFKA_LOG_RETENTION_BYTES: -1 # Unlimited size
+      # Topic Configuration
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      # Performance Tuning
+      KAFKA_MESSAGE_MAX_BYTES: 5242880 # 5MB max message size
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 5242880
+      # Logging Configuration
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+      # Cluster Configuration
+      CLUSTER_ID: "q1Sh-9_ISia_zwGINzRvyQ"
+    command: >
+      sh -c '
+        echo "Setting up Kafka..."
+        chmod +x /scripts/kafkaSetup.sh
+        /scripts/kafkaSetup.sh &
+        
+        # Start Kafka broker
+        /etc/confluent/docker/run
+      '
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - >
+          /bin/kafka-topics --bootstrap-server kafka:9092 --list
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   # ======================================
   # Song Database
@@ -208,7 +216,7 @@ services:
     image: postgres:11.1
     container_name: song-db
     platform: linux/amd64
-    ports: 
+    ports:
       - "5433:5432"
     environment:
       POSTGRES_USER: admin
@@ -222,7 +230,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 20s
-   
+
   # ======================================
   # Song
   # ======================================
@@ -275,12 +283,12 @@ services:
       SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
       # Swagger Variable
       SWAGGER_ALTERNATEURL: /swagger-api
-   
+
   # ======================================
   # Minio
   # ======================================
-  # High-performance open-source object storage provider 
-  # Used here for local object storage found at persistentStorage/data-minio 
+  # High-performance open-source object storage provider
+  # Used here for local object storage found at persistentStorage/data-minio
   # data-minio contains 60 data files linked to the pre-populated analyses in the song-db. This folder is passed into the image on startup
   # Documentation Link: https://www.overture.bio/documentation/guides/deployment/datamanagement/#setting-up-object-storage
   # --------------------------------------
@@ -302,7 +310,7 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
-   
+
   # ======================================
   # Score
   # ======================================
@@ -345,19 +353,19 @@ services:
       AUTH_SERVER_TOKENNAME: apiKey
       AUTH_SERVER_KEYCLOAK_HOST: http://keycloak:8080
       AUTH_SERVER_KEYCLOAK_REALM: myrealm
-      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.            
+      AUTH_SERVER_SCOPE_STUDY_PREFIX: STUDY.
       AUTH_SERVER_SCOPE_DOWNLOAD_SUFFIX: .READ
       AUTH_SERVER_SCOPE_DOWNLOAD_SYSTEM: score.READ
       AUTH_SERVER_SCOPE_UPLOAD_SYSTEM: score.WRITE
       AUTH_SERVER_SCOPE_UPLOAD_SUFFIX: .WRITE
-      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/      
+      AUTH_SERVER_URL: http://keycloak:8080/realms/myrealm/apikey/check_api_key/
       AUTH_JWT_PUBLICKEYURL: http://keycloak:8080/oauth/token/public_key
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
-   
+
   # ==================================================================================
   #  E. Search (Elasticsearch, Maestro, Arranger)
   # ==================================================================================
-  
+
   # ======================================
   # Elasticsearch
   # ======================================
@@ -366,7 +374,7 @@ services:
   # --------------------------------------
   elasticsearch:
     profiles: ["platform", "stageDev", "arrangerDev", "maestroDev"]
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.28
     container_name: elasticsearch
     platform: linux/amd64
     ports:
@@ -374,18 +382,21 @@ services:
     environment:
       discovery.type: single-node
       cluster.name: workflow.elasticsearch
-      ES_JAVA_OPTS: -Xms512m -Xmx2048m
+      ES_JAVA_OPTS: "-Xms512m -Xmx2048m"
       ELASTIC_PASSWORD: myelasticpassword
       xpack.security.enabled: "true"
-      MANAGE_INDEX_TEMPLATES: "true"
-      NETWORK_HOST: http://localhost:9200
+      network.host: 0.0.0.0
     logging:
       driver: "json-file"
       options:
         max-size: "50m"
         max-file: "10"
     healthcheck:
-      test: "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s || exit 1"
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=green&timeout=50s || exit 1",
+        ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -440,7 +451,7 @@ services:
       # Kafka Variables
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
-    
+
   # ======================================
   # Arranger-Server
   # ======================================
@@ -458,11 +469,11 @@ services:
     ports:
       - "5050:5050"
     volumes:
-     - ./configurationFiles/arrangerConfigs/base.json:/app/modules/server/configs/base.json
-     - ./configurationFiles/arrangerConfigs/extended.json:/app/modules/server/configs/extended.json
-     - ./configurationFiles/arrangerConfigs/facets.json:/app/modules/server/configs/facets.json
-     - ./configurationFiles/arrangerConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
-     - ./configurationFiles/arrangerConfigs/table.json:/app/modules/server/configs/table.json
+      - ./configurationFiles/arrangerConfigs/base.json:/app/modules/server/configs/base.json
+      - ./configurationFiles/arrangerConfigs/extended.json:/app/modules/server/configs/extended.json
+      - ./configurationFiles/arrangerConfigs/facets.json:/app/modules/server/configs/facets.json
+      - ./configurationFiles/arrangerConfigs/matchbox.json:/app/modules/server/configs/matchbox.json
+      - ./configurationFiles/arrangerConfigs/table.json:/app/modules/server/configs/table.json
     environment:
       # Arranger Variables
       ENABLE_LOGS: false
@@ -470,7 +481,7 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-    
+
   # ==================================================================================
   #  F. Discovery (Stage)
   # ==================================================================================
