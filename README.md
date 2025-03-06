@@ -1,69 +1,59 @@
-# Conductor 
+# Conductor
 
 Conductor is a flexible Docker Compose setup that simplifies the process of spinning up Overture development and deployment configurations using Docker profiles and extensible scripting events.
 
-## Key Features
+> <div>
+> <img align="left" src="ov-logo.png" height="50"/>
+> </div>
+>
+> Conductor is part of [Overture](https://www.overture.bio/), a collection of open-source software microservices used to create platforms for researchers to organize and share genomics data.\*
 
-- **Profile-based Deployments**: Uses Docker profiles to manage different environment setups.
-- **Conductor-driven Execution**: The Conductor service executes ordered scripts based on the `PROFILE` environment variable.
+## Documentation
 
-## Getting Started
+Technical resources for those working with or contributing to the project are available from our official documentation site, the following content can also be read and updated within the `/docs` folder of this repository.
 
-**1. Clone the repo's `main` branch**
+- **[Getting Started](https://docs.overture.bio/guides/getting-started#overture-platform-quick-start)**
+- **[Conductor Documentation](https://docs.overture.bio/docs/other-software/conductor/)**
 
-```
-git clone -b concerto https://github.com/overture-stack/composer.git && cd composer
-```
+## Requirements
 
-**2. Run one of the following commands to spin up different environments:**
+- [Docker Version 4.39.0+](https://www.docker.com/products/docker-desktop/)
+- Note:
 
-| Environment | Unix/macOS | Windows |
-|-------------|------------|---------|
-| Overture Platform | `make platform` | `make.bat platform` |
-| Stage Dev | `make stageDev` | `make.bat stageDev` |
-| Arranger Dev | `make arrangerDev` | `make.bat arrangerDev` |
-| Maestro Dev | `make maestroDev` | `make.bat maestroDev` |
-| Song Dev | `make songDev` | `make.bat songDev` |
-| Score Dev | `make scoreDev` | `make.bat scoreDev` |
+> [!NOTE]
+> Docker needs to be allocated with sufficient resources:
+>
+> - Minimum CPU: 8 cores
+> - Memory: 8 GB
+> - Swap: 2 GB
+> - Virtual disk: 64 GB
+>
+> Adjust these in Docker Desktop settings under "Resources".
 
-Each command spins up complementary services for the specified development environment.
+## Support & Contributions
 
-## Repository Structure
+- For support, feature requests, and bug reports, please see our [Support Guide](https://docs.overture.bio/community/support).
 
-```
-.
-├── conductorScripts/
-│   ├── deployments
-│   └── services
-├── configurationFiles/
-│   ├── arrangerConfigs
-│   ├── elasticsearchConfigs
-│   └── keycloakConfigs
-├── guideMaterials
-├── persistentStorage/
-│   ├── data-keycloak-db
-│   ├── data-minio
-│   └── data-song-db
-├── Makefile
-└── make.bat
-```
+- For detailed information on how to contribute to this project, please see our [Contributing Guide](https://docs.overture.bio/docs/contribution).
 
-- **`conductorScripts/`** Contains scripts for orchestrating the deployment process.
-    - `deployments/`: Scripts that execute service scripts sequentially based on the deployment configuration. These also include custom post-deployment logs with essential next steps for the deployment scenario.
-    - `services/`: Modular scripts for individual service setup tasks. Each file is named according to its purpose, with inline comments documenting the code.
+## Related Software
 
-- **`configurationFiles/`** Stores all required configuration files, including:
-    - `arrangerConfigs/`: Configuration files specific to Arranger.
-    - `elasticsearchConfigs/`: Configuration files for Elasticsearch, encompassing indexing mappings and documents for seeding data.
-    - `keycloakConfigs/`: Configuration files for Keycloak, including preconfigured realm files and Overture API key provider details.
+The Overture Platform includes the following Overture Components:
 
-- **`guideMaterials/`** Supplementary folders and files for use with the [Overture guides](https://www.overture.bio/documentation/guides/).
+</br>
 
-- **`persistentStorage/`** Directory for storing persistent data during container startups and restarts. These folders come pre-loaded with mock data.
-    - `data-keycloak-db/`: Persistent local storage for the Keycloak database.
-    - `data-minio/`: Persistent local storage for MinIO object storage.
-    - `data-song-db/`: Persistent local storage for the Song database.
+| Software                                                | Description                                                                               |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [Score](https://github.com/overture-stack/score/)       | Transfer data to and from any cloud-based storage system                                  |
+| [Song](https://github.com/overture-stack/song/)         | Catalog and manage metadata associated to file data spread across cloud storage systems   |
+| [Maestro](https://github.com/overture-stack/maestro/)   | Organizing your distributed data into a centralized Elasticsearch index                   |
+| [Arranger](https://github.com/overture-stack/arranger/) | A search API with reusable search UI components                                           |
+| [Stage](https://github.com/overture-stack/stage)        | A React-based web portal scaffolding                                                      |
+| [Lyric](https://github.com/overture-stack/lyric)        | A model-agnostic, tabular data submission system                                          |
+| [Lectern](https://github.com/overture-stack/lectern)    | Schema Manager, designed to validate, store, and manage collections of data dictionaries. |
 
-- **`Makefile`** Contains [`make` commands](https://www.gnu.org/software/make/manual/make.html#Overview-of-make) for Unix-based systems (macOS, Linux) to streamline Docker operations.
+If you'd like to get started using our platform [check out our quickstart guides](https://docs.overture.bio/guides/getting-started)
 
-- **`make.bat`** Windows equivalent of the Makefile, featuring batch commands tailored for Windows systems.
+## Funding Acknowledgement
+
+Overture is supported by grant #U24CA253529 from the National Cancer Institute at the US National Institutes of Health, and additional funding from Genome Canada, the Canada Foundation for Innovation, the Canadian Institutes of Health Research, Canarie, and the Ontario Institute for Cancer Research.
