@@ -18,7 +18,6 @@ Technical resources for those working with or contributing to the project are av
 ## Requirements
 
 - [Docker Version 4.39.0+](https://www.docker.com/products/docker-desktop/)
-- Note:
 
 > [!NOTE]
 > Docker needs to be allocated with sufficient resources:
