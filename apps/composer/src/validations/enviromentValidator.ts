@@ -2,7 +2,6 @@ import * as fs from "fs";
 import * as path from "path";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { PathValidationConfig } from "../types/validations";
-import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
 
 // Keep track of validation state to prevent duplicate validations
@@ -19,25 +18,6 @@ function getRequiredDirectories(config: PathValidationConfig): string[] {
     const outputDir = path.dirname(outputPath);
     if (outputDir !== ".") {
       directories.push(outputDir);
-    }
-  }
-
-  if (profile !== Profiles.GENERATE_CONFIGS) {
-    switch (profile) {
-      case Profiles.GENERATE_LECTERN_DICTIONARY:
-        if (config.lecternDictionary)
-          directories.push(config.lecternDictionary);
-        break;
-      case Profiles.GENERATE_SONG_SCHEMA:
-        if (config.songSchema) directories.push(config.songSchema);
-        break;
-      case Profiles.GENERATE_ELASTICSEARCH_MAPPING:
-        if (config.esConfigDir) directories.push(config.esConfigDir);
-        break;
-      case Profiles.GENERATE_ARRANGER_CONFIGS:
-        if (config.arrangerConfigDir)
-          directories.push(config.arrangerConfigDir);
-        break;
     }
   }
 

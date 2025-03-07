@@ -237,31 +237,166 @@ export class Logger {
   }
 
   static showReferenceCommands(): void {
-    this.header("Example Commands");
+    this.header("Command Examples");
 
-    const commands = [
-      {
-        title: "Generate Elasticsearch Mapping",
-        command: "composer -p generateElasticearchMapping ...",
-      },
-      {
-        title: "Generate Arranger Configs",
-        command: "composer -p generateArrangerConfigs ...",
-      },
-      {
-        title: "Generate Song Schema",
-        command: "composer -p generateSongSchema ...",
-      },
-      {
-        title: "Generate Lectern Dictionary",
-        command: "composer -p generateLecternDictionary ...",
-      },
-      { title: "Debug Mode", command: "composer --debug [other-options]" },
-    ];
+    // Dictionary Generation
+    this.generic(chalk.bold.magenta("Generate Lectern Dictionary:"));
+    this.generic(
+      chalk.white(
+        "composer -p generateLecternDictionary -f clinical.csv demographics.csv"
+      )
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+    );
+    this.generic(
+      chalk.gray(
+        "-f, --files <paths...>  Input file paths (CSV or JSON, space separated) (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-o, --output <path>     Output file path for generated dictionary"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-n, --name <n>        Dictionary name (default: lectern_dictionary)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-d, --description <text> Dictionary description (default: Generated dictionary from CSV files)"
+      )
+    );
+    this.generic(
+      chalk.gray("-v, --version <version>  Dictionary version (default: 1.0.0)")
+    );
+    this.generic(
+      chalk.gray("--delimiter <char>       CSV delimiter (default: ,)")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: composer -p generateLecternDictionary -f clinical.csv demographics.csv -o dictionary.json -n 'Clinical Dictionary' -v '2.0.0'"
+      )
+    );
+    this.generic("");
 
-    commands.forEach(({ title, command }) => {
-      console.log(chalk.bold.cyan`${title}:`);
-      console.log(chalk.white(command + "\n"));
-    });
+    // Song Schema Generation
+    this.generic(chalk.bold.magenta("Generate Song Schema:"));
+    this.generic(
+      chalk.white("composer -p generateSongSchema -f schema-template.json")
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+    );
+    this.generic(
+      chalk.gray(
+        "-f, --files <paths...>  Input file paths (CSV or JSON, space separated) (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-o, --output <path>     Output file path for generated schema"
+      )
+    );
+    this.generic(
+      chalk.gray("-n, --name <n>        Schema name (default: song_schema)")
+    );
+    this.generic(
+      chalk.gray("--file-types <types...>  Allowed file types for Song schema")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: composer -p generateSongSchema -f data-model.json -o song-schema.json -n 'Analysis Schema' --file-types bam vcf fastq"
+      )
+    );
+    this.generic("");
+
+    // Elasticsearch Mapping Generation
+    this.generic(chalk.bold.magenta("Generate Elasticsearch Mapping:"));
+    this.generic(
+      chalk.white("composer -p generateElasticearchMapping -f data.csv")
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+    );
+    this.generic(
+      chalk.gray(
+        "-f, --files <paths...>  Input file paths (CSV or JSON, space separated) (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-o, --output <path>     Output file path for generated mapping"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-i, --index <n>       Elasticsearch index name (default: data)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--shards <number>        Number of Elasticsearch shards (default: 1)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--replicas <number>      Number of Elasticsearch replicas (default: 1)"
+      )
+    );
+    this.generic(
+      chalk.gray("--delimiter <char>       CSV delimiter (default: ,)")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: composer -p generateElasticearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
+      )
+    );
+    this.generic("");
+
+    // Arranger Configuration Generation
+    this.generic(chalk.bold.magenta("Generate Arranger Configs:"));
+    this.generic(
+      chalk.white("composer -p generateArrangerConfigs -f metadata.csv")
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+    );
+    this.generic(
+      chalk.gray(
+        "-f, --files <paths...>  Input file paths (CSV or JSON, space separated) (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-o, --output <path>     Output file path for generated configs"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--arranger-doc-type <type> Arranger document type (file or analysis) (default: file)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-i, --index <n>         Elasticsearch index name (default: data)"
+      )
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: composer -p generateArrangerConfigs -f metadata.csv -o arranger-config/ --arranger-doc-type analysis -i clinical_data"
+      )
+    );
+    this.generic("");
   }
 }

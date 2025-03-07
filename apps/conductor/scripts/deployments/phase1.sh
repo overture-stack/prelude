@@ -40,7 +40,7 @@ echo -e "\033[1;36m║   Spinning up the Prelude Phase One Development Portal   
 echo -e "\033[1;36m╚══════════════════════════════════════════════════════════╝\033[0m\n"
 
 # Elasticsearch Check
-echo -e "\n\033[1;35m[1/5]\033[0m Checking Elasticsearch (this may take a few minutes)"
+echo -e "\033[1;35m[1/5]\033[0m Checking Elasticsearch (this may take a few minutes)"
 rs "${SCRIPT_DIR}/elasticsearch/elasticsearch_check.sh"
 
 # Elasticsearch Setup
@@ -49,7 +49,7 @@ rs "$SCRIPT_DIR/elasticsearch/setup_indices.sh"
 
 # Update Conductor to Healthy Status
 echo -e "\n\033[1;35m[3/5]\033[0m Updating Conductor health status"
-echo "healthy" > /health/conductor_health
+echo "healthy" > conductor/volumes/health/conductor_health
 echo -e "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Stage
@@ -61,8 +61,7 @@ echo -e "\n\033[1;35m[5/5]\033[0m Checking Arranger Instances"
 rs "$SCRIPT_DIR/arranger/arranger_check.sh"
 
 # Remove Health Check File
-rm /health/conductor_health
-echo -e "\n"
+rs "${SCRIPT_DIR}/utils/healthcheck_cleanup.sh"
 
 # Success and Next Steps
 echo -e "\n\033[1;36m╔═════════════════════════════════════════════════════════════════╗\033[0m"

@@ -6,11 +6,6 @@ import { Profile } from "./cli";
  */
 export interface PathValidationConfig {
   profile: Profile; // The operation profile being used
-  dataFile?: string; // Path to the input data file (usually CSV)
-  esConfigDir?: string; // Directory for Elasticsearch configuration
-  arrangerConfigDir?: string; // Directory for Arranger configuration
-  lecternDictionary?: string; // Directory for Lectern dictionary
-  songSchema?: string; // Directory for song schema
   outputPath?: string; // Path where generated files will be saved
 }
 

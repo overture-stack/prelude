@@ -30,23 +30,12 @@ export async function setupCLI(): Promise<CLIOutput> {
         input: options.files,
         output: outputPath,
       },
-      directories: {
-        elasticsearch: envConfig.esConfigDir,
-        arranger: envConfig.arrangerConfigDir,
-        lectern: envConfig.lecternDictionary,
-        song: envConfig.songSchema,
-      },
     });
 
     // Validate options and environment
     validateCliOptions(options, profile);
     await validateEnvironment({
       profile,
-      dataFile: envConfig.dataFile,
-      esConfigDir: envConfig.esConfigDir,
-      arrangerConfigDir: envConfig.arrangerConfigDir,
-      lecternDictionary: envConfig.lecternDictionary,
-      songSchema: envConfig.songSchema,
       outputPath,
     });
 
@@ -57,37 +46,40 @@ export async function setupCLI(): Promise<CLIOutput> {
           index:
             options.indexPattern ||
             options.index ||
-            envConfig.indexName ||
+            envConfig.esIndex ||
             "data",
-          shards: parseInt(options.shards, 10) || 1,
-          replicas: parseInt(options.replicas, 10) || 0,
+          shards: parseInt(options.shards, 10) || envConfig.esShards || 1,
+          replicas: parseInt(options.replicas, 10) || envConfig.esReplicas || 0,
         },
-        delimiter: options.delimiter || ",",
+        delimiter: options.delimiter || envConfig.csvDelimiter || ",",
       },
       profile,
       filePaths: options.files,
       outputPath,
       envConfig,
-      arrangerConfigDir:
-        options.arrangerConfigDir || envConfig.arrangerConfigDir,
     };
 
     // Add profile-specific config
     if (profile === "generateLecternDictionary") {
       cliOutput.dictionaryConfig = {
-        name: options.name,
-        description: options.description,
-        version: options.version,
+        name: options.name || envConfig.dictionaryName || "lectern_dictionary",
+        description:
+          options.description ||
+          envConfig.dictionaryDescription ||
+          "Generated dictionary from CSV files",
+        version: options.version || envConfig.dictionaryVersion || "1.0.0",
       };
     } else if (profile === "generateSongSchema") {
       cliOutput.songConfig = {
-        name: options.name,
-        fileTypes: options.fileTypes,
+        name: options.name || envConfig.schemaName,
+        fileTypes: options.fileTypes || envConfig.fileTypes,
       };
     } else if (profile === "generateArrangerConfigs") {
       cliOutput.arrangerConfig = {
         documentType:
-          (options.arrangerDocType as "file" | "analysis") || "file",
+          (options.arrangerDocType as "file" | "analysis") ||
+          (envConfig.arrangerDocType as "file" | "analysis") ||
+          "file",
       };
     }
 

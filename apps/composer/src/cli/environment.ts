@@ -1,20 +1,37 @@
 import { EnvConfig } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { Logger } from "../utils/logger";
-import { CONFIG_PATHS } from "../utils/paths";
+import { BASE_CONFIG_DIR } from "../utils/paths";
 
 /**
  * Maps config key to environment variable name
  */
-const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
-  dataFile: "TABULAR_DATA_FILE",
-  indexName: "TABULAR_INDEX_NAME",
-  fileMetadataSample: "FILE_METADATA_SAMPLE",
-  tabularSample: "TABULAR_SAMPLE",
-  songSchema: "GENERATE_SONG_SCHEMA",
-  lecternDictionary: "LECTERN_DICTIONARY",
-  esConfigDir: "ES_CONFIG_DIR",
-  arrangerConfigDir: "ARRANGER_CONFIG_DIR",
+const ENV_VAR_MAP = {
+  // Input files
+  inputFiles: "FILES",
+
+  // Output paths
+  outputPath: "OUTPUT_PATH",
+
+  // Lectern Dictionary options
+  dictionaryName: "DICTIONARY_NAME",
+  dictionaryDescription: "DICTIONARY_DESC",
+  dictionaryVersion: "DICTIONARY_VERSION",
+
+  // Song Schema options
+  schemaName: "SCHEMA_NAME",
+  fileTypes: "FILE_TYPES",
+
+  // Elasticsearch options
+  esIndex: "ES_INDEX",
+  esShards: "ES_SHARDS",
+  esReplicas: "ES_REPLICAS",
+
+  // CSV options
+  csvDelimiter: "CSV_DELIMITER",
+
+  // Arranger options
+  arrangerDocType: "ARRANGER_DOC_TYPE",
 };
 
 /**
@@ -25,31 +42,41 @@ export function loadEnvironmentConfig(): EnvConfig {
     Logger.debug("Loading environment configuration");
 
     const config: EnvConfig = {
-      // Optional environment variables
-      dataFile: process.env.TABULAR_DATA_FILE,
-      indexName: process.env.TABULAR_INDEX_NAME,
+      // Core variables aligned with Docker Compose
+      inputFiles: process.env.FILES?.split(",").map((f) => f.trim()),
+      outputPath: process.env.OUTPUT_PATH || BASE_CONFIG_DIR,
 
-      // Variables with defaults
-      fileMetadataSample:
-        process.env.FILE_METADATA_SAMPLE || CONFIG_PATHS.samples.fileMetadata,
-      tabularSample: process.env.TABULAR_SAMPLE || CONFIG_PATHS.samples.tabular,
-      songSchema: process.env.GENERATE_SONG_SCHEMA || CONFIG_PATHS.song.dir,
-      lecternDictionary:
-        process.env.LECTERN_DICTIONARY || CONFIG_PATHS.lectern.dir,
-      esConfigDir: process.env.ES_CONFIG_DIR || CONFIG_PATHS.elasticsearch.dir,
-      arrangerConfigDir:
-        process.env.ARRANGER_CONFIG_DIR || CONFIG_PATHS.arranger.dir,
+      // Lectern Dictionary options
+      dictionaryName: process.env.DICTIONARY_NAME || "lectern_dictionary",
+      dictionaryDescription:
+        process.env.DICTIONARY_DESC || "Generated dictionary from CSV files",
+      dictionaryVersion: process.env.DICTIONARY_VERSION || "1.0.0",
+
+      // Song Schema options
+      schemaName: process.env.SCHEMA_NAME || "song_schema",
+      fileTypes: process.env.FILE_TYPES?.split(/\s+/),
+
+      // Elasticsearch options
+      esIndex: process.env.ES_INDEX || "data",
+      esShards: parseInt(process.env.ES_SHARDS || "1", 10),
+      esReplicas: parseInt(process.env.ES_REPLICAS || "1", 10),
+
+      // CSV options
+      csvDelimiter: process.env.CSV_DELIMITER || ",",
+
+      // Arranger options
+      arrangerDocType: process.env.ARRANGER_DOC_TYPE || "file",
     };
 
     // Log overridden defaults
-    (Object.entries(config) as [keyof EnvConfig, string | undefined][]).forEach(
-      ([key, value]) => {
-        const envVar = ENV_VAR_MAP[key];
+    Object.entries(config).forEach(([key, value]) => {
+      if (key in ENV_VAR_MAP) {
+        const envVar = ENV_VAR_MAP[key as keyof typeof ENV_VAR_MAP];
         if (process.env[envVar]) {
-          Logger.debug`Using custom ${key}: ${value}`;
+          Logger.debug(`Using custom ${key}: ${value}`);
         }
       }
-    );
+    });
 
     Logger.debugObject("Environment configuration", config);
     return config;

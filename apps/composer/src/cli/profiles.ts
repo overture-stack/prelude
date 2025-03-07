@@ -1,4 +1,3 @@
-import * as path from "path";
 import { Profile, EnvConfig, Profiles } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { Logger } from "../utils/logger";
@@ -47,30 +46,12 @@ export function getDefaultOutputPath(
 ): string | undefined {
   Logger.debug`Getting default output path for profile: ${profile}`;
 
-  // Handle special cases first
-  if (profile === Profiles.GENERATE_CONFIGS) {
-    return envConfig.esConfigDir || "";
-  }
-
   // Get the standard output path
   let defaultPath = getDefaultOutputPathForProfile(profile);
 
-  // Override with environment config if needed
-  if (defaultPath) {
-    switch (profile) {
-      case Profiles.GENERATE_SONG_SCHEMA:
-        defaultPath = path.join(envConfig.songSchema || "", "songSchema.json");
-        break;
-      case Profiles.GENERATE_LECTERN_DICTIONARY:
-        defaultPath = path.join(
-          envConfig.lecternDictionary || "",
-          "dictionary.json"
-        );
-        break;
-      case Profiles.GENERATE_ARRANGER_CONFIGS:
-        defaultPath = path.join(envConfig.arrangerConfigDir || "", "configs");
-        break;
-    }
+  // Use environment output path if available
+  if (envConfig.outputPath) {
+    defaultPath = envConfig.outputPath;
   }
 
   Logger.debug`Using default output path: ${defaultPath}`;

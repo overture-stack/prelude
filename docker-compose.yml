@@ -13,7 +13,7 @@ services:
       - "9204:9204"
     volumes:
       - ./data:/data
-      - ./volumes/health:/health
+      - ./apps/conductor/volumes/health:/health
       - ./apps/composer/:/composer
       - ./apps/conductor/:/conductor
     environment:
@@ -84,13 +84,14 @@ services:
         exit 0
       '
     healthcheck:
-      test: ["CMD", "test", "-f", "/health/conductor_health"]
+      test: ["CMD", "test", "-f", "conductor/volumes/health/conductor_health"]
       interval: 5s
       timeout: 40s
       retries: 100
       start_period: 30s
     networks:
       - conductor-network
+
   # ================================================================================== #
   # ================================================================================== #
   #                                    phase1:                                         #
@@ -603,7 +604,7 @@ services:
       MINIO_SECRET_KEY: admin123
     command: server /data
     volumes:
-      - ./volumes/data-minio:/data
+      - .apps/conductor/volumes/data-minio:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
