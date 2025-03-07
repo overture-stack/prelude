@@ -6,149 +6,82 @@ services:
   #  scripts to automate general setup and configuration.                              #
   # ================================================================================== #
   conductor:
-    profiles:
-      [
-        "phase1",
-        "phase2",
-        "phase3",
-        "loadCSV",
-        "lecternUpload",
-        "lyricRegister",
-        "lyricUpload",
-        "SongSchemaUpload",
-        "createSongStudy",
-        "songDataUpload",
-        "indexLyricData",
-        "indexSongData",
-        "stageDev",
-        "default",
-      ]
-    image: node:22-alpine
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+    image: alpine/curl:8.8.0
     container_name: conductor
     ports:
       - "9204:9204"
     volumes:
-      - ./apps/composer/:/composer
       - ./data:/data
-      - ./apps/conductor/:/conductor
       - ./volumes/health:/health
+      - ./apps/composer/:/composer
+      - ./apps/conductor/:/conductor
     environment:
+      # Global Configuration
       PROFILE: ${PROFILE:-default}
-      # Inputs
-      DATA_FILES: /data/tabularData.csv
-      INDEX_NAMES: tabular-index
-      # Outputs
-      SONG_SCHEMA: conductor/configs/songSchema
-      LECTERN_DICTIONARY: conductor/configs/lecternDictionaries
-      ES_MAPPINGS: conductor/configs/elasticsearchConfigs
-      ARRANGER_CONFIGS: conductor/configs/arrangerConfigs
-      # Elasticsearch service script variables
+      DEBUG: false
+      # Elasticsearch Index Configuration
+      # Dynamic indices are configured with a count and indexed variables
+      ES_INDEX_COUNT: 1
+      # First index
+      # ES_INDEX_0_NAME: file-index
+      # ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
+      # ES_INDEX_0_TEMPLATE_NAME: file_template
+      # ES_INDEX_0_ALIAS_NAME: file_centric
+      # Second index
+      ES_INDEX_1_NAME: tabular-index
+      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
+      ES_INDEX_1_TEMPLATE_NAME: tabular_template
+      ES_INDEX_1_ALIAS_NAME: tabular_centric
+      # Arranger Services Configuration
+      # Dynamically configurable number of Arranger instances
+      ARRANGER_COUNT: 1
+      ARRANGER_0_URL: http://arranger-0:5050
+      # ARRANGER_1_URL: http://arranger-1:5051
+      # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
+      # ARRANGER_X_URL: http://arranger-x:505X
+      # Service Connections
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      FILE_INDEX_NAME: file-index
-      FILE_ES_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
-      # File Metadata Mapping
-      FILE_ES_TEMPLATE_NAME: file_template
-      FILE_ES_ALIAS_NAME: file_centric
-      TABULAR_INDEX_NAME: tabular-index
-      # Tabular Mapping
-      TABULAR_ES_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
-      TABULAR_ES_TEMPLATE_NAME: tabular_template
-      TABULAR_ES_ALIAS_NAME: tabular_centric
-      # Service Ports
+      ES_URL: http://elasticsearch:9200
       STAGE_URL: http://stage:3000
       LECTERN_URL: http://lectern:3031
-      ES_URL: http://elasticsearch:9200
       LYRIC_URL: http://lyric:3030
       SONG_URL: http://song:8080
       SCORE_URL: http://score:8087
-      OBJECT_STORAGE_URL: http://minio:9000
       MAESTRO_URL: http://maestro:11235
-      ARRANGER_FILE_DATA_URL: http://arranger-file:5050/graphql
-      ARRANGER_TABULAR_DATA_URL: http://arranger-tabular:5051/graphql
-      # Troubleshooting
-      DEBUG: false
+      OBJECT_STORAGE_URL: http://minio:9000
     command: >
       sh -c '
         set -e
-          apk add --no-cache curl --quiet
-          echo "Profile is set to: $PROFILE"
-          case "$PROFILE" in
-            "phase1")
-              echo "Running phase1 deployment..."
-              chmod +x conductor/scripts/deployments/phase1.sh
-              conductor/scripts/deployments/phase1.sh
-              ;;
-            "phase2")
-              echo "Running phase2 deployment..."
-              chmod +x conductor/scripts/deployments/phase2.sh
-              conductor/scripts/deployments/phase2.sh
-              ;;
-            "phase3")
-              echo "Running phase3 deployment ..."
-              chmod +x conductor/scripts/deployments/phase3.sh
-              conductor/scripts/deployments/phase3.sh
-              ;;
-            "loadLecternDictionary")
-              echo "Updating Lectern dictionary..."
-              chmod +x conductor/scripts/lecternSchemaUpload.sh
-              conductor/scripts/lecternSchemaUpload.sh
-              ;;
-            "registerLyricDictionary")
-              echo "Registering Lyric with a Lectern dictionary..."
-              chmod +x conductor/scripts/lyricRegisterDictionary.sh
-              conductor/scripts/lyricRegisterDictionary.sh
-              ;;
-            "submitLyricData")
-              echo "Uploading mock data to Lyric..."
-              chmod +x conductor/scripts/lyricDataUpload.sh
-              conductor/scripts/lyricDataUpload.sh
-              ;;
-            "indexLyricData")
-              echo "Indexing tabular data..."
-              chmod +x conductor/scripts/indexTabularData.sh
-              conductor/scripts/indexTabularData.sh
-              ;;
-            "loadSongSchema")
-              echo "Updating Song schema..."
-              chmod +x conductor/scripts/songSchemaUpload.sh
-              conductor/scripts/songSchemaUpload.sh
-              ;;
-            "createSongStudy")
-              echo "Updating Song with a StudyId..."
-              chmod +x conductor/scripts/songStudyCreation.sh
-              conductor/scripts/songStudyCreation.sh
-              ;;
-            "submitSongData")
-              echo "Loading Song data..."
-              chmod +x conductor/scripts/songDataUpload.sh
-              conductor/scripts/songDataUpload.sh
-              ;;
-            "indexSongData")
-              echo "Indexing Song data..."
-              chmod +x conductor/scripts/indexSongData.sh
-              conductor/scripts/indexSongData.sh
-              ;;
-            "phaseOneSubmission")
-              echo "Running tabular data submission..."
-              chmod +x conductor/scripts/services/phase1/phaseOneSubmission.sh
-              conductor/scripts/services/phase1/phaseOneSubmission.sh
-              ;;
-            "stageDev")
-              echo "Running Stage Dev deployment..."
-              chmod +x conductor/scripts/deployments/stageDev.sh
-              conductor/scripts/deployments/stageDev.sh
-              ;;
-            "default")
-              echo "Holla..."
-              tail -f /dev/null
-              ;;
-            *)
-              echo "Invalid profile specified."
-              exit 1
-              ;;
-          esac
-          exit 0
+        echo "Profile is set to: $PROFILE"
+        case "$PROFILE" in
+          "phase1")
+            echo "Running phase1 deployment..."
+            chmod +x conductor/scripts/deployments/phase1.sh
+            conductor/scripts/deployments/phase1.sh
+            ;;
+          "phase2")
+            echo "Running phase2 deployment..."
+            chmod +x conductor/scripts/deployments/phase2.sh
+            conductor/scripts/deployments/phase2.sh
+            ;;
+          "phase3")
+            echo "Running phase3 deployment ..."
+            chmod +x conductor/scripts/deployments/phase3.sh
+            conductor/scripts/deployments/phase3.sh
+            ;;
+          "stageDev")
+            echo "Running Stage Dev deployment..."
+            chmod +x conductor/scripts/deployments/stageDev.sh
+            conductor/scripts/deployments/stageDev.sh
+            ;;
+          *)
+            echo "Invalid profile specified."
+            exit 1
+            ;;
+        esac
+        exit 0
       '
     healthcheck:
       test: ["CMD", "test", "-f", "/health/conductor_health"]
@@ -158,7 +91,6 @@ services:
       start_period: 30s
     networks:
       - conductor-network
-
   # ================================================================================== #
   # ================================================================================== #
   #                                    phase1:                                         #
@@ -215,16 +147,16 @@ services:
   # Search API generation with compatible search UI components                          #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
-  arranger-tabular:
+  arranger-0:
     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-tabular
+    container_name: arranger-0
     platform: linux/amd64
     depends_on:
       conductor:
         condition: service_healthy
     ports:
-      - "5051:5051"
+      - "5050:5050"
     volumes:
       - ./apps/conductor/configs/arrangerConfigs/tabular-index:/app/modules/server/configs
     environment:
@@ -234,7 +166,7 @@ services:
       ES_PASS: myelasticpassword
       ES_ARRANGER_SET_INDEX: tabular_arranger_set
       # Arranger Variables (Port required)
-      PORT: 5051
+      PORT: 5050
       DEBUG: false
       ENABLE_LOGS: false
     networks:
@@ -271,7 +203,7 @@ services:
       NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size, file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type, analysis.experiment.data.sequence_length
       # Tabular Arranger Variables
-      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API: http://arranger-tabular:5051
+      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API: http://arranger-0:5051
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX: tabular_centric
       # Using localhost for client-side requests
@@ -504,12 +436,12 @@ services:
   # Storage provider (Minio).                                                          #
   # ================================================================================== #
 
-  # -----------------------------------------------------------------------------------#
+  # ---------------------------------------------------------------------------------- #
   # Song                                                                               #
-  # -----------------------------------------------------------------------------------#
+  # ---------------------------------------------------------------------------------- #
   # Catalog and manage metadata associated to file data                                #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Song/overview     #
-  # -----------------------------------------------------------------------------------#
+  # ---------------------------------------------------------------------------------- #
   song:
     profiles: ["phase3", "default"]
     image: ghcr.io/overture-stack/song-server:a81a8e48
@@ -686,16 +618,16 @@ services:
   # Search API generation with compatible search UI components                          #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
-  arranger-file:
+  arranger-1:
     profiles: ["phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-file
+    container_name: arranger-1
     platform: linux/amd64
     depends_on:
       conductor:
         condition: service_healthy
     ports:
-      - "5050:5050"
+      - "5051:5051"
     volumes:
       - ./apps/conductor/configs/arrangerConfigs/fileDataConfigs:/app/modules/server/configs
     environment:
@@ -705,6 +637,7 @@ services:
       ES_PASS: myelasticpassword
       ES_ARRANGER_SET_INDEX: file_arranger_set
       # Arranger Variables
+      PORT: 5051
       DEBUG: false
       ENABLE_LOGS: false
     networks:

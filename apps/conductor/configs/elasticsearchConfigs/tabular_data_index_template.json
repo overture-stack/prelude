@@ -1,7 +1,5 @@
 {
-  "index_patterns": [
-    "tabular-*"
-  ],
+  "index_patterns": ["tabular-*"],
   "aliases": {
     "data_centric": {}
   },

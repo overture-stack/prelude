@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set the base directory for scripts
-SCRIPT_DIR="conductor/scripts/services/phase1"
+SCRIPT_DIR="/conductor/scripts/services"
 
 # Debug function for logging
 debug() {
@@ -30,45 +30,42 @@ rs() {
     fi
 }
 
-# Welcome
-echo -e "\033[1;36m╔══════════════════════════════════════════════════════════╗\033[0m"
-echo -e "\033[1;36m║   Spinning up the Prelude Phase One Development Portal   ║\033[0m"
-echo -e "\033[1;36m╚══════════════════════════════════════════════════════════╝\033[0m"
-
 # Cleanup any existing healthcheck file
-echo -e "\n\033[1;35m[1/6]\033[0m Cleaning up existing health check files"
-rs "${SCRIPT_DIR}/healthcheckCleanup.sh"
+echo -e "Cleaning up any existing health check files"
+rs "$SCRIPT_DIR/utils/healthcheck_cleanup.sh"
 
-echo -e "\033[1;36mElasticsearch:\033[0m Starting up (this may take a few minutes)"
-rs "${SCRIPT_DIR}/elasticsearchCheck.sh"
+# Welcome
+echo -e "\n\033[1;36m╔══════════════════════════════════════════════════════════╗\033[0m"
+echo -e "\033[1;36m║   Spinning up the Prelude Phase One Development Portal   ║\033[0m"
+echo -e "\033[1;36m╚══════════════════════════════════════════════════════════╝\033[0m\n"
 
-# Elasticsearch (File) Setup
-echo -e "\n\033[1;35m[2/6]\033[0m Setting up File Data in Elasticsearch"
-rs "${SCRIPT_DIR}/elasticsearchSetupFileData.sh"
+# Elasticsearch Check
+echo -e "\n\033[1;35m[1/5]\033[0m Checking Elasticsearch (this may take a few minutes)"
+rs "${SCRIPT_DIR}/elasticsearch/elasticsearch_check.sh"
 
-# Elasticsearch (Tabular) Setup
-echo -e "\n\033[1;35m[3/6]\033[0m Setting Tabular Data in Elasticsearch"
-rs "${SCRIPT_DIR}/elasticsearchSetupTabularData.sh"
+# Elasticsearch Setup
+echo -e "\n\033[1;35m[2/5]\033[0m Setting up Elasticsearch Indices"
+rs "$SCRIPT_DIR/elasticsearch/setup_indices.sh"
 
 # Update Conductor to Healthy Status
-echo -e "\n\033[1;35m[4/6]\033[0m Updating Conductor health status"
+echo -e "\n\033[1;35m[3/5]\033[0m Updating Conductor health status"
 echo "healthy" > /health/conductor_health
 echo -e "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Stage
-echo -e "\n\033[1;35m[5/6]\033[0m Checking Stage"
-rs "${SCRIPT_DIR}/stageCheck.sh"
+echo -e "\n\033[1;35m[4/5]\033[0m Checking Stage"
+rs "$SCRIPT_DIR/stage/stage_check.sh"
 
 # Check Arranger
-echo -e "\n\033[1;35m[6/6]\033[0m Checking Arranger"
-rs "${SCRIPT_DIR}/arrangerCheck.sh"
+echo -e "\n\033[1;35m[5/5]\033[0m Checking Arranger Instances"
+rs "$SCRIPT_DIR/arranger/arranger_check.sh"
 
 # Remove Health Check File
 rm /health/conductor_health
 echo -e "\n"
 
 # Success and Next Steps
-echo -e "\033[1;36m╔═════════════════════════════════════════════════════════════════╗\033[0m"
+echo -e "\n\033[1;36m╔═════════════════════════════════════════════════════════════════╗\033[0m"
 echo -e "\033[1;36m║   Prelude Phase One Development Portal running on localhost     ║\033[0m"
 echo -e "\033[1;36m╚═════════════════════════════════════════════════════════════════╝\033[0m\n"
 echo -e "\033[1m🌐 Development Portal should now be available at:\033[0m\n"

@@ -1,52 +1,124 @@
 {
   "extended": [
     {
-      "displayName": "Object Id",
-      "fieldName": "object_id"
+      "displayName": "Data Donor Id",
+      "fieldName": "data.donor_id"
     },
     {
-      "displayName": "Study Id",
-      "fieldName": "study_id"
+      "displayName": "Data Gender",
+      "fieldName": "data.gender"
     },
     {
-      "displayName": "Data Type",
-      "fieldName": "data_type"
+      "displayName": "Data Primary Site",
+      "fieldName": "data.primary_site"
     },
     {
-      "displayName": "File Type",
-      "fieldName": "file_type"
+      "displayName": "Data Vital Status",
+      "fieldName": "data.vital_status"
     },
     {
-      "displayName": "File Access",
-      "fieldName": "file_access"
+      "displayName": "Data Diagnosis Id",
+      "fieldName": "data.diagnosis_id"
     },
     {
-      "displayName": "File Autocomplete",
-      "fieldName": "file_autocomplete"
+      "displayName": "Data Age At Diagnosis",
+      "fieldName": "data.age_at_diagnosis"
     },
     {
-      "displayName": "Analysis",
-      "fieldName": "analysis"
+      "displayName": "Data Cancer Type",
+      "fieldName": "data.cancer_type"
     },
     {
-      "displayName": "File",
-      "fieldName": "file"
+      "displayName": "Data Staging System",
+      "fieldName": "data.staging_system"
     },
     {
-      "displayName": "Repositories",
-      "fieldName": "repositories"
+      "displayName": "Data Stage",
+      "fieldName": "data.stage"
     },
     {
-      "displayName": "Donors",
-      "fieldName": "donors"
+      "displayName": "Data Specimen Id",
+      "fieldName": "data.specimen_id"
     },
     {
-      "displayName": "DataCategory",
-      "fieldName": "dataCategory"
+      "displayName": "Data Specimen Type",
+      "fieldName": "data.specimen_type"
     },
     {
-      "displayName": "JbrowseCoordinates",
-      "fieldName": "jbrowseCoordinates"
+      "displayName": "Data Tissue Source",
+      "fieldName": "data.tissue_source"
+    },
+    {
+      "displayName": "Data Sample Id",
+      "fieldName": "data.sample_id"
+    },
+    {
+      "displayName": "Data Sample Type",
+      "fieldName": "data.sample_type"
+    },
+    {
+      "displayName": "Data Treatment Id",
+      "fieldName": "data.treatment_id"
+    },
+    {
+      "displayName": "Data Treatment Type",
+      "fieldName": "data.treatment_type"
+    },
+    {
+      "displayName": "Data Treatment Start",
+      "fieldName": "data.treatment_start"
+    },
+    {
+      "displayName": "Data Treatment Duration",
+      "fieldName": "data.treatment_duration"
+    },
+    {
+      "displayName": "Data Treatment Response",
+      "fieldName": "data.treatment_response"
+    },
+    {
+      "displayName": "Data Drug Name",
+      "fieldName": "data.drug_name"
+    },
+    {
+      "displayName": "Data Followup Id",
+      "fieldName": "data.followup_id"
+    },
+    {
+      "displayName": "Data Followup Interval",
+      "fieldName": "data.followup_interval"
+    },
+    {
+      "displayName": "Data Disease Status",
+      "fieldName": "data.disease_status"
+    },
+    {
+      "displayName": "Data Submission Metadata Submitter Id",
+      "fieldName": "data.submission_metadata.submitter_id"
+    },
+    {
+      "displayName": "Data Submission Metadata Processing Started",
+      "fieldName": "data.submission_metadata.processing_started"
+    },
+    {
+      "displayName": "Data Submission Metadata Processed At",
+      "fieldName": "data.submission_metadata.processed_at"
+    },
+    {
+      "displayName": "Data Submission Metadata Source File",
+      "fieldName": "data.submission_metadata.source_file"
+    },
+    {
+      "displayName": "Data Submission Metadata Record Number",
+      "fieldName": "data.submission_metadata.record_number"
+    },
+    {
+      "displayName": "Data Submission Metadata Hostname",
+      "fieldName": "data.submission_metadata.hostname"
+    },
+    {
+      "displayName": "Data Submission Metadata Username",
+      "fieldName": "data.submission_metadata.username"
     }
   ]
 }
