@@ -20,21 +20,23 @@
  */
 
 import fs from 'fs';
-import { GetStaticProps } from 'next';
-import Link from 'next/link';
+import { marked } from 'marked';
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import path from 'path';
 import PageLayout from '../../components/PageLayout';
 import Sidebar from '../../components/pages/documentation/DocContainer/Sidebar';
 import styles from '../../components/pages/documentation/DocContainer/styles';
-import { SidebarSection } from '../../components/pages/documentation/DocContainer/types';
+import { Section, SidebarSection } from '../../components/pages/documentation/DocContainer/types';
+import { renderMarkdown } from '../../components/pages/documentation/DocContainer/utils/markdown';
 import HeroBanner from '../../components/pages/documentation/HeroBanner';
 import { PageWithConfig } from '../../global/utils/pages/types';
 
-interface DocumentationIndexProps {
+interface DocumentationPageProps {
+	section: Section;
 	sections: SidebarSection[];
 }
 
-const DocumentationIndex: React.FC<DocumentationIndexProps> = ({ sections }) => {
+const DocumentationPage: NextPage<DocumentationPageProps> = ({ section, sections }) => {
 	return (
 		<PageLayout>
 			<main>
@@ -42,20 +44,8 @@ const DocumentationIndex: React.FC<DocumentationIndexProps> = ({ sections }) => 
 				<div css={styles.contentWrapper}>
 					<Sidebar sections={sections} />
 					<main css={styles.main}>
-						<article css={styles.content}>
-							<h1>Prelude Documentation</h1>
-							<p>
-								Welcome to the Prelude documentation. Use the sidebar to navigate through different sections of our
-								comprehensive guide.
-							</p>
-							<h2>Available Sections</h2>
-							<ul>
-								{sections.map((section) => (
-									<li key={section.id}>
-										<Link href={`/documentation/${section.id}`}>{section.title}</Link>
-									</li>
-								))}
-							</ul>
+						<article css={styles.content} id={section.id}>
+							<div dangerouslySetInnerHTML={renderMarkdown(section.content || '', marked)} />
 						</article>
 					</main>
 				</div>
@@ -64,48 +54,81 @@ const DocumentationIndex: React.FC<DocumentationIndexProps> = ({ sections }) => 
 	);
 };
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
+	// Read markdown files
+	const docsDirectory = path.join(process.cwd(), 'public', 'docs');
+	const files = fs
+		.readdirSync(docsDirectory)
+		.filter((filename) => filename.endsWith('.md'))
+		.sort();
+
+	const paths = files.map((filename) => ({
+		params: { slug: createSlug(filename) },
+	}));
+
+	return {
+		paths,
+		fallback: false,
+	};
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+	const slug = params?.slug as string;
+
 	try {
-		// Use Node.js fs to read markdown files directly
+		// Read all markdown files
 		const docsDirectory = path.join(process.cwd(), 'public', 'docs');
 		const files = fs
 			.readdirSync(docsDirectory)
 			.filter((filename) => filename.endsWith('.md'))
 			.sort();
 
-		// Prepare sections
-		const sectionsPromises = files.map(async (filename) => {
-			const filePath = path.join(docsDirectory, filename);
-			const content = fs.readFileSync(filePath, 'utf8');
+		// Find the matching file
+		const matchingFile = files.find((filename) => createSlug(filename) === slug);
 
+		if (!matchingFile) {
+			return { notFound: true };
+		}
+
+		// Read the content of the matching file
+		const filePath = path.join(docsDirectory, matchingFile);
+		const content = fs.readFileSync(filePath, 'utf8');
+
+		// Prepare section data
+		const section: Section = {
+			title: getDocumentTitle(content),
+			markdownPath: `/docs/${matchingFile}`,
+			content,
+			order: getDocumentOrder(matchingFile),
+			id: createSlug(matchingFile),
+		};
+
+		// Prepare all sections for sidebar navigation
+		const sectionsPromises = files.map(async (filename) => {
+			const sectionPath = path.join(docsDirectory, filename);
+			const sectionContent = fs.readFileSync(sectionPath, 'utf8');
 			return {
-				title: getDocumentTitle(content),
+				title: getDocumentTitle(sectionContent),
 				id: createSlug(filename),
-				order: getDocumentOrder(filename),
 			};
 		});
 
 		const sections = await Promise.all(sectionsPromises);
-		sections.sort((a, b) => a.order - b.order);
 
 		return {
 			props: {
+				section,
 				sections,
 			},
 		};
 	} catch (error) {
 		console.error('Error in getStaticProps:', error);
-		return {
-			props: {
-				sections: [],
-				error: 'Failed to load documentation',
-			},
-		};
+		return { notFound: true };
 	}
 };
 
 // Mark the page as public
-(DocumentationIndex as PageWithConfig).isPublic = true;
+(DocumentationPage as PageWithConfig).isPublic = true;
 
 // Utility functions
 function createSlug(filename: string): string {
@@ -127,4 +150,4 @@ function getDocumentTitle(content: string): string {
 	return titleMatch ? titleMatch[1].trim() : 'Untitled Section';
 }
 
-export default DocumentationIndex;
+export default DocumentationPage;

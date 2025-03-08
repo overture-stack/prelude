@@ -181,7 +181,7 @@ services:
   # ------------------------------------------------------------------------------------#
   stage:
     profiles: ["phase1", "phase2", "phase3", "default"]
-    image: localstageimage:1.0
+    image: stageimage:1.0
     container_name: stage
     pull_policy: never
     platform: linux/arm64/v8

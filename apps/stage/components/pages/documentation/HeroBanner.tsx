@@ -32,10 +32,7 @@ const styles = {
 		padding: 20px;
 		width: 100%;
 		justify-content: center;
-
-		@media (min-width: 1270px) {
-			height: 200px;
-		}
+		margin-bottom: 0;
 	`,
 	section: css`
 		display: flex;
@@ -53,7 +50,7 @@ const styles = {
 		font-weight: normal;
 		position: relative;
 		padding-right: 20%;
-
+		margin: 0; /* Add this explicitly */
 		@media (min-width: 1345px) {
 			font-size: 34px;
 		}
