@@ -19,13 +19,12 @@
  *
  */
 
-import React from 'react';
 import { css } from '@emotion/react';
+import { getConfig } from '../global/config';
+import { HELP_URL } from '../global/utils/constants';
+import StyledLink from './Link';
 import defaultTheme from './theme';
 import { OvertureLogoWithText } from './theme/icons';
-import StyledLink from './Link';
-import { HELP_URL } from '../global/utils/constants';
-import { getConfig } from '../global/config';
 
 const Footer = () => {
 	const { NEXT_PUBLIC_UI_VERSION } = getConfig();

@@ -42,6 +42,9 @@ const NavBar = (): ReactElement => {
 				left: 0;
 				z-index: 666;
 				width: 100%;
+				min-width: 100%;
+				max-width: 100vw;
+				box-sizing: border-box;
 			`}
 		>
 			<div

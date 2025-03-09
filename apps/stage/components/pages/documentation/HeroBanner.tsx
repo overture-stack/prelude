@@ -1,25 +1,6 @@
-/*
- *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
- *
- *  This program and the accompanying materials are made available under the terms of
- *  the GNU Affero General Public License v3.0. You should have received a copy of the
- *  GNU Affero General Public License along with this program.
- *   If not, see <http://www.gnu.org/licenses/>.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
- *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
- *  SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
- *  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
- *  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
+// HeroBanner.tsx - Updated for the fixed layout approach
 import { css, useTheme } from '@emotion/react';
+import Link from 'next/link';
 import { ReactElement } from 'react';
 import defaultTheme from '../../theme';
 
@@ -32,27 +13,89 @@ const styles = {
 		padding: 20px;
 		width: 100%;
 		justify-content: center;
-		margin-bottom: 0;
+		margin: 0;
+
+		@media (max-width: 768px) {
+			padding: 15px;
+		}
+
+		@media (max-width: 480px) {
+			padding: 12px 15px;
+		}
 	`,
 	section: css`
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		max-width: 1550px;
 		width: 100%;
+		max-width: 1400px;
 
 		> * {
 			margin: 0;
 		}
 	`,
+	breadcrumbs: css`
+		display: flex;
+		align-items: center;
+		margin-bottom: 6px;
+		font-size: 14px;
+
+		a {
+			color: rgba(255, 255, 255, 0.9);
+			text-decoration: none;
+			transition: color 0.2s ease;
+
+			&:hover {
+				color: white;
+				text-decoration: underline;
+			}
+		}
+
+		span {
+			display: flex;
+			align-items: center;
+			color: rgba(255, 255, 255, 0.9);
+
+			&:not(:last-child)::after {
+				content: '/';
+				margin: 0 8px;
+				color: rgba(255, 255, 255, 0.7);
+			}
+		}
+	`,
 	title: css`
-		font-size: 30px;
-		font-weight: normal;
+		font-size: 26px;
+		font-weight: 600;
 		position: relative;
-		padding-right: 20%;
-		margin: 0; /* Add this explicitly */
+		margin: 0;
+
 		@media (min-width: 1345px) {
-			font-size: 34px;
+			font-size: 30px;
+		}
+
+		@media (max-width: 768px) {
+			font-size: 24px;
+		}
+
+		@media (max-width: 480px) {
+			font-size: 20px;
+		}
+	`,
+	subtitle: css`
+		font-size: 15px;
+		margin-top: 6px;
+		font-weight: normal;
+		max-width: 650px;
+		opacity: 0.9;
+
+		@media (max-width: 768px) {
+			font-size: 14px;
+			margin-top: 4px;
+		}
+
+		@media (max-width: 480px) {
+			font-size: 13px;
+			margin-top: 3px;
 		}
 	`,
 };
@@ -63,7 +106,16 @@ const HeroBanner = (): ReactElement => {
 	return (
 		<article css={styles.article}>
 			<section css={styles.section}>
-				<h2 css={styles.title}>Documentation</h2>
+				<div css={styles.breadcrumbs}>
+					<span>
+						<Link href="/">
+							<a>Home</a>
+						</Link>
+					</span>
+					<span>Documentation</span>
+				</div>
+				<h1 css={styles.title}>Documentation</h1>
+				<p css={styles.subtitle}>Learn how to use Prelude to incrementally build your data platform</p>
 			</section>
 		</article>
 	);
