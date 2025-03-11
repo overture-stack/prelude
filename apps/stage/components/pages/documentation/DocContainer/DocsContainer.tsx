@@ -222,23 +222,6 @@ const DocsContainer = ({ heroHeight = 160 }: DocsContainerProps) => {
 
 	const prevSection = getPrevSection();
 	const nextSection = getNextSection();
-
-	// Create custom styles for the fixed sidebar
-	const sidebarStyles = {
-		width: '280px',
-		minWidth: '280px',
-		background: '#f5f6f7',
-		borderRight: '1px solid #e2e8f0',
-		position: 'fixed',
-		top: '160px', // Always 160px from top
-		left: '0',
-		height: 'calc(100vh - 160px)', // Always subtract 160px
-		overflowY: 'auto',
-		paddingTop: '1.5rem',
-		paddingBottom: '2rem',
-		zIndex: 10,
-	} as const;
-
 	// Determine if we should use mobile styles
 	const [isMobile, setIsMobile] = useState(false);
 
@@ -260,12 +243,7 @@ const DocsContainer = ({ heroHeight = 160 }: DocsContainerProps) => {
 				onClick={() => setSidebarOpen(false)}
 			/>
 
-			<aside
-				css={styles.sidebar}
-				style={!isMobile ? sidebarStyles : undefined}
-				className={sidebarOpen ? 'active' : ''}
-				ref={sidebarRef}
-			>
+			<aside css={styles.sidebar} className={sidebarOpen ? 'active' : ''} ref={sidebarRef}>
 				<div css={styles.sidebarHeader}>
 					<span>Contents</span>
 					<button className="close-button" onClick={() => setSidebarOpen(false)} aria-label="Close sidebar">

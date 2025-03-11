@@ -19,7 +19,7 @@ const theme = {
 		mono: 'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
 		heading: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif',
 	},
-	maxWidth: '100ch',
+	maxWidth: '125ch',
 	breakpoints: {
 		xs: '480px',
 		sm: '640px',

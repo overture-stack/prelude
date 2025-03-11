@@ -13,9 +13,7 @@ const styles = {
 		background: '#f5f6f7',
 		borderRight: '1px solid #e2e8f0',
 		position: 'fixed',
-		top: '160px', // Always 160px from top
 		left: '0',
-		height: 'calc(100vh - 160px)', // Always subtract 160px
 		overflowY: 'auto',
 		paddingTop: '1.5rem',
 		paddingBottom: '2rem',
@@ -43,9 +41,7 @@ const styles = {
 		background: ${theme.colors.sidebar};
 		border-right: 1px solid ${theme.colors.border};
 		position: fixed; // Changed to fixed
-		top: 160px; // Explicitly set to 160px from top
 		left: 0;
-		height: calc(100vh - 160px); // Adjust height to account for fixed top
 		overflow-y: auto;
 		padding-bottom: 2rem;
 		z-index: 10;
@@ -187,12 +183,6 @@ const styles = {
 	`,
 
 	nav: css`
-		ul {
-			list-style: none;
-			padding: 0 0.5rem;
-			margin: 0;
-		}
-
 		li {
 			margin: 0.5rem 0;
 		}
@@ -238,7 +228,7 @@ const styles = {
 		margin-left: 280px;
 		box-sizing: border-box;
 		padding-top: 1.5rem;
-		margin-top: 160px; // Explicitly set to 160px from top
+		margin-top: 120px;
 
 		/* Tablet adjustments */
 		@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
@@ -251,7 +241,6 @@ const styles = {
 		@media (max-width: ${theme.breakpoints.md}) {
 			width: 100%;
 			margin-left: 0;
-			margin-top: 160px; // Keep consistent on mobile
 			padding: 1.5rem 1rem 3rem;
 		}
 	`,
@@ -583,8 +572,6 @@ const styles = {
 	toc: css`
 		display: none;
 		position: fixed;
-		top: calc(160px + 1.5rem); // Adjust top position to be below the header
-		max-height: calc(100vh - 160px - 3rem);
 		overflow-y: auto;
 		padding-left: 2rem;
 		width: 240px;

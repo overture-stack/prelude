@@ -44,7 +44,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sections, isOpen = false, onClose, he
 				overflow-y: auto;
 				padding: 1.5rem 0;
 				z-index: 10;
-				flex-shrink: 0;
 				scrollbar-width: thin;
 				scrollbar-color: ${theme.colors.primary} ${theme.colors.sidebar};
 
@@ -86,7 +85,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sections, isOpen = false, onClose, he
 		>
 			<div
 				css={css`
-					padding: 0 1.5rem 1rem;
+					padding: 0.5rem 0;
+					margin: 0 0 0.5rem 0;
 					font-weight: 600;
 					font-size: 0.875rem;
 					text-transform: uppercase;
@@ -95,6 +95,9 @@ const Sidebar: React.FC<SidebarProps> = ({ sections, isOpen = false, onClose, he
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
+					width: 90%;
+					max-width: 1550px;
+					margin-left: 3rem;
 
 					.close-button {
 						display: none;
@@ -141,9 +144,13 @@ const Sidebar: React.FC<SidebarProps> = ({ sections, isOpen = false, onClose, he
 			</div>
 			<nav
 				css={css`
+					width: 90%;
+					max-width: 1550px;
+					margin-left: 2rem;
+
 					ul {
 						list-style: none;
-						padding: 0 0.5rem;
+						padding: 0;
 						margin: 0;
 					}
 
@@ -170,7 +177,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sections, isOpen = false, onClose, he
 							color: ${theme.colors.primary};
 							background: ${theme.colors.hover};
 							font-weight: 500;
-							border-left: 2px solid ${theme.colors.primary};
+							border-left-color: ${theme.colors.primary};
 						}
 					}
 

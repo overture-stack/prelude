@@ -38,7 +38,7 @@ const HeroBanner = ({
 				box-sizing: border-box;
 				color: ${textColor};
 				display: flex;
-				justify-content: center;
+				justify-content: flex-start;
 				align-items: center;
 				width: 100%;
 				height: ${height}px;
@@ -66,7 +66,11 @@ const HeroBanner = ({
 					flex-direction: column;
 					width: 100%;
 					max-width: 1550px;
-					width: 90%;
+					padding-left: 1.5rem;
+
+					@media (max-width: 768px) {
+						padding-left: 1rem;
+					}
 				`}
 			>
 				{breadcrumbs.length > 0 && (
