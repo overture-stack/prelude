@@ -133,7 +133,7 @@ const HomeNavigation = (): ReactElement => {
 											css={css`
 												font-size: 1.125rem;
 												font-weight: 600;
-												color: ${defaultTheme.colors.hero};
+												color: ${defaultTheme.colors.primary};
 											`}
 										>
 											{card.title}
