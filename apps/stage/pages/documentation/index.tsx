@@ -21,6 +21,7 @@ const DocumentationIndex: React.FC<DocumentationIndexProps> = ({ sections }) => 
 					title="Documentation"
 					description="Learn how to use Prelude to incrementally build your data platform"
 					breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Documentation' }]}
+					fixed={true}
 				/>
 				<div css={styles.contentWrapper}>
 					<Sidebar sections={sections} />

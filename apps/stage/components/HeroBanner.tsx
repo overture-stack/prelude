@@ -1,7 +1,7 @@
 // components/HeroBanner.tsx
-import { css, useTheme } from '@emotion/react';
+import { css } from '@emotion/react';
 import Link from 'next/link';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement } from 'react';
 
 // Define the breadcrumb item interface
 export interface BreadcrumbItem {
@@ -29,37 +29,6 @@ const HeroBanner = ({
 	height = 120,
 	fixed = true,
 }: HeroBannerProps): ReactElement => {
-	const theme = useTheme();
-	// Use useState to properly handle the navbar height
-	const [navbarHeight, setNavbarHeight] = useState(
-		// Initialize with theme value if available, otherwise default to 0
-		theme?.dimensions?.navbar?.height || 0,
-	);
-
-	// Measure the actual navbar height
-	useEffect(() => {
-		const measureNavbar = () => {
-			const navbar = document.querySelector('nav') || document.querySelector('header > div:first-child');
-			if (navbar) {
-				const navHeight = navbar.getBoundingClientRect().height;
-				if (navHeight > 0) {
-					setNavbarHeight(navHeight);
-				}
-			}
-		};
-
-		// Initial measurement after component mounts
-		measureNavbar();
-
-		// Re-measure on window resize
-		window.addEventListener('resize', measureNavbar);
-		return () => window.removeEventListener('resize', measureNavbar);
-	}, []);
-
-	// Responsive height adjustments
-	const mobileHeight = height - 10;
-	const smallMobileHeight = height - 20;
-
 	return (
 		<article
 			className="hero-banner"
@@ -69,25 +38,25 @@ const HeroBanner = ({
 				box-sizing: border-box;
 				color: ${textColor};
 				display: flex;
-				padding: 20px;
-				width: 100%;
 				justify-content: center;
-				margin: 0;
+				align-items: center;
+				width: 100%;
+				height: ${height}px;
+				padding: 20px;
 				position: ${fixed ? 'fixed' : 'relative'};
-				top: 50px;
+				top: ${fixed ? '60' : 'auto'};
 				left: 0;
 				right: 0;
 				z-index: 100;
-				height: ${height}px;
 
 				@media (max-width: 768px) {
 					padding: 15px;
-					height: ${mobileHeight}px;
+					height: ${height - 10}px;
 				}
 
 				@media (max-width: 480px) {
 					padding: 12px 15px;
-					height: ${smallMobileHeight}px;
+					height: ${height - 20}px;
 				}
 			`}
 		>
@@ -95,13 +64,9 @@ const HeroBanner = ({
 				css={css`
 					display: flex;
 					flex-direction: column;
-					justify-content: space-between;
 					width: 100%;
-					max-width: 1400px;
-
-					> * {
-						margin: 0;
-					}
+					max-width: 1550px;
+					width: 90%;
 				`}
 			>
 				{breadcrumbs.length > 0 && (
@@ -145,7 +110,6 @@ const HeroBanner = ({
 					css={css`
 						font-size: 26px;
 						font-weight: 600;
-						position: relative;
 						margin: 0;
 
 						@media (min-width: 1345px) {
@@ -168,6 +132,7 @@ const HeroBanner = ({
 						css={css`
 							font-size: 15px;
 							margin-top: 6px;
+							margin-bottom: 0;
 							font-weight: normal;
 							max-width: 650px;
 							opacity: 0.9;

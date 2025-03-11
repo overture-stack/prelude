@@ -3,6 +3,7 @@ import { ReactElement, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
 import defaultTheme from '../../theme';
 import HomeAcknowledgements from './HomeAcknowledgements';
+import HomeCommunityResources from './HomeCommunityResources';
 
 interface CardItem {
 	title: string;
@@ -16,16 +17,16 @@ const homeCards: CardItem[] = [
 	{
 		title: 'Explore the Data',
 		link: '#',
-		description: 'Browse and interact with comprehensive datasets',
+		description: 'Browse and interact with datasets',
 		subItems: [
-			{ title: 'File Data', link: INTERNAL_PATHS.FILE },
-			{ title: 'Tabular Data', link: INTERNAL_PATHS.TABULAR },
+			{ title: 'Clnical Data', link: INTERNAL_PATHS.TABULAR },
+			{ title: 'Moelecular Data', link: INTERNAL_PATHS.FILE },
 		],
 	},
 	{
 		title: 'Documentation & Guides',
 		link: INTERNAL_PATHS.DOCUMENTATION,
-		description: 'In-depth guides for Prelude and Overture',
+		description: 'Phased guides covering Prelude usage',
 	},
 	{
 		title: 'Find Support',
@@ -66,6 +67,7 @@ const HomeNavigation = (): ReactElement => {
 				width: 90%;
 				margin: 0 auto;
 				padding: 32px 16px 0;
+				padding-bottom: 64px; // Ensure bottom padding
 			`}
 		>
 			<div
@@ -204,6 +206,13 @@ const HomeNavigation = (): ReactElement => {
 				))}
 			</div>
 
+			<div
+				css={css`
+					margin-top: 24px;
+				`}
+			>
+				<HomeCommunityResources />
+			</div>
 			<div
 				css={css`
 					margin-top: 24px;

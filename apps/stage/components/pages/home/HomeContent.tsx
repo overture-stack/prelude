@@ -1,7 +1,7 @@
+import HeroBanner from '@/components/HeroBanner';
 import { css } from '@emotion/react';
 import { ReactElement } from 'react';
 import defaultTheme from '../../theme';
-import HomeHero from './HomeHero';
 import HomeNavigation from './HomeNavigation';
 
 const HomeContent = (): ReactElement => {
@@ -12,7 +12,12 @@ const HomeContent = (): ReactElement => {
 				min-height: 100vh;
 			`}
 		>
-			<HomeHero />
+			<HeroBanner
+				title="Prelude"
+				description="Incrementally build your Overture data platform"
+				breadcrumbs={[{ label: 'Home', href: '/' }]}
+				fixed={false}
+			/>
 			<HomeNavigation />
 		</main>
 	);
