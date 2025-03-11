@@ -45,6 +45,7 @@ export enum INTERNAL_PATHS {
 // external docs links
 export const HELP_URL = 'https://github.com/overture-stack/docs/discussions/new?category=support';
 export const EMAIL_SETTING_URL = 'admin@example.com';
+export const DOCS_URL = 'https://docs.overture.bio';
 
 // keycloak
 export const KEYCLOAK_URL_ISSUER = urlJoin(NEXT_PUBLIC_KEYCLOAK_HOST, 'realms', NEXT_PUBLIC_KEYCLOAK_REALM);

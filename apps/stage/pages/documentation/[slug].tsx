@@ -1,34 +1,14 @@
-/*
- *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
- *
- *  This program and the accompanying materials are made available under the terms of
- *  the GNU Affero General Public License v3.0. You should have received a copy of the
- *  GNU Affero General Public License along with this program.
- *   If not, see <http://www.gnu.org/licenses/>.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
- *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
- *  SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
- *  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
- *  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
+// Fix for pages/documentation/[slug].tsx
 import fs from 'fs';
 import { marked } from 'marked';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import path from 'path';
+import HeroBanner from '../../components/HeroBanner';
 import PageLayout from '../../components/PageLayout';
 import Sidebar from '../../components/pages/documentation/DocContainer/Sidebar';
 import styles from '../../components/pages/documentation/DocContainer/styles';
 import { Section, SidebarSection } from '../../components/pages/documentation/DocContainer/types';
 import { renderMarkdown } from '../../components/pages/documentation/DocContainer/utils/markdown';
-import HeroBanner from '../../components/pages/documentation/HeroBanner';
 import { PageWithConfig } from '../../global/utils/pages/types';
 
 interface DocumentationPageProps {
@@ -40,7 +20,11 @@ const DocumentationPage: NextPage<DocumentationPageProps> = ({ section, sections
 	return (
 		<PageLayout>
 			<main>
-				<HeroBanner />
+				<HeroBanner
+					title="Documentation"
+					description="Learn how to use Prelude to incrementally build your data platform"
+					breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Documentation' }]}
+				/>
 				<div css={styles.contentWrapper}>
 					<Sidebar sections={sections} />
 					<main css={styles.main}>

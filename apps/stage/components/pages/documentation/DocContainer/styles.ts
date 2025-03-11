@@ -5,16 +5,28 @@ const styles = {
 	container: css`
 		display: flex;
 		width: 100%;
-		height: 100%; /* Full height of parent */
+		height: 100%;
 		position: relative;
-		overflow: hidden;
+		overflow: hidden;	const sidebarStyles = {
+		width: '280px',
+		minWidth: '280px',
+		background: '#f5f6f7',
+		borderRight: '1px solid #e2e8f0',
+		position: 'fixed',
+		top: '160px', // Always 160px from top
+		left: '0',
+		height: 'calc(100vh - 160px)', // Always subtract 160px
+		overflowY: 'auto',
+		paddingTop: '1.5rem',
+		paddingBottom: '2rem',
+		zIndex: 10,
+	} as const;
 	`,
 
 	contentWrapper: css`
 		display: flex;
 		width: 100%;
 		max-width: 100%;
-		flex: 1;
 		position: relative;
 		margin: 0;
 		padding: 0;
@@ -30,15 +42,15 @@ const styles = {
 		min-width: 280px;
 		background: ${theme.colors.sidebar};
 		border-right: 1px solid ${theme.colors.border};
-		position: fixed;
-		top: 0;
+		position: fixed; // Changed to fixed
+		top: 160px; // Explicitly set to 160px from top
 		left: 0;
-		bottom: 0; /* This ensures it extends to the bottom of the viewport */
-		height: 100vh; /* This sets it to full viewport height */
+		height: calc(100vh - 160px); // Adjust height to account for fixed top
 		overflow-y: auto;
-		padding-top: 60px; /* Account for navbar height - adjust if needed */
 		padding-bottom: 2rem;
 		z-index: 10;
+		flex-shrink: 0;
+		align-self: flex-start;
 
 		/* Scrollbar styling */
 		scrollbar-width: thin;
@@ -65,11 +77,17 @@ const styles = {
 
 		/* Mobile adjustments */
 		@media (max-width: ${theme.breakpoints.md}) {
+			position: fixed; /* Fixed position for slide-out mobile menu */
+			top: 0;
+			left: 0;
+			bottom: 0;
 			transform: translateX(-100%);
 			width: 85%;
 			max-width: 300px;
+			height: 100vh;
 			box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 			padding-top: 1rem;
+			transition: transform 0.3s ease;
 
 			&.active {
 				transform: translateX(0);
@@ -216,21 +234,28 @@ const styles = {
 	main: css`
 		flex: 1;
 		padding: 1.5rem 2.5rem 3rem;
-		width: calc(100% - 280px); /* Account for sidebar */
+		width: calc(100% - 280px);
+		margin-left: 280px;
 		box-sizing: border-box;
+		padding-top: 1.5rem;
+		margin-top: 160px; // Explicitly set to 160px from top
 
 		/* Tablet adjustments */
 		@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
 			width: calc(100% - 240px);
+			margin-left: 240px;
 			padding: 1.5rem 1.5rem 3rem;
 		}
 
 		/* Mobile adjustments */
 		@media (max-width: ${theme.breakpoints.md}) {
 			width: 100%;
+			margin-left: 0;
+			margin-top: 160px; // Keep consistent on mobile
 			padding: 1.5rem 1rem 3rem;
 		}
 	`,
+
 	content: css`
 		max-width: ${theme.maxWidth};
 		margin: 0 auto;
@@ -557,9 +582,9 @@ const styles = {
 
 	toc: css`
 		display: none;
-		position: sticky;
-		top: 1.5rem;
-		max-height: calc(100vh - 3rem);
+		position: fixed;
+		top: calc(160px + 1.5rem); // Adjust top position to be below the header
+		max-height: calc(100vh - 160px - 3rem);
 		overflow-y: auto;
 		padding-left: 2rem;
 		width: 240px;

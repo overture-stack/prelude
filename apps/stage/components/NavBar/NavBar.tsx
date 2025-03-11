@@ -37,7 +37,7 @@ const NavBar = (): ReactElement => {
 				background: ${theme.colors.white};
 				background-size: 281px;
 				${theme.shadow.default};
-				position: sticky;
+				position: fixed;
 				top: 0;
 				left: 0;
 				z-index: 666;

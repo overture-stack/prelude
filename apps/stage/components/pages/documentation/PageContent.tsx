@@ -1,11 +1,13 @@
-// PageContent.tsx - Updated component with width consistency fixes
+// components/pages/documentation/PageContent.tsx
 import { css } from '@emotion/react';
 import { ReactElement } from 'react';
 import DocsContainer from './DocContainer';
 import theme from './DocContainer/theme';
-import HeroBanner from './HeroBanner';
 
 const PageContent = (): ReactElement => {
+	// Fixed hero height for consistent positioning
+	const heroHeight = 160;
+
 	return (
 		<main
 			css={css`
@@ -16,7 +18,6 @@ const PageContent = (): ReactElement => {
 				max-width: 100%;
 			`}
 		>
-			<HeroBanner />
 			<article
 				css={css`
 					display: flex;
@@ -27,13 +28,18 @@ const PageContent = (): ReactElement => {
 					padding: 0;
 					flex: 1;
 					background-color: ${theme.colors.background};
+					margin-top: ${heroHeight}px; /* Consistent 160px from top */
 
 					@media (max-width: ${theme.breakpoints.md}) {
-						padding: 0;
+						margin-top: ${heroHeight}px; /* Keep consistent on mobile */
+					}
+
+					@media (max-width: ${theme.breakpoints.sm}) {
+						margin-top: ${heroHeight}px; /* Keep consistent on small mobile */
 					}
 				`}
 			>
-				<DocsContainer />
+				<DocsContainer heroHeight={heroHeight} />
 			</article>
 		</main>
 	);

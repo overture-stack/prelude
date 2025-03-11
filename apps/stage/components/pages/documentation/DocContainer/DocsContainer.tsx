@@ -7,7 +7,12 @@ import { Section } from './types';
 import { extractHeadings, extractOrder, extractTitle, generateId, renderMarkdown } from './utils/markdown';
 import { updateActiveHash } from './utils/navigation';
 
-const DocsContainer = () => {
+// Add props interface with heroHeight
+interface DocsContainerProps {
+	heroHeight?: number;
+}
+
+const DocsContainer = ({ heroHeight = 160 }: DocsContainerProps) => {
 	const [sections, setSections] = useState<Section[]>([]);
 	const [activeHash, setActiveHash] = useState<string>('');
 	const [activeTocItem, setActiveTocItem] = useState<string>('');
@@ -24,7 +29,7 @@ const DocsContainer = () => {
 	const tocRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		// Save scroll position when sidebar opens
+		// Handle sidebar overlay scrolling
 		const handleSidebarToggle = (isOpen: boolean) => {
 			if (isOpen) {
 				document.body.style.overflow = 'hidden';
@@ -218,6 +223,35 @@ const DocsContainer = () => {
 	const prevSection = getPrevSection();
 	const nextSection = getNextSection();
 
+	// Create custom styles for the fixed sidebar
+	const sidebarStyles = {
+		width: '280px',
+		minWidth: '280px',
+		background: '#f5f6f7',
+		borderRight: '1px solid #e2e8f0',
+		position: 'fixed',
+		top: '160px', // Always 160px from top
+		left: '0',
+		height: 'calc(100vh - 160px)', // Always subtract 160px
+		overflowY: 'auto',
+		paddingTop: '1.5rem',
+		paddingBottom: '2rem',
+		zIndex: 10,
+	} as const;
+
+	// Determine if we should use mobile styles
+	const [isMobile, setIsMobile] = useState(false);
+
+	useEffect(() => {
+		const checkIfMobile = () => {
+			setIsMobile(window.innerWidth < 768);
+		};
+
+		checkIfMobile();
+		window.addEventListener('resize', checkIfMobile);
+		return () => window.removeEventListener('resize', checkIfMobile);
+	}, []);
+
 	return (
 		<div css={styles.container}>
 			<div
@@ -226,7 +260,12 @@ const DocsContainer = () => {
 				onClick={() => setSidebarOpen(false)}
 			/>
 
-			<aside css={styles.sidebar} className={sidebarOpen ? 'active' : ''} ref={sidebarRef}>
+			<aside
+				css={styles.sidebar}
+				style={!isMobile ? sidebarStyles : undefined}
+				className={sidebarOpen ? 'active' : ''}
+				ref={sidebarRef}
+			>
 				<div css={styles.sidebarHeader}>
 					<span>Contents</span>
 					<button className="close-button" onClick={() => setSidebarOpen(false)} aria-label="Close sidebar">
@@ -279,7 +318,11 @@ const DocsContainer = () => {
 			</button>
 
 			<div css={styles.contentWrapper}>
-				<main css={styles.main} ref={mainRef}>
+				<main
+					css={styles.main}
+					ref={mainRef}
+					style={!isMobile ? { marginLeft: '280px', width: 'calc(100% - 280px)' } : undefined}
+				>
 					{loading ? (
 						<div css={styles.loadingContainer}>
 							<div css={styles.loader}></div>
