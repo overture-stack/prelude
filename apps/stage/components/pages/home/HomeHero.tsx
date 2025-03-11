@@ -8,7 +8,10 @@ const HomeHero = (): ReactElement => {
 			css={css`
 				background-color: ${defaultTheme.colors.hero};
 				color: ${defaultTheme.colors.white};
-				padding: 32px 16px;
+				height: 120px;
+				display: flex;
+				align-items: center;
+				padding: 0 16px;
 				text-align: left;
 			`}
 		>
@@ -21,21 +24,25 @@ const HomeHero = (): ReactElement => {
 			>
 				<h1
 					css={css`
-						font-size: 2rem;
-						margin-bottom: 16px;
+						font-size: 1.5rem;
+						margin-bottom: 8px;
 						font-weight: 600;
+						line-height: 1.2;
 					`}
 				>
-					Prelude Documentation
+					Home{' '}
 				</h1>
 				<p
 					css={css`
-						font-size: 1rem;
-						line-height: 1.6;
+						font-size: 0.875rem;
+						line-height: 1.4;
+						display: -webkit-box;
+						-webkit-line-clamp: 2;
+						-webkit-box-orient: vertical;
+						overflow: hidden;
 					`}
 				>
-					Learn how to incrementally build your data platform with Prelude. Explore our comprehensive guides and
-					resources.
+					Incrementally build your Overture data platform with Prelude.
 				</p>
 			</div>
 		</section>
