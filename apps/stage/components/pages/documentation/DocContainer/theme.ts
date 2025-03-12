@@ -5,6 +5,7 @@ const theme = {
 		sidebar: '#f5f6f7',
 		primary: '#0B75A2',
 		primaryLight: '#e8f4f8',
+		primary_green: '#00A88F',
 		text: '#2d3748',
 		textSecondary: '#4a5568',
 		border: '#e2e8f0',

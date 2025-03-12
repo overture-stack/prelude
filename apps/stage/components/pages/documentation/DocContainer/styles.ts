@@ -190,7 +190,7 @@ const styles = {
 		a {
 			display: block;
 			padding: 0.75rem 1rem;
-			color: ${theme.colors.textSecondary};
+			color: ${theme.colors.primary_green};
 			text-decoration: none;
 			font-size: 0.875rem;
 			border-radius: 0.375rem;
@@ -284,23 +284,11 @@ const styles = {
 			display: none;
 		}
 
-		h1,
-		h2,
-		h3,
-		h4 {
-			font-weight: 600;
-			line-height: 1.3;
-			margin: 1.5rem 0 1rem;
-			scroll-margin-top: 2rem;
-			position: relative;
-			overflow-wrap: break-word;
-			word-wrap: break-word;
-			width: 100%;
-			max-width: 100%;
-		}
-
 		h1 {
-			font-size: 2.25rem;
+			font-size: 48px;
+			font-weight: 900;
+			line-height: 60px;
+			margin-bottom: 20px;
 			border-bottom: 2px solid ${theme.colors.border};
 			padding-bottom: 0.75rem;
 			margin-top: 0;
@@ -321,7 +309,10 @@ const styles = {
 		}
 
 		h2 {
-			font-size: 1.85rem;
+			font-size: 32px;
+			font-weight: 900;
+			line-height: 40px;
+			margin-bottom: 20px;
 			border-bottom: 1px solid ${theme.colors.border};
 			padding-bottom: 0.5rem;
 
@@ -340,8 +331,8 @@ const styles = {
 		}
 
 		h3 {
-			font-size: 1.5rem;
-
+			font-size: 18px;
+			font-weight: 900;
 			/* Tablet-specific heading size */
 			@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
 				font-size: 1.4rem;
@@ -358,7 +349,7 @@ const styles = {
 
 		h4 {
 			font-size: 1.25rem;
-
+			margin-bottom: 20px;
 			/* Tablet-specific heading size */
 			@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
 				font-size: 1.2rem;
@@ -373,7 +364,10 @@ const styles = {
 			}
 		}
 
-		p,
+		p {
+			line-height: 1.5;
+		}
+		,
 		ul,
 		ol {
 			margin: 1.25rem 0;
@@ -395,7 +389,8 @@ const styles = {
 		}
 
 		a {
-			color: ${theme.colors.primary};
+			color: ${theme.colors.primary_green};
+			font-weight: 900;
 			text-decoration: none;
 			border-bottom: 1px solid transparent;
 			transition: ${theme.transitions.standard};
@@ -468,7 +463,7 @@ const styles = {
 		pre,
 		code {
 			font-family: ${theme.fonts.mono};
-			background: ${theme.colors.codeBackground};
+			background: ${theme.colors.primaryLight};
 			border-radius: 0.5rem;
 			font-size: 0.9375rem;
 			line-height: 2;
@@ -509,19 +504,13 @@ const styles = {
 			max-width: 100%;
 			height: auto;
 			margin: 2rem auto;
-			border-radius: 0.5rem;
+			border-radius: 8px;
 			box-shadow: ${theme.boxShadow};
+			border: 10px solid transparent;
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				margin: 1.5rem auto;
 			}
-		}
-
-		.mermaid {
-			margin: 2rem auto;
-			text-align: center;
-			overflow-x: auto;
-			max-width: 100%;
 		}
 	`,
 

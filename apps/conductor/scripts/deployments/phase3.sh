@@ -88,9 +88,12 @@ rs "${SCRIPT_DIR}/maestro/maestro_check.sh"
 rs "${SCRIPT_DIR}/utils/healthcheck_cleanup.sh"
 
 # Success and Next Steps
-echo -e "\n\033[1;36m╔═══════════════════════════════════════════════════════════════════╗\033[0m"
+echo -e "\n\033[1;36m╔═════════════════════════════════════════════════════════════════╗\033[0m"
 echo -e "\033[1;36m║   Prelude Phase Three Development Portal running on localhost     ║\033[0m"
-echo -e "\033[1;36m╚═══════════════════════════════════════════════════════════════════╝\033[0m\n"
-echo -e "\033[1m🌐 Development Portal should now be available at:\033[0m\n"
+echo -e "\033[1;36m╚═════════════════════════════════════════════════════════════════╝\033[0m\n"
+echo -e "\033[1m🌐 Development Portal should now be available at:\033[0m"
 echo -e "   \033[1;32mhttp://localhost:3000\033[0m"
 echo -e "   \033[0;90m(unless configured to use a different port)\033[0m\n"
+echo -e "\033[1m📚 The PhaseThree usage guide can be found at:\033[0m"
+echo -e "   \033[1;32mhttp://localhost:3000/documentation/phasethree\033[0m\n"
+

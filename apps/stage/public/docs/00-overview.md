@@ -13,8 +13,6 @@ Prelude is a comprehensive toolkit designed for the **planning and development s
 
 Prelude implements a phased architecture that grows with your project needs:
 
-![Arch](/docs/images/arch.png "Phased Architecture")
-
 | Phase                                   | Focus                                    | Components                        | Capabilities                                          |
 | --------------------------------------- | ---------------------------------------- | --------------------------------- | ----------------------------------------------------- |
 | **Phase 1:** Data Exploration & Theming | How your data is displayed in the portal | Elasticsearch, Arranger, Stage    | Display tabular data with search and filters          |
