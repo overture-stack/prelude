@@ -249,7 +249,7 @@ const styles = {
 		max-width: ${theme.maxWidth};
 		margin: 0 auto;
 		font-size: 1rem;
-		line-height: 1.8;
+		line-height: 1.25;
 		color: ${theme.colors.text};
 		overflow-wrap: break-word;
 		word-wrap: break-word;
@@ -471,6 +471,7 @@ const styles = {
 			background: ${theme.colors.codeBackground};
 			border-radius: 0.5rem;
 			font-size: 0.9375rem;
+			line-height: 2;
 			overflow-x: auto;
 
 			@media (max-width: ${theme.breakpoints.md}) {

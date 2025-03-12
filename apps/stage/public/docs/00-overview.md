@@ -1,4 +1,4 @@
-# What is Prelude?
+# Overview
 
 Prelude is a comprehensive toolkit designed for the **planning and development stages** of data platform implementation. It enables teams to:
 
@@ -13,7 +13,7 @@ Prelude is a comprehensive toolkit designed for the **planning and development s
 
 Prelude implements a phased architecture that grows with your project needs:
 
-![Arch](/docs/images/arch.png 'Phased Architecture')
+![Arch](/docs/images/arch.png "Phased Architecture")
 
 | Phase                                   | Focus                                    | Components                        | Capabilities                                          |
 | --------------------------------------- | ---------------------------------------- | --------------------------------- | ----------------------------------------------------- |
