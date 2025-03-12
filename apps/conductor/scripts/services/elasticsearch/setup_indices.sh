@@ -54,7 +54,7 @@ while [ "$i" -lt "$INDEX_COUNT" ]; do
     if ! curl -s -u "$ES_USER:$ES_PASS" "$ES_URL/_template/$template_name" | grep -q "\"index_patterns\""; then 
         curl -s -u "$ES_USER:$ES_PASS" -X PUT "$ES_URL/_template/$template_name" \
             -H "Content-Type: application/json" -d @"$template_file" > /dev/null \
-        && printf "\033[1;32mSuccess:\033[0m Created template %s\n" "$template_name"
+        && printf "\033[1;36mInfo:\033[0m Created template %s\n" "$template_name"
     else
         printf "\033[1;36mInfo:\033[0m Template %s already exists, skipping\n" "$template_name"
     fi
@@ -63,7 +63,7 @@ while [ "$i" -lt "$INDEX_COUNT" ]; do
         curl -s -u "$ES_USER:$ES_PASS" -X PUT "$ES_URL/$index_name" \
             -H "Content-Type: application/json" \
             -d "{\"aliases\": {\"$alias_name\": {}}}" > /dev/null
-        printf "\033[1;32mSuccess:\033[0m Created index %s with alias %s\n" "$index_name" "$alias_name"
+        printf "\033[1;36mInfo:\033[0m Created index %s with alias %s\n" "$index_name" "$alias_name"
     else
         printf "\033[1;36mInfo:\033[0m Index %s already exists\n" "$index_name"
     fi
@@ -71,4 +71,4 @@ while [ "$i" -lt "$INDEX_COUNT" ]; do
     i=$((i + 1))
 done
 
-printf "\033[1;32mAll indices set up successfully\033[0m\n"
+printf "\033[1;32mSuccess:\033[0m Indices set up successfully\033[0m\n"

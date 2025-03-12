@@ -7,6 +7,10 @@ help:
 	@echo "  phase3         - Start Phase 3 development environment"
 	@echo "  stage-dev      - Start Stage development environment"
 	@echo ""
+	@echo "Conductor Deployment:"
+	@echo "  pre-check      - Run pre-deployment checks"
+	@echo "  deploy-stage   - Deploy the stage application (with pre-checks)"
+	@echo ""
 	@echo "Conductor Data Loading and Management:"
 	@echo "  clean-data     - Remove all documents from Elasticsearch (preserves index structure)"
 	@echo ""
@@ -29,6 +33,12 @@ help:
 #                                    Conductor:                                      #
 # ================================================================================== #
 
+# Run pre-deployment checks
+phase0:
+	@echo "Running Pre-deployment checks..."
+	chmod +x ./apps/conductor/scripts/deployments/phase0.sh
+	./apps/conductor/scripts/deployments/phase0.sh
+
 # Start Phase One development environment
 phase1:
 	@echo "Starting Phase 1 development environment..."
@@ -48,6 +58,12 @@ phase3:
 stage-dev:
 	@echo "Starting Stage development environment..."
 	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach conductor
+
+
+# Deploy the stage application (with pre-checks)
+deploy-stage: pre-check
+	@echo "Deploying stage application..."
+	docker build -t stageimage:1.0 .
 
 # Gracefully shutdown all containers while preserving volumes
 down:
@@ -85,10 +101,10 @@ generate-phase-one-configs:
 
 # Generate Phase Two Configurations 
 generate-phase-two-configs:
-	@echo "Generating Phase One Configurations..."
-	PROFILE=generatePhaseOneConfigs docker compose -f ./docker-composer.yml --profile generatePhaseOneConfigs up --attach composer
+	@echo "Generating Phase Two Configurations..."
+	PROFILE=generatePhaseTwoConfigs docker compose -f ./docker-composer.yml --profile generatePhaseTwoConfigs up --attach composer
 
 # Generate Phase Three Configurations 
 generate-phase-three-configs:
-	@echo "Generating Phase One Configurations..."
-	PROFILE=generatePhaseOneConfigs docker compose -f ./docker-composer.yml --profile generatePhaseOneConfigs up --attach composer
+	@echo "Generating Phase Three Configurations..."
+	PROFILE=generatePhaseThreeConfigs docker compose -f ./docker-composer.yml --profile generatePhaseThreeConfigs up --attach composer
