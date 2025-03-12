@@ -55,9 +55,9 @@ export interface PageContentProps {
 }
 
 const {
-	NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API,
-	NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE,
-	NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX,
+	NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_API,
+	NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE,
+	NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_INDEX,
 } = getConfig();
 
 const configsQuery = `
@@ -66,7 +66,7 @@ const configsQuery = `
 	}
 `;
 
-const TABULARRepositoryPage = (): ReactElement => {
+const MolecularRepositoryPage = (): ReactElement => {
 	const theme = useTheme();
 	const [arrangerHasConfig, setArrangerHasConfig] = useState<boolean>(false);
 	const [loadingArrangerConfig, setLoadingArrangerConfig] = useState<boolean>(true);
@@ -76,8 +76,8 @@ const TABULARRepositoryPage = (): ReactElement => {
 			endpoint: 'graphql/hasValidConfig',
 			body: JSON.stringify({
 				variables: {
-					documentType: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE,
-					index: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX,
+					documentType: NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE,
+					index: NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_INDEX,
 				},
 				query: configsQuery,
 			}),
@@ -91,7 +91,7 @@ const TABULARRepositoryPage = (): ReactElement => {
 					return setLoadingArrangerConfig(false);
 				}
 
-				throw new Error('Could not validate Arranger Tabular server configuration!');
+				throw new Error('Could not validate Arranger server configuration!');
 			})
 			.catch(async (err) => {
 				console.warn(err);
@@ -99,16 +99,16 @@ const TABULARRepositoryPage = (): ReactElement => {
 				await sleep(1000);
 				setLoadingArrangerConfig(false);
 			});
-	}, []);
+	}, [NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE, NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_INDEX]);
 
 	const ConfigError = getConfigError({
 		hasConfig: arrangerHasConfig,
-		index: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX,
-		documentType: NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE,
+		index: NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_INDEX,
+		documentType: NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE,
 	});
 
 	return (
-		<PageLayout subtitle="Tabular Data Explorer">
+		<PageLayout subtitle="Molecular Data Explorer">
 			{loadingArrangerConfig ? (
 				<div
 					css={css`
@@ -135,9 +135,9 @@ const TABULARRepositoryPage = (): ReactElement => {
 				</ErrorNotification>
 			) : (
 				<ArrangerDataProvider
-					apiUrl={NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API}
+					apiUrl={NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_API}
 					customFetcher={arrangerFetcher}
-					documentType={NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE}
+					documentType={NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE}
 					theme={{
 						colors: {
 							common: {
@@ -160,4 +160,4 @@ const TABULARRepositoryPage = (): ReactElement => {
 	);
 };
 
-export default TABULARRepositoryPage;
+export default MolecularRepositoryPage;

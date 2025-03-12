@@ -1,3 +1,4 @@
+// components/NavBar/NavBar.tsx
 import { css, useTheme } from '@emotion/react';
 import cx from 'classnames';
 import { useRouter } from 'next/router';
@@ -11,6 +12,7 @@ import defaultTheme from '../theme';
 import UserDropdown from '../UserDropdown';
 
 import labIcon from '@/public/images/navbar-logo.png';
+import DataTablesDropdown from './DataTablesDropdown';
 import Dropdown from './Dropdown';
 import { linkStyles, StyledLink, StyledListLink } from './styles';
 
@@ -111,22 +113,9 @@ const NavBar = (): ReactElement => {
 						color: ${theme.colors.black};
 					`}
 				>
-					<Dropdown
-						css={linkStyles}
-						data={[
-							<InternalLink path={INTERNAL_PATHS.TABULAR}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.TABULAR) })}>
-									Tabular Data
-								</StyledListLink>
-							</InternalLink>,
-							<InternalLink path={INTERNAL_PATHS.FILE}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.FILE) })}>
-									File Data
-								</StyledListLink>
-							</InternalLink>,
-						]}
-						label="Explore The Data"
-					/>
+					{/* Dynamic data tables dropdown based on folder structure */}
+					<DataTablesDropdown />
+
 					<InternalLink path={INTERNAL_PATHS.DOCUMENTATION}>
 						<StyledLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.DOCUMENTATION) })}>
 							Documentation

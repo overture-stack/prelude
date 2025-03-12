@@ -18,15 +18,15 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-import { ReactElement } from 'react';
-import { Aggregations, QuickSearch, useArrangerTheme } from '@overture-stack/arranger-components';
-import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
-import { css, useTheme } from '@emotion/react';
 import { StageThemeInterface } from '@/components/theme';
 import { getConfig } from '@/global/config';
+import { css, useTheme } from '@emotion/react';
+import { Aggregations, QuickSearch, useArrangerTheme } from '@overture-stack/arranger-components';
+import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
+import { ReactElement } from 'react';
 
 const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps => ({
-	callerName: 'TABULAR-Facets',
+	callerName: 'CLINICAL-Facets',
 	components: {
 		Aggregations: {
 			ActionIcon: {
@@ -211,7 +211,7 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 	},
 });
 const Facets = (): ReactElement => {
-	const { NEXT_PUBLIC_ENABLE_TABULAR_QUICKSEARCH } = getConfig();
+	const { NEXT_PUBLIC_ENABLE_CLINICAL_QUICKSEARCH } = getConfig();
 	const theme = useTheme();
 	useArrangerTheme(getAggregationsStyles(theme));
 	return (
@@ -232,7 +232,7 @@ const Facets = (): ReactElement => {
 			>
 				Filters
 			</h2>
-			{NEXT_PUBLIC_ENABLE_TABULAR_QUICKSEARCH && <QuickSearch />}
+			{NEXT_PUBLIC_ENABLE_CLINICAL_QUICKSEARCH && <QuickSearch />}
 			<Aggregations />
 		</article>
 	);

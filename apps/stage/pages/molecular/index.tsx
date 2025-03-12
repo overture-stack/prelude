@@ -1,7 +1,7 @@
-import File from '../../components/pages/file';
+import File from '../../components/pages/dataTables/molecular';
 import { createPage } from '../../global/utils/pages';
 
-const FilePage = createPage({
+const MolecularExplorationPage = createPage({
 	getInitialProps: async ({ query, egoJwt }) => {
 		return { query, egoJwt };
 	},
@@ -10,4 +10,4 @@ const FilePage = createPage({
 	return <File />;
 });
 
-export default FilePage;
+export default MolecularExplorationPage;

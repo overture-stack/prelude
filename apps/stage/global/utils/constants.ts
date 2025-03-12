@@ -32,8 +32,8 @@ export const LOGIN_PATH = '/login';
 export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
-	FILE = '/file',
-	TABULAR = '/tabular',
+	MOLECULAR = '/molecular',
+	CLINICAL = '/clinical',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
 	SONG = '/swaggerDocs/song',
@@ -60,8 +60,8 @@ const PROXY_API_PATH = '/api';
 const PROXY_PROTECTED_API_PATH = '/api/protected';
 
 export const INTERNAL_API_PROXY = {
-	FILE_ARRANGER: urlJoin(PROXY_API_PATH, 'file_arranger'),
-	TABULAR_ARRANGER: urlJoin(PROXY_API_PATH, 'tabular_arranger'),
+	MOLECULAR_ARRANGER: urlJoin(PROXY_API_PATH, 'molecular_arranger'),
+	CLINICAL_ARRANGER: urlJoin(PROXY_API_PATH, 'clinical_arranger'),
 	PROTECTED_ARRANGER: urlJoin(PROXY_PROTECTED_API_PATH, 'arranger'),
 	PROTECTED_KEYCLOAK_APIKEY_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'keycloak/apikey'),
 	PROTECTED_KEYCLOAK_TOKEN_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'keycloak/token'),

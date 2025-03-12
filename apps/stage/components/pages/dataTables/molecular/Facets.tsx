@@ -214,7 +214,7 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 });
 
 const Facets = (): ReactElement => {
-	const { NEXT_PUBLIC_ENABLE_FILE_QUICKSEARCH } = getConfig();
+	const { NEXT_PUBLIC_ENABLE_MOLECULAR_QUICKSEARCH } = getConfig();
 	const theme = useTheme();
 	useArrangerTheme(getAggregationsStyles(theme));
 
@@ -237,7 +237,7 @@ const Facets = (): ReactElement => {
 				Filters
 			</h2>
 
-			{NEXT_PUBLIC_ENABLE_FILE_QUICKSEARCH && <QuickSearch />}
+			{NEXT_PUBLIC_ENABLE_MOLECULAR_QUICKSEARCH && <QuickSearch />}
 
 			<Aggregations />
 		</article>

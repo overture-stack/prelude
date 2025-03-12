@@ -27,7 +27,7 @@ import createArrangerFetcher from '@/components/utils/arrangerFetcher';
 import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 
 export const arrangerFetcher = createArrangerFetcher({
-	ARRANGER_API: INTERNAL_API_PROXY.FILE_ARRANGER,
+	ARRANGER_API: INTERNAL_API_PROXY.MOLECULAR_ARRANGER,
 });
 
 const saveSetMutation = `mutation ($sqon: JSON!)  {

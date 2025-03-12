@@ -1,6 +1,8 @@
+// components/pages/home/HomeNavigation.tsx
 import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
+import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
 interface CardItem {
@@ -22,15 +24,13 @@ const HomeNavigation = (): ReactElement => {
 	const theme = useTheme();
 	const [openDropdown, setOpenDropdown] = useState<number | null>(null);
 	const [docSections, setDocSections] = useState<SectionItem[]>([]);
+	const [dataTables, setDataTables] = useState<DataTableInfo[]>([]);
 	const [homeCards, setHomeCards] = useState<CardItem[]>([
 		{
 			title: 'Explore the Data',
 			link: '#',
 			description: 'Browse and interact with datasets',
-			subItems: [
-				{ title: 'Clinical Data', link: INTERNAL_PATHS.TABULAR },
-				{ title: 'Molecular Data', link: INTERNAL_PATHS.FILE },
-			],
+			subItems: [], // Will be populated dynamically with data tables
 		},
 		{
 			title: 'Documentation & Guides',
@@ -56,6 +56,34 @@ const HomeNavigation = (): ReactElement => {
 		},
 	]);
 
+	// Load data tables from API
+	useEffect(() => {
+		fetch('/api/data-tables')
+			.then((response) => response.json())
+			.then((data) => {
+				setDataTables(data);
+
+				// Update the Explore the Data card with data tables
+				setHomeCards((prevCards) =>
+					prevCards.map((card) =>
+						card.title === 'Explore the Data'
+							? {
+									...card,
+									subItems: data.map((table: DataTableInfo) => ({
+										title: table.title,
+										link: table.path,
+									})),
+							  }
+							: card,
+					),
+				);
+			})
+			.catch((error) => {
+				console.error('Error fetching data tables:', error);
+			});
+	}, []);
+
+	// Load documentation sections
 	useEffect(() => {
 		const fetchDocs = async () => {
 			try {
@@ -107,7 +135,7 @@ const HomeNavigation = (): ReactElement => {
 	}, []);
 
 	const handleCardClick = (card: CardItem, index: number, e: React.MouseEvent) => {
-		if (card.subItems) {
+		if (card.subItems && card.subItems.length > 0) {
 			e.preventDefault();
 			setOpenDropdown(openDropdown === index ? null : index);
 		} else if (card.external) {
@@ -127,7 +155,7 @@ const HomeNavigation = (): ReactElement => {
 		}
 	};
 
-	// Optimized CSS styles
+	// CSS styles
 	const styles = {
 		container: css`
 			width: 95%;
@@ -215,6 +243,12 @@ const HomeNavigation = (): ReactElement => {
 		acknowledgements: css`
 			margin-top: 20px;
 		`,
+		emptySubItems: css`
+			padding: 12px;
+			color: ${theme.colors.grey_5};
+			font-style: italic;
+			text-align: center;
+		`,
 	};
 
 	return (
@@ -226,7 +260,7 @@ const HomeNavigation = (): ReactElement => {
 							<div css={styles.cardContent}>
 								<div css={styles.cardHeader}>
 									<h3 css={styles.cardTitle}>{card.title}</h3>
-									{card.subItems && (
+									{card.subItems && card.subItems.length > 0 && (
 										<button
 											onClick={(e) => {
 												e.stopPropagation();
@@ -246,11 +280,15 @@ const HomeNavigation = (): ReactElement => {
 							</div>
 							{card.subItems && openDropdown === index && (
 								<div css={styles.dropdownContent}>
-									{card.subItems.map((subItem, subIndex) => (
-										<div key={subIndex} onClick={(e) => handleSubItemClick(subItem, e)} css={styles.dropdownItem}>
-											{subItem.title}
-										</div>
-									))}
+									{card.subItems.length > 0 ? (
+										card.subItems.map((subItem, subIndex) => (
+											<div key={subIndex} onClick={(e) => handleSubItemClick(subItem, e)} css={styles.dropdownItem}>
+												{subItem.title}
+											</div>
+										))
+									) : (
+										<div css={styles.emptySubItems}>No items available</div>
+									)}
 								</div>
 							)}
 						</div>

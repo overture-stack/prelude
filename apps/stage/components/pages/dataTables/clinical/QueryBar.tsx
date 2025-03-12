@@ -18,13 +18,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+import { StageThemeInterface } from '@/components/theme';
 import { css, useTheme } from '@emotion/react';
 import { SQONViewer, useArrangerTheme } from '@overture-stack/arranger-components';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
 import { Row } from 'react-grid-system';
-import { StageThemeInterface } from '@/components/theme';
 const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProps => ({
-	callerName: 'TABULAR-QueryBar',
+	callerName: 'CLINICAL-QueryBar',
 	components: {
 		SQONViewer: {
 			EmptyMessage: {

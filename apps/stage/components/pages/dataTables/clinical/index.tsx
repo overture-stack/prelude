@@ -55,9 +55,9 @@ export interface PageContentProps {
 }
 
 const {
-	NEXT_PUBLIC_ARRANGER_FILE_DATA_API,
-	NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE,
-	NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX,
+	NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_API,
+	NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_DOCUMENT_TYPE,
+	NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_INDEX,
 } = getConfig();
 
 const configsQuery = `
@@ -66,7 +66,7 @@ const configsQuery = `
 	}
 `;
 
-const FileRepositoryPage = (): ReactElement => {
+const CLINICALRepositoryPage = (): ReactElement => {
 	const theme = useTheme();
 	const [arrangerHasConfig, setArrangerHasConfig] = useState<boolean>(false);
 	const [loadingArrangerConfig, setLoadingArrangerConfig] = useState<boolean>(true);
@@ -76,8 +76,8 @@ const FileRepositoryPage = (): ReactElement => {
 			endpoint: 'graphql/hasValidConfig',
 			body: JSON.stringify({
 				variables: {
-					documentType: NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE,
-					index: NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX,
+					documentType: NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_DOCUMENT_TYPE,
+					index: NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_INDEX,
 				},
 				query: configsQuery,
 			}),
@@ -91,7 +91,7 @@ const FileRepositoryPage = (): ReactElement => {
 					return setLoadingArrangerConfig(false);
 				}
 
-				throw new Error('Could not validate Arranger server configuration!');
+				throw new Error('Could not validate Arranger Clinical server configuration!');
 			})
 			.catch(async (err) => {
 				console.warn(err);
@@ -99,16 +99,16 @@ const FileRepositoryPage = (): ReactElement => {
 				await sleep(1000);
 				setLoadingArrangerConfig(false);
 			});
-	}, [NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE, NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX]);
+	}, []);
 
 	const ConfigError = getConfigError({
 		hasConfig: arrangerHasConfig,
-		index: NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX,
-		documentType: NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE,
+		index: NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_INDEX,
+		documentType: NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_DOCUMENT_TYPE,
 	});
 
 	return (
-		<PageLayout subtitle="File Data Explorer">
+		<PageLayout subtitle="Clinical Data Explorer">
 			{loadingArrangerConfig ? (
 				<div
 					css={css`
@@ -135,9 +135,9 @@ const FileRepositoryPage = (): ReactElement => {
 				</ErrorNotification>
 			) : (
 				<ArrangerDataProvider
-					apiUrl={NEXT_PUBLIC_ARRANGER_FILE_DATA_API}
+					apiUrl={NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_API}
 					customFetcher={arrangerFetcher}
-					documentType={NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE}
+					documentType={NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_DOCUMENT_TYPE}
 					theme={{
 						colors: {
 							common: {
@@ -160,4 +160,4 @@ const FileRepositoryPage = (): ReactElement => {
 	);
 };
 
-export default FileRepositoryPage;
+export default CLINICALRepositoryPage;
