@@ -19,12 +19,12 @@
  *
  */
 
-import styled from '@emotion/styled';
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import Link from 'next/link';
 
-import defaultTheme from './theme';
 import getInternalLink from '../global/utils/getInternalLink';
+import defaultTheme from './theme';
 
 const StyledLink = styled('a')`
 	${({ theme }: { theme: typeof defaultTheme }) => css`
@@ -40,7 +40,7 @@ const StyledLink = styled('a')`
 export const StyledLinkAsButton = styled(StyledLink)`
 	${({ theme }: { theme: typeof defaultTheme }) => css`
 		color: ${theme.colors.white};
-		background-color: ${theme.colors.accent};
+		background-color: ${theme.colors.primary};
 		${theme.typography.subheading2};
 		line-height: 24px;
 		border-radius: 5px;
@@ -54,7 +54,7 @@ export const StyledLinkAsButton = styled(StyledLink)`
 		text-decoration: none;
 		&:hover {
 			color: ${theme.colors.white};
-			background-color: ${theme.colors.accent_dark};
+			background-color: ${theme.colors.primary_dark};
 		}
 	`}
 `;

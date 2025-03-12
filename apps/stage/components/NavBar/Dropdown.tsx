@@ -19,16 +19,15 @@
  *
  */
 
-import { MouseEventHandler, ReactElement, ReactNode, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { css, useTheme } from '@emotion/react';
 import cx from 'classnames';
+import { MouseEventHandler, ReactElement, ReactNode, SyntheticEvent, useEffect, useRef, useState } from 'react';
 
 import defaultTheme from '../theme';
-import { ChevronDown } from '../theme/icons';
 
-import { TransparentButton } from '../Button';
-import { INTERNAL_PATHS } from '../../global/utils/constants';
 import { useRouter } from 'next/router';
+import { INTERNAL_PATHS } from '../../global/utils/constants';
+import { TransparentButton } from '../Button';
 
 const Dropdown = ({
 	children,
@@ -106,18 +105,17 @@ const Dropdown = ({
 		>
 			{children || label}
 
-			<ChevronDown
-				fill={theme.colors.white}
-				size={11}
-				style={css`
+			<div
+				css={css`
+					display: flex;
+					align-items: center;
 					margin-left: 10px;
-					${open
-						? css`
-								transform: rotate(180deg) translateY(-2px);
-						  `
-						: css`
-								transform: translateY(1px);
-						  `}
+					width: 4px;
+					height: 4px;
+					border: 1px solid ${theme.colors.grey_3};
+					border-top: none;
+					border-right: none;
+					transform: rotate(-45deg);
 				`}
 			/>
 
@@ -125,7 +123,7 @@ const Dropdown = ({
 				<ul
 					css={css`
 						background: ${theme.colors.white};
-						box-shadow: 0 8px 21px 0 rgba(0, 0, 0, 0.1), 0 6px 12px 0 rgba(0, 0, 0, 0.1);
+						box-shadow: 0 8px 21px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
 						color: ${theme.colors.grey_6};
 						list-style: none;
 						margin: 0;
@@ -133,9 +131,10 @@ const Dropdown = ({
 						min-width: 100%;
 						padding: 0;
 						position: absolute;
-						right: 0;
+						left: 0;
 						top: calc(100% + 5px);
 						z-index: 1000;
+						border-left: 4px solid ${theme.colors.primary_dark};
 
 						li {
 							box-sizing: border-box;

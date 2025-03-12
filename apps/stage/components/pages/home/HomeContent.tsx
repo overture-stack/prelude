@@ -14,7 +14,7 @@ const HomeContent = (): ReactElement => {
 		>
 			<HeroBanner
 				title="Prelude"
-				description="Incrementally build your Overture data platform"
+				description="Version 1.0.0-beta"
 				breadcrumbs={[{ label: 'Home', href: '/' }]}
 				fixed={false}
 			/>

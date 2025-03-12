@@ -13,8 +13,9 @@ import UserDropdown from '../UserDropdown';
 
 import labIcon from '@/public/images/navbar-logo.png';
 import DataTablesDropdown from './DataTablesDropdown';
+import DocumentationDropdown from './DocumentationDropdown';
 import Dropdown from './Dropdown';
-import { linkStyles, StyledLink, StyledListLink } from './styles';
+import { linkStyles, StyledListLink } from './styles';
 
 export const navBarRef = createRef<HTMLDivElement>();
 
@@ -113,35 +114,29 @@ const NavBar = (): ReactElement => {
 						color: ${theme.colors.black};
 					`}
 				>
-					{/* Dynamic data tables dropdown based on folder structure */}
 					<DataTablesDropdown />
-
-					<InternalLink path={INTERNAL_PATHS.DOCUMENTATION}>
-						<StyledLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.DOCUMENTATION) })}>
-							Documentation
-						</StyledLink>
-					</InternalLink>
+					<DocumentationDropdown />
 					<Dropdown
 						css={linkStyles}
 						data={[
 							<InternalLink path={INTERNAL_PATHS.LYRIC}>
 								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.LYRIC) })}>
-									Lyric
+									Lyric API
 								</StyledListLink>
 							</InternalLink>,
 							<InternalLink path={INTERNAL_PATHS.LECTERN}>
 								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.LECTERN) })}>
-									Lectern
+									Lectern API
 								</StyledListLink>
 							</InternalLink>,
 							<InternalLink path={INTERNAL_PATHS.SONG}>
 								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SONG) })}>
-									Song
+									Song API
 								</StyledListLink>
 							</InternalLink>,
 							<InternalLink path={INTERNAL_PATHS.SCORE}>
 								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SCORE) })}>
-									Score
+									Score API
 								</StyledListLink>
 							</InternalLink>,
 						]}

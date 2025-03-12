@@ -1,3 +1,4 @@
+// pages/documentation/index.tsx
 import fs from 'fs';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
@@ -18,9 +19,9 @@ const DocumentationIndex: React.FC<DocumentationIndexProps> = ({ sections }) => 
 		<PageLayout>
 			<main>
 				<HeroBanner
-					title="Documentation"
-					description="Learn how to use Prelude to incrementally build your data platform"
-					breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Documentation' }]}
+					title="Documentation & Guides"
+					description=""
+					breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Documentation & Guides' }]}
 					fixed={true}
 				/>
 				<div css={styles.contentWrapper}>

@@ -1,4 +1,4 @@
-# Stage Development Guide
+# Stage Development
 
 ## Theming
 

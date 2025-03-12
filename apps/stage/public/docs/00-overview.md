@@ -1,77 +1,101 @@
 # Overview
 
-Prelude is a comprehensive toolkit designed for the **planning and development stages** of data platform implementation. It enables teams to:
+## Overview
 
-- Build and validate data platform requirements incrementally
+Prelude is a toolkit designed specifically for the **planning and development stages** of Overture data platform implementation. It guides teams through building and validating data platform requirements incrementally, enabling them to:
+
 - Systematically verify requirements and user workflows
 - Minimize technical overhead during planning and prototype phases
-- Create a blueprint for production deployment
+- Create a comprehensive blueprint for production deployment
 
-**Note:** Prelude is **not a production environment**, but prepares you for successful production deployment.
+**Important:** Prelude is **not intended for production environments**. It serves as a preparatory tool to ensure successful production deployments. We are actively enhancing resources to support teams bridging from prelude to production.
+
+Any feedback and suggestions are valuable to us - please share them through our [ideas forum](https://github.com/overture-stack/docs/discussions/categories/ideas).
 
 ## Development Phases
 
-Prelude implements a phased architecture that grows with your project needs:
+Prelude is segmented across four phases incremental phases:
 
-| Phase                                   | Focus                                    | Components                        | Capabilities                                          |
-| --------------------------------------- | ---------------------------------------- | --------------------------------- | ----------------------------------------------------- |
-| **Phase 1:** Data Exploration & Theming | How your data is displayed in the portal | Elasticsearch, Arranger, Stage    | Display tabular data with search and filters          |
-| **Phase 2:** Tabular Data Management    | Back-end data storage and validation     | Lyric, Lectern, Postgres, MongoDB | Schema validation, data submission, quality control   |
-| **Phase 3:** File Management            | File storage and metadata tracking       | Song, Score, Object Storage       | Multi-part uploads, file versioning, metadata linking |
-| **\*Phase 4:** Identity & Access        | Security and user management             | Keycloak integration              | Authentication, authorization, audit logging          |
+![Development Phases](/docs/images/architecture.png 'Prelude Development Phases')
 
-**\*Phase 4**, will not be included in the Prelude version 1 release, phase 4 will be implemented following this initial relase.
+| Phase                                   | Focus                                    | Components                        |
+| --------------------------------------- | ---------------------------------------- | --------------------------------- |
+| **Phase 1:** Data Exploration & Theming | How your data is displayed in the portal | Elasticsearch, Arranger, Stage    |
+| **Phase 2:** Tabular Data Management    | Back-end data storage and validation     | Lyric, Lectern, Postgres, MongoDB |
+| **Phase 3:** File Management            | File storage and metadata tracking       | Song, Score, Object Storage       |
+| **_Phase 4:_** Identity & Access        | Security and user management             | Keycloak integration              |
 
-## Core Tools
+**Phase 4**, is not included in the Prelude version 1 release, phase 4 will be implemented following this initial release.
 
-### Composer CLI
+## Supplemental Tools
 
-The **Composer** tool transforms your data into base Overture configurations:
+The **Composer** tool transforms your data into base Overture configurations, generating:
 
-- **Elasticsearch Configuration**: Build ES mappings with automatic type inference
-- **Arranger UI Configuration**: Create Arranger configurations for search interfaces
-- **Data Dictionary Generation**: Create Lectern dictionaries from CSV data files
-- **Schema Creation**: Generate Song schemas from JSON metadata templates
+- **Elasticsearch Mappings**: Defines the structure and indexing settings for your data in Elasticsearch
+- **Arranger UI Configs**: Configures the user interface for data exploration and visualization
+- **Lectern Dictionary and Schema**: Creates data dictionaries and schemas for tabular data management
+- **Song Schema**: Generates schema configurations for our file metadata
 
-### Conductor CLI
+These configuration files provide a foundational setup for your Overture platform components, ensuring consistent data representation and interoperability.
 
-The **Conductor** tool provides workflow management commands simplifying interactions with APIs across all components:
+The **Conductor** tool streamlines interactions with Overture APIs, offering capabilities such as:
 
-- **Elasticsearch Management**: Upload CSV data, manage indices and templates
-- **Schema Management**: Upload and validate data dictionaries via Lectern
-- **Data Validation**: Register dictionaries with Lyric and validate data against schemas
-- **File Management**: Upload, manifest, and publish files with Song and Score
-- **Study Management**: Create and manage studies and their associated data within Song
+- **Elasticsearch Management**
+
+  - Update Elasticsearch mappings
+  - Transform and load CSV data into Elasticsearch
+
+- **Metadata and Schema Handling**
+
+  - Validate and submit schema dictionaries to Lectern
+  - Register Lectern dictionaries with Lyric
+
+- **Data Management**
+  - Upload tabular data to Lyric
+  - Create Song studies
+  - Update Song with analysis schemas
+  - Upload and publish file data with Song and Score
+
+The guides here provide detailed instructions for using Conductor. Since Conductor streamlines and abstracts interactions with Overture API endpoints, we will reference the specific endpoints used at each stage. To supplement this, we have integrated the [Overture Swagger docs and API pages](/swaggerDocs/overview) within this portal, allowing you to explore and interact with any API endpoint as needed.
+
+**Note:** Swagger APIs will only be available when running the phases that include the respective service.
 
 ## Getting Started
 
-### 1. Prerequisites
+**Note:** The following information will be redundant if you are reading from the Prelude documentation page.
 
-- Docker Desktop 4.39.0+ with sufficient resources:
-  - 8 cores CPU minimum
-  - 8 GB memory
-  - 2 GB swap
-  - 64 GB virtual disk
-- Node.js 18+ and npm 9+
+**1. Clone the repository:** 
 
-### 2. Installation
-
-```bash
-# Clone the repository
+```
 git clone -b prelude https://github.com/overture-stack/conductor.git
 cd conductor
-
-# Build the Stage image
-cd apps/stage
-docker build -t stageimage:1.0 .
-cd ../..
 ```
 
-### 3. Launch the Platform
+**2. Pre-deployment Check:** You can run `make Phase0` to run a pre-deployment check.
 
-To begin, run `make phase1`
+Pre-requisites and minimum requirements are as follows:
 
-### 4. Access the Portal
+  - Docker Desktop 4.39.0+ with sufficient resources:
+    - 8 cores CPU minimum
+    - 8 GB memory
+    - 2 GB swap
+    - 64 GB virtual disk
+  - Node.js 18+ and npm 9+
+
+
+**3. Build the local stage UI image:** 
+
+```
+cd apps/stage
+docker build -t stageimage:1.0 .
+```
+
+**4. Run the Phase1 deployment script from the root directory:** 
+
+```
+make phase1
+```
+**5. Access the Portal**
 
 After startup, access the portal at: http://localhost:3000
 

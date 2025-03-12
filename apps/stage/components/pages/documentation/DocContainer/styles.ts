@@ -284,8 +284,19 @@ const styles = {
 			display: none;
 		}
 
+		h1:first-of-type {
+			visibility: hidden;
+			height: 0;
+			margin: 0;
+			margin-top: -30px;
+			padding: 0;
+			line-height: 0;
+			font-size: 0;
+			border: none;
+		}
+
 		h1 {
-			font-size: 48px;
+			font-size: 32px;
 			font-weight: 900;
 			line-height: 60px;
 			margin-bottom: 20px;
@@ -309,7 +320,7 @@ const styles = {
 		}
 
 		h2 {
-			font-size: 32px;
+			font-size: 24px;
 			font-weight: 900;
 			line-height: 40px;
 			margin-bottom: 20px;
@@ -348,7 +359,7 @@ const styles = {
 		}
 
 		h4 {
-			font-size: 1.25rem;
+			font-size: 16px;
 			margin-bottom: 20px;
 			/* Tablet-specific heading size */
 			@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
@@ -366,6 +377,8 @@ const styles = {
 
 		p {
 			line-height: 1.5;
+			font-size: 16px;
+			font-weight: 400;
 		}
 		,
 		ul,
@@ -373,6 +386,7 @@ const styles = {
 			margin: 1.25rem 0;
 			max-width: 100%;
 			overflow-wrap: break-word;
+			font-size: 16px;
 		}
 
 		ul,
@@ -511,6 +525,11 @@ const styles = {
 			@media (max-width: ${theme.breakpoints.md}) {
 				margin: 1.5rem auto;
 			}
+		}
+		strong {
+			font-weight: 900;
+			color: #000;
+			letter-spacing: -0.02em;
 		}
 	`,
 

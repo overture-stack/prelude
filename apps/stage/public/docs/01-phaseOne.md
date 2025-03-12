@@ -1,4 +1,4 @@
-# Phase1: Portal Interface
+# Phase One
 
 Phase1 focuses on how you want your data displayed in the front-end portal.
 Here you want to figure out how many data tables you want and how you want them

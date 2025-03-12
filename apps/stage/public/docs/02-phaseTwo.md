@@ -1,4 +1,4 @@
-# Phase2: Data Management
+# Phase Two
 
 Here we will focus on implementing our back-end tabular data management services
 which will include the addition of Lyric, Lectern, LyricDb (Postgres) and a

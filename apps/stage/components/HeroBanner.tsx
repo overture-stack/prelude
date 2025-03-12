@@ -1,7 +1,7 @@
 // components/HeroBanner.tsx
 import { css, useTheme } from '@emotion/react';
 import Link from 'next/link';
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 
 // Define the breadcrumb item interface
 export interface BreadcrumbItem {
@@ -11,8 +11,8 @@ export interface BreadcrumbItem {
 
 // Define the component props interface
 export interface HeroBannerProps {
-	title: string;
-	description?: string;
+	title: string | ReactNode; // Updated to accept ReactNode
+	description?: string | ReactNode; // Updated to accept ReactNode
 	breadcrumbs?: BreadcrumbItem[];
 	backgroundColor?: string;
 	textColor?: string;

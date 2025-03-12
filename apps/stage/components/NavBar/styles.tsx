@@ -26,7 +26,7 @@ import defaultTheme from '../theme';
 
 export const linkStyles = (theme?: typeof defaultTheme): SerializedStyles => css`
 	align-items: center;
-	border-bottom: 3px solid transparent;
+	border-bottom: 4px solid transparent;
 	box-sizing: border-box;
 	color: ${theme?.colors.black};
 	cursor: pointer;
@@ -35,20 +35,20 @@ export const linkStyles = (theme?: typeof defaultTheme): SerializedStyles => css
 	font-weight: bold;
 	height: 100%;
 	justify-content: center;
-	padding: 0 1rem;
+
 	text-decoration: none;
 	white-space: nowrap;
 	width: fit-content;
 	font-size: 14px;
 
 	svg path {
-		fill: ${theme?.colors.white};
+		fill: ${theme?.colors.black};
 	}
 
 	&.active,
 	&:hover {
-		border-bottom-color: ${theme?.colors.primary_dark};
 		color: ${theme?.colors.primary_dark};
+		background-color: ${theme?.colors.grey_1};
 
 		svg path {
 			fill: ${theme?.colors.primary_dark};
@@ -77,7 +77,7 @@ export const StyledListLink = styled.a`
 	${({ theme }: { theme?: typeof defaultTheme }) => css`
 		align-items: center;
 		background-color: ${theme?.colors.white};
-		border: 1px solid ${theme?.colors.grey_3};
+		border: 1px solid ${theme?.colors.grey_2};
 		box-sizing: border-box;
 		color: ${theme?.colors.black};
 		cursor: pointer;

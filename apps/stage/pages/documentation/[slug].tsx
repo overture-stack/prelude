@@ -1,4 +1,4 @@
-// Fix for pages/documentation/[slug].tsx
+// pages/documentation/[slug].tsx
 import fs from 'fs';
 import { marked } from 'marked';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
@@ -21,9 +21,13 @@ const DocumentationPage: NextPage<DocumentationPageProps> = ({ section, sections
 		<PageLayout>
 			<main>
 				<HeroBanner
-					title="Documentation"
-					description="Learn how to use Prelude to incrementally build your data platform"
-					breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Documentation' }]}
+					title={section.title}
+					description=""
+					breadcrumbs={[
+						{ label: 'Home', href: '/' },
+						{ label: 'Documentation & Guides', href: '/documentation' },
+						{ label: section.title },
+					]}
 					fixed={true}
 				/>
 				<div css={styles.contentWrapper}>
