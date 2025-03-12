@@ -24,19 +24,19 @@ services:
       # Dynamic indices are configured with a count and indexed variables
       ES_INDEX_COUNT: 1
       # First index
-      # ES_INDEX_0_NAME: file-index
-      # ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
-      # ES_INDEX_0_TEMPLATE_NAME: file_template
-      # ES_INDEX_0_ALIAS_NAME: file_centric
+      ES_INDEX_0_NAME: tabular-index
+      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
+      ES_INDEX_0_TEMPLATE_NAME: tabular_template
+      ES_INDEX_0_ALIAS_NAME: tabular_centric
       # Second index
-      ES_INDEX_1_NAME: tabular-index
-      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
-      ES_INDEX_1_TEMPLATE_NAME: tabular_template
-      ES_INDEX_1_ALIAS_NAME: tabular_centric
+      # ES_INDEX_1_NAME: file-index
+      # ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
+      # ES_INDEX_1_TEMPLATE_NAME: file_template
+      # ES_INDEX_1_ALIAS_NAME: file_centric
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
       ARRANGER_COUNT: 1
-      ARRANGER_0_URL: http://arranger-0:5050
+      ARRANGER_0_URL: http://arranger-clinical:5050
       # ARRANGER_1_URL: http://arranger-1:5051
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
@@ -148,10 +148,10 @@ services:
   # Search API generation with compatible search UI components                          #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
-  arranger-0:
+  arranger-clinical:
     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-0
+    container_name: arranger-clinical
     platform: linux/amd64
     depends_on:
       conductor:
@@ -199,14 +199,14 @@ services:
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       # File Arranger Variables
-      NEXT_PUBLIC_ARRANGER_FILE_DATA_API: http://arranger-file:5050
-      NEXT_PUBLIC_ARRANGER_FILE_DATA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_FILE_DATA_INDEX: file_centric
+      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_API: http://arranger-1:5050
+      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_INDEX: file_centric
       NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size, file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type, analysis.experiment.data.sequence_length
       # Tabular Arranger Variables
-      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_API: http://arranger-0:5051
-      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_TABULAR_DATA_INDEX: tabular_centric
+      NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_API: http://arranger-0:5051
+      NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_INDEX: tabular_centric
       # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://song:8080
       NEXT_PUBLIC_LYRIC_API: http://lyric:3030
@@ -619,10 +619,10 @@ services:
   # Search API generation with compatible search UI components                          #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
-  arranger-1:
+  arranger-molecular:
     profiles: ["phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-1
+    container_name: arranger-molecular
     platform: linux/amd64
     depends_on:
       conductor:
