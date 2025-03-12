@@ -1,15 +1,16 @@
-import { css } from '@emotion/react';
+import { css, useTheme } from '@emotion/react';
 import { ReactElement } from 'react';
-import defaultTheme from '../../theme';
 
 const HomeAcknowledgements = (): ReactElement => {
+	const theme = useTheme();
+
 	return (
 		<div
 			css={css`
-				background-color: ${defaultTheme.colors.white};
+				background-color: ${theme.colors.white};
 				border-radius: 8px;
 				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				border: 1px solid ${defaultTheme.colors.grey_3};
+				border: 1px solid ${theme.colors.grey_3};
 				width: 100%;
 			`}
 		>
@@ -27,9 +28,9 @@ const HomeAcknowledgements = (): ReactElement => {
 						css={css`
 							font-size: 1.125rem;
 							font-weight: 600;
-							color: ${defaultTheme.colors.primary};
+							color: ${theme.colors.primary};
 							margin-bottom: 16px;
-							border-bottom: 1px solid ${defaultTheme.colors.grey_3};
+							border-bottom: 1px solid ${theme.colors.grey_3};
 							padding-bottom: 8px;
 						`}
 					>
@@ -38,7 +39,7 @@ const HomeAcknowledgements = (): ReactElement => {
 					<p
 						css={css`
 							font-size: 0.875rem;
-							color: ${defaultTheme.colors.grey_6};
+							color: ${theme.colors.grey_6};
 							margin-bottom: 16px;
 						`}
 					>
@@ -52,8 +53,8 @@ const HomeAcknowledgements = (): ReactElement => {
 					rel="noopener noreferrer"
 					css={css`
 						display: inline-block;
-						background-color: ${defaultTheme.colors.primary};
-						color: ${defaultTheme.colors.white};
+						background-color: ${theme.colors.primary};
+						color: ${theme.colors.white};
 						text-decoration: none;
 						padding: 10px 20px;
 						border-radius: 6px;
@@ -64,7 +65,7 @@ const HomeAcknowledgements = (): ReactElement => {
 						align-self: flex-start;
 
 						&:hover {
-							background-color: ${defaultTheme.colors.primary}dd;
+							background-color: ${theme.colors.primary_dark};
 						}
 					`}
 				>

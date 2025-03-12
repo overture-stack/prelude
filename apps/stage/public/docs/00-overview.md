@@ -1,44 +1,19 @@
-# Introduction
+# What is Prelude?
 
-Prelude is a comprehensive toolkit designed for the **planning and development stages** of data platform implementation. It enables teams to build and validate their data platform requirements incrementally before moving to production. By breaking down data portal development into phased steps, teams can systematically verify requirements and user workflows while minimizing technical overhead during the crucial planning and prototype phases.
+Prelude is a comprehensive toolkit designed for the **planning and development stages** of data platform implementation. It enables teams to:
 
-## Core Benefits
+- Build and validate data platform requirements incrementally
+- Systematically verify requirements and user workflows
+- Minimize technical overhead during planning and prototype phases
+- Create a blueprint for production deployment
 
-- **Validate requirements** through hands-on testing before production commitment
-- **Gain clear understanding** of user workflows and data interactions
-- **Document and standardize** data management processes
-- **Define granular security** and access control requirements
-- **Build a solid foundation** for production deployment planning
-- **Ensure data integrity** through structured validation workflows
-- **Reduce risk** by confirming platform fit before full production investment
-- **Accelerate development** with pre-configured components and guided setup
+**Note:** Prelude is **not a production environment**, but prepares you for successful production deployment.
 
-## Architecture Overview
+## Development Phases
 
 Prelude implements a phased architecture that grows with your project needs:
 
-```mermaid
-flowchart TD
-    p1["Phase 1: Data Display & Theme"] --> p2["Phase 2: Tabular Data Management"]
-    p2 --> p3["Phase 3: File Data Management"]
-    p3 --> p4["Phase 4: Identity and Access"]
-
-    p1 --> c1["Elasticsearch<br>Arranger<br>Stage UI<br>Composer CLI"]
-    p2 --> c2["Lyric<br>Lectern<br>Postgres DB<br>MongoDB"]
-    p3 --> c3["Song<br>Score<br>Object Storage"]
-    p4 --> c4["Keycloak<br>Role-based Access Control"]
-
-    style p1 fill:#d4f1f9,stroke:#0099cc,color:black
-    style p2 fill:#d4f1f9,stroke:#0099cc,color:black
-    style p3 fill:#d4f1f9,stroke:#0099cc,color:black
-    style p4 fill:#e0e0e0,stroke:#888888,color:black,stroke-dasharray: 5 5
-    style c1 fill:#f9e8d4,stroke:#cc7000,color:black
-    style c2 fill:#f9e8d4,stroke:#cc7000,color:black
-    style c3 fill:#f9e8d4,stroke:#cc7000,color:black
-    style c4 fill:#e0e0e0,stroke:#888888,color:black,stroke-dasharray: 5 5
-```
-
-## Development Phases
+![Arch](/docs/images/arch.png 'Phased Architecture')
 
 | Phase                                   | Focus                                    | Components                        | Capabilities                                          |
 | --------------------------------------- | ---------------------------------------- | --------------------------------- | ----------------------------------------------------- |
@@ -62,7 +37,7 @@ The **Composer** tool transforms your data into base Overture configurations:
 
 ### Conductor CLI
 
-The **Conductor** tool provides workflow management commands simplifying interactions with our APIs across all components:
+The **Conductor** tool provides workflow management commands simplifying interactions with APIs across all components:
 
 - **Elasticsearch Management**: Upload CSV data, manage indices and templates
 - **Schema Management**: Upload and validate data dictionaries via Lectern
@@ -96,47 +71,13 @@ cd ../..
 
 ### 3. Launch the Platform
 
-Choose the appropriate phase for your development needs:
-
-```bash
-# For Phase 1 (data exploration)
-make phase1
-
-# For Stage development
-make stage-dev
-
-# For other phases (when ready)
-make phase2
-make phase3
-```
+To begin, run `make phase1`
 
 ### 4. Access the Portal
 
 After startup, access the portal at: http://localhost:3000
 
-## Common Workflows
-
-## Prelude in the Platform Adoption Journey
-
-Prelude focuses specifically on the **Planning** and **Development** stages of platform adoption:
-
-### Planning Stage
-
-### Development Stage
-
-- **Data Integration**: Connect your data sources to the platform
-- **Schema Development**: Define and validate data dictionaries and schemas
-- **UI/UX Customization**: Adjust the user interface to your specific needs
-- **Workflow Testing**: Verify end-to-end data workflows function as expected
-
-### Bridge to Production (Post-Prelude)
-
-Note that Prelude is **not a production environment**, but prepares you for production by:
-
-- Providing validated configurations that can be transferred to production deployments
-- Documenting the specific components and configurations needed for your use case
-- Defining resource requirements based on your actual data volumes
-- Creating a blueprint for your production security and access control needs
+You can find all Prelude documentation rendered in the documentation tab or from our [documentation site](https://docs.overture.bio/other-software/prelude).
 
 ## Support
 
@@ -145,8 +86,4 @@ If you have any questions, please reach out through our [relevant community supp
 - For public support, use GitHub issues
 - For private inquiries, contact OICR Slack or contact@overture.bio
 
-### Common Issues
-
-| Issue | Possible Cause | Solution |
-| ----- | -------------- | -------- |
-| TBD   | TBD            | TBD      |
+We are currently working on creating new resources to aid users transitioning into production. If you have any ideas or suggestions, feel free to post them to our [GitHub discussion forum](https://github.com/overture-stack/docs/discussions/categories/ideas).

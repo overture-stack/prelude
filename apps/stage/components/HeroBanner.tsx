@@ -1,5 +1,5 @@
 // components/HeroBanner.tsx
-import { css } from '@emotion/react';
+import { css, useTheme } from '@emotion/react';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
@@ -24,17 +24,21 @@ const HeroBanner = ({
 	title,
 	description,
 	breadcrumbs = [],
-	backgroundColor = '#0B75A2',
+	backgroundColor,
 	textColor = '#ffffff',
 	height = 120,
 	fixed = true,
 }: HeroBannerProps): ReactElement => {
+	const theme = useTheme();
+
+	const bgColor = backgroundColor || theme.colors.primary;
+
 	return (
 		<article
 			className="hero-banner"
 			data-hero="true"
 			css={css`
-				background-color: ${backgroundColor};
+				background-color: ${bgColor};
 				box-sizing: border-box;
 				color: ${textColor};
 				display: flex;

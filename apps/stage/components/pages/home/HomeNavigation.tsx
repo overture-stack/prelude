@@ -1,201 +1,253 @@
-import { css } from '@emotion/react';
-import { ReactElement, useState } from 'react';
+import { css, useTheme } from '@emotion/react';
+import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
-import defaultTheme from '../../theme';
 import HomeAcknowledgements from './HomeAcknowledgements';
-import HomeCommunityResources from './HomeCommunityResources';
 
 interface CardItem {
 	title: string;
 	link: string;
 	description: string;
-	subItems?: { title: string; link: string }[];
+	subItems?: { title: string; link: string; external?: boolean }[];
 	external?: boolean;
+	isDynamic?: boolean;
 }
 
-const homeCards: CardItem[] = [
-	{
-		title: 'Explore the Data',
-		link: '#',
-		description: 'Browse and interact with datasets',
-		subItems: [
-			{ title: 'Clnical Data', link: INTERNAL_PATHS.TABULAR },
-			{ title: 'Moelecular Data', link: INTERNAL_PATHS.FILE },
-		],
-	},
-	{
-		title: 'Documentation & Guides',
-		link: INTERNAL_PATHS.DOCUMENTATION,
-		description: 'Phased guides covering Prelude usage',
-	},
-	{
-		title: 'Find Support',
-		link: 'https://docs.overture.bio/community/support',
-		description: 'Connect with our community and get help',
-		external: true,
-	},
-];
+interface SectionItem {
+	title: string;
+	id: string;
+	order: number;
+}
 
 const HomeNavigation = (): ReactElement => {
+	const theme = useTheme();
 	const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+	const [docSections, setDocSections] = useState<SectionItem[]>([]);
+	const [homeCards, setHomeCards] = useState<CardItem[]>([
+		{
+			title: 'Explore the Data',
+			link: '#',
+			description: 'Browse and interact with datasets',
+			subItems: [
+				{ title: 'Clinical Data', link: INTERNAL_PATHS.TABULAR },
+				{ title: 'Molecular Data', link: INTERNAL_PATHS.FILE },
+			],
+		},
+		{
+			title: 'Documentation & Guides',
+			link: INTERNAL_PATHS.DOCUMENTATION,
+			description: 'Phased guides covering Prelude usage',
+			isDynamic: true,
+		},
+		{
+			title: 'Find Support',
+			link: 'https://docs.overture.bio/community/support',
+			description: 'Connect with our community and get help',
+			external: true,
+		},
+		{
+			title: 'Community Resources',
+			link: '#',
+			description: 'Additional Overture resources',
+			subItems: [
+				{ title: 'Overture Docs', link: 'https://docs.overture.bio/', external: true },
+				{ title: 'Overture.bio', link: 'https://overture.bio/', external: true },
+				{ title: 'Overture-Stack GitHub', link: 'https://github.com/overture-stack', external: true },
+			],
+		},
+	]);
+
+	useEffect(() => {
+		const fetchDocs = async () => {
+			try {
+				const response = await fetch('/api/docs');
+				if (!response.ok) throw new Error('Failed to fetch documentation list');
+
+				const files = await response.json();
+				const sectionsPromises = files.map(async (filename: string) => {
+					try {
+						const contentResponse = await fetch(`/docs/${filename}`);
+						if (!contentResponse.ok) throw new Error(`Failed to load ${filename}`);
+
+						const content = await contentResponse.text();
+						return {
+							title: extractTitle(content),
+							id: createSlug(filename),
+							order: extractOrder(filename),
+						};
+					} catch (error) {
+						console.error(`Error processing file ${filename}:`, error);
+						return null;
+					}
+				});
+
+				const sections = (await Promise.all(sectionsPromises))
+					.filter((section): section is SectionItem => section !== null)
+					.sort((a, b) => a.order - b.order);
+
+				setDocSections(sections);
+				setHomeCards((prevCards) =>
+					prevCards.map((card) =>
+						card.isDynamic
+							? {
+									...card,
+									subItems: sections.map((section) => ({
+										title: section.title,
+										link: `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`,
+									})),
+							  }
+							: card,
+					),
+				);
+			} catch (error) {
+				console.error('Error fetching documentation:', error);
+			}
+		};
+
+		fetchDocs();
+	}, []);
 
 	const handleCardClick = (card: CardItem, index: number, e: React.MouseEvent) => {
-		// Prevent default for dropdown or external links
 		if (card.subItems) {
 			e.preventDefault();
 			setOpenDropdown(openDropdown === index ? null : index);
 		} else if (card.external) {
-			// Open external links in new tab
 			window.open(card.link, '_blank', 'noopener,noreferrer');
 		} else {
-			// Internal navigation
 			e.preventDefault();
 			window.location.href = card.link;
 		}
 	};
 
-	const handleSubItemClick = (subItem: { title: string; link: string }, e: React.MouseEvent) => {
-		// Prevent default for internal navigation
+	const handleSubItemClick = (subItem: { title: string; link: string; external?: boolean }, e: React.MouseEvent) => {
 		e.preventDefault();
-		window.location.href = subItem.link;
+		if (subItem.external) {
+			window.open(subItem.link, '_blank', 'noopener,noreferrer');
+		} else {
+			window.location.href = subItem.link;
+		}
+	};
+
+	// Optimized CSS styles
+	const styles = {
+		container: css`
+			width: 95%;
+			margin: 0 auto;
+			padding: 24px 16px 48px;
+			@media (max-width: 1280px) {
+				width: 92%;
+			}
+		`,
+		grid: css`
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 20px;
+			@media (max-width: 1024px) {
+				grid-template-columns: 1fr 1fr;
+			}
+			@media (max-width: 768px) {
+				grid-template-columns: 1fr;
+			}
+		`,
+		card: css`
+			cursor: pointer;
+			transition: transform 0.25s ease, box-shadow 0.25s ease;
+			&:hover {
+				transform: translateY(-1px);
+			}
+		`,
+		cardContainer: css`
+			background-color: ${theme.colors.white};
+			border-radius: 8px;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			border: 1px solid ${theme.colors.grey_3};
+			transition: box-shadow 0.25s ease;
+			&:hover {
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+			}
+		`,
+		cardContent: css`
+			padding: 18px;
+		`,
+		cardHeader: css`
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		`,
+		cardTitle: css`
+			font-size: 1.125rem;
+			font-weight: 600;
+			color: ${theme.colors.primary};
+			margin: 0 0 4px 0;
+		`,
+		cardDescription: css`
+			font-size: 0.875rem;
+			color: ${theme.colors.grey_6};
+			margin: 4px 0;
+		`,
+		dropdownButton: css`
+			background: none;
+			border: none;
+			cursor: pointer;
+			transition: transform 0.2s ease;
+			padding: 4px;
+		`,
+		dropdownContent: css`
+			border-top: 1px solid ${theme.colors.grey_3};
+			padding: 12px;
+			max-height: 260px;
+			overflow-y: auto;
+		`,
+		dropdownItem: css`
+			display: block;
+			padding: 8px 0;
+			color: ${theme.colors.grey_6};
+			text-decoration: none;
+			font-size: 0.875rem;
+			transition: color 0.2s ease;
+			cursor: pointer;
+			&:hover {
+				color: ${theme.colors.secondary};
+			}
+			&:not(:last-child) {
+				border-bottom: 1px solid ${theme.colors.grey_3};
+			}
+		`,
+		acknowledgements: css`
+			margin-top: 20px;
+		`,
 	};
 
 	return (
-		<div
-			css={css`
-				max-width: 1550px;
-				width: 90%;
-				margin: 0 auto;
-				padding: 32px 16px 0;
-				padding-bottom: 64px; // Ensure bottom padding
-			`}
-		>
-			<div
-				css={css`
-					display: grid;
-					grid-template-columns: repeat(3, 1fr);
-					gap: 24px;
-
-					@media (max-width: 1024px) {
-						grid-template-columns: 1fr 1fr;
-					}
-
-					@media (max-width: 768px) {
-						grid-template-columns: 1fr;
-					}
-				`}
-			>
+		<div css={styles.container}>
+			<div css={styles.grid}>
 				{homeCards.map((card, index) => (
-					<div
-						key={index}
-						css={css`
-							cursor: pointer;
-							transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-							&:hover {
-								transform: translateY(-5px);
-							}
-						`}
-						onClick={(e) => handleCardClick(card, index, e)}
-					>
-						<div
-							css={css`
-								background-color: ${defaultTheme.colors.white};
-								border-radius: 8px;
-								box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-								border: 1px solid ${defaultTheme.colors.grey_3};
-								transition: box-shadow 0.3s ease;
-
-								&:hover {
-									box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-								}
-							`}
-						>
-							<div
-								css={css`
-									padding: 24px;
-									display: flex;
-									flex-direction: column;
-									justify-content: space-between;
-									height: 100%;
-								`}
-							>
-								<div>
-									<div
-										css={css`
-											display: flex;
-											justify-content: space-between;
-											align-items: center;
-											margin-bottom: 8px;
-										`}
-									>
-										<h3
+					<div key={index} css={styles.card} onClick={(e) => handleCardClick(card, index, e)}>
+						<div css={styles.cardContainer}>
+							<div css={styles.cardContent}>
+								<div css={styles.cardHeader}>
+									<h3 css={styles.cardTitle}>{card.title}</h3>
+									{card.subItems && (
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												setOpenDropdown(openDropdown === index ? null : index);
+											}}
 											css={css`
-												font-size: 1.125rem;
-												font-weight: 600;
-												color: ${defaultTheme.colors.primary};
+												${styles.dropdownButton}
+												transform: ${openDropdown === index ? 'rotate(180deg)' : 'rotate(0deg)'};
 											`}
+											aria-label={openDropdown === index ? 'Hide options' : 'Show options'}
 										>
-											{card.title}
-										</h3>
-										{card.subItems && (
-											<button
-												onClick={(e) => {
-													e.stopPropagation();
-													setOpenDropdown(openDropdown === index ? null : index);
-												}}
-												css={css`
-													background: none;
-													border: none;
-													cursor: pointer;
-													transform: ${openDropdown === index ? 'rotate(180deg)' : 'rotate(0deg)'};
-													transition: transform 0.3s ease;
-												`}
-											>
-												▼
-											</button>
-										)}
-									</div>
-									<p
-										css={css`
-											font-size: 0.875rem;
-											color: ${defaultTheme.colors.grey_6};
-											margin-bottom: 16px;
-										`}
-									>
-										{card.description}
-									</p>
+											▼
+										</button>
+									)}
 								</div>
+								<p css={styles.cardDescription}>{card.description}</p>
 							</div>
 							{card.subItems && openDropdown === index && (
-								<div
-									css={css`
-										border-top: 1px solid ${defaultTheme.colors.grey_3};
-										padding: 16px;
-									`}
-								>
+								<div css={styles.dropdownContent}>
 									{card.subItems.map((subItem, subIndex) => (
-										<div
-											key={subIndex}
-											onClick={(e) => handleSubItemClick(subItem, e)}
-											css={css`
-												display: block;
-												padding: 10px 0;
-												color: ${defaultTheme.colors.grey_6};
-												text-decoration: none;
-												font-size: 0.875rem;
-												transition: color 0.3s ease;
-												cursor: pointer;
-
-												&:hover {
-													color: ${defaultTheme.colors.primary};
-												}
-
-												&:not(:last-child) {
-													border-bottom: 1px solid ${defaultTheme.colors.grey_3};
-												}
-											`}
-										>
+										<div key={subIndex} onClick={(e) => handleSubItemClick(subItem, e)} css={styles.dropdownItem}>
 											{subItem.title}
 										</div>
 									))}
@@ -206,22 +258,31 @@ const HomeNavigation = (): ReactElement => {
 				))}
 			</div>
 
-			<div
-				css={css`
-					margin-top: 24px;
-				`}
-			>
-				<HomeCommunityResources />
-			</div>
-			<div
-				css={css`
-					margin-top: 24px;
-				`}
-			>
+			<div css={styles.acknowledgements}>
 				<HomeAcknowledgements />
 			</div>
 		</div>
 	);
 };
+
+// Helper functions
+function extractTitle(content: string): string {
+	const titleMatch = content.match(/^#\s+(.+?)(?:\s+\{#.+\})?$/m);
+	return titleMatch ? titleMatch[1].trim() : 'Untitled Section';
+}
+
+function createSlug(filename: string): string {
+	return filename
+		.replace(/^\d+[-_]?/, '')
+		.replace(/\.md$/, '')
+		.toLowerCase()
+		.replace(/\s+/g, '-')
+		.replace(/[^\w-]/g, '');
+}
+
+function extractOrder(filename: string): number {
+	const match = filename.match(/^(\d+)/);
+	return match ? parseInt(match[1], 10) : 999;
+}
 
 export default HomeNavigation;
