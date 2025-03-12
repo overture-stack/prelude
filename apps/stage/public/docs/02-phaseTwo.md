@@ -1,15 +1,47 @@
 # Phase Two
 
-Here we will focus on implementing our back-end tabular data management services
-which will include the addition of Lyric, Lectern, LyricDb (Postgres) and a
-LecternDb (MongoDb).
+## Overview
 
-![Image Title](/docs/images/phase2.png 'Phase2 Architecture Diagram')
+**This guide is for** those in phase two of Prelude's deployment process. The primary goal is to [primary goal]. 
 
-| Added Software                                                           | Description                                                                                                                                                                                                                                                                                         |
-| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Lyric](https://docs.overture.bio/docs/under-development/lyric/)         | Lyric is a tabular data management service designed to handle structured clinical and research data. Built on top of Lectern's dictionary framework, it provides a system for organizations to submit, validate, and manage structured data according to predefined schemas.                        |
-| [Lectern](https://docs.overture.bio/docs/under-development/lectern/)     | Data dictionaries are collections of schemas that define the structure of tabular data files (like CSV). This application provides functionality to validate the structure of data dictionaries, maintain a list of dictionary versions, and to compute the difference between dictionary versions. |
-| [Maestro](https://docs.overture.bio/docs/core-software/Maestro/overview) | Organizes distributed data into a centralized Elasticsearch index, automatically, on publication.                                                                                                                                                                                                   |
-| LecternDB (MongoDb)                                                      | Database used by Lectern to store its schemas.                                                                                                                                                                                                                                                      |
-| LyricDb (Postgres)                                                       | Database used by Lyric to store its tabular data.                                                                                                                                                                                                                                                   |
+**By the end of this guide you will be able to:**
+
+- [specific learning outcomes/deliverables]
+- [specific learning outcomes/deliverables]
+- [specific learning outcomes/deliverables]
+
+**You will need:**
+- [pre-requisite]
+- [pre-requisite]
+- [pre-requisite]
+
+## Background Information
+
+[2-3 sentences providing essential context and background information that readers need to understand the guide]
+
+[If applicable, include a diagram or visual representation of the end goal/architecture]
+
+## Step 1: [Description]
+
+Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+
+Implementation: Stepwise instructions on what to do.
+
+Validation How can we verify the implementation was successful. What is the expected output?
+
+## Step 2: [Description]
+
+Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+
+Implementation: Stepwise instructions on what to do.
+
+Validation How can we verify the implementation was successful. What is the expected output?
+
+## Step 3: [Description]
+
+Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+
+Implementation: Stepwise instructions on what to do.
+
+Validation How can we verify the implementation was successful. What is the expected output?
+                                                                                                                                                                                                                                               |

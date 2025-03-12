@@ -1,6 +1,6 @@
-# Overview  
+# Introduction  
 
-## Overview  
+## Introduction  
 
 **Prelude** is a toolkit designed for the **planning and development stages** of Overture data platform implementation. It helps teams incrementally build and validate platform requirements, enabling them to:  
 

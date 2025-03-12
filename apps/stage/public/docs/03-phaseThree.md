@@ -1,15 +1,45 @@
 # Phase Three
 
-Here we will focus on implementing our back-end file management services which
-will include the addition of Song, Score, SongDb (Postgres) and an Object
-Storage provider (Minio).
+**This guide is for** those in phase two of Prelude's deployment process. The primary goal is to [primary goal]. 
 
-![Image Title](/docs/images/phase3.png 'Phase3 Architecture Diagram')
+**By the end of this guide you will be able to:**
 
-| Added Software                                                           | Description                                                                                      |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| [Score](https://docs.overture.bio/docs/core-software/Score/overview)     | Transfer file data to and from any S3 object storage                                             |
-| [Song](https://docs.overture.bio/docs/core-software/song/overview/)      | Catalog and manage metadata associated to file data                                              |
-| [Maestro](https://docs.overture.bio/docs/core-software/Maestro/overview) | Organizes distributed data into a centralized Elasticsearch index, automatically, on publication |
-| SongDB (Postgres)                                                        | Database used by Song to store metadata and manage file information                              |
-| Minio                                                                    | Open source S3-compatible object storage used locally for development and testing                |
+- [specific learning outcomes/deliverables]
+- [specific learning outcomes/deliverables]
+- [specific learning outcomes/deliverables]
+
+**You will need:**
+- [pre-requisite]
+- [pre-requisite]
+- [pre-requisite]
+
+## Background Information
+
+[2-3 sentences providing essential context and background information that readers need to understand the guide]
+
+[If applicable, include a diagram or visual representation of the end goal/architecture]
+
+## Step 1: [Description]
+
+Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+
+Implementation: Stepwise instructions on what to do.
+
+Validation How can we verify the implementation was successful. What is the expected output?
+
+## Step 2: [Description]
+
+Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+
+Implementation: Stepwise instructions on what to do.
+
+Validation How can we verify the implementation was successful. What is the expected output?
+
+## Step 3: [Description]
+
+Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+
+Implementation: Stepwise instructions on what to do.
+
+Validation How can we verify the implementation was successful. What is the expected output?
+                                                                                                                                                                                                                                               |
