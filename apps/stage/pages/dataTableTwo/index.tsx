@@ -1,4 +1,4 @@
-import DataTable2 from '../../components/pages/dataTables/dataTable2';
+import DataTableTwo from '../../components/pages/dataTables/dataTableTwo';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetTwoExplorationPage = createPage({
@@ -7,7 +7,7 @@ const DataSetTwoExplorationPage = createPage({
 	},
 	isPublic: true,
 })(() => {
-	return <DataTable2 />;
+	return <DataTableTwo />;
 });
 
 export default DataSetTwoExplorationPage;
