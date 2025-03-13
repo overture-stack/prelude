@@ -342,8 +342,9 @@ const styles = {
 		}
 
 		h3 {
-			font-size: 18px;
+			font-size: 20px;
 			font-weight: 900;
+			color: #000;
 			/* Tablet-specific heading size */
 			@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
 				font-size: 1.4rem;
@@ -376,7 +377,7 @@ const styles = {
 		}
 
 		details {
-			background-color: ${theme.colors.hover};
+			background-color: ${theme.colors.primaryLight}50;
 			border: 1px solid ${theme.colors.border};
 			border-radius: 0.5rem;
 			padding: 0.75rem 1.25rem;
@@ -387,6 +388,13 @@ const styles = {
 
 		details[open] {
 			padding-bottom: 1rem;
+			p {
+				padding-left: 2rem;
+				line-height: 1;
+			}
+			ul {
+				padding-left: 6rem;
+			}
 		}
 
 		summary {
@@ -463,7 +471,7 @@ const styles = {
 		}
 
 		li {
-			margin-bottom: 0.5rem;
+			line-height: 1.5rem;
 		}
 
 		a {
@@ -496,52 +504,118 @@ const styles = {
 				font-style: italic;
 			}
 		}
-
 		table {
 			width: 100%;
 			margin: 2rem 0;
-			border-collapse: separate;
+			border-collapse: collapse;
 			border-spacing: 0;
 			font-size: 0.9375rem;
 			border: 1px solid ${theme.colors.border};
 			border-radius: 0.5rem;
-			display: block;
+			overflow: hidden;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+			/* Ensure full width and even column distribution */
+			table-layout: fixed;
+			max-width: 100%;
+
+			/* Responsive horizontal scroll */
+			display: table;
 			overflow-x: auto;
-			white-space: nowrap;
+			-webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				margin: 1.5rem 0;
 				font-size: 0.875rem;
+				border-radius: 0.375rem;
 			}
 
+			/* Ensure columns fill space evenly */
 			th,
 			td {
-				padding: 0.875rem 1.25rem;
-				text-align: left;
-
-				@media (max-width: ${theme.breakpoints.sm}) {
-					padding: 0.75rem 1rem;
-				}
+				width: 50%; /* Equal width for both columns */
 			}
 
-			th {
+			/* Table Head Styling */
+			thead {
 				background: ${theme.colors.sidebar};
 				border-bottom: 2px solid ${theme.colors.border};
 			}
 
-			td {
-				border-bottom: 1px solid ${theme.colors.border};
+			/* Header Cells */
+			th {
+				padding: 1rem 1.25rem;
+				text-align: left;
+				font-weight: 600;
+				color: ${theme.colors.textSecondary};
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				border-bottom: 2px solid ${theme.colors.border};
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				@media (max-width: ${theme.breakpoints.sm}) {
+					padding: 0.875rem 1rem;
+					font-size: 0.8125rem;
+				}
 			}
 
-			tr:last-child td {
+			/* Body Cells */
+			td {
+				padding: 1rem 1.25rem;
+				text-align: left;
+				border-bottom: 1px solid ${theme.colors.border};
+				vertical-align: middle;
+				transition: background-color 0.2s ease;
+				word-wrap: break-word;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				@media (max-width: ${theme.breakpoints.sm}) {
+					padding: 0.875rem 1rem;
+				}
+			}
+
+			/* Alternate Row Coloring */
+			tbody tr:nth-of-type(even) {
+				background-color: ${theme.colors.primaryLight}20; /* Very subtle background */
+			}
+
+			/* Hover Effect */
+			tbody tr:hover {
+				background-color: ${theme.colors.primaryLight}40;
+			}
+
+			/* Remove Border from Last Row */
+			tbody tr:last-child td {
 				border-bottom: none;
 			}
+
+			/* Responsive Considerations */
+			@media (max-width: ${theme.breakpoints.sm}) {
+				font-size: 0.8125rem;
+			}
+		}
+
+		/* Scrollbar Styling for Overflow */
+		table::-webkit-scrollbar {
+			height: 8px;
+		}
+
+		table::-webkit-scrollbar-track {
+			background: ${theme.colors.sidebar};
+		}
+
+		table::-webkit-scrollbar-thumb {
+			background-color: ${theme.colors.primary}80;
+			border-radius: 4px;
 		}
 
 		pre,
 		code {
 			font-family: ${theme.fonts.mono};
-			background: ${theme.colors.primaryLight};
+			background: ${theme.colors.primaryLight}50;
 			border-radius: 0.5rem;
 			font-size: 0.9375rem;
 			line-height: 2;
@@ -553,10 +627,10 @@ const styles = {
 		}
 
 		pre {
-			padding: 1.25rem;
+			padding: 1rem;
 			overflow-x: auto;
 			border: 1px solid ${theme.colors.border};
-			margin: 1.5rem 0;
+			margin: 1rem 0;
 			box-shadow: ${theme.boxShadow};
 			max-width: 100%;
 
@@ -662,6 +736,7 @@ const styles = {
 			letter-spacing: 0.05em;
 			color: ${theme.colors.textSecondary};
 			margin: 0 0 1rem;
+			font-weight: 900;
 		}
 
 		ul {

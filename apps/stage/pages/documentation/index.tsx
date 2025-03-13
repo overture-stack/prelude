@@ -29,6 +29,7 @@ const DocumentationIndex: React.FC<DocumentationIndexProps> = ({ sections }) => 
 					<main css={styles.main}>
 						<article css={styles.content}>
 							<h1>Prelude Documentation</h1>
+							<h2>Prelude Documentation</h2>
 							<p>
 								Welcome to the Prelude documentation. Use the sidebar to navigate through different sections of our
 								comprehensive guide.
