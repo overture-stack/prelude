@@ -18,13 +18,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-import { ReactElement, useEffect, useState } from 'react';
+import defaultTheme from '@/components/theme';
 import { css, useTheme } from '@emotion/react';
 import { useArrangerData } from '@overture-stack/arranger-components';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types';
 import stringify from 'fast-json-stable-stringify';
 import { isEqual } from 'lodash';
-import defaultTheme from '@/components/theme';
+import { ReactElement, useEffect, useState } from 'react';
 
 import useUrlParamState from '@/global/hooks/useUrlParamsState';
 

@@ -24,10 +24,10 @@ services:
       # Dynamic indices are configured with a count and indexed variables
       ES_INDEX_COUNT: 1
       # First index
-      ES_INDEX_1_NAME: tabular-index
-      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
-      ES_INDEX_1_TEMPLATE_NAME: tabular_template
-      ES_INDEX_1_ALIAS_NAME: tabular_centric
+      ES_INDEX_0_NAME: dataset1-index
+      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/dataset1-mapping.json
+      ES_INDEX_0_TEMPLATE_NAME: dataset1-index
+      ES_INDEX_0_ALIAS_NAME: dataset1_centric
       # Second index
       # ES_INDEX_2_NAME: file-index
       # ES_INDEX_2_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
@@ -36,9 +36,9 @@ services:
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
       ARRANGER_COUNT: 1
-      ARRANGER_1_URL: http://arranger-dataset1:5050
-      ARRANGER_2_URL: http://arranger-dataset2:5051
-      ARRANGER_3_URL: http://arranger-dataset3:5052
+      ARRANGER_0_URL: http://arranger-dataset1:5050
+      ARRANGER_1_URL: http://arranger-dataset2:5051
+      ARRANGER_2_URL: http://arranger-dataset3:5052
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
       # Service Connections
@@ -250,17 +250,17 @@ services:
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       # Dataset1 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATASET_1_DATA_API: http://arranger-dataset1:5050
-      NEXT_PUBLIC_ARRANGER_DATASET_1_DATA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATASET_1_DATA_INDEX: dataset1_centric
+      NEXT_PUBLIC_ARRANGER_DATASET_1_API: http://arranger-dataset1:5050
+      NEXT_PUBLIC_ARRANGER_DATASET_1_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATASET_1_INDEX: dataset1_centric
       # Dataset2 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATASET_2_DATA_API: http://arranger-dataset2:5051
-      NEXT_PUBLIC_ARRANGER_DATASET_2_DATA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATASET_2_DATA_INDEX: dataset2_centric
+      NEXT_PUBLIC_ARRANGER_DATASET_2_API: http://arranger-dataset2:5051
+      NEXT_PUBLIC_ARRANGER_DATASET_2_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATASET_2_INDEX: dataset2_centric
       # Dataset2 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATASET_3_DATA_API: http://arranger-dataset3:5052
-      NEXT_PUBLIC_ARRANGER_DATASET_3_DATA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATASET_3_DATA_INDEX: dataset3_centric
+      NEXT_PUBLIC_ARRANGER_DATASET_3_API: http://arranger-dataset3:5052
+      NEXT_PUBLIC_ARRANGER_DATASET_3_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATASET_3_INDEX: dataset3_centric
       # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://song:8080
       NEXT_PUBLIC_LYRIC_API: http://lyric:3030

@@ -161,10 +161,10 @@ const RepoTable = () => {
 	const theme = useTheme();
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 	const customExporters = [
-		{ label: 'Download', fileName: `clinical-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
+		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
 
-	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.CLINICAL_ARRANGER, customExporters, theme }));
+	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATASET_2_ARRANGER, customExporters, theme }));
 
 	return useMemo(
 		() => (

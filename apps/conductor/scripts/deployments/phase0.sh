@@ -142,7 +142,7 @@ main() {
     # Final Success
     printf "\n\033[1;32mSuccess:\033[0m All requirements met\n"
     printf "\n\033[1;33mSystem Resources:\033[0m\n"
-    printf "Docker Engine Version: \033[0;32m%s\033[0m\n" "$ENGINE_VERSION"
+    printf "Docker Engine:        \033[0;32m%s\033[0m\n" "$ENGINE_VERSION"
     printf "CPU Cores:            \033[0;32m%s\033[0m\n" "$CPU_CORES"
     printf "Total Memory:         \033[0;32m%s\033[0m\n" "$TOTAL_MEMORY"
     printf "Disk Space:           \033[0;32m%s GB\033[0m\n" "$DISK_GB"

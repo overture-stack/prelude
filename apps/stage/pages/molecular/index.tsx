@@ -1,4 +1,4 @@
-import File from '../../components/pages/dataTables/molecular';
+import File from '../../components/pages/molecular';
 import { createPage } from '../../global/utils/pages';
 
 const MolecularExplorationPage = createPage({

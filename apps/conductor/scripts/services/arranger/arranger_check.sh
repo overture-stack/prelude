@@ -101,7 +101,7 @@ check_arrangers() {
     printf "\033[1;36mConductor:\033[0m Checking %d Arranger instances\n" "$arranger_count"
     
     all_healthy=true
-    i=1
+    i=0
     while [ "$i" -lt "$arranger_count" ]; do
         # Dynamically retrieve the URL for this instance
         arranger_url_var="ARRANGER_${i}_URL"

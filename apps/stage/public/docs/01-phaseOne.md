@@ -41,7 +41,7 @@ Phase One focuses on configuring how your data will be displayed in the front-en
 
 The phase architecture is diagramed below and detailed in the following table:
 
-![Phase 1 Architecture Diagram](/docs/images/phase1.png 'Phase 1 Architecture Diagram')
+![Phase 1 Architecture Diagram](/docs/images/phase1.png "Phase 1 Architecture Diagram")
 
 | Component                                                                                                  | Description                                                                                                  |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -168,7 +168,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
     </details>
 
-   ![Output](/docs/images/generateElasticsearchMapping.png 'Terminal output from generateElasticsearchMapping')
+   ![Output](/docs/images/generateElasticsearchMapping.png "Terminal output from generateElasticsearchMapping")
 
 2. Validate and review the generated mapping template(s):
 
@@ -235,7 +235,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
     </details>
 
-    ![Output](/docs/images/generateArrangerConfigs.png 'Terminal output from generateArrangerConfigs')
+    ![Output](/docs/images/generateArrangerConfigs.png "Terminal output from generateArrangerConfigs")
 
 2.  Validate and review the generated arranger configuration file:
 
@@ -301,7 +301,7 @@ This step configures your docker-compose.yml file to properly connect your data 
 
    ```yaml
    arranger-dataset1:
-     profiles: ['phase1', 'phase2', 'phase3', 'stageDev', 'default']
+     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
      image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
      container_name: arranger-dataset1 # Rename to match above
      platform: linux/amd64
@@ -309,7 +309,7 @@ This step configures your docker-compose.yml file to properly connect your data 
        conductor:
          condition: service_healthy
      ports:
-       - '5050:5050' # Use unique ports for each Arranger instance
+       - "5050:5050" # Use unique ports for each Arranger instance
      volumes:
        - ./configs/arrangerConfigs/dataset1:/app/modules/server/configs # Point to the relevant generated config
      environment:
@@ -393,7 +393,29 @@ After updating your docker-compose.yml file, verify the configuration:
 
 ## Step 4: Updating Stage
 
+1. `make reset`
+
+2. Run stage complementary services `make stage-dev`
+
+To run Stage locally, navigate to the directory:
+cd apps/stage
+
+Copy the example environment file:
+cp .env.stageDev .env
+
+Install the dependencies:
+npm ci
+
+Run the development server:
+npm run dev
+Your development server will be accessible at:
+http://localhost:3000
+
+3.
+
 Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+
+conductor indexManagement -t ./configs/elasticsearchconfigs/dataset1-mapping.json -n template_name -i dataset1-index
 
 Implementation: Stepwise instructions on what to do.
 

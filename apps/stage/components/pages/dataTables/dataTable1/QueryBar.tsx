@@ -24,7 +24,7 @@ import { SQONViewer, useArrangerTheme } from '@overture-stack/arranger-component
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
 import { Row } from 'react-grid-system';
 const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProps => ({
-	callerName: 'CLINICAL-QueryBar',
+	callerName: 'DataSetOne-QueryBar',
 	components: {
 		SQONViewer: {
 			EmptyMessage: {
