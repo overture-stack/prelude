@@ -9,7 +9,7 @@ const theme = {
 		text: '#2d3748',
 		textSecondary: '#4a5568',
 		border: '#e2e8f0',
-		hover: 'rgba(11, 117, 162, 0.08)',
+		hover: 'rgba(0, 168, 143, 0.08)',
 		codeBackground: '#f7fafc',
 		error: '#e53e3e',
 		hero: '#0B75A2',

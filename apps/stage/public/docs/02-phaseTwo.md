@@ -2,7 +2,7 @@
 
 ## Overview
 
-**This guide is for** those in phase two of Prelude's deployment process. The primary goal is to [primary goal]. 
+**This guide is for** those in phase two of Prelude's deployment process. The primary goal is to [primary goal].
 
 **By the end of this guide you will be able to:**
 
@@ -11,6 +11,7 @@
 - [specific learning outcomes/deliverables]
 
 **You will need:**
+
 - [pre-requisite]
 - [pre-requisite]
 - [pre-requisite]
@@ -21,7 +22,7 @@
 
 [If applicable, include a diagram or visual representation of the end goal/architecture]
 
-## Step 1: [Description]
+## Step 1: Defining your data model
 
 Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
 
@@ -29,7 +30,7 @@ Implementation: Stepwise instructions on what to do.
 
 Validation How can we verify the implementation was successful. What is the expected output?
 
-## Step 2: [Description]
+## Step 2: Preparing your Data
 
 Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
 
@@ -37,11 +38,11 @@ Implementation: Stepwise instructions on what to do.
 
 Validation How can we verify the implementation was successful. What is the expected output?
 
-## Step 3: [Description]
+## Step 3: Uploading your Data
 
 Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
 
 Implementation: Stepwise instructions on what to do.
 
 Validation How can we verify the implementation was successful. What is the expected output?
-                                                                                                                                                                                                                                               |
+|

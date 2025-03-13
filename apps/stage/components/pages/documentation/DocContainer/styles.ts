@@ -384,11 +384,11 @@ const styles = {
 			transition: ${theme.transitions.standard};
 			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 		}
-		
+
 		details[open] {
 			padding-bottom: 1rem;
 		}
-		
+
 		summary {
 			cursor: pointer;
 			position: relative;
@@ -401,15 +401,15 @@ const styles = {
 			align-items: center;
 			user-select: none;
 		}
-		
+
 		summary:hover {
 			color: ${theme.colors.primary_green};
 		}
-		
+
 		summary::-webkit-details-marker {
 			display: none;
 		}
-		
+
 		summary::before {
 			content: '';
 			border-width: 0.4rem;
@@ -421,11 +421,11 @@ const styles = {
 			top: -1px;
 			transition: transform 0.25s ease;
 		}
-		
+
 		details[open] > summary::before {
 			transform: rotate(90deg);
 		}
-		
+
 		details > div,
 		details > p,
 		details > pre,
@@ -434,7 +434,7 @@ const styles = {
 			margin-top: 1rem;
 			padding-left: 1.25rem;
 		}
-		
+
 		details code {
 			background-color: rgba(0, 0, 0, 0.05);
 		}
@@ -793,33 +793,31 @@ const styles = {
 
 	docFooter: css`
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: space-between;
 		margin-top: 3rem;
+		margin-bottom: 3rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid ${theme.colors.border};
-		width: 100%;
-
-		@media (max-width: ${theme.breakpoints.sm}) {
-			flex-direction: column;
-			gap: 1rem;
-		}
 
 		a {
-			display: inline-flex;
+			display: flex;
 			align-items: center;
-			color: ${theme.colors.primary};
+			color: ${theme.colors.primary_green};
 			text-decoration: none;
-			font-weight: 500;
 			transition: ${theme.transitions.standard};
+			padding: 0.5rem;
+			border-radius: 0.25rem;
+			border-bottom: none;
 
 			&:hover {
-				color: #09638a;
+				background: ${theme.colors.hover};
+				border-bottom: none;
+				text-decoration: none;
 			}
 
 			svg {
 				width: 20px;
 				height: 20px;
-				flex-shrink: 0;
 			}
 		}
 
@@ -831,27 +829,25 @@ const styles = {
 			margin-left: 0.5rem;
 		}
 
-		.next-link {
-			text-align: right;
-		}
-
 		@media (max-width: ${theme.breakpoints.sm}) {
-			.next-link {
-				text-align: left;
-			}
+			flex-direction: column;
+			gap: 1rem;
 		}
 	`,
 
 	sectionNav: css`
 		display: flex;
+		width: 100%;
 		justify-content: space-between;
-		margin-top: 3rem;
-		padding-top: 1.5rem;
-		border-top: 1px solid ${theme.colors.border};
 
-		@media (max-width: ${theme.breakpoints.sm}) {
-			flex-direction: column;
-			gap: 1rem;
+		.prev-link {
+			flex: 0 0 auto;
+		}
+
+		.next-link {
+			flex: 0 0 auto;
+			margin-left: auto;
+			text-align: right;
 		}
 	`,
 };
