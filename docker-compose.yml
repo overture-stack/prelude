@@ -36,7 +36,7 @@ services:
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
       ARRANGER_COUNT: 1
-      ARRANGER_0_URL: http://arranger-clinical:5050
+      ARRANGER_0_URL: http://arranger-dataset1:5050
       # ARRANGER_1_URL: http://arranger-1:5051
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
@@ -148,10 +148,10 @@ services:
   # Search API generation with compatible search UI components                          #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
-  arranger-clinical:
+  arranger-dataset1:
     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-clinical
+    container_name: arranger-dataset1
     platform: linux/amd64
     depends_on:
       conductor:

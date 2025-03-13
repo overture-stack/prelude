@@ -382,19 +382,35 @@ const styles = {
 			border-radius: 0.5rem;
 			padding: 0.75rem 1.25rem;
 			margin: 1.5rem 0;
-			transition: ${theme.transitions.standard};
+			transition: all 0.3s ease-in-out;
 			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 		}
 
 		details[open] {
+			padding-left: 1.25rem;
 			padding-bottom: 1rem;
-			p {
-				padding-left: 2rem;
-				line-height: 1;
-			}
-			ul {
-				padding-left: 6rem;
-			}
+			transition-delay: 0.1s;
+		}
+
+		/* Content transition */
+		details > :not(summary) {
+			transform-origin: top left;
+			opacity: 0;
+			max-height: 0;
+			overflow: hidden;
+			transition: all 0.3s ease-out;
+		}
+
+		details[open] > :not(summary) {
+			opacity: 1;
+			max-height: 1000px; /* Arbitrary large value */
+			margin-top: 1rem;
+			padding-left: 1.75rem;
+			transition-delay: 0.15s;
+		}
+
+		details[open] ul {
+			padding-left: 4rem;
 		}
 
 		summary {
@@ -408,6 +424,7 @@ const styles = {
 			display: flex;
 			align-items: center;
 			user-select: none;
+			transition: color 0.2s ease;
 		}
 
 		summary:hover {
@@ -434,19 +451,11 @@ const styles = {
 			transform: rotate(90deg);
 		}
 
-		details > div,
-		details > p,
-		details > pre,
-		details > ul,
-		details > ol {
-			margin-top: 1rem;
-			padding-left: 1.25rem;
-		}
-
 		details code {
 			background-color: rgba(0, 0, 0, 0.05);
+			border-radius: 3px;
+			padding: 0.1em 0.3em;
 		}
-
 		p {
 			line-height: 1.5;
 			font-size: 16px;

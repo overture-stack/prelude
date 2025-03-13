@@ -372,9 +372,7 @@ export class Logger {
       chalk.gray("-p, --profile <profile> Execution profile (default: default)")
     );
     this.generic(
-      chalk.gray(
-        "-f, --files <paths...>  Input file paths (CSV or JSON, space separated) (required)"
-      )
+      chalk.gray("-f, --files <paths...>  Input file mapping (JSON) (required)")
     );
     this.generic(
       chalk.gray(
@@ -394,7 +392,7 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: composer -p generateArrangerConfigs -f metadata.csv -o arranger-config/ --arranger-doc-type analysis -i clinical_data"
+        "Example: composer -p generateArrangerConfigs -f mapping.json -o arranger-config/ --arranger-doc-type analysis -i clinical_data"
       )
     );
     this.generic("");

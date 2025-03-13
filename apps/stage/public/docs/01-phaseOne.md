@@ -53,8 +53,6 @@ The phase architecture is diagramed below and detailed in the following table:
 
 ## Step 1: Preparing your data
 
-### Introduction
-
 The `data` folder at the root of this project is for storing data files used in
 your project. Below are guidelines for data management:
 
@@ -122,33 +120,281 @@ To verify successful data preparation:
   - No sensitive information is exposed
 - Confirm your `.gitignore` includes data files if necessary
 
-### Next Steps
-
-After completing data preparation, you'll be ready to generate your Arranger and Stage configuration files.
+**Next Steps:** After completing data preparation, you'll be ready to generate your Arranger and Stage configuration files.
 
 ## Step 2: Update portal configurations
 
 Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
 
-Implementation: Stepwise instructions on what to do.
+### Installing Composer
 
-Validation How can we verify the implementation was successful. What is the expected output?
+1. Move to the Composer App directory:
 
-## Step 3: Submit your data
+   ```
+   cd ./apps/composer
+   ```
+
+2. Run the following commands:
+
+   ```
+   npm install
+   npm run build
+   npm install -g
+   ```
+
+3. **Validate:** From the root directory test that Composer is working by running `composer -h` you should be able to see help text outlining the available commands.
+
+### Generating our Elasticsearch index mappings
+
+1. Run the following Composer command to generate elasticsearch index mappings using your data files:
+
+   ```
+   composer -p generateElasticsearchMapping -f ./data/dataset1.csv -i dataset1 -o ./configs/elasticsearchConfigs/dataset1-mapping.json
+   ```
+
+    <details>
+    <summary>Command Breakdown</summary>
+
+   In this command:
+
+   - `-p generateElasticsearchMapping`: Specifies the operation to generate an Elasticsearch mapping schema
+   - `-f ./data/dataset1.csv`: Specifies the input data file to analyze
+   - `-i dataset1`: Sets the Elasticsearch index name to "dataset1"
+   - `-o ./configs/elasticsearchConfigs/dataset1-mapping.json`: Sets the output path for the generated mapping file
+
+   The command analyzes the structure of dataset1.csv and creates an appropriate Elasticsearch mapping configuration, which defines how the data will be indexed and searched in Elasticsearch.
+
+   A detailed overview of all available options for the generateElasticsearchMapping command can be seen by running `composer -h`
+
+    </details>
+
+   ![Output](/docs/images/generateElasticsearchMapping.png 'Terminal output from generateElasticsearchMapping')
+
+2. Validate and review the generated mapping template(s):
+
+   After running the command, examine the generated index mapping in the `configs/elasticsearchConfigs` directory. The mapping contains several critical components:
+
+   - **Index Pattern:** `"index_patterns": ["dataset1-*"]` - This template will apply to all indices that start with "dataset1-"
+   - **Aliases:** `"dataset1_centric": {}` - An alias that can be used to reference all matching indices as one
+   - **Data Structure:** Note how all fields are nested under a `data` object, providing clean organization
+
+   <details>
+   <summary>Key Elements to Review</summary>
+
+   - **Field Types:** Most fields are set as `keyword` type for exact matching, with numeric values like `age_at_diagnosis`, `treatment_start`, and `followup_interval` appropriately set as `integer` types
+
+   - **Metadata Structure:** The auto-generated `submission_metadata` object contains important tracking fields:
+     ```json
+     "submission_metadata": {
+       "type": "object",
+       "properties": {
+         "submitter_id": { "type": "keyword", "null_value": "No Data" },
+         "processing_started": { "type": "date" },
+         "processed_at": { "type": "date" },
+         "source_file": { "type": "keyword", "null_value": "No Data" },
+         "record_number": { "type": "integer" },
+         "hostname": { "type": "keyword", "null_value": "No Data" },
+         "username": { "type": "keyword", "null_value": "No Data" }
+       }
+     }
+     ```
+   - **Index Settings:** The configuration uses minimal settings with 1 shard and 0 replicas:
+     ```json
+     "settings": {
+       "number_of_shards": 1,
+       "number_of_replicas": 0
+     }
+     ```
+     These settings are appropriate for development but can and should be adjusted as we move foward.
+     </details>
+
+3. Repeat the above steps for your remaining datasets, make sure to name your indices and files appropriatly.
+
+   **Next Step:** Once you're satisfied with the mapping configuration, you're ready to move on to the next step, generating and confuring the Arranger configuration files.
+
+### Generating our Arranger configuration files
+
+1.  Run the following Composer command to generate Arranger configuration files using your index mapping templates:
+
+    ```
+    composer -p generateArrangerConfigs -f ./configs/elasticsearchConfigs/dataset1-mapping.json -o ./configs/arrangerConfigs/dataset1/
+    ```
+
+    <details>
+    <summary>Command Breakdown</summary>
+
+    In this command:
+
+    - `-p generateArrangerConfigs`: Specifies the operation to generate Arranger configuration files
+    - `-f ./configs/elasticsearchConfigs/dataset1-mapping.json`: Specifies the input Elasticsearch mapping file to use as a template
+    - `-o ./configs/arrangerConfigs/dataset1/`: Sets the output directory for the generated Arranger configuration files
+
+    The command analyzes the Elasticsearch mapping structure and creates appropriate Arranger configuration files, which define how data will be displayed, filtered, and queried in the Arranger UI.
+
+    A detailed overview of all available options for the generateArrangerConfigs command can be seen by running `composer -h generateArrangerConfigs`
+
+    </details>
+
+    ![Output](/docs/images/generateArrangerConfigs.png 'Terminal output from generateArrangerConfigs')
+
+2.  Validate and review the generated arranger configuration file:
+
+    - **Directory structure:** should now look like the following
+
+      ```
+      configs
+      ├── arrangerConfigs
+      │ └── dataset1
+      │   ├── base.json # Core configuration
+      │   ├── extended.json # Field display settings
+      │   ├── facets.json # Filter panel configuration
+      │   └── table.json # Table display settings
+      └── elasticsearchConfigs
+          └── dataset1-mapping.json
+
+      ```
+
+    - **Base.json:** update the index field of your base.json file to match relevant index alias. In this case `dataset1-index`.
+
+      ```
+      {
+      "documentType": "file",
+      "index": "dataset1-centric"
+      }
+      ```
+
+    - **Extended.json** `fieldNames` should be accurate in the extended.json, take time to review and update the `displayNames` as these will be how fields are read from the front-end UI.
+    - **Table.json** By default `canChangeShow`, `show`, and `sortable` are set to true. Update these fields accordingly. For information see our documentation covering [Arrangers table configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#table-configuration-tablejson)
+    - **Facets.json** By default `active` and `show` are set to true. Update these fields accordingly. The order of the elements will also match the order of the facets as they appear in the facet panel, update accordingly. For information see our documentation covering [Arrangers facet configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#facet-configuration-facetsjson)
+
+3.  Repeat the above steps for your remaining datasets.
+
+    **Next Step:** After generating your Elasticsearch mappings and Arranger configuration files, the next step is to update the docker-compose.yml file to properly connect these components.
+
+## Step 3: Updating the docker-compose
+
+This step configures your docker-compose.yml file to properly connect your data sources, Elasticsearch, Arranger, and Stage. You'll update environment variables and service configurations to reflect your specific dataset configurations.
+
+1. **Update the following Environment Variables within the conductor image**:
+
+   Modify the `conductor` service environment variables to reference your dataset(s):
+
+   ```yaml
+   # Elasticsearch Index Configuration
+   ES_INDEX_COUNT: 1 # Update this if you have multiple datasets
+
+   # First index
+   ES_INDEX_0_NAME: dataset1-index
+   ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/dataset1-mapping.json
+   ES_INDEX_0_TEMPLATE_NAME: dataset1_template
+   ES_INDEX_0_ALIAS_NAME: dataset1_centric
+   # Add more indices if needed
+   # ES_INDEX_1_NAME: dataset2-index
+   # ES_INDEX_1_TEMPLATE_FILE: configs/elasticsearchConfigs/dataset2-mapping.json
+   # ES_INDEX_1_TEMPLATE_NAME: dataset2_template
+   # ES_INDEX_1_ALIAS_NAME: dataset2_centric
+   ```
+
+2. **Configure Arranger Services**:
+
+   For each dataset, configure a separate Arranger service. Update the `arranger-clinical` service (or rename it appropriately) and add additional Arranger services if needed:
+
+   ```yaml
+   arranger-dataset1: # Rename to match your dataset
+     profiles: ['phase1', 'phase2', 'phase3', 'stageDev', 'default']
+     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+     container_name: arranger-dataset1
+     platform: linux/amd64
+     depends_on:
+       conductor:
+         condition: service_healthy
+     ports:
+       - '5050:5050' # Use unique ports for each Arranger instance
+     volumes:
+       - ./configs/arrangerConfigs/dataset1:/app/modules/server/configs # Point to your generated config
+     environment:
+       # Elasticsearch Variables
+       ES_HOST: http://elasticsearch:9200
+       ES_USER: elastic
+       ES_PASS: myelasticpassword
+       ES_ARRANGER_SET_INDEX: dataset1_arranger_set
+       # Arranger Variables (Port required)
+       PORT: 5050
+       DEBUG: false
+       ENABLE_LOGS: false
+   ```
+
+   - Make sure to use unique ports for each Arranger instance, this includes updating the ports section as well as the `PORT` environment variable for each Arranger instance
+   - Make sure you point the volume path provided to the relevant arranger config
+
+3. **Update the Arranger Count in Conductor**:
+
+   If you have multiple datasets/Arranger instances, update the `ARRANGER_COUNT` and add URLs for each:
+
+   ```yaml
+   # Arranger Services Configuration
+   ARRANGER_COUNT: 1 # Update this if you have multiple Arrangers
+   ARRANGER_0_URL: http://arranger-dataset1:5050
+   # ARRANGER_1_URL: http://arranger-dataset2:5051
+   ```
+
+   - Here `ARRANGER_1_URL` is commented, make sure to uncomment any additionally added arranger URLs
+
+4. **Ensure all services are on the same network**:
+
+   The following should be included with each added service
+
+   ```yaml
+   networks:
+     - conductor-network
+   ```
+
+5. **pre-configure the Stage Environment variable**:
+
+   Update the Stage service environment variables to connect to your Arranger instances:
+
+   ```yaml
+   # Tabular Arranger Variables
+   NEXT_PUBLIC_ARRANGER_DATASET1_DATA_API: http://arranger-dataset1:5050
+   NEXT_PUBLIC_ARRANGER_DATASET1_DATA_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATASET1_INDEX: dataset1_centric
+   # Add more Arranger connections if needed
+   NEXT_PUBLIC_ARRANGER_DATASET2_API: http://arranger-dataset2:5051
+   NEXT_PUBLIC_ARRANGER_DATASET2_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATASET2_INDEX: dataset2_centric
+   # Add more Arranger connections if needed
+   NEXT_PUBLIC_ARRANGER_DATASET3_API: http://arranger-dataset2:5051
+   NEXT_PUBLIC_ARRANGER_DATASET3_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATASET3_INDEX: dataset2_centric
+   # Add more Arranger connections if needed
+   # NEXT_PUBLIC_ARRANGER_DATASET4_API: http://arranger-dataset2:5051
+   # NEXT_PUBLIC_ARRANGER_DATASET4_DOCUMENT_TYPE: file
+   # NEXT_PUBLIC_ARRANGER_DATASET4_INDEX: dataset2_centric
+   ```
+
+### Validation
+
+After updating your docker-compose.yml file, verify the configuration:
+
+1. **Validate Port Mappings**:
+
+   - Each Arranger instance should have a unique port
+   - Ports should not conflict with other services
+
+2. **Start the Services**:
+
+   Run `make phase1` to start your services.
+
+3. **Check Service Health**:
+
+   The deployment script should verify all services are running correctly.
+
+**Next Steps:** We will run through the process of adding a third data table to stage.
+
+## Step 4: Updating Stage
 
 Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
 
 Implementation: Stepwise instructions on what to do.
-
-Validation How can we verify the implementation was successful. What is the expected output?
-
-## Step 4: Updating Stage (optional)
-
-Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
-
-Implementation: Stepwise instructions on what to do.
-
-- Theming
-- Creating Data Tables
 
 Validation How can we verify the implementation was successful. What is the expected output?
