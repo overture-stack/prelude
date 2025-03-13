@@ -391,32 +391,132 @@ After updating your docker-compose.yml file, verify the configuration:
 
 **Next Steps:** We will run through the process of adding a third data table to stage.
 
-## Step 4: Updating Stage
+## Step 4: Updating Stage (Optional)
 
-1. `make reset`
+This step guides you through customizing Stage UI to incorporate multiple data exploration tables and update the theming to match your organization's branding.
 
-2. Run stage complementary services `make stage-dev`
+1. **Reset your environment** to ensure a clean state:
 
-To run Stage locally, navigate to the directory:
-cd apps/stage
+   ```bash
+   make reset
+   ```
 
-Copy the example environment file:
-cp .env.stageDev .env
+2. **Run Stage complementary services** in development mode:
 
-Install the dependencies:
-npm ci
+   ```bash
+   make stage-dev
+   ```
 
-Run the development server:
-npm run dev
-Your development server will be accessible at:
-http://localhost:3000
+3. **Set up local Stage development environment**:
 
-3.
+   To run Stage locally for development and customization:
 
-Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
+   ```bash
+   # Navigate to the Stage directory
+   cd apps/stage
 
-conductor indexManagement -t ./configs/elasticsearchconfigs/dataset1-mapping.json -n template_name -i dataset1-index
+   # Copy the example environment file
+   cp .env.stageDev .env
 
-Implementation: Stepwise instructions on what to do.
+   # Install dependencies
+   npm ci
 
-Validation How can we verify the implementation was successful. What is the expected output?
+   # Start the development server
+   npm run dev
+   ```
+
+   Your development server will be accessible at: http://localhost:3000
+
+4. **Creating New Data Exploration Pages**:
+
+   To add a new data table in Stage:
+   a.
+   b.
+   c.
+
+5. **Customize Stage Theming** (Optional):
+
+Update theme colors to match your organization's branding:
+
+Update the logo by replacing the image file at `apps/stage/public/images/logo.svg`
+
+Customize x.y.x
+
+**Next Steps:** Once you have completed the Stage customization, you're ready to upload your data to make it available in the Elasticsearch indices and visible in your data exploration tables.
+
+## Step 5: Uploading your data (To Be Updated)
+
+With Arranger, Stage, and Elasticsearch now configured, it's time to upload our data. We will use Conductor to transform our CSV files into Elasticsearch documents and upload them into the portal.
+
+1. Run the Conductor `upload` command to upload your data:
+
+   ```
+   conductor upload -f ./data/dataset1.csv -i dataset1-index
+   ```
+
+   <details>
+   <summary>Command Breakdown</summary>
+
+   In this command:
+
+   - `-f ./data/dataset1.csv`: Specifies the input data file to upload
+   - `-i dataset1-index`: Specifies the target Elasticsearch index
+
+   Additional options:
+
+   - `-b, --batch-size <n>`: Number of records to upload in each batch (default: 1000)
+   - `--delimiter <char>`: CSV delimiter character (default: comma)
+   - `-o, --output <path>`: Path for saving upload logs
+
+   The command processes your CSV file, transforms it according to the index mapping structure, and uploads it to Elasticsearch in batches.
+
+   Full command reference can be seen by running `conductor upload -h`
+   </details>
+
+2. Monitor the upload process:
+
+   The command will display progress information including:
+
+   - Number of records processed
+   - Processing speed (records per second)
+   - Current upload status
+   - Error counts (if any)
+
+3. Repeat for additional datasets:
+
+   If you have multiple datasets, repeat the upload command for each one, ensuring you specify the correct index name:
+
+   ```
+   conductor upload -f ./data/dataset2.csv -i dataset2-index
+   ```
+
+### Validation
+
+To verify that your data was successfully uploaded:
+
+1. **Check the Conductor Output**:
+
+   - Confirm the final message shows successful completion
+   - Verify the record count matches your expectations
+   - Check for any error messages
+
+2. **Verify Data in Elasticsearch**:
+
+   - Open Elasticvue (http://localhost:9200) if you have it installed
+   - Navigate to Indices and select your index (e.g., `dataset1-index`)
+   - Browse documents to ensure they contain the expected data
+   - Run a sample query to test data retrieval
+
+3. **Check Data in Stage UI**:
+   - Navigate to http://localhost:3000 in your browser
+   - Go to your data exploration page
+   - Verify that your data appears in the table
+   - Test the search and filter functionality to ensure it works correctly
+
+If you encounter any issues:
+
+- Check Elasticsearch logs for indexing errors
+- Verify your CSV file follows the guidelines outlined in Step 1
+- Ensure the index name in your upload command matches the index pattern in your mapping template
+
+**Next Steps:** With your data successfully uploaded and available in the Elasticsearch index, you can now fully explore and interact with your data through the Stage UI.
