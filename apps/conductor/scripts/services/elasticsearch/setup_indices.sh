@@ -26,7 +26,7 @@ printf "\033[1;32mSuccess:\033[0m Elasticsearch is available\n"
 INDEX_COUNT=${ES_INDEX_COUNT:-0}
 printf "\033[1;36mElasticsearch:\033[0m Setting up %d indices\n" "$INDEX_COUNT"
 
-i=0
+i=1
 while [ "$i" -lt "$INDEX_COUNT" ]; do
     # Use indirect variable expansion with proper syntax
     index_name_var="ES_INDEX_${i}_NAME"

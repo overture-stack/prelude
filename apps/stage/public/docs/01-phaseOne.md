@@ -300,10 +300,10 @@ This step configures your docker-compose.yml file to properly connect your data 
    For each dataset, configure a separate Arranger service. Update the `arranger-clinical` service (or rename it appropriately) and add additional Arranger services if needed:
 
    ```yaml
-   arranger-dataset1: # Rename to match your dataset
+   arranger-dataset1:
      profiles: ['phase1', 'phase2', 'phase3', 'stageDev', 'default']
      image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-     container_name: arranger-dataset1
+     container_name: arranger-dataset1 # Rename to match above
      platform: linux/amd64
      depends_on:
        conductor:
@@ -311,15 +311,15 @@ This step configures your docker-compose.yml file to properly connect your data 
      ports:
        - '5050:5050' # Use unique ports for each Arranger instance
      volumes:
-       - ./configs/arrangerConfigs/dataset1:/app/modules/server/configs # Point to your generated config
+       - ./configs/arrangerConfigs/dataset1:/app/modules/server/configs # Point to the relevant generated config
      environment:
        # Elasticsearch Variables
        ES_HOST: http://elasticsearch:9200
        ES_USER: elastic
        ES_PASS: myelasticpassword
        ES_ARRANGER_SET_INDEX: dataset1_arranger_set
-       # Arranger Variables (Port required)
-       PORT: 5050
+       # Arranger Variables
+       PORT: 5050 # Required
        DEBUG: false
        ENABLE_LOGS: false
    ```

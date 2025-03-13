@@ -24,20 +24,21 @@ services:
       # Dynamic indices are configured with a count and indexed variables
       ES_INDEX_COUNT: 1
       # First index
-      ES_INDEX_0_NAME: tabular-index
-      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
-      ES_INDEX_0_TEMPLATE_NAME: tabular_template
-      ES_INDEX_0_ALIAS_NAME: tabular_centric
+      ES_INDEX_1_NAME: tabular-index
+      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/tabular_data_index_template.json
+      ES_INDEX_1_TEMPLATE_NAME: tabular_template
+      ES_INDEX_1_ALIAS_NAME: tabular_centric
       # Second index
-      # ES_INDEX_1_NAME: file-index
-      # ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
-      # ES_INDEX_1_TEMPLATE_NAME: file_template
-      # ES_INDEX_1_ALIAS_NAME: file_centric
+      # ES_INDEX_2_NAME: file-index
+      # ES_INDEX_2_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
+      # ES_INDEX_2_TEMPLATE_NAME: file_template
+      # ES_INDEX_2_ALIAS_NAME: file_centric
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
       ARRANGER_COUNT: 1
-      ARRANGER_0_URL: http://arranger-dataset1:5050
-      # ARRANGER_1_URL: http://arranger-1:5051
+      ARRANGER_1_URL: http://arranger-dataset1:5050
+      ARRANGER_2_URL: http://arranger-dataset2:5051
+      ARRANGER_3_URL: http://arranger-dataset3:5052
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
       # Service Connections
@@ -159,15 +160,65 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/tabular-index:/app/modules/server/configs
+      - ./apps/conductor/configs/arrangerConfigs/dataset1:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: tabular_arranger_set
+      ES_ARRANGER_SET_INDEX: dataset1_arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
+      DEBUG: false
+      ENABLE_LOGS: false
+    networks:
+      - conductor-network
+
+  arranger-dataset2:
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-dataset2
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - "5051:5051" # Use unique ports for each Arranger instance
+    volumes:
+      - ./apps/conductor/configs/arrangerConfigs/dataset2:/app/modules/server/configs # Point to the relevant generated config
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: dataset2_arranger_set
+      # Arranger Variables
+      PORT: 5051 # Required
+      DEBUG: false
+      ENABLE_LOGS: false
+    networks:
+      - conductor-network
+
+  arranger-dataset3:
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-dataset3
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - "5052:5052" # Use unique ports for each Arranger instance
+    volumes:
+      - ./apps/conductor/configs/arrangerConfigs/dataset3:/app/modules/server/configs # Point to the relevant generated config
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: dataset3_arranger_set
+      # Arranger Variables
+      PORT: 5052 # Required
       DEBUG: false
       ENABLE_LOGS: false
     networks:
@@ -198,15 +249,18 @@ services:
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
-      # File Arranger Variables
-      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_API: http://arranger-1:5050
-      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_INDEX: file_centric
-      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size, file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type, analysis.experiment.data.sequence_length
-      # Tabular Arranger Variables
-      NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_API: http://arranger-0:5051
-      NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_CLINICAL_DATA_INDEX: tabular_centric
+      # Dataset1 Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATASET_1_DATA_API: http://arranger-dataset1:5050
+      NEXT_PUBLIC_ARRANGER_DATASET_1_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATASET_1_DATA_INDEX: dataset1_centric
+      # Dataset2 Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATASET_2_DATA_API: http://arranger-dataset2:5051
+      NEXT_PUBLIC_ARRANGER_DATASET_2_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATASET_2_DATA_INDEX: dataset2_centric
+      # Dataset2 Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATASET_3_DATA_API: http://arranger-dataset3:5052
+      NEXT_PUBLIC_ARRANGER_DATASET_3_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATASET_3_DATA_INDEX: dataset3_centric
       # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://song:8080
       NEXT_PUBLIC_LYRIC_API: http://lyric:3030
@@ -219,6 +273,11 @@ services:
       # CORS Configuration
       NEXT_PUBLIC_CORS_ENABLED: "true"
       NEXT_PUBLIC_CORS_ALLOWED_ORIGINS: "*"
+      # File Arranger Variables
+      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_API: http://arranger-molecular:5060
+      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_INDEX: file_centric
+      NEXT_PUBLIC_ARRANGER_MANIFEST_COLUMNS: repositories.code, analysis.analysis_id, object_id, study_id, file.name, file.size, file.md5sum, file_access, analysis.experiment.acknowledgements.strategy, file.data_type, analysis.experiment.data.sequence_length
     volumes:
       - stage-data:/usr/src/public/static/dms_user_assets
     networks:
@@ -628,7 +687,7 @@ services:
       conductor:
         condition: service_healthy
     ports:
-      - "5051:5051"
+      - "5060:5060"
     volumes:
       - ./apps/conductor/configs/arrangerConfigs/fileDataConfigs:/app/modules/server/configs
     environment:
@@ -638,7 +697,7 @@ services:
       ES_PASS: myelasticpassword
       ES_ARRANGER_SET_INDEX: file_arranger_set
       # Arranger Variables
-      PORT: 5051
+      PORT: 5060
       DEBUG: false
       ENABLE_LOGS: false
     networks:
