@@ -326,26 +326,22 @@ export class Logger {
     this.generic("");
 
     // Lyric Register commands
-    this.generic(chalk.bold.magenta("Lyric Register Dictoinary Command:"));
-    this.generic(chalk.white("conductor lyricRegister"));
+    this.generic(chalk.bold.magenta("Lyric Register Dictionary Command:"));
+    this.generic(
+      chalk.white(
+        "conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0"
+      )
+    );
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray(
         "-u, --lyric-url <url>     Lyric server URL (default: http://localhost:3030)"
       )
     );
+    this.generic(chalk.gray("-c, --category-name <name> Category name"));
+    this.generic(chalk.gray("--dict-name <name>        Dictionary name"));
     this.generic(
-      chalk.gray("-c, --category-name <name> Category name (default: clinical)")
-    );
-    this.generic(
-      chalk.gray(
-        "-d, --dictionary-name <name> Dictionary name (default: clinical_data_dictionary)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-v, --dictionary-version <version> Dictionary version (default: 1.0)"
-      )
+      chalk.gray("-v, --dictionary-version <version> Dictionary version")
     );
     this.generic(
       chalk.gray(
@@ -355,7 +351,7 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: conductor lyricRegister -c my-category -d my-dictionary -v 2.0"
+        "Example: conductor lyricRegister -c my-category --dict-name my-dictionary -v 2.0"
       )
     );
     this.generic("");
@@ -450,7 +446,7 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "-d, --description <text>  Study description (default: string)"
+        "--description <text>      Study description (default: string)"
       )
     );
     this.generic(
@@ -502,13 +498,60 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "--force                  Force studyId from command line instead of from file"
+        "--force                   Force studyId from command line instead of from file"
       )
     );
     this.generic("");
     this.generic(
       chalk.gray(
         "Example: conductor songSubmitAnalysis -a metadata.json -i my-study"
+      )
+    );
+    this.generic("");
+
+    // Score Manifest Upload commands
+    this.generic(chalk.bold.magenta("Score Manifest Upload Commands:"));
+    this.generic(
+      chalk.white("conductor scoreManifestUpload -a analysis-id -d ./data")
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray(
+        "-a, --analysis-id <id>    Analysis ID from Song submission (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-d, --data-dir <path>     Directory containing data files (default: ./data)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-o, --output-dir <path>   Directory for manifest output (default: ./output)"
+      )
+    );
+    this.generic(
+      chalk.gray("-m, --manifest-file <path> Path for manifest file (optional)")
+    );
+    this.generic(
+      chalk.gray(
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-s, --score-url <url>     Score server URL (default: http://localhost:8087)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-t, --auth-token <token>  Authentication token (default: 123)"
+      )
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor scoreManifestUpload -a 4d9ed1c5-1053-4377-9ed1-c51053f3771f -d ./my-data"
       )
     );
     this.generic("");
@@ -545,11 +588,14 @@ export class Logger {
       )
     );
     this.generic("");
+
     // SONG and Score Combined Submission commands
     this.generic(
       chalk.bold.magenta("SONG and Score Combined Submission Command:")
     );
-    this.generic(chalk.white("conductor songScoreSubmit"));
+    this.generic(
+      chalk.white("conductor songScoreSubmit -p analysis.json -d ./data")
+    );
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray(

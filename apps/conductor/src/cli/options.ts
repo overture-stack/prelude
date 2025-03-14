@@ -7,11 +7,7 @@
 
 import { Command } from "commander";
 import { Profiles } from "../types/constants";
-import {
-  CLIOutput,
-  ScoreManifestOptions,
-  SongPublishOptions,
-} from "../types/cli";
+import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 
 /**
@@ -23,7 +19,7 @@ export function configureCommandOptions(program: Command): void {
   program
     .version("1.0.0")
     .description("Conductor: Data Processing Pipeline")
-    .option("-d, --debug", "Enable debug mode")
+    .option("--debug", "Enable debug mode")
     // Add a custom action for the help option
     .addHelpCommand("help [command]", "Display help for a specific command")
     .on("--help", () => {
@@ -38,7 +34,7 @@ export function configureCommandOptions(program: Command): void {
     .option("-f, --file <files...>", "Input files to process")
     .option("-i, --index <name>", "Elasticsearch index name")
     .option("-b, --batch-size <size>", "Batch size for uploads")
-    .option("-d, --delimiter <char>", "CSV delimiter character")
+    .option("--delimiter <char>", "CSV delimiter character")
     .option("-o, --output <path>", "Output directory for generated files")
     .option("--force", "Force overwrite of existing files")
     .option("--url <url>", "Elasticsearch URL")
@@ -99,21 +95,9 @@ export function configureCommandOptions(program: Command): void {
       "Lyric server URL",
       process.env.LYRIC_URL || "http://localhost:3030"
     )
-    .option(
-      "-c, --category-name <name>",
-      "Category name",
-      process.env.CATEGORY_NAME || "clinical"
-    )
-    .option(
-      "-d, --dictionary-name <name>",
-      "Dictionary name",
-      process.env.DICTIONARY_NAME || "clinical_data_dictionary"
-    )
-    .option(
-      "-v, --dictionary-version <version>",
-      "Dictionary version",
-      process.env.DICTIONARY_VERSION || "1.0"
-    )
+    .option("-c, --category-name <name>", "Category name")
+    .option("--dict-name <name>", "Dictionary name")
+    .option("-v, --dictionary-version <version>", "Dictionary version")
     .option(
       "-e, --default-centric-entity <entity>",
       "Default centric entity",
@@ -212,7 +196,7 @@ export function configureCommandOptions(program: Command): void {
       process.env.ORGANIZATION || "string"
     )
     .option(
-      "-d, --description <text>",
+      "--description <text>",
       "Study description",
       process.env.DESCRIPTION || "string"
     )
@@ -369,7 +353,6 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 }
-
 /**
  * Parses command-line arguments into a standardized CLIOutput object
  *
@@ -450,22 +433,16 @@ export function parseCommandLineArgs(options: any): CLIOutput {
     },
     lyric: {
       url: options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
-      categoryName:
-        options.categoryName || process.env.CATEGORY_NAME || "clinical",
-      dictionaryName:
-        options.dictionaryName ||
-        process.env.DICTIONARY_NAME ||
-        "clinical_data_dictionary",
+      categoryName: options.categoryName || process.env.CATEGORY_NAME,
+      dictionaryName: options.dictName || process.env.DICTIONARY_NAME,
       dictionaryVersion:
-        options.dictionaryVersion || process.env.DICTIONARY_VERSION || "1.0",
+        options.dictionaryVersion || process.env.DICTIONARY_VERSION,
       defaultCentricEntity:
-        options.defaultCentricEntity ||
-        process.env.DEFAULT_CENTRIC_ENTITY ||
-        "clinical_data",
+        options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY,
       // Data loading specific options
       dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
-      categoryId: options.categoryId || process.env.CATEGORY_ID || "1",
-      organization: options.organization || process.env.ORGANIZATION || "OICR",
+      categoryId: options.categoryId || process.env.CATEGORY_ID,
+      organization: options.organization || process.env.ORGANIZATION,
       maxRetries: options.maxRetries
         ? parseInt(options.maxRetries)
         : process.env.MAX_RETRIES

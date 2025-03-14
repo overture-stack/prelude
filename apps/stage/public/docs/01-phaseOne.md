@@ -448,7 +448,25 @@ Customize x.y.x
 
 With Arranger, Stage, and Elasticsearch now configured, it's time to upload our data. We will use Conductor to transform our CSV files into Elasticsearch documents and upload them into the portal.
 
-1. Run the Conductor `upload` command to upload your data:
+### Installing Composer
+
+1. Move to the Conductor App directory:
+
+   ```
+   cd ./apps/conductor
+   ```
+
+2. Run the following commands:
+
+   ```
+   npm install
+   npm run build
+   npm install -g
+   ```
+
+3. **Validate:** From the root directory test that Conductor is working by running `conductor -h` you should be able to see help text outlining the available commands.
+
+4. Run the Conductor `upload` command to upload your data:
 
    ```
    conductor upload -f ./data/dataset1.csv -i dataset1-index
@@ -473,7 +491,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
    Full command reference can be seen by running `conductor upload -h`
    </details>
 
-2. Monitor the upload process:
+5. Monitor the upload process:
 
    The command will display progress information including:
 
@@ -482,7 +500,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
    - Current upload status
    - Error counts (if any)
 
-3. Repeat for additional datasets:
+6. Repeat for additional datasets:
 
    If you have multiple datasets, repeat the upload command for each one, ensuring you specify the correct index name:
 

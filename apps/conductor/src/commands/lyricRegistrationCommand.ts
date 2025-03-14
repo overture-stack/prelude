@@ -27,18 +27,12 @@ export class LyricRegistrationCommand extends Command {
     try {
       // Extract configuration from options or environment
       const lyricUrl = options.lyricUrl || process.env.LYRIC_URL;
-      const categoryName =
-        options.categoryName || process.env.CATEGORY_NAME || "clinical";
-      const dictionaryName =
-        options.dictionaryName ||
-        process.env.DICTIONARY_NAME ||
-        "clinical_data_dictionary";
+      const categoryName = options.categoryName || process.env.CATEGORY_NAME;
+      const dictionaryName = options.dictName || process.env.DICTIONARY_NAME;
       const dictionaryVersion =
-        options.dictionaryVersion || process.env.DICTIONARY_VERSION || "1.0";
+        options.dictionaryVersion || process.env.DICTIONARY_VERSION;
       const defaultCentricEntity =
-        options.defaultCentricEntity ||
-        process.env.DEFAULT_CENTRIC_ENTITY ||
-        "clinical_data";
+        options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY;
 
       // Validate required parameters
       if (!lyricUrl) {
@@ -48,9 +42,31 @@ export class LyricRegistrationCommand extends Command {
         );
       }
 
+      // Add specific validation for dictionary name
+      if (!dictionaryName) {
+        throw new ConductorError(
+          "Dictionary name not specified. Use --dict-name option or set DICTIONARY_NAME environment variable.",
+          ErrorCodes.INVALID_ARGS
+        );
+      }
+
+      // Add validations for other required fields
+      if (!categoryName) {
+        throw new ConductorError(
+          "Category name not specified. Use -c or --category-name option or set CATEGORY_NAME environment variable.",
+          ErrorCodes.INVALID_ARGS
+        );
+      }
+
+      if (!dictionaryVersion) {
+        throw new ConductorError(
+          "Dictionary version not specified. Use -v or --dictionary-version option or set DICTIONARY_VERSION environment variable.",
+          ErrorCodes.INVALID_ARGS
+        );
+      }
+
       // Create Lyric service
       const lyricService = new LyricService(lyricUrl);
-
       // Check Lyric service health
       const isHealthy = await lyricService.checkHealth();
       if (!isHealthy) {

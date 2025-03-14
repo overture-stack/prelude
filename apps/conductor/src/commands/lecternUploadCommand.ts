@@ -24,6 +24,36 @@ export class LecternUploadCommand extends Command {
   }
 
   /**
+   * Override the base validate method since we don't require input files in filePaths
+   * but instead use the schema file directly.
+   */
+  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+    const { options } = cliOutput;
+    const schemaFile = options.schemaFile || process.env.LECTERN_SCHEMA;
+
+    if (!schemaFile) {
+      return {
+        success: false,
+        errorMessage:
+          "Schema file not specified. Use --schema-file or set LECTERN_SCHEMA environment variable.",
+        errorCode: ErrorCodes.INVALID_ARGS,
+      };
+    }
+
+    // Check if the schema file exists
+    if (!fs.existsSync(schemaFile)) {
+      return {
+        success: false,
+        errorMessage: `Schema file not found: ${schemaFile}`,
+        errorCode: ErrorCodes.FILE_NOT_FOUND,
+      };
+    }
+
+    // We passed validation
+    return { success: true };
+  }
+
+  /**
    * Normalize URL for health check
    * @param url Original URL
    * @returns Base URL for health check
