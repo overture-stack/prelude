@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { validateFile, validateDelimiter } from "../validations/fileValidator";
 import * as readline from "readline";
-import { expandDirectoryPaths } from "../utils/fileUtils"; // Add this import
+import { expandDirectoryPaths } from "../utils/fileUtils";
 
 /**
  * Abstract base class for all CLI commands.
