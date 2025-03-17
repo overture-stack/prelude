@@ -1,3 +1,4 @@
+// Updated lecternCommand.ts
 import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
@@ -12,6 +13,7 @@ import { validateCSVHeaders, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
+import { getCSVFiles } from "../utils/fileUtils"; // Add this import
 
 export class DictionaryCommand extends Command {
   // Define dictionary-specific defaults
@@ -80,32 +82,78 @@ export class DictionaryCommand extends Command {
       );
     }
 
-    // Validate all files are CSVs
-    const invalidFiles = cliOutput.filePaths.filter(
-      (filePath) => path.extname(filePath).toLowerCase() !== ".csv"
+    // Get only CSV files from the paths (already expanded in base class)
+    const csvFiles = cliOutput.filePaths.filter(
+      (filePath) => path.extname(filePath).toLowerCase() === ".csv"
     );
 
-    if (invalidFiles.length > 0) {
+    // Check if we've got valid CSV files
+    if (csvFiles.length === 0) {
       throw new ComposerError(
         "Lectern dictionary generation requires CSV input files",
-        ErrorCodes.INVALID_FILE,
-        { invalidFiles: invalidFiles.join(", ") }
+        ErrorCodes.INVALID_FILE
       );
     }
 
-    // Validate CSV headers
-    for (const filePath of cliOutput.filePaths) {
-      const csvHeadersValid = await validateCSVHeaders(
-        filePath,
-        cliOutput.config.delimiter
+    // If we filtered out some non-CSV files, log which ones were skipped
+    if (csvFiles.length < cliOutput.filePaths.length) {
+      const skippedFiles = cliOutput.filePaths.filter(
+        (filePath) => path.extname(filePath).toLowerCase() !== ".csv"
       );
-      if (!csvHeadersValid) {
-        throw new ComposerError(
-          `CSV file ${filePath} has invalid headers`,
-          ErrorCodes.VALIDATION_FAILED
+
+      Logger.warn(`Skipping ${skippedFiles.length} non-CSV files`);
+      skippedFiles.forEach((file) => {
+        Logger.generic(`  - ${file}`);
+      });
+    }
+
+    // Update filePaths to only include CSV files
+    cliOutput.filePaths = csvFiles;
+    Logger.info(`Processing ${csvFiles.length} CSV files`);
+
+    // Validate CSV headers for each file
+    const validFiles: string[] = [];
+    const invalidFiles: string[] = [];
+
+    for (const filePath of cliOutput.filePaths) {
+      try {
+        const csvHeadersValid = await validateCSVHeaders(
+          filePath,
+          cliOutput.config.delimiter
         );
+        if (csvHeadersValid) {
+          validFiles.push(filePath);
+        } else {
+          invalidFiles.push(filePath);
+        }
+      } catch (error) {
+        Logger.warn(`Error validating CSV headers in ${filePath}: ${error}`);
+        invalidFiles.push(filePath);
       }
     }
+
+    // If some files are invalid, warn and continue with valid ones
+    if (invalidFiles.length > 0) {
+      Logger.warn(`Skipping ${invalidFiles.length} files with invalid headers`);
+      invalidFiles.forEach((file) => {
+        Logger.generic(`  - ${path.basename(file)}`);
+      });
+
+      // Update filePaths to only include valid files
+      cliOutput.filePaths = validFiles;
+    }
+
+    // Ensure we still have files to process
+    if (cliOutput.filePaths.length === 0) {
+      throw new ComposerError(
+        "No valid CSV files found with proper headers",
+        ErrorCodes.VALIDATION_FAILED
+      );
+    }
+
+    Logger.info(
+      `Found ${cliOutput.filePaths.length} valid CSV files to process`
+    );
   }
 
   protected async execute(cliOutput: CLIOutput): Promise<any> {
@@ -139,24 +187,33 @@ export class DictionaryCommand extends Command {
         dictionaryConfig!.version
       );
 
+      let processedFiles = 0;
+      let skippedFiles = 0;
+
       for (const filePath of cliOutput.filePaths) {
         try {
           const fileContent = fs.readFileSync(filePath, "utf-8");
           const [headerLine, sampleLine] = fileContent.split("\n");
 
           if (!headerLine) {
-            throw new ComposerError(
-              `CSV file ${filePath} is empty or has no headers`,
-              ErrorCodes.INVALID_FILE
+            Logger.warn(
+              `CSV file ${path.basename(
+                filePath
+              )} is empty or has no headers. Skipping.`
             );
+            skippedFiles++;
+            continue;
           }
 
           const headers = parseCSVLine(headerLine, delimiter, true)[0];
           if (!headers) {
-            throw new ComposerError(
-              `Failed to parse CSV headers in ${filePath}`,
-              ErrorCodes.INVALID_FILE
+            Logger.warn(
+              `Failed to parse CSV headers in ${path.basename(
+                filePath
+              )}. Skipping.`
             );
+            skippedFiles++;
+            continue;
           }
 
           // Process sample data
@@ -174,10 +231,20 @@ export class DictionaryCommand extends Command {
           const schema = generateSchema(filePath, headers, sampleData);
           dictionary.schemas.push(schema);
           Logger.debug`Generated schema for ${schema.name}`;
+          processedFiles++;
         } catch (error) {
-          Logger.warn`Skipping ${filePath} due to error: ${error}`;
+          Logger.warn`Skipping ${path.basename(
+            filePath
+          )} due to error: ${error}`;
+          skippedFiles++;
           continue;
         }
+      }
+
+      // Log summary of processing
+      Logger.info(`Successfully processed ${processedFiles} CSV files`);
+      if (skippedFiles > 0) {
+        Logger.warn(`Skipped ${skippedFiles} files due to errors`);
       }
 
       // Ensure output directory exists

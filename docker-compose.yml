@@ -24,10 +24,10 @@ services:
       # Dynamic indices are configured with a count and indexed variables
       ES_INDEX_COUNT: 1
       # First index
-      ES_INDEX_0_NAME: dataset1-index
-      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/dataset1-mapping.json
-      ES_INDEX_0_TEMPLATE_NAME: dataset1-index
-      ES_INDEX_0_ALIAS_NAME: dataset1_centric
+      ES_INDEX_0_NAME: datatable1-index
+      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/datatable1-mapping.json
+      ES_INDEX_0_TEMPLATE_NAME: datatable1-index
+      ES_INDEX_0_ALIAS_NAME: datatable1_centric
       # Second index
       # ES_INDEX_1_NAME: file-index
       # ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
@@ -36,9 +36,9 @@ services:
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
       ARRANGER_COUNT: 1
-      ARRANGER_0_URL: http://arranger-dataset1:5050
-      ARRANGER_1_URL: http://arranger-dataset2:5051
-      # ARRANGER_2_URL: http://arranger-dataset3:5052
+      ARRANGER_0_URL: http://arranger-datatable1:5050
+      ARRANGER_1_URL: http://arranger-datatable2:5051
+      # ARRANGER_2_URL: http://arranger-datatable3:5052
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
       # Service Connections
@@ -107,7 +107,7 @@ services:
   # --------------------------------------------------------------------------------------#
   # Elasticsearch                                                                         #
   # --------------------------------------------------------------------------------------#
-  # A search and analytics engine used to help query massive datasets.                    #
+  # A search and analytics engine used to help query massive datatables.                    #
   # Documentation Link:                                                                   #
   # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
   # --------------------------------------------------------------------------------------#
@@ -149,10 +149,10 @@ services:
   # Search API generation with compatible search UI components                          #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
-  arranger-dataset1:
+  arranger-datatable1:
     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-dataset1
+    container_name: arranger-datatable1
     platform: linux/amd64
     depends_on:
       conductor:
@@ -160,13 +160,13 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/dataset1:/app/modules/server/configs
+      - ./apps/conductor/configs/arrangerConfigs/datatable1:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: dataset1_arranger_set
+      ES_ARRANGER_SET_INDEX: datatable1_arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
@@ -174,10 +174,10 @@ services:
     networks:
       - conductor-network
 
-  arranger-dataset2:
+  arranger-datatable2:
     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-dataset2
+    container_name: arranger-datatable2
     platform: linux/amd64
     depends_on:
       conductor:
@@ -185,13 +185,13 @@ services:
     ports:
       - "5051:5051" # Use unique ports for each Arranger instance
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/dataset2:/app/modules/server/configs # Point to the relevant generated config
+      - ./apps/conductor/configs/arrangerConfigs/datatable2:/app/modules/server/configs # Point to the relevant generated config
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: dataset2_arranger_set
+      ES_ARRANGER_SET_INDEX: datatable2_arranger_set
       # Arranger Variables
       PORT: 5051 # Required
       DEBUG: false
@@ -199,10 +199,10 @@ services:
     networks:
       - conductor-network
 
-  # arranger-dataset3:
+  # arranger-datatable3:
   #   profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
   #   image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-  #   container_name: arranger-dataset3
+  #   container_name: arranger-datatable3
   #   platform: linux/amd64
   #   depends_on:
   #     conductor:
@@ -210,13 +210,13 @@ services:
   #   ports:
   #     - "5052:5052" # Use unique ports for each Arranger instance
   #   volumes:
-  #     - ./apps/conductor/configs/arrangerConfigs/dataset3:/app/modules/server/configs # Point to the relevant generated config
+  #     - ./apps/conductor/configs/arrangerConfigs/datatable3:/app/modules/server/configs # Point to the relevant generated config
   #   environment:
   #     # Elasticsearch Variables
   #     ES_HOST: http://elasticsearch:9200
   #     ES_USER: elastic
   #     ES_PASS: myelasticpassword
-  #     ES_ARRANGER_SET_INDEX: dataset3_arranger_set
+  #     ES_ARRANGER_SET_INDEX: datatable3_arranger_set
   #     # Arranger Variables
   #     PORT: 5052 # Required
   #     DEBUG: false
@@ -249,18 +249,18 @@ services:
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
-      # Dataset1 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATASET_1_API: http://arranger-dataset1:5050
-      NEXT_PUBLIC_ARRANGER_DATASET_1_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATASET_1_INDEX: dataset1_centric
-      # Dataset2 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATASET_2_API: http://arranger-dataset2:5051
-      NEXT_PUBLIC_ARRANGER_DATASET_2_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATASET_2_INDEX: dataset2_centric
-      # Dataset2 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATASET_3_API: http://arranger-dataset3:5052
-      NEXT_PUBLIC_ARRANGER_DATASET_3_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATASET_3_INDEX: dataset3_centric
+      # Datatable1 Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
+      # Datatable2 Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
+      NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
+      # Datatable2 Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable3:5052
+      NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable3_centric
       # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://song:8080
       NEXT_PUBLIC_LYRIC_API: http://lyric:3030

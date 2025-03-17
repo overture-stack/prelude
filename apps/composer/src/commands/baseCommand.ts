@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { validateFile, validateDelimiter } from "../validations/fileValidator";
 import * as readline from "readline";
+import { expandDirectoryPaths } from "../utils/fileUtils"; // Add this import
 
 /**
  * Abstract base class for all CLI commands.
@@ -130,6 +131,26 @@ export abstract class Command {
         ErrorCodes.INVALID_ARGS
       );
     }
+
+    // Expand directory paths to file paths
+    const originalPaths = [...cliOutput.filePaths];
+    const expandedPaths = expandDirectoryPaths(cliOutput.filePaths);
+
+    if (expandedPaths.length === 0) {
+      throw new ComposerError(
+        "No valid input files found",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // If we found more files than were originally specified, log this info
+    if (expandedPaths.length > originalPaths.length) {
+      Logger.info(`Found ${expandedPaths.length} files from specified paths`);
+    }
+
+    // Replace the original file paths with expanded ones
+    cliOutput.filePaths = expandedPaths;
+    Logger.debug(`Expanded file paths: ${cliOutput.filePaths.join(", ")}`);
 
     // Validate each input file
     for (const filePath of cliOutput.filePaths) {

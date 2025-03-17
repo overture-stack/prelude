@@ -109,9 +109,9 @@ To verify successful data preparation:
   ```
   project-root/
   └── data/
-      ├── dataset1.csv
-      ├── dataset2.csv
-      └── dataset3.csv
+      ├── datatable1.csv
+      ├── datatable2.csv
+      └── datatable3.csv
   ```
 
 - Open each CSV file and confirm:
@@ -149,7 +149,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 1. Run the following Composer command to generate elasticsearch index mappings using your data files:
 
    ```
-   composer -p generateElasticsearchMapping -f ./data/dataset1.csv -i dataset1 -o ./configs/elasticsearchConfigs/dataset1-mapping.json
+   composer -p generateElasticsearchMapping -f ./data/datatable1.csv -i datatable1 -o ./configs/elasticsearchConfigs/datatable1-mapping.json
    ```
 
     <details>
@@ -158,11 +158,11 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
    In this command:
 
    - `-p generateElasticsearchMapping`: Specifies the operation to generate an Elasticsearch mapping schema
-   - `-f ./data/dataset1.csv`: Specifies the input data file to analyze
-   - `-i dataset1`: Sets the Elasticsearch index name to "dataset1"
-   - `-o ./configs/elasticsearchConfigs/dataset1-mapping.json`: Sets the output path for the generated mapping file
+   - `-f ./data/datatable1.csv`: Specifies the input data file to analyze
+   - `-i datatable1`: Sets the Elasticsearch index name to "datatable1"
+   - `-o ./configs/elasticsearchConfigs/datatable1-mapping.json`: Sets the output path for the generated mapping file
 
-   The command analyzes the structure of dataset1.csv and creates an appropriate Elasticsearch mapping configuration, which defines how the data will be indexed and searched in Elasticsearch.
+   The command analyzes the structure of datatable1.csv and creates an appropriate Elasticsearch mapping configuration, which defines how the data will be indexed and searched in Elasticsearch.
 
    A detailed overview of all available options for the generateElasticsearchMapping command can be seen by running `composer -h`
 
@@ -174,8 +174,8 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
    After running the command, examine the generated index mapping in the `configs/elasticsearchConfigs` directory. The mapping contains several critical components:
 
-   - **Index Pattern:** `"index_patterns": ["dataset1-*"]` - This template will apply to all indices that start with "dataset1-"
-   - **Aliases:** `"dataset1_centric": {}` - An alias that can be used to reference all matching indices as one
+   - **Index Pattern:** `"index_patterns": ["datatable1-*"]` - This template will apply to all indices that start with "datatable1-"
+   - **Aliases:** `"datatable1_centric": {}` - An alias that can be used to reference all matching indices as one
    - **Data Structure:** Note how all fields are nested under a `data` object, providing clean organization
 
    <details>
@@ -217,7 +217,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 1.  Run the following Composer command to generate Arranger configuration files using your index mapping templates:
 
     ```
-    composer -p generateArrangerConfigs -f ./configs/elasticsearchConfigs/dataset1-mapping.json -o ./configs/arrangerConfigs/dataset1/
+    composer -p generateArrangerConfigs -f ./configs/elasticsearchConfigs/datatable1-mapping.json -o ./configs/arrangerConfigs/datatable1/
     ```
 
     <details>
@@ -226,8 +226,8 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
     In this command:
 
     - `-p generateArrangerConfigs`: Specifies the operation to generate Arranger configuration files
-    - `-f ./configs/elasticsearchConfigs/dataset1-mapping.json`: Specifies the input Elasticsearch mapping file to use as a template
-    - `-o ./configs/arrangerConfigs/dataset1/`: Sets the output directory for the generated Arranger configuration files
+    - `-f ./configs/elasticsearchConfigs/datatable1-mapping.json`: Specifies the input Elasticsearch mapping file to use as a template
+    - `-o ./configs/arrangerConfigs/datatable1/`: Sets the output directory for the generated Arranger configuration files
 
     The command analyzes the Elasticsearch mapping structure and creates appropriate Arranger configuration files, which define how data will be displayed, filtered, and queried in the Arranger UI.
 
@@ -244,22 +244,22 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
       ```
       configs
       ├── arrangerConfigs
-      │ └── dataset1
+      │ └── datatable1
       │   ├── base.json # Core configuration
       │   ├── extended.json # Field display settings
       │   ├── facets.json # Filter panel configuration
       │   └── table.json # Table display settings
       └── elasticsearchConfigs
-          └── dataset1-mapping.json
+          └── datatable1-mapping.json
 
       ```
 
-    - **Base.json:** update the index field of your base.json file to match relevant index alias. In this case `dataset1-index`.
+    - **Base.json:** update the index field of your base.json file to match relevant index alias. In this case `datatable1-index`.
 
       ```
       {
       "documentType": "file",
-      "index": "dataset1-centric"
+      "index": "datatable1-centric"
       }
       ```
 
@@ -284,15 +284,15 @@ This step configures your docker-compose.yml file to properly connect your data 
    ES_INDEX_COUNT: 1 # Update this if you have multiple datasets
 
    # First index
-   ES_INDEX_0_NAME: dataset1-index
-   ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/dataset1-mapping.json
-   ES_INDEX_0_TEMPLATE_NAME: dataset1_template
-   ES_INDEX_0_ALIAS_NAME: dataset1_centric
+   ES_INDEX_0_NAME: datatable1-index
+   ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable1-mapping.json
+   ES_INDEX_0_TEMPLATE_NAME: datatable1_template
+   ES_INDEX_0_ALIAS_NAME: datatable1_centric
    # Add more indices if needed
-   # ES_INDEX_1_NAME: dataset2-index
-   # ES_INDEX_1_TEMPLATE_FILE: configs/elasticsearchConfigs/dataset2-mapping.json
-   # ES_INDEX_1_TEMPLATE_NAME: dataset2_template
-   # ES_INDEX_1_ALIAS_NAME: dataset2_centric
+   # ES_INDEX_1_NAME: datatable2-index
+   # ES_INDEX_1_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable2-mapping.json
+   # ES_INDEX_1_TEMPLATE_NAME: datatable2_template
+   # ES_INDEX_1_ALIAS_NAME: datatable2_centric
    ```
 
 2. **Configure Arranger Services**:
@@ -300,10 +300,10 @@ This step configures your docker-compose.yml file to properly connect your data 
    For each dataset, configure a separate Arranger service. Update the `arranger-clinical` service (or rename it appropriately) and add additional Arranger services if needed:
 
    ```yaml
-   arranger-dataset1:
+   arranger-datatable1:
      profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
      image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-     container_name: arranger-dataset1 # Rename to match above
+     container_name: arranger-datatable1 # Rename to match above
      platform: linux/amd64
      depends_on:
        conductor:
@@ -311,13 +311,13 @@ This step configures your docker-compose.yml file to properly connect your data 
      ports:
        - "5050:5050" # Use unique ports for each Arranger instance
      volumes:
-       - ./configs/arrangerConfigs/dataset1:/app/modules/server/configs # Point to the relevant generated config
+       - ./configs/arrangerConfigs/datatable1:/app/modules/server/configs # Point to the relevant generated config
      environment:
        # Elasticsearch Variables
        ES_HOST: http://elasticsearch:9200
        ES_USER: elastic
        ES_PASS: myelasticpassword
-       ES_ARRANGER_SET_INDEX: dataset1_arranger_set
+       ES_ARRANGER_SET_INDEX: datatable1_arranger_set
        # Arranger Variables
        PORT: 5050 # Required
        DEBUG: false
@@ -334,8 +334,8 @@ This step configures your docker-compose.yml file to properly connect your data 
    ```yaml
    # Arranger Services Configuration
    ARRANGER_COUNT: 1 # Update this if you have multiple Arrangers
-   ARRANGER_0_URL: http://arranger-dataset1:5050
-   # ARRANGER_1_URL: http://arranger-dataset2:5051
+   ARRANGER_0_URL: http://arranger-datatable1:5050
+   # ARRANGER_1_URL: http://arranger-datatable2:5051
    ```
 
    - Here `ARRANGER_1_URL` is commented, make sure to uncomment any additionally added arranger URLs
@@ -355,21 +355,21 @@ This step configures your docker-compose.yml file to properly connect your data 
 
    ```yaml
    # Tabular Arranger Variables
-   NEXT_PUBLIC_ARRANGER_DATASET1_DATA_API: http://arranger-dataset1:5050
-   NEXT_PUBLIC_ARRANGER_DATASET1_DATA_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATASET1_INDEX: dataset1_centric
+   NEXT_PUBLIC_ARRANGER_DATATABLE1_DATA_API: http://arranger-datatable1:5050
+   NEXT_PUBLIC_ARRANGER_DATATABLE1_DATA_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATATABLE1_INDEX: datatable1_centric
    # Add more Arranger connections if needed
-   NEXT_PUBLIC_ARRANGER_DATASET2_API: http://arranger-dataset2:5051
-   NEXT_PUBLIC_ARRANGER_DATASET2_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATASET2_INDEX: dataset2_centric
+   NEXT_PUBLIC_ARRANGER_DATATABLE2_API: http://arranger-datatable2:5051
+   NEXT_PUBLIC_ARRANGER_DATATABLE2_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATATABLE2_INDEX: datatable2_centric
    # Add more Arranger connections if needed
-   NEXT_PUBLIC_ARRANGER_DATASET3_API: http://arranger-dataset2:5051
-   NEXT_PUBLIC_ARRANGER_DATASET3_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATASET3_INDEX: dataset2_centric
+   NEXT_PUBLIC_ARRANGER_DATATABLE3_API: http://arranger-datatable2:5051
+   NEXT_PUBLIC_ARRANGER_DATATABLE3_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATATABLE3_INDEX: datatable2_centric
    # Add more Arranger connections if needed
-   # NEXT_PUBLIC_ARRANGER_DATASET4_API: http://arranger-dataset2:5051
+   # NEXT_PUBLIC_ARRANGER_DATASET4_API: http://arranger-datatable2:5051
    # NEXT_PUBLIC_ARRANGER_DATASET4_DOCUMENT_TYPE: file
-   # NEXT_PUBLIC_ARRANGER_DATASET4_INDEX: dataset2_centric
+   # NEXT_PUBLIC_ARRANGER_DATASET4_INDEX: datatable2_centric
    ```
 
 ### Validation
@@ -469,7 +469,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
 4. Run the Conductor `upload` command to upload your data:
 
    ```
-   conductor upload -f ./data/dataset1.csv -i dataset1-index
+   conductor upload -f ./data/datatable1.csv -i datatable1-index
    ```
 
    <details>
@@ -477,8 +477,8 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
 
    In this command:
 
-   - `-f ./data/dataset1.csv`: Specifies the input data file to upload
-   - `-i dataset1-index`: Specifies the target Elasticsearch index
+   - `-f ./data/datatable1.csv`: Specifies the input data file to upload
+   - `-i datatable1-index`: Specifies the target Elasticsearch index
 
    Additional options:
 
@@ -505,7 +505,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
    If you have multiple datasets, repeat the upload command for each one, ensuring you specify the correct index name:
 
    ```
-   conductor upload -f ./data/dataset2.csv -i dataset2-index
+   conductor upload -f ./data/datatable2.csv -i datatable2-index
    ```
 
 ### Validation
@@ -521,7 +521,7 @@ To verify that your data was successfully uploaded:
 2. **Verify Data in Elasticsearch**:
 
    - Open Elasticvue (http://localhost:9200) if you have it installed
-   - Navigate to Indices and select your index (e.g., `dataset1-index`)
+   - Navigate to Indices and select your index (e.g., `datatable1-index`)
    - Browse documents to ensure they contain the expected data
    - Run a sample query to test data retrieval
 

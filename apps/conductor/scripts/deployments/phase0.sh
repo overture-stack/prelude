@@ -150,7 +150,7 @@ main() {
     printf "\nTo setup stage move into its directory\n"
     printf "\033[1;33mcd apps/stage\033[0m\n"
     printf "\nAnd then run:\n"
-    printf "\033[1;33mdocker build -t staxgeimage:1.0 .\033[0m\n"
+    printf "\033[1;33mdocker build -t stageimage:1.0 .\033[0m\n"
     printf "\nOnce built you should be able to successfully run:\n"
     printf "\033[1;33mmake phase1\033[0m\n"
 }
