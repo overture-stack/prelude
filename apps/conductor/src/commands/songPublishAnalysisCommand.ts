@@ -226,21 +226,44 @@ export class SongPublishAnalysisCommand extends Command {
    * This implementation ensures that analysis ID is provided.
    *
    * @param cliOutput - The parsed command line arguments
-   * @returns A validation result indicating success or failure
+   * @throws ConductorError if validation fails
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
-    const analysisId = options.analysisId || process.env.ANALYSIS_ID;
 
+    // Validate analysis ID
+    const analysisId =
+      options.analysisId ||
+      cliOutput.config.score?.analysisId ||
+      process.env.ANALYSIS_ID;
     if (!analysisId) {
-      return {
-        success: false,
-        errorMessage:
-          "No analysis ID provided. Use --analysis-id option or set ANALYSIS_ID environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No analysis ID provided. Use --analysis-id option or set ANALYSIS_ID environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
-    return { success: true };
+    // Validate SONG URL
+    const songUrl =
+      options.songUrl || cliOutput.config.song?.url || process.env.SONG_URL;
+    if (!songUrl) {
+      throw new ConductorError(
+        "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Optional validations
+    const studyId =
+      options.studyId ||
+      cliOutput.config.song?.studyId ||
+      process.env.STUDY_ID ||
+      "demo";
+    if (!studyId) {
+      throw new ConductorError(
+        "Study ID is invalid or not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
   }
 }

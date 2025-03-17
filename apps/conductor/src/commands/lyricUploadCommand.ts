@@ -5,6 +5,7 @@ import chalk from "chalk";
 import { ConductorError, ErrorCodes } from "../utils/errors";
 import { LyricDataService } from "../services/lyric/lyricDataService";
 import * as fs from "fs";
+import * as path from "path";
 
 /**
  * Command for loading data into Lyric
@@ -40,8 +41,7 @@ export class LyricUploadCommand extends Command {
       cliOutput.config.lectern?.url ||
       process.env.LECTERN_URL ||
       "http://localhost:3031";
-    const dataDirectory =
-      cliOutput.config.lyric?.dataDirectory || process.env.LYRIC_DATA;
+    const dataDirectory = this.resolveDataDirectory(cliOutput);
     const categoryId =
       cliOutput.config.lyric?.categoryId || process.env.CATEGORY_ID || "1";
     const organization =
@@ -56,36 +56,6 @@ export class LyricUploadCommand extends Command {
       parseInt(process.env.RETRY_DELAY || "20000");
 
     try {
-      // Validate required parameters
-      if (!lyricUrl) {
-        throw new ConductorError(
-          "Lyric URL not specified. Use --lyric-url or set LYRIC_URL environment variable.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
-      if (!lecternUrl) {
-        throw new ConductorError(
-          "Lectern URL not specified. Use --lectern-url or set LECTERN_URL environment variable.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
-      if (!dataDirectory) {
-        throw new ConductorError(
-          "Data directory not specified. Use --data-directory or set LYRIC_DATA environment variable.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
-      // Validate data directory
-      if (!fs.existsSync(dataDirectory)) {
-        throw new ConductorError(
-          `Data directory not found: ${dataDirectory}`,
-          ErrorCodes.FILE_NOT_FOUND
-        );
-      }
-
       // Create Lyric data service
       const lyricDataService = new LyricDataService(lyricUrl, lecternUrl);
 
@@ -168,48 +138,91 @@ export class LyricUploadCommand extends Command {
     }
   }
 
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  /**
+   * Resolves the data directory with fallback and validation
+   * @param cliOutput The CLI configuration and inputs
+   * @returns A resolved, absolute path to the data directory
+   */
+  private resolveDataDirectory(cliOutput: CLIOutput): string {
+    // First, try to get the data directory from config or environment
+    const rawDataDirectory =
+      cliOutput.config.lyric?.dataDirectory ||
+      process.env.LYRIC_DATA ||
+      "./data";
+
+    // Resolve to an absolute path
+    const resolvedPath = path.resolve(process.cwd(), rawDataDirectory);
+
+    // Validate the directory exists
+    if (!fs.existsSync(resolvedPath)) {
+      throw new ConductorError(
+        `Data directory not found: ${resolvedPath}`,
+        ErrorCodes.FILE_NOT_FOUND,
+        {
+          providedPath: rawDataDirectory,
+          resolvedPath,
+        }
+      );
+    }
+
+    return resolvedPath;
+  }
+
+  /**
+   * Validates command line arguments and configuration
+   *
+   * @param cliOutput - The parsed command line arguments
+   * @throws ConductorError if validation fails
+   */
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     // Ensure config exists
     if (!cliOutput.config) {
-      return {
-        success: false,
-        errorMessage: "Configuration is missing",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "Configuration is missing",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
+    // Validate Lyric URL
     const lyricUrl = cliOutput.config.lyric?.url || process.env.LYRIC_URL;
-    const lecternUrl = cliOutput.config.lectern?.url || process.env.LECTERN_URL;
-    const dataDirectory =
-      cliOutput.config.lyric?.dataDirectory || process.env.LYRIC_DATA;
-
     if (!lyricUrl) {
-      return {
-        success: false,
-        errorMessage:
-          "No Lyric URL provided. Use --lyric-url option or set LYRIC_URL environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No Lyric URL provided. Use --lyric-url option or set LYRIC_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
+    // Validate Lectern URL
+    const lecternUrl = cliOutput.config.lectern?.url || process.env.LECTERN_URL;
     if (!lecternUrl) {
-      return {
-        success: false,
-        errorMessage:
-          "No Lectern URL provided. Use --lectern-url option or set LECTERN_URL environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No Lectern URL provided. Use --lectern-url option or set LECTERN_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
-    if (!dataDirectory) {
-      return {
-        success: false,
-        errorMessage:
-          "No data directory provided. Use --data-directory option or set LYRIC_DATA environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+    // This will throw an error if the directory is invalid
+    this.resolveDataDirectory(cliOutput);
+
+    // Optional additional validations
+    const categoryId =
+      cliOutput.config.lyric?.categoryId || process.env.CATEGORY_ID || "1";
+    if (!categoryId) {
+      throw new ConductorError(
+        "Category ID is invalid or not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
-    return { success: true };
+    const organization =
+      cliOutput.config.lyric?.organization ||
+      process.env.ORGANIZATION ||
+      "OICR";
+    if (!organization) {
+      throw new ConductorError(
+        "Organization is invalid or not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
   }
 }

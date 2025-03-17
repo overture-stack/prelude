@@ -493,9 +493,9 @@ export class ScoreManifestUploadCommand extends Command {
   }
 
   /**
-   * Validates command line arguments
+   * Update the validate method to throw errors directly
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
     const analysisId =
       options.analysisId ||
@@ -505,27 +505,25 @@ export class ScoreManifestUploadCommand extends Command {
       options.dataDir ||
       cliOutput.config.score?.dataDir ||
       process?.env?.DATA_DIR ||
-      "./data";
+      "./data/fileData";
 
+    // Validate analysis ID
     if (!analysisId) {
-      return {
-        success: false,
-        errorMessage:
-          "No analysis ID provided. Use --analysis-id option or set ANALYSIS_ID environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No analysis ID provided. Use --analysis-id option or set ANALYSIS_ID environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
     // Verify data directory exists
     if (!fs.existsSync(dataDir)) {
-      return {
-        success: false,
-        errorMessage: `Data directory not found: ${dataDir}`,
-        errorCode: ErrorCodes.FILE_NOT_FOUND,
-      };
+      throw new ConductorError(
+        `Data directory not found: ${dataDir}`,
+        ErrorCodes.FILE_NOT_FOUND
+      );
     }
 
-    // Check if Docker is available, but don't fail if it's not
+    // Check if Docker is available
     try {
       await execPromise("docker --version");
     } catch (error) {
@@ -535,8 +533,14 @@ export class ScoreManifestUploadCommand extends Command {
       Logger.tip(
         `Install Docker and start the required containers before running this command.`
       );
+      throw new ConductorError(
+        "Docker is required for this command",
+        ErrorCodes.INVALID_ARGS,
+        {
+          suggestion:
+            "Install Docker and ensure song-client and score-client containers are running",
+        }
+      );
     }
-
-    return { success: true };
   }
 }

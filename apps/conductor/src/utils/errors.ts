@@ -29,6 +29,8 @@ export const ErrorCodes = {
   CLI_ERROR: "[CLI_ERROR]",
   CSV_ERROR: "[CSV_ERROR]",
   ES_ERROR: "[ES_ERROR]",
+  UNKNOWN_ERROR: "[UNKNOWN_ERROR]",
+  USER_CANCELLED: "[USER_CANCELLED]",
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
@@ -52,30 +54,34 @@ export function handleError(
   showAvailableProfiles?: () => void
 ): never {
   if (error instanceof ConductorError) {
-    // Just output the code and message without any prefix
-    // Logger.error already adds the "✗ Error" prefix
-    Logger.error(`${error.code}: ${error.message}`);
+    // Basic error message for all users
+    Logger.error(`${error.message}`);
+
+    // Detailed error only in debug mode
+    if (process.argv.includes("--debug")) {
+      if (error.details) {
+        Logger.debug("Error details:");
+        Logger.debug(formatErrorDetails(error.details));
+      }
+
+      Logger.debug("Stack trace:");
+      Logger.debug(error.stack || "No stack trace available");
+    }
 
     if (showAvailableProfiles) {
       showAvailableProfiles();
     }
-
-    if (error.details) {
-      const formattedDetails = formatErrorDetails(error.details);
-      Logger.debug("Details:");
-      Logger.debug(formattedDetails);
-    }
-
-    Logger.debug("Stack trace:");
-    Logger.debug(error.stack || "No stack trace available");
   } else {
     // For unexpected errors, just output the message
-    if (error instanceof Error) {
-      Logger.error(error.message);
+    Logger.error(
+      `Unexpected error: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+
+    if (process.argv.includes("--debug") && error instanceof Error) {
       Logger.debug("Stack trace:");
       Logger.debug(error.stack || "No stack trace available");
-    } else {
-      Logger.error(String(error));
     }
   }
 

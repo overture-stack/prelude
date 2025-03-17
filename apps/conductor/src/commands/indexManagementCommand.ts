@@ -22,11 +22,111 @@ import {
   extractTemplateInfo,
   TemplateInfo,
 } from "../services/elasticsearch/templates";
+import * as path from "path";
 
 export class IndexManagementCommand extends Command {
   constructor() {
     super("indexManagement");
     this.defaultOutputFileName = "elasticsearch-setup.json";
+  }
+
+  /**
+   * Validates command line arguments and configuration
+   * @param cliOutput The CLI configuration and inputs
+   * @throws ConductorError if validation fails
+   */
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
+    const { config, options } = cliOutput;
+
+    // Extract and validate template file
+    const templateFile =
+      options.templateFile || config.elasticsearch?.templateFile;
+
+    if (!templateFile) {
+      throw new ConductorError(
+        "Template file not specified. Use --template-file or configure in settings.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Resolve to absolute path and validate file existence
+    const resolvedTemplatePath = path.resolve(process.cwd(), templateFile);
+
+    if (!fs.existsSync(resolvedTemplatePath)) {
+      throw new ConductorError(
+        `Template file not found at ${resolvedTemplatePath}`,
+        ErrorCodes.FILE_NOT_FOUND
+      );
+    }
+
+    // Validate template file can be parsed
+    try {
+      const rawContent = fs.readFileSync(resolvedTemplatePath, "utf-8");
+      JSON.parse(rawContent);
+    } catch (error) {
+      throw new ConductorError(
+        `Failed to parse template file: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        ErrorCodes.INVALID_FILE,
+        error
+      );
+    }
+
+    // Validate Elasticsearch connection configuration
+    const elasticsearchUrl =
+      config.elasticsearch?.url || process.env.ELASTICSEARCH_URL;
+
+    if (!elasticsearchUrl) {
+      throw new ConductorError(
+        "Elasticsearch URL not specified. Use --url or set ELASTICSEARCH_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Validate username and password
+    const username =
+      config.elasticsearch?.user || process.env.ELASTICSEARCH_USER;
+
+    const password =
+      config.elasticsearch?.password || process.env.ELASTICSEARCH_PASSWORD;
+
+    if (!username || !password) {
+      throw new ConductorError(
+        "Elasticsearch username or password not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Optional additional validations
+    const templateName =
+      options.templateName || config.elasticsearch?.templateName;
+
+    const indexName = options.indexName || config.elasticsearch?.index;
+
+    const aliasName = options.aliasName || config.elasticsearch?.alias;
+
+    // While these are optional, we can add some basic validation
+    if (templateName && typeof templateName !== "string") {
+      throw new ConductorError(
+        "Invalid template name format.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    if (indexName && typeof indexName !== "string") {
+      throw new ConductorError(
+        "Invalid index name format.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    if (aliasName && typeof aliasName !== "string") {
+      throw new ConductorError(
+        "Invalid alias name format.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
   }
 
   /**
@@ -42,37 +142,9 @@ export class IndexManagementCommand extends Command {
       const templateFile =
         options.templateFile || config.elasticsearch?.templateFile;
 
-      // Validate required parameters
-      if (!templateFile) {
-        throw new ConductorError(
-          "Template file not specified. Use --template-file or configure in settings.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
-      // Validate template file exists
-      if (!fs.existsSync(templateFile)) {
-        Logger.error(`Template file not found at ${templateFile}`);
-        throw new ConductorError(
-          `Template file not found at ${templateFile}`,
-          ErrorCodes.FILE_NOT_FOUND
-        );
-      }
-
       // Load template content
-      let templateContent: any;
-      try {
-        const rawContent = fs.readFileSync(templateFile, "utf-8");
-        templateContent = JSON.parse(rawContent);
-      } catch (error) {
-        throw new ConductorError(
-          `Failed to parse template file: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          ErrorCodes.INVALID_FILE,
-          error
-        );
-      }
+      const rawContent = fs.readFileSync(templateFile, "utf-8");
+      const templateContent = JSON.parse(rawContent);
 
       // Extract information from template
       const templateInfo = extractTemplateInfo(templateContent);

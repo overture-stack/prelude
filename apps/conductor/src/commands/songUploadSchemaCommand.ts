@@ -369,31 +369,97 @@ export class SongUploadSchemaCommand extends Command {
    * This implementation ensures that SONG URL and schema file are provided.
    *
    * @param cliOutput - The parsed command line arguments
-   * @returns A validation result indicating success or failure
+   * @throws ConductorError if validation fails
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
-    const songUrl = options.songUrl || process.env.SONG_URL;
-    const schemaFile = options.schemaFile || process.env.SONG_SCHEMA;
+
+    // Validate SONG URL
+    const songUrl =
+      options.songUrl || cliOutput.config.song?.url || process.env.SONG_URL;
 
     if (!songUrl) {
-      return {
-        success: false,
-        errorMessage:
-          "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
+
+    // Validate schema file
+    const schemaFile =
+      options.schemaFile ||
+      cliOutput.config.song?.schemaFile ||
+      process.env.SONG_SCHEMA;
 
     if (!schemaFile) {
-      return {
-        success: false,
-        errorMessage:
-          "No schema file provided. Use --schema-file option or set SONG_SCHEMA environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No schema file provided. Use --schema-file option or set SONG_SCHEMA environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
-    return { success: true };
+    // Verify schema file exists
+    if (!fs.existsSync(schemaFile)) {
+      throw new ConductorError(
+        `Schema file not found: ${schemaFile}`,
+        ErrorCodes.FILE_NOT_FOUND
+      );
+    }
+
+    // Validate schema JSON structure
+    try {
+      const schemaContent = fs.readFileSync(schemaFile, "utf-8");
+      const schemaJson = JSON.parse(schemaContent);
+
+      // Basic schema validation
+      if (!schemaJson.name) {
+        throw new ConductorError(
+          "Invalid schema format: Missing required field 'name'",
+          ErrorCodes.INVALID_FILE
+        );
+      }
+
+      if (!schemaJson.schema || typeof schemaJson.schema !== "object") {
+        throw new ConductorError(
+          "Invalid schema format: Missing or invalid 'schema' field",
+          ErrorCodes.INVALID_FILE
+        );
+      }
+
+      // Optional schema option validations
+      if (schemaJson.options) {
+        if (
+          schemaJson.options.fileTypes &&
+          !Array.isArray(schemaJson.options.fileTypes)
+        ) {
+          throw new ConductorError(
+            "Invalid schema format: 'fileTypes' must be an array",
+            ErrorCodes.INVALID_FILE
+          );
+        }
+
+        if (
+          schemaJson.options.externalValidations &&
+          !Array.isArray(schemaJson.options.externalValidations)
+        ) {
+          throw new ConductorError(
+            "Invalid schema format: 'externalValidations' must be an array",
+            ErrorCodes.INVALID_FILE
+          );
+        }
+      }
+    } catch (error) {
+      if (error instanceof ConductorError) {
+        throw error;
+      }
+
+      throw new ConductorError(
+        `Schema file contains invalid JSON: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        ErrorCodes.INVALID_FILE,
+        error
+      );
+    }
   }
 }

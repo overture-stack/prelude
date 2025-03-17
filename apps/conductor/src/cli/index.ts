@@ -101,7 +101,7 @@ export async function setupCLI(): Promise<CLIOutput> {
     const envConfig = loadEnvironmentConfig();
     configureCommandOptions(program);
 
-    console.log("Raw arguments:", process.argv);
+    Logger.debug("Raw arguments:", process.argv);
     program.parse(process.argv);
 
     // Get the command
@@ -113,9 +113,8 @@ export async function setupCLI(): Promise<CLIOutput> {
     // Extract options for the specific command
     const options = command ? command.opts() : {};
 
-    console.log("Parsed options:", options);
-    console.log("Remaining arguments:", program.args);
-
+    Logger.debug("Parsed options:", options);
+    Logger.debug("Remaining arguments:", program.args);
     // Determine the profile based on the command name
     let profile: CLIprofile = Profiles.INDEX_MANAGEMENT;
     switch (commandName) {
@@ -181,10 +180,13 @@ export async function setupCLI(): Promise<CLIOutput> {
       // Ensure analysis file is added to filePaths for SONG analysis upload
       ...(options.analysisFile ? { file: options.analysisFile } : {}),
     });
+    Logger.debug("CLI setup completed successfully");
 
     return cliOutput;
   } catch (error) {
-    // Rethrow without logging
+    console.error("Error during CLI setup:", error);
+    // Rethrow the error
+
     throw error;
   }
 }

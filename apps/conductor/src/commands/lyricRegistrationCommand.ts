@@ -34,39 +34,9 @@ export class LyricRegistrationCommand extends Command {
       const defaultCentricEntity =
         options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY;
 
-      // Validate required parameters
-      if (!lyricUrl) {
-        throw new ConductorError(
-          "Lyric URL not specified. Use --lyric-url or set LYRIC_URL environment variable.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
-      // Add specific validation for dictionary name
-      if (!dictionaryName) {
-        throw new ConductorError(
-          "Dictionary name not specified. Use --dict-name option or set DICTIONARY_NAME environment variable.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
-      // Add validations for other required fields
-      if (!categoryName) {
-        throw new ConductorError(
-          "Category name not specified. Use -c or --category-name option or set CATEGORY_NAME environment variable.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
-      if (!dictionaryVersion) {
-        throw new ConductorError(
-          "Dictionary version not specified. Use -v or --dictionary-version option or set DICTIONARY_VERSION environment variable.",
-          ErrorCodes.INVALID_ARGS
-        );
-      }
-
       // Create Lyric service
       const lyricService = new LyricService(lyricUrl);
+
       // Check Lyric service health
       const isHealthy = await lyricService.checkHealth();
       if (!isHealthy) {
@@ -224,24 +194,46 @@ export class LyricRegistrationCommand extends Command {
    * This implementation ensures that Lyric URL is provided.
    *
    * @param cliOutput - The parsed command line arguments
-   * @returns A validation result indicating success or failure
+   * @throws ConductorError if validation fails
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
-    // Skip the file check from base class since we don't need input files
-    // This overrides the default validate method
-
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
-    const lyricUrl = options.lyricUrl || process.env.LYRIC_URL;
 
+    // Validate Lyric URL
+    const lyricUrl = options.lyricUrl || process.env.LYRIC_URL;
     if (!lyricUrl) {
-      return {
-        success: false,
-        errorMessage:
-          "No Lyric URL provided. Use --lyric-url option or set LYRIC_URL environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "Lyric URL not specified. Use --lyric-url option or set LYRIC_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
-    return { success: true };
+    // Validate dictionary name
+    const dictionaryName = options.dictName || process.env.DICTIONARY_NAME;
+    if (!dictionaryName) {
+      throw new ConductorError(
+        "Dictionary name not specified. Use --dict-name option or set DICTIONARY_NAME environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Validate category name
+    const categoryName = options.categoryName || process.env.CATEGORY_NAME;
+    if (!categoryName) {
+      throw new ConductorError(
+        "Category name not specified. Use -c or --category-name option or set CATEGORY_NAME environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Validate dictionary version
+    const dictionaryVersion =
+      options.dictionaryVersion || process.env.DICTIONARY_VERSION;
+    if (!dictionaryVersion) {
+      throw new ConductorError(
+        "Dictionary version not specified. Use -v or --dictionary-version option or set DICTIONARY_VERSION environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
   }
 }

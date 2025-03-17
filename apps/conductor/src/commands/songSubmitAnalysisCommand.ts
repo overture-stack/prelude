@@ -482,31 +482,92 @@ export class SongSubmitAnalysisCommand extends Command {
    * This implementation ensures that required parameters are provided.
    *
    * @param cliOutput - The parsed command line arguments
-   * @returns A validation result indicating success or failure
+   * @throws ConductorError if validation fails
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
-    const songUrl = options.songUrl || process.env.SONG_URL;
-    const analysisFile = options.analysisFile || process.env.ANALYSIS_FILE;
 
-    if (!songUrl) {
-      return {
-        success: false,
-        errorMessage:
-          "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
-    }
+    // Validate analysis file
+    const analysisFile =
+      options.analysisFile ||
+      cliOutput.config.song?.analysisFile ||
+      process.env.ANALYSIS_FILE;
 
     if (!analysisFile) {
-      return {
-        success: false,
-        errorMessage:
-          "No analysis file provided. Use --analysis-file option or set ANALYSIS_FILE environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No analysis file provided. Use --analysis-file option or set ANALYSIS_FILE environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
-    return { success: true };
+    // Verify analysis file exists
+    if (!fs.existsSync(analysisFile)) {
+      throw new ConductorError(
+        `Analysis file not found: ${analysisFile}`,
+        ErrorCodes.FILE_NOT_FOUND
+      );
+    }
+
+    // Validate SONG URL
+    const songUrl =
+      options.songUrl || cliOutput.config.song?.url || process.env.SONG_URL;
+
+    if (!songUrl) {
+      throw new ConductorError(
+        "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Validate analysis JSON structure
+    try {
+      const analysisContent = fs.readFileSync(analysisFile, "utf-8");
+      const analysisJson = JSON.parse(analysisContent);
+
+      // Basic validation of required fields
+      if (!analysisJson.analysisType || !analysisJson.analysisType.name) {
+        throw new ConductorError(
+          "Invalid analysis format: Missing required field 'analysisType.name'",
+          ErrorCodes.INVALID_FILE
+        );
+      }
+
+      if (
+        !analysisJson.files ||
+        !Array.isArray(analysisJson.files) ||
+        analysisJson.files.length === 0
+      ) {
+        throw new ConductorError(
+          "Invalid analysis format: 'files' must be a non-empty array",
+          ErrorCodes.INVALID_FILE
+        );
+      }
+    } catch (error) {
+      if (error instanceof ConductorError) {
+        throw error;
+      }
+
+      throw new ConductorError(
+        `Analysis file contains invalid JSON: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        ErrorCodes.INVALID_FILE,
+        error
+      );
+    }
+
+    // Optional validations
+    const studyId =
+      options.studyId ||
+      cliOutput.config.song?.studyId ||
+      process.env.STUDY_ID ||
+      "demo";
+
+    if (!studyId) {
+      throw new ConductorError(
+        "Study ID is invalid or not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
   }
 }

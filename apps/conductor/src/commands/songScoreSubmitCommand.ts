@@ -678,38 +678,81 @@ export class SongScoreSubmitCommand extends Command {
   /**
    * Validates command line arguments
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
+
+    // Verify analysis file exists
     const analysisPath =
       options.analysisPath ||
       cliOutput.config.song?.analysisPath ||
       process?.env?.ANALYSIS_PATH ||
       "./analysis.json";
 
+    if (!fs.existsSync(analysisPath)) {
+      throw new ConductorError(
+        `Analysis file not found: ${analysisPath}`,
+        ErrorCodes.FILE_NOT_FOUND
+      );
+    }
+
+    // Verify data directory exists
     const dataDir =
       options.dataDir ||
       cliOutput.config.score?.dataDir ||
       process?.env?.DATA_DIR ||
       "./data/fileData";
 
-    // Verify analysis file exists
-    if (!fs.existsSync(analysisPath)) {
-      return {
-        success: false,
-        errorMessage: `Analysis file not found: ${analysisPath}`,
-        errorCode: ErrorCodes.FILE_NOT_FOUND,
-      };
-    }
-
-    // Verify data directory exists
     if (!fs.existsSync(dataDir)) {
-      return {
-        success: false,
-        errorMessage: `Data directory not found: ${dataDir}`,
-        errorCode: ErrorCodes.FILE_NOT_FOUND,
-      };
+      throw new ConductorError(
+        `Data directory not found: ${dataDir}`,
+        ErrorCodes.FILE_NOT_FOUND
+      );
     }
 
-    return { success: true };
+    // Validate SONG URL
+    const songUrl =
+      options.songUrl ||
+      cliOutput.config.song?.url ||
+      process?.env?.SONG_URL ||
+      "http://localhost:8080";
+    if (!songUrl) {
+      throw new ConductorError(
+        "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Validate Score URL
+    const scoreUrl =
+      options.scoreUrl ||
+      cliOutput.config.score?.url ||
+      process?.env?.SCORE_URL ||
+      "http://localhost:8087";
+    if (!scoreUrl) {
+      throw new ConductorError(
+        "No Score URL provided. Use --score-url option or set SCORE_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    // Optional Docker availability check
+    try {
+      await execPromise("docker --version");
+    } catch (error) {
+      Logger.warn(
+        `Docker not available. This command requires Docker with song-client and score-client containers.`
+      );
+      Logger.tip(
+        `Install Docker and start the required containers before running this command.`
+      );
+      throw new ConductorError(
+        "Docker is required for this command",
+        ErrorCodes.INVALID_ARGS,
+        {
+          suggestion:
+            "Install Docker and ensure song-client and score-client containers are running",
+        }
+      );
+    }
   }
 }

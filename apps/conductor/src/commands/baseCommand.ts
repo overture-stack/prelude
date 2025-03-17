@@ -10,6 +10,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 import { Logger } from "../utils/logger";
+import { ConductorError, ErrorCodes, handleError } from "../utils/errors";
 
 /**
  * Command execution result
@@ -66,10 +67,18 @@ export abstract class Command {
         Logger.debug(`Running ${this.name} command with debug enabled`);
       }
 
-      // Validate input arguments
-      const validationResult = await this.validate(cliOutput);
-      if (!validationResult.success) {
-        return validationResult;
+      // Validate input arguments - directly throws errors
+      try {
+        await this.validate(cliOutput);
+      } catch (validationError) {
+        Logger.debug(`Validation error: ${validationError}`);
+        if (validationError instanceof Error) {
+          throw validationError;
+        }
+        throw new ConductorError(
+          String(validationError),
+          ErrorCodes.VALIDATION_FAILED
+        );
       }
 
       Logger.debug(`Output path before check: ${cliOutput.outputPath}`);
@@ -139,18 +148,24 @@ export abstract class Command {
 
       return result;
     } catch (error: unknown) {
+      // Use Logger instead of console.error
+      Logger.debug(`ERROR IN ${this.name} COMMAND:`, error);
+
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Logger.error(`Unexpected error in ${this.name} command: ${errorMessage}`);
+      Logger.debug(`Unexpected error in ${this.name} command: ${errorMessage}`);
 
       return {
         success: false,
         errorMessage,
         errorCode:
-          error instanceof Error && "code" in error
-            ? (error as any).code
-            : "UNKNOWN_ERROR",
-        details: { stack: error instanceof Error ? error.stack : undefined },
+          error instanceof ConductorError
+            ? error.code
+            : ErrorCodes.UNKNOWN_ERROR,
+        details: {
+          error,
+          stack: error instanceof Error ? error.stack : undefined,
+        },
       };
     }
   }
@@ -170,29 +185,45 @@ export abstract class Command {
    * Derived classes should override to add additional validation.
    *
    * @param cliOutput - The parsed command line arguments
-   * @returns A validation result indicating success or failure
+   * @throws ConductorError if validation fails
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     if (!cliOutput.filePaths?.length) {
-      return {
-        success: false,
-        errorMessage: "No input files provided",
-        errorCode: "INVALID_ARGS",
-      };
+      throw new ConductorError(
+        "No input files provided",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
     // Validate each input file exists
     for (const filePath of cliOutput.filePaths) {
       if (!fs.existsSync(filePath)) {
-        return {
-          success: false,
-          errorMessage: `Input file not found: ${filePath}`,
-          errorCode: "FILE_NOT_FOUND",
-        };
+        throw new ConductorError(
+          `Input file not found: ${filePath}`,
+          ErrorCodes.FILE_NOT_FOUND
+        );
+      }
+
+      // Check if file is readable
+      try {
+        fs.accessSync(filePath, fs.constants.R_OK);
+      } catch (error) {
+        throw new ConductorError(
+          `File '${filePath}' is not readable`,
+          ErrorCodes.INVALID_FILE,
+          error
+        );
+      }
+
+      // Check if file has content
+      const stats = fs.statSync(filePath);
+      if (stats.size === 0) {
+        throw new ConductorError(
+          `File '${filePath}' is empty`,
+          ErrorCodes.INVALID_FILE
+        );
       }
     }
-
-    return { success: true };
   }
 
   /**

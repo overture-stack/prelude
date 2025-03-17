@@ -348,21 +348,44 @@ export class SongCreateStudyCommand extends Command {
    * This implementation ensures that SONG URL is provided.
    *
    * @param cliOutput - The parsed command line arguments
-   * @returns A validation result indicating success or failure
+   * @throws ConductorError if validation fails
    */
-  protected async validate(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
-    const songUrl = options.songUrl || process.env.SONG_URL;
 
+    // Validate SONG URL
+    const songUrl = options.songUrl || process.env.SONG_URL;
     if (!songUrl) {
-      return {
-        success: false,
-        errorMessage:
-          "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
-        errorCode: ErrorCodes.INVALID_ARGS,
-      };
+      throw new ConductorError(
+        "No SONG URL provided. Use --song-url option or set SONG_URL environment variable.",
+        ErrorCodes.INVALID_ARGS
+      );
     }
 
-    return { success: true };
+    // Optional additional validations
+    const studyId = options.studyId || process.env.STUDY_ID || "demo";
+    if (!studyId) {
+      throw new ConductorError(
+        "Study ID is invalid or not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    const studyName = options.studyName || process.env.STUDY_NAME || "string";
+    if (!studyName) {
+      throw new ConductorError(
+        "Study name is invalid or not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
+
+    const organization =
+      options.organization || process.env.ORGANIZATION || "string";
+    if (!organization) {
+      throw new ConductorError(
+        "Organization is invalid or not specified.",
+        ErrorCodes.INVALID_ARGS
+      );
+    }
   }
 }
