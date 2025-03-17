@@ -33,8 +33,8 @@ export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
 	MOLECULAR = '/molecular',
-	DATASET_1 = '/dataset1',
-	DATASET_2 = '/dataset2',
+	DATASET_1 = '/datatable1',
+	DATASET_2 = '/datatable2',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
 	SONG = '/swaggerDocs/song',

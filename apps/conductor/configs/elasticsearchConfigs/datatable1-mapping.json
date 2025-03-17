@@ -1,9 +1,7 @@
 {
-  "index_patterns": [
-    "dataset1-*"
-  ],
+  "index_patterns": ["datatable1-*"],
   "aliases": {
-    "dataset1_centric": {}
+    "datatable1_centric": {}
   },
   "mappings": {
     "properties": {

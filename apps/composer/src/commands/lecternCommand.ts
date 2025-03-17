@@ -13,7 +13,6 @@ import { validateCSVHeaders, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
-import { getCSVFiles } from "../utils/fileUtils"; // Add this import
 
 export class DictionaryCommand extends Command {
   // Define dictionary-specific defaults

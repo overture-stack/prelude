@@ -424,9 +424,9 @@ services:
       - conductor-network
 
   # -----------------------------------------------------------------------------------#
-  # Maestro (Tabular Data)                                                             #
+  # Maestro                                                                            #
   # -----------------------------------------------------------------------------------#
-  # Indexs tabular data into Elasticsearch on publication                              #
+  # Indexs data into Elasticsearch on publication                                      #
   # Documentation Link: https://docs.overture.bio/docs/core-software/Maestro/overview  #
   # Organization === study                                                             #
   # id === analysisId                                                                  #
@@ -448,7 +448,6 @@ services:
       MAESTRO_FAILURELOG_ENABLED: true
       MAESTRO_FAILURELOG_DIR: app/logs/maestro
       MAESTRO_LOGGING_LEVEL_ROOT: INFO
-      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
       MAESTRO_DISABLEEVENTINDEXING: true
       # Repository Configuration - Lyric
       MAESTRO_REPOSITORIES_0_BASE_URL: http://lyric:3030
@@ -456,7 +455,7 @@ services:
       MAESTRO_REPOSITORIES_0_CODE: lyric.overture
       MAESTRO_REPOSITORIES_0_NAME: Overture Lyric
       MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_0_INDEX_NAME: tabular-index
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: datatable1-index
       MAESTRO_REPOSITORIES_0_TYPE: LYRIC
       MAESTRO_REPOSITORIES_0_LYRIC_VALID_DATA_ONLY: true
       MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 1

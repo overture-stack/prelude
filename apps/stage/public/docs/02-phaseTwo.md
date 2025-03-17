@@ -2,16 +2,16 @@
 
 ## Overview
 
-**In this guide we will** extend our data management capabilities by implementing data submission validation, storage, and publication processes.
+**In this guide you will** extend your data management capabilities by implementing robust data submission validation, storage, and publication processes.
 
 **By the end of this guide you will be able to:**
 
-1. Manage data submission validation using the Lectern dictionary schema manager
-2. Complete a full data submission workflow with Lyric
+1. Validate data submissions using the Lectern dictionary schema manager
+2. Complete an end-to-end data submission workflow with Lyric
 3. Index validated data with Maestro
-4. View the indexed data from the front-end UI configured in Phase One
+4. Access and view indexed data through the front-end UI configured in Phase One
 
-## Prerequisites and Requirements
+## Prerequisites
 
 **You will need:**
 
@@ -20,77 +20,88 @@
   - Index mapping templates
   - Arranger configuration files
 - A basic understanding of the following Overture services:
-  - [Lectern](https://docs.overture.bio/docs/core-software/Lectern/overview)
-  - [Lyric](https://docs.overture.bio/docs/core-software/Lyric/overview/)
-  - [Maestro](https://docs.overture.bio/docs/core-software/Maestro/overview)
-- Your data table file(s) from Phase One, which may be divided into multiple schemas if necessary
+  - [Lectern](https://docs.overture.bio/docs/core-software/Lectern/overview) - Dictionary schema management
+  - [Lyric](https://docs.overture.bio/docs/core-software/Lyric/overview/) - Submission workflow management
+  - [Maestro](https://docs.overture.bio/docs/core-software/Maestro/overview) - Data indexing service
+- Your data table file(s) from Phase One (which may need to be divided into multiple schemas)
 
 ## Background Information
 
-Phase Two focuses on establishing a data submission and management workflow. This phase introduces tools to validate, store, and publish data while maintaining data integrity and consistency across your platform. If necessary, the data file you made for Phase One will be divided into multiple segments represented as schemas to support distributed data collection.
+Phase Two establishes your data submission and management workflow. This phase introduces tools to validate, store, and publish data while maintaining data integrity and consistency across your platform.
+
+Your Phase One data file may need to be divided into multiple segments represented as schemas to support distributed data collection from different teams or departments.
 
 ### Architecture Overview
 
-The phase architecture is diagrammed below and detailed in the following table:
+The Phase Two architecture includes these components:
 
 ![Phase 2 Architecture](/docs/images/phase2.png "Phase 2 Architecture")
 
-| Component   | Description                                                             |
-| ----------- | ----------------------------------------------------------------------- |
-| **Lectern** | A dictionary schema manager that defines and validates data structures  |
-| **Lyric**   | A submission management system for data validation and workflow control |
-| **Maestro** | A data indexing and storage service for submitted data                  |
-| **Song**    | A metadata management system for tracking data submissions              |
-| **Score**   | A file transfer and storage service for data files                      |
+| Component   | Purpose                                                               |
+| ----------- | --------------------------------------------------------------------- |
+| **Lectern** | Dictionary schema manager that defines and validates data structures  |
+| **Lyric**   | Submission management system for data validation and workflow control |
+| **Maestro** | Data indexing and storage service for submitted data                  |
+| **Song**    | Metadata management system for tracking data submissions              |
+| **Score**   | File transfer and storage service for data files                      |
 
-## Step 1: Data Dictionary Setup
+## Step 1: Deploy Phase 2 Services
 
-### Preparing Your Clinical Data
+1. Run the deployment command:
 
-Depending on your data requirements, you may need to separate your data into multiple distinct schemas to support a distributed submission process where different teams contribute different aspects of information.
+   ```bash
+   make phase2
+   ```
+
+2. Verify service health:
+   - The deployment script should automatically verify that all services are running correctly
+   - Check the container logs if any service fails to start properly
+
+## Step 2: Set Up Data Dictionary
+
+### A) Prepare Your Clinical Data
+
+Depending on your requirements, you may need to separate your data into multiple schemas to support distributed submission processes.
 
 **Example: Clinical Data Schema Division**
 
-As an example, we've separated our clinical cancer dataset from phase one's `dataTable1.csv` into five logical csv's:
+For demonstration purposes, we've separated our clinical cancer dataset from Phase One's `dataTable1.csv` into five logical files:
 
-1. **Donor CSV:**
+| File              | Owner             | Contains                                    |
+| ----------------- | ----------------- | ------------------------------------------- |
+| **donor.csv**     | Registration Team | Demographic information and primary IDs     |
+| **diagnosis.csv** | Diagnostic Team   | Condition details with references to donors |
+| **specimen.csv**  | Laboratory Team   | Sample information linked to diagnoses      |
+| **treatment.csv** | Treatment Team    | Intervention details linked to diagnoses    |
+| **followup.csv**  | Follow-up Team    | Outcome information linked to diagnoses     |
 
-- Owner: Registration Team
-- Contains: Basic demographic information
-- Primary identifiers for study participants
+Directory structure example:
 
-2. **Diagnosis CSV:**
+```
+data/
+├── datatable1.csv                  # Original combined file
+└── segmentedDataTable1/            # Directory with segmented files
+    ├── donor.csv
+    ├── diagnosis.csv
+    ├── specimen.csv
+    ├── treatment.csv
+    └── followup.csv
+```
 
-- Owner: Diagnostic Team
-- Contains: Condition details and references to donors
-- Links to donor records
+Analyze your own data to determine if similar division would be beneficial. If not, you can proceed with a single schema representing your original data structure.
 
-3. **Specimen CSV:**
+### B) Generate the Dictionary
 
-- Owner: Laboratory Team
-- Contains: Sample information linked to diagnoses
-- References diagnosis records
-
-4. **Treatment CSV:**
-
-- Owner: Treatment Team
-- Contains: Intervention details linked to diagnoses
-- Records therapies and responses
-
-5. **Follow-up CSV:**
-
-- Owner: Follow-up Team
-- Contains: Outcome information linked to diagnoses
-- Tracks long-term status
-
-Each file will correspond to a specific schema in the Lectern dictionary we will generate in the next step. This will ensure data integrity and structure are maintained across submissions from multiple teams. You should analyze your own data requirements to determine if a similar division would be beneficial. Otherwise, you may proceed with one scheme to represent your original data structure.
-
-### Generate the Dictionary
-
-1. Run the Composer command to generate a Lectern dictionary for all five schemas:
+1. For multiple segmented data files:
 
    ```bash
-   composer -p generateLecternDictionary -f ./data/segmentedData/ -n clinical-cancer-data -v 1.0
+   composer -p generateLecternDictionary -f ./data/segmentedData/ -n clinical-cancer-data -v 1.0 -o ./configs/lecternDictionaries/
+   ```
+
+2. For a single data file:
+
+   ```bash
+   composer -p generateLecternDictionary -f ./data/dataTable1.csv -n dataTableOneDictionary -v 1.0 -o ./configs/lecternDictionaries/
    ```
 
    <details>
@@ -99,175 +110,252 @@ Each file will correspond to a specific schema in the Lectern dictionary we will
    In this command:
 
    - `-p generateLecternDictionary`: Specifies the operation to generate a Lectern dictionary
-   - `-f donor.csv diagnosis.csv specimen.csv treatment.csv followup.csv`: Specifies all five clinical data files to analyze
+   - `-f ./data/segmentedData/`: Specifies the directory containing our segmented data files
    - `-n clinical-cancer-data`: Names the dictionary
    - `-v 1.0`: Sets the dictionary version
+   - `-o ./configs/lecternDictionaries/`: Output directory for the generated dictionary
    - Additional options include:
-     - `-o, --output <path>`: Output file path for generated dictionary
-     - `--delimiter <char>`: CSV delimiter
+     - `--delimiter <char>`: CSV delimiter (if different from default)
 
    The command analyzes the structure of input CSV files and creates a comprehensive data dictionary that defines the structure, constraints, and metadata for your clinical datasets.
    </details>
 
-2. Validate the generated dictionary:
-   - Review the dictionary structure to ensure it correctly captures all five schemas
-   - Confirm all required fields are present
-   - Check data types and constraints, especially for clinical terms and IDs
-   - Ensure proper references between schemas (e.g., diagnosis_id in specimen.csv references diagnosis.csv)
+### C) Review and Enhance the Dictionary
 
-### Upload the Dictionary
+The generated dictionary provides a basic structure derived from your CSV files. You should review and enhance it to ensure data integrity.
 
-1. Upload the dictionary to Lectern:
+Example of a generated dictionary structure:
+
+```json
+{
+  "name": "clinical-cancer-data",
+  "description": "Generated dictionary from CSV files",
+  "version": "1.0",
+  "schemas": [
+    {
+      "name": "diagnosis",
+      "description": "Schema generated from diagnosis.csv",
+      "fields": [
+        {
+          "name": "diagnosis_id",
+          "description": "Field containing diagnosis_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "diagnosis_id"
+          }
+        }
+        // Additional fields...
+      ],
+      "meta": {
+        "createdAt": "2025-03-17T18:54:20.265Z",
+        "sourceFile": "diagnosis.csv"
+      }
+    }
+    // Additional schemas...
+  ],
+  "meta": {}
+}
+```
+
+Review and enhance the following elements:
+
+#### 1. Dictionary Structure
+
+- Verify all required properties: `name`, `version`, and `schemas`
+- Add a meaningful `description` that explains the purpose of your dictionary
+- Add custom metadata in the `meta` object if needed
+
+#### 2. Schema Validation
+
+- Confirm all expected schemas are present (donor, diagnosis, specimen, etc.)
+- Ensure each schema has a unique `name` property without whitespace or periods
+- Review and improve each schema's `description`
+
+#### 3. Field Definitions
+
+- Verify each field has the correct `valueType` (`string`, `integer`, `number`, or `boolean`)
+- For array fields, add `"isArray": true` and specify a `delimiter`
+- Enhance `meta` information for better user experience
+
+**Example of field enhancement:**
+
+```json
+// Original auto-generated field
+{
+  "name": "treatment_drugs",
+  "description": "Field containing treatment_drugs data",
+  "valueType": "string",
+  "meta": {
+    "displayName": "treatment_drugs"
+  }
+}
+
+// Enhanced field definition
+{
+  "name": "treatment_drugs",
+  "description": "List of drugs used in the treatment regimen",
+  "valueType": "string",
+  "isArray": true,
+  "delimiter": "|",
+  "meta": {
+    "displayName": "Treatment Drugs",
+    "guidance": "Provide all drugs used in this treatment, separated by pipe (|) characters"
+  }
+}
+```
+
+#### 4. Add Validation Rules
+
+Add restrictions to enforce data validation:
+
+```json
+"restrictions": {
+  "required": true,             // Field must have a value
+  "regex": "^DO[0-9]{4}$",      // Pattern validation for IDs
+  "codeList": ["Male", "Female"], // Enumeration of allowed values
+  "range": {"min": 0, "max": 120} // Numeric range validation
+}
+```
+
+#### 5. Implement Conditional Logic
+
+Add conditional validation for interdependent fields:
+
+```json
+"restrictions": {
+  "if": {
+    "conditions": [
+      {
+        "fields": ["vital_status"],
+        "match": { "value": "Deceased" }
+      }
+    ]
+  },
+  "then": { "required": true },
+  "else": { "empty": true }
+}
+```
+
+#### 6. Define Field Relationships
+
+For fields that reference other schemas:
+
+```json
+"restrictions": {
+  "compare": {
+    "fields": ["other_field"],
+    "relation": "equal"
+  }
+}
+```
+
+#### 7. Add Uniqueness Constraints
+
+For identifier fields:
+
+```json
+"name": "donor_id",
+"valueType": "string",
+"unique": true,
+"restrictions": { "required": true }
+```
+
+## Step 3: Upload the Dictionary to Lectern
+
+Upload you updated dictionary to Lectern
+
+```bash
+conductor lecternUpload -s ./configs/lecternDictionaries/dictionary.json -u http://localhost:3031
+```
+
+<details>
+<summary>Command Breakdown</summary>
+
+Lectern Schema Upload Command:
+conductor lecternUpload -s dictionary.json
+Options:
+-s, --schema-file <path> Schema JSON file to upload (required)
+-u, --lectern-url <url> Lectern server URL (default: http://localhost:3031)
+-t, --auth-token <token> Authentication token (optional)
+-o, --output <path> Output directory for logs
+
+Example: conductor lecternUpload -s data-dictionary.json
+
+</details>
+
+## Step 4: Register Dictionary with Lyric
+
+Register your enhanced dictionary with Lyric:
+
+```bash
+conductor lyricRegister -c clinical-cancer --dict-name clinical-cancer-data -v 1.0 -e donor
+```
+
+<details>
+<summary>Command Breakdown</summary>
+
+In this command:
+
+Lyric Register Dictionary Command:
+conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0
+Options:
+-u, --lyric-url <url> Lyric server URL (default: http://localhost:3030)
+-c, --category-name <name> Category name
+--dict-name <name> Dictionary name
+-v, --dictionary-version <version> Dictionary version
+-e, --default-centric-entity <entity> Default centric entity (default: clinical_data)
+
+Example: conductor lyricRegister -c my-category --dict-name my-dictionary -v 2.0
+
+This step updates the dictionary with Lyric, preparing it for clinical data submission and validation.
+
+</details>
+
+## Step 5: Upload Data to Lyric
+
+Upload your data files in the correct order to ensure proper validation of interdependent records:
+
+1. Start with donor data (base entity):
 
    ```bash
-   conductor lecternUpload -s clinical-cancer-dictionary.json
-   ```
-
-   <details>
-   <summary>Command Breakdown</summary>
-
-   In this command:
-
-   - `-s, --schema-file <path>`: Specifies the dictionary JSON file to upload
-   - Additional options include:
-     - `-u, --lectern-url <url>`: Lectern server URL
-     - `-t, --auth-token <token>`: Authentication token
-     - `-o, --output <path>`: Output directory for logs
-
-   This step registers your clinical data dictionary with the Lectern service, enabling validation and management of data submissions from various clinical teams.
-   </details>
-
-## Step 2: Register Dictionary with Lyric
-
-1. Register the dictionary in Lyric:
-
-   ```bash
-   conductor lyricRegister -c clinical-cancer -n clinical-cancer-data -v 1.0 -e donor
-   ```
-
-   <details>
-   <summary>Command Breakdown</summary>
-
-   In this command:
-
-   - `-u, --lyric-url <url>`: Lyric server URL
-   - `-c, --category-name clinical-cancer`: Category name for the dictionary
-   - `-n, --dict-name clinical-cancer-data`: Name of the dictionary
-   - `-v, --dictionary-version 1.0`: Dictionary version
-   - `-e, --default-centric-entity donor`: Default centric entity (patient-centric approach)
-
-   This step integrates the dictionary with Lyric, preparing it for clinical data submission and validation.
-   </details>
-
-## Step 3: Configure Submission Sequence
-
-Since our clinical data involves multiple related schemas, it's important to configure the submission sequence to maintain data integrity:
-
-1. Configure submission sequence in Lyric:
-
-   ```bash
-   conductor lyricSequence -c clinical-cancer -s "donor,diagnosis,specimen,treatment,followup"
-   ```
-
-   <details>
-   <summary>Command Breakdown</summary>
-
-   In this command:
-
-   - `-c, --category-id clinical-cancer`: Category ID
-   - `-s, --sequence "donor,diagnosis,specimen,treatment,followup"`: The order in which schemas should be validated and processed
-
-   This ensures that parent records (donors) are validated before child records (diagnoses, specimens, etc.).
-   </details>
-
-## Step 4: Upload Data to Lyric
-
-1. Upload donor data first:
-
-   ```bash
-   conductor lyricData -d ./donor-directory -c clinical-cancer -g cancer-center
+   conductor lyricData -d ./data/segmentedDataTable1/donor.csv -c clinical-cancer -g cancer-center
    ```
 
 2. After donor validation succeeds, upload diagnosis data:
 
    ```bash
-   conductor lyricData -d ./diagnosis-directory -c clinical-cancer -g cancer-center
+   conductor lyricData -d ./data/segmentedDataTable1/diagnosis.csv -c clinical-cancer -g cancer-center
    ```
 
-3. Continue with remaining schemas in order:
-
+3. Continue with remaining schemas:
    ```bash
-   conductor lyricData -d ./specimen-directory -c clinical-cancer -g cancer-center
-   conductor lyricData -d ./treatment-directory -c clinical-cancer -g cancer-center
-   conductor lyricData -d ./followup-directory -c clinical-cancer -g cancer-center
+   conductor lyricData -d ./data/segmentedDataTable1/specimen.csv -c clinical-cancer -g cancer-center
+   conductor lyricData -d ./data/segmentedDataTable1/treatment.csv -c clinical-cancer -g cancer-center
+   conductor lyricData -d ./data/segmentedDataTable1/followup.csv -c clinical-cancer -g cancer-center
    ```
 
-   <details>
-   <summary>Command Breakdown</summary>
+<details>
+<summary>Command Breakdown</summary>
 
-   In these commands:
+In these commands:
 
-   - `-u, --lyric-url <url>`: Lyric server URL
-   - `-l, --lectern-url <url>`: Lectern server URL
-   - `-d, --data-directory <path>`: Directory containing the specific CSV data file
-   - `-c, --category-id clinical-cancer`: Category ID
-   - `-g, --organization cancer-center`: Organization name
-   - `-m, --max-retries <number>`: Maximum retry attempts
+- `-d, --data-directory <path>`: Path to the specific CSV data file
+- `-c, --category-id clinical-cancer`: Category ID for the submission
+- `-g, --organization cancer-center`: Organization name submitting the data
+- Additional options include:
+  - `-u, --lyric-url <url>`: Lyric server URL
+  - `-l, --lectern-url <url>`: Lectern server URL
+  - `-m, --max-retries <number>`: Maximum retry attempts
 
-   This sequential upload ensures that each clinical team's data is properly validated against the previously registered dictionary and dependent records exist.
-   </details>
+This sequential upload ensures that each dataset is properly validated against the dictionary and that dependent records exist before related records are added.
 
-## Step 5: Configure Maestro for Clinical Data
+</details>
 
-1. Setup Maestro indexing rules for clinical data:
-
-   ```bash
-   conductor maestroRules -c clinical-cancer -e donor -r "diagnosis,specimen,treatment,followup"
-   ```
-
-   <details>
-   <summary>Command Breakdown</summary>
-
-   In this command:
-
-   - `-c, --category clinical-cancer`: Category name
-   - `-e, --entity donor`: Primary entity (creates donor-centric index)
-   - `-r, --related "diagnosis,specimen,treatment,followup"`: Related entities to include
-
-   This configures Maestro to create donor-centric indexes with nested related entities, enabling comprehensive patient views in the UI.
-   </details>
-
-## Validation
-
-After completing these steps, verify:
-
-- Dictionary is successfully uploaded to Lectern and includes all five clinical schemas
-- Dictionary is registered in Lyric
-- Data files from all clinical teams pass validation
-- References between schemas (e.g., donor_id in diagnosis, diagnosis_id in treatment) are maintained
-- Data is correctly indexed in Maestro with proper relationships
-
-## Troubleshooting
-
-Common issues and solutions:
-
-- Dictionary validation failures: Check field types and constraints match the clinical data
-- ID reference errors: Ensure diagnosis_ids in specimen, treatment, and followup files match existing diagnosis records
-- Data type mismatches: Verify formats for clinical codes, dates, and numeric values
-- Missing required fields: Ensure all mandatory clinical fields are populated
-- Connectivity problems with Lyric or Lectern
-
-## Next Steps
-
-With your clinical data submitted and validated, you are now ready to:
-
-- View comprehensive patient data in the Stage UI
-- Perform clinical cohort analysis
-- Generate reports on treatment outcomes
-- Expand your clinical data management workflow
+This sequential upload ensures that each dataset is properly validated against the dictionary and that dependent records exist before related records are added.
 
 ## Additional Resources
 
 - [Lectern Documentation](https://docs.overture.bio/docs/core-software/Lectern/overview)
 - [Lyric Documentation](https://docs.overture.bio/docs/core-software/Lyric/overview/)
 - [Maestro Documentation](https://docs.overture.bio/docs/core-software/Maestro/overview)
+- [Overture Support Forum](https://docs.overture.bio/community/support)

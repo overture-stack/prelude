@@ -355,21 +355,21 @@ This step configures your docker-compose.yml file to properly connect your data 
 
    ```yaml
    # Tabular Arranger Variables
-   NEXT_PUBLIC_ARRANGER_DATATABLE1_DATA_API: http://arranger-datatable1:5050
-   NEXT_PUBLIC_ARRANGER_DATATABLE1_DATA_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATATABLE1_INDEX: datatable1_centric
+   NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_API: http://arranger-datatable1:5050
+   NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
    # Add more Arranger connections if needed
-   NEXT_PUBLIC_ARRANGER_DATATABLE2_API: http://arranger-datatable2:5051
-   NEXT_PUBLIC_ARRANGER_DATATABLE2_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATATABLE2_INDEX: datatable2_centric
+   NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
+   NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
    # Add more Arranger connections if needed
-   NEXT_PUBLIC_ARRANGER_DATATABLE3_API: http://arranger-datatable2:5051
-   NEXT_PUBLIC_ARRANGER_DATATABLE3_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATATABLE3_INDEX: datatable2_centric
+   NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable2:5051
+   NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable2_centric
    # Add more Arranger connections if needed
-   # NEXT_PUBLIC_ARRANGER_DATASET4_API: http://arranger-datatable2:5051
-   # NEXT_PUBLIC_ARRANGER_DATASET4_DOCUMENT_TYPE: file
-   # NEXT_PUBLIC_ARRANGER_DATASET4_INDEX: datatable2_centric
+   # NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger-datatable2:5051
+   # NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: file
+   # NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: datatable2_centric
    ```
 
 ### Validation

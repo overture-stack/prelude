@@ -1,4 +1,3 @@
-// Create a new file: utils/fileUtils.ts
 import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "./logger";
