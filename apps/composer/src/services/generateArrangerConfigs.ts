@@ -95,20 +95,40 @@ function processFields(
 
   for (const [fieldName, field] of Object.entries(properties)) {
     const currentPath = [...parentPath, fieldName];
+    const formattedFieldName = formatFieldName(currentPath);
 
-    if (field.type === "object" && field.properties) {
-      Logger.debug(
-        `Recursively processing nested object: ${currentPath.join(".")}`
-      );
+    // Handle nested and object types more comprehensively
+    if (field.type === "nested" || field.type === "object") {
+      Logger.debug(`Processing nested/object field: ${formattedFieldName}`);
 
-      // Recursively process nested fields
-      const nestedResults = processFields(field.properties, currentPath);
-      extendedFields.push(...nestedResults.extendedFields);
-      tableColumns.push(...nestedResults.tableColumns);
-      facetAggregations.push(...nestedResults.facetAggregations);
-    } else {
-      const formattedFieldName = formatFieldName(currentPath);
+      // Add the nested/object field itself as an extended field
+      const extendedField = {
+        displayName: formatDisplayName(formattedFieldName),
+        fieldName: formattedFieldName,
+      };
+      extendedFields.push(extendedField);
 
+      // Add as table column
+      const tableColumn: TableColumn = {
+        canChangeShow: true,
+        fieldName: formattedFieldName,
+        show: currentPath.length === 1, // Show by default if it's a top-level field
+        sortable: false, // Nested fields generally aren't sortable directly
+      };
+      tableColumns.push(tableColumn);
+
+      // Recursively process nested properties if they exist
+      if (field.properties) {
+        const nestedResults = processFields(field.properties, currentPath);
+
+        // Add the results from nested processing
+        extendedFields.push(...nestedResults.extendedFields);
+        tableColumns.push(...nestedResults.tableColumns);
+        facetAggregations.push(...nestedResults.facetAggregations);
+      }
+    }
+    // Regular field processing
+    else {
       // Add to extended fields
       const extendedField = {
         displayName: formatDisplayName(formattedFieldName),
@@ -121,7 +141,7 @@ function processFields(
       const tableColumn: TableColumn = {
         canChangeShow: true,
         fieldName: formattedFieldName,
-        show: currentPath.length === 2, // Show by default if it's a top-level field
+        show: currentPath.length === 1, // Show by default if it's a top-level field
         sortable: true,
       };
 

@@ -44,7 +44,8 @@ export type CLIprofile =
   | "indexManagement"
   | "lecternUpload"
   | "lyricRegister"
-  | "lyricData"
+  | "lyricUpload"
+  | "maestroIndex"
   | "songUploadSchema"
   | "songCreateStudy"
   | "songSubmitAnalysis"
@@ -127,8 +128,11 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "lyricRegister":
         profile = Profiles.LYRIC_REGISTER;
         break;
-      case "lyricData":
+      case "lyricUpload":
         profile = Profiles.LYRIC_DATA;
+        break;
+      case "maestroIndex":
+        profile = Profiles.INDEX_REPOSITORY;
         break;
       case "songUploadSchema":
         profile = Profiles.song_upload_schema;

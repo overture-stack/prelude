@@ -17,6 +17,15 @@ interface TypeInferenceRules {
 }
 
 /**
+ * Configuration options for mapping generation
+ */
+export interface MappingOptions {
+  ignoredFields?: string[]; // Field names to exclude from mapping
+  skipMetadata?: boolean; // Whether to skip adding submission metadata
+  customRules?: Partial<TypeInferenceRules>; // Custom type inference rules
+}
+
+/**
  * Default rules for type inference
  */
 const defaultRules: TypeInferenceRules = {
@@ -61,7 +70,7 @@ export function inferFieldType(
     // Handle null/undefined
     if (sampleValue === null || sampleValue === undefined) {
       Logger.debug("Null/undefined value detected, defaulting to keyword");
-      return { type: "keyword", null_value: "No Data" };
+      return { type: "keyword" as const, null_value: "No Data" };
     }
 
     // Handle sensitive data patterns
@@ -71,7 +80,7 @@ export function inferFieldType(
       )
     ) {
       Logger.debug("Field matches exclude pattern, setting as keyword");
-      return { type: "keyword" };
+      return { type: "keyword" as const };
     }
 
     // Handle nested objects
@@ -81,40 +90,64 @@ export function inferFieldType(
       for (const [key, value] of Object.entries(sampleValue)) {
         properties[key] = inferFieldType(key, value, rules);
       }
-      return { type: "object", properties };
+      return { type: "object" as const, properties };
     }
 
     // Handle arrays
     if (Array.isArray(sampleValue)) {
       Logger.debug`Processing array for ${keyName}`;
+
       if (sampleValue.length === 0) {
-        return { type: "keyword" };
+        return { type: "keyword" as const };
       }
-      const elementType = inferFieldType(
-        `${keyName}_element`,
-        sampleValue[0],
-        rules
-      );
-      return {
-        type: "nested",
-        properties: { value: elementType },
-      };
+
+      // Check if array contains objects
+      if (
+        typeof sampleValue[0] === "object" &&
+        sampleValue[0] !== null &&
+        !Array.isArray(sampleValue[0])
+      ) {
+        // For arrays of objects, directly infer properties from the first element
+        // This eliminates the "value" wrapper
+        const properties: Record<string, ElasticsearchField> = {};
+
+        for (const [key, value] of Object.entries(sampleValue[0])) {
+          properties[key] = inferFieldType(key, value, rules);
+        }
+
+        return {
+          type: "nested" as const,
+          properties: properties,
+        };
+      } else {
+        // For arrays of primitives, use a simpler approach
+        const elementType = inferFieldType(
+          `${keyName}_element`,
+          sampleValue[0],
+          rules
+        );
+
+        return {
+          type: "nested" as const,
+          properties: { value: elementType },
+        };
+      }
     }
 
     // Handle numbers
     if (typeof sampleValue === "number") {
       if (Number.isInteger(sampleValue)) {
         Logger.debug("Detected integer type");
-        return { type: "integer" };
+        return { type: "integer" as const };
       }
       Logger.debug("Detected float type");
-      return { type: "float" };
+      return { type: "float" as const };
     }
 
     // Handle booleans
     if (typeof sampleValue === "boolean") {
       Logger.debug("Detected boolean type");
-      return { type: "boolean" };
+      return { type: "boolean" as const };
     }
 
     // Handle strings
@@ -127,23 +160,23 @@ export function inferFieldType(
       ) {
         if (isValidDate(sampleValue)) {
           Logger.debug("Detected date type");
-          return { type: "date" };
+          return { type: "date" as const };
         }
       }
 
       // Handle long strings
       if (sampleValue.length > rules.maxTextLength) {
         Logger.debug("Detected text type (long string)");
-        return { type: "text" };
+        return { type: "text" as const };
       }
 
       Logger.debug("Detected keyword type");
-      return { type: "keyword" };
+      return { type: "keyword" as const };
     }
 
     // Default fallback
     Logger.debug("Using default keyword type for unknown value type");
-    return { type: "keyword" };
+    return { type: "keyword" as const };
   } catch (error) {
     Logger.error("Error inferring field type");
     Logger.debugObject("Error details", { keyName, sampleValue, error });
@@ -159,17 +192,18 @@ export function inferFieldType(
  * Generates Elasticsearch mapping from a JSON file
  * Supports both single objects and arrays of objects
  * Adds standard metadata fields and configuration
+ * Allows configurable field exclusion and metadata skipping
  *
  * @example
  * // For a JSON file containing: { "name": "John", "age": 30 }
- * generateMappingFromJson("data.json") → {
+ * generateMappingFromJson("data.json", "users", { ignoredFields: ["createdAt"], skipMetadata: true }) → {
  *   mappings: {
  *     properties: {
  *       data: {
  *         properties: {
  *           name: { type: "keyword" },
- *           age: { type: "integer" },
- *           submission_metadata: { ... }
+ *           age: { type: "integer" }
+ *           // submission_metadata is NOT included when skipMetadata is true
  *         }
  *       }
  *     }
@@ -179,7 +213,8 @@ export function inferFieldType(
  */
 export function generateMappingFromJson(
   jsonFilePath: string,
-  indexName: string
+  indexName: string,
+  options: MappingOptions = {}
 ): ElasticsearchMapping {
   try {
     Logger.debug("generateEsMappingFromJSON running");
@@ -189,18 +224,41 @@ export function generateMappingFromJson(
       )} within generateEsMappingFromJSON function`
     );
 
+    // Extract options with defaults
+    const ignoredFields = options.ignoredFields || [];
+    const skipMetadata = options.skipMetadata || false;
+    const customRules = options.customRules || {};
+
+    // Merge custom rules with defaults
+    const rules: TypeInferenceRules = {
+      ...defaultRules,
+      ...customRules,
+    };
+
+    // Log ignored fields if any are specified
+    if (ignoredFields.length > 0) {
+      Logger.info`Fields that will be excluded from mapping: ${ignoredFields.join(
+        ", "
+      )}`;
+    }
+
+    // Log metadata skipping
+    if (skipMetadata) {
+      Logger.info`Submission metadata fields will be excluded from mapping`;
+    }
+
     // Check if using default index name
     if (indexName === "default" || indexName === "data") {
       Logger.defaultValueWarning(
         "No index name supplied, defaulting to: data",
-        "--index <name>"
+        "--index <n>"
       );
       indexName = "data";
     } else {
       Logger.info`Using index name: ${indexName}`;
     }
 
-    // Read and validate JSON
+    // Read and parse JSON
     const startTime = Date.now();
 
     const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, "utf8"));
@@ -210,62 +268,71 @@ export function generateMappingFromJson(
       Logger.timing("JSON parsing", parseTime);
     }
 
-    if (typeof jsonData !== "object") {
+    if (typeof jsonData !== "object" || jsonData === null) {
       throw new ComposerError(
-        "Invalid JSON: Expected an object or array of objects",
+        "Invalid JSON: Expected a non-null object",
         ErrorCodes.INVALID_FILE
       );
     }
 
-    // Get sample data (first object if array)
-    const isArray = Array.isArray(jsonData);
-    const sampleData = isArray ? jsonData[0] : jsonData;
+    // Prepare properties for mapping
+    let mappingProperties: Record<string, ElasticsearchField>;
 
-    if (isArray) {
-      Logger.info(
-        `JSON contains an array of ${jsonData.length} objects, using first object as sample`
-      );
-    }
+    // Determine if the top-level contains a 'data' key
+    const hasDataKey = jsonData.hasOwnProperty("data");
+    const sampleData = hasDataKey ? jsonData.data : jsonData;
 
-    if (!sampleData || typeof sampleData !== "object") {
-      throw new ComposerError(
-        "Invalid JSON structure: No valid object found",
-        ErrorCodes.INVALID_FILE
-      );
-    }
+    // Process the sample data, preserving the 'data' key if present
+    const processDataStructure = (
+      data: Record<string, any>
+    ): Record<string, ElasticsearchField> => {
+      const dataProperties: Record<string, ElasticsearchField> = {};
 
-    // Generate field mappings
-    const fieldCount = Object.keys(sampleData).length;
-    Logger.info`Analyzing ${fieldCount} fields for type inference`;
+      // Process each field in the data
+      Object.entries(data).forEach(([key, value]) => {
+        // Skip ignored fields
+        if (ignoredFields.includes(key)) {
+          Logger.debug`Ignoring field: ${key}`;
+          return;
+        }
 
-    const typeInferenceStart = Date.now();
-    const properties: Record<string, ElasticsearchField> = {};
+        // Recursively process nested arrays or objects
+        if (Array.isArray(value) && value.length > 0) {
+          const firstElement = value[0];
+          if (typeof firstElement === "object" && firstElement !== null) {
+            dataProperties[key] = {
+              type: "nested",
+              properties: processDataStructure(firstElement),
+            };
+          } else {
+            // Simple array of primitives
+            dataProperties[key] = inferFieldType(key, value[0], rules);
+          }
+        } else if (typeof value === "object" && value !== null) {
+          dataProperties[key] = {
+            type: "object",
+            properties: processDataStructure(value),
+          };
+        } else {
+          // Simple field
+          dataProperties[key] = inferFieldType(key, value, rules);
+        }
+      });
 
-    let complexFieldCount = 0;
+      return dataProperties;
+    };
 
-    for (const [key, value] of Object.entries(sampleData)) {
-      properties[key] = inferFieldType(key, value);
-
-      // Count complex fields (objects, arrays)
-      if (
-        typeof value === "object" &&
-        (Array.isArray(value) ||
-          (value !== null && Object.keys(value).length > 0))
-      ) {
-        complexFieldCount++;
-      }
-    }
-
-    const typeInferenceTime = Date.now() - typeInferenceStart;
-    if (typeInferenceTime > 500) {
-      Logger.timing("Type inference", typeInferenceTime);
-    }
-
-    Logger.debug`Field analysis complete`;
-    if (complexFieldCount > 0) {
-      Logger.debug(
-        `Detected ${complexFieldCount} complex field(s) (objects/arrays)`
-      );
+    // Process the data structure
+    if (hasDataKey) {
+      mappingProperties = {
+        data: {
+          type: "object",
+          properties: processDataStructure(sampleData),
+        },
+      };
+    } else {
+      // If no 'data' key, use the entire object directly
+      mappingProperties = processDataStructure(sampleData);
     }
 
     // Create complete mapping with dynamic index name
@@ -275,26 +342,7 @@ export function generateMappingFromJson(
         [`${indexName}_centric`]: {},
       },
       mappings: {
-        properties: {
-          data: {
-            type: "object",
-            properties: {
-              ...properties,
-              submission_metadata: {
-                type: "object",
-                properties: {
-                  submitter_id: { type: "keyword", null_value: "No Data" },
-                  processing_started: { type: "date" },
-                  processed_at: { type: "date" },
-                  source_file: { type: "keyword", null_value: "No Data" },
-                  record_number: { type: "integer" },
-                  hostname: { type: "keyword", null_value: "No Data" },
-                  username: { type: "keyword", null_value: "No Data" },
-                },
-              },
-            },
-          },
-        },
+        properties: mappingProperties,
       },
       settings: {
         number_of_shards: 1,
@@ -303,23 +351,33 @@ export function generateMappingFromJson(
     };
 
     Logger.debug("Mapping configuration generated successfully");
-
     Logger.debugObject("Generated Mapping", mapping);
     return mapping;
   } catch (error) {
+    // Type-safe error handling
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    const errorStack =
+      error instanceof Error ? error.stack : "No stack trace available";
+
     Logger.error("Error generating mapping from JSON");
     Logger.debugObject("Error details", {
       filePath: jsonFilePath,
-      error,
+      errorMessage,
+      stack: errorStack,
     });
 
     if (error instanceof ComposerError) {
       throw error;
     }
     throw new ComposerError(
-      "Error generating mapping from JSON",
+      `Error generating mapping from JSON: ${errorMessage}`,
       ErrorCodes.GENERATION_FAILED,
-      { filePath: jsonFilePath, error }
+      {
+        filePath: jsonFilePath,
+        errorMessage,
+        stack: errorStack,
+      }
     );
   }
 }
@@ -371,16 +429,3 @@ export function mergeMappings(
     );
   }
 }
-
-/* Usage Examples:
-// Generate mapping from JSON file
-const mapping = generateMappingFromJson("data.json");
-
-// Infer field types
-const stringField = inferFieldType("description", "short text");  // → keyword
-const numberField = inferFieldType("count", 42);                  // → integer
-const dateField = inferFieldType("created_at", "2024-01-01");    // → date
-
-// Merge mappings
-const merged = mergeMappings(mapping1, mapping2);
-*/

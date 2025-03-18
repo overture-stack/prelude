@@ -16,6 +16,14 @@ interface TypeInferenceRules {
 }
 
 /**
+ * Configuration options for mapping generation
+ */
+export interface CSVMappingOptions {
+  skipMetadata?: boolean; // Whether to skip adding submission metadata
+  customRules?: Partial<TypeInferenceRules>; // Custom type inference rules
+}
+
+/**
  * Default rules for type inference
  */
 const defaultRules: TypeInferenceRules = {
@@ -61,7 +69,7 @@ export function inferFieldType(
       Logger.debug(
         "Empty value detected, defaulting to keyword with null value"
       );
-      return { type: "keyword", null_value: "No Data" };
+      return { type: "keyword" as const, null_value: "No Data" };
     }
 
     // Handle sensitive data patterns
@@ -71,24 +79,24 @@ export function inferFieldType(
       )
     ) {
       Logger.debug("Field matches exclude pattern, setting as keyword");
-      return { type: "keyword" };
+      return { type: "keyword" as const };
     }
 
     // Check for numeric fields
     if (!isNaN(Number(sampleValue))) {
       if (Number.isInteger(Number(sampleValue))) {
         Logger.debug("Detected integer type");
-        return { type: "integer" };
+        return { type: "integer" as const };
       }
       Logger.debug("Detected float type");
-      return { type: "float" };
+      return { type: "float" as const };
     }
 
     // Check for boolean fields
     const lowerValue = sampleValue.toLowerCase();
     if (rules.booleanValues.includes(lowerValue)) {
       Logger.debug("Detected boolean type");
-      return { type: "boolean" };
+      return { type: "boolean" as const };
     }
 
     // Check for dates based on header name
@@ -100,19 +108,19 @@ export function inferFieldType(
       // If the sample value is a valid date, use date type
       if (isValidDate(sampleValue)) {
         Logger.debug("Detected date type");
-        return { type: "date" };
+        return { type: "date" as const };
       }
     }
 
     // Check string length for keyword vs text
     if (sampleValue.length > rules.maxTextLength) {
       Logger.debug("Detected text type (long string)");
-      return { type: "text" };
+      return { type: "text" as const };
     }
 
     // Default to keyword for shorter strings
     Logger.debug("Detected keyword type");
-    return { type: "keyword" };
+    return { type: "keyword" as const };
   } catch (error) {
     Logger.error("Error inferring field type");
     Logger.debugObject("Error details", { headerName, sampleValue, error });
@@ -149,11 +157,27 @@ export function inferFieldType(
 export function generateMappingFromCSV(
   csvHeaders: string[],
   sampleData: Record<string, string>,
-  indexName: string = "data"
+  indexName: string = "data",
+  options: CSVMappingOptions = {}
 ): ElasticsearchMapping {
   try {
     Logger.debug("generateEsMappingFromCSV running");
     Logger.debug`Processing ${csvHeaders.length} CSV columns`;
+
+    // Extract options
+    const skipMetadata = options.skipMetadata || false;
+    const customRules = options.customRules || {};
+
+    // Merge custom rules with defaults
+    const rules: TypeInferenceRules = {
+      ...defaultRules,
+      ...customRules,
+    };
+
+    // Log metadata skipping
+    if (skipMetadata) {
+      Logger.info`Submission metadata fields will be excluded from mapping`;
+    }
 
     // Check if using default index name
     if (indexName === "default" || indexName === "data") {
@@ -181,7 +205,7 @@ export function generateMappingFromCSV(
     let complexFieldCount = 0;
 
     csvHeaders.forEach((header) => {
-      const fieldType = inferFieldType(header, sampleData[header]);
+      const fieldType = inferFieldType(header, sampleData[header], rules);
       properties[header] = fieldType;
 
       // Count field types for summary
@@ -236,6 +260,25 @@ export function generateMappingFromCSV(
       Logger.debug`Complex fields: ${complexFieldCount}`;
     }
 
+    // Create data properties with or without submission metadata
+    const dataProperties = skipMetadata
+      ? { ...properties }
+      : {
+          ...properties,
+          submission_metadata: {
+            type: "object" as const,
+            properties: {
+              submitter_id: { type: "keyword" as const, null_value: "No Data" },
+              processing_started: { type: "date" as const },
+              processed_at: { type: "date" as const },
+              source_file: { type: "keyword" as const, null_value: "No Data" },
+              record_number: { type: "integer" as const },
+              hostname: { type: "keyword" as const, null_value: "No Data" },
+              username: { type: "keyword" as const, null_value: "No Data" },
+            },
+          },
+        };
+
     // Create complete mapping with dynamic index name
     const mapping: ElasticsearchMapping = {
       index_patterns: [`${indexName}-*`],
@@ -245,22 +288,8 @@ export function generateMappingFromCSV(
       mappings: {
         properties: {
           data: {
-            type: "object",
-            properties: {
-              ...properties,
-              submission_metadata: {
-                type: "object",
-                properties: {
-                  submitter_id: { type: "keyword", null_value: "No Data" },
-                  processing_started: { type: "date" },
-                  processed_at: { type: "date" },
-                  source_file: { type: "keyword", null_value: "No Data" },
-                  record_number: { type: "integer" },
-                  hostname: { type: "keyword", null_value: "No Data" },
-                  username: { type: "keyword", null_value: "No Data" },
-                },
-              },
-            },
+            type: "object" as const,
+            properties: dataProperties,
           },
         },
       },
@@ -330,24 +359,3 @@ export function mergeMappings(
     );
   }
 }
-
-/* Usage Examples:
-// Generate mapping from CSV data
-const headers = ["id", "name", "created_at", "is_active", "score"];
-const sampleData = {
-  id: "12345",
-  name: "John Doe",
-  created_at: "2024-01-01",
-  is_active: "true",
-  score: "85.5"
-};
-const mapping = generateMappingFromCSV(headers, sampleData);
-
-// Infer field types
-const stringField = inferFieldType("description", "short text");  // → keyword
-const numberField = inferFieldType("count", "42");                // → integer
-const dateField = inferFieldType("created_at", "2024-01-01");     // → date
-
-// Merge mappings
-const merged = mergeMappings(mapping1, mapping2);
-*/

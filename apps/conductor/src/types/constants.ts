@@ -21,8 +21,11 @@ export const Profiles = {
   /** Register a Lectern dictionary with Lyric */
   LYRIC_REGISTER: "lyricRegister",
 
-  /** Load data into Lyric service */
-  LYRIC_DATA: "lyricData",
+  /** Upload data into Lyric */
+  LYRIC_DATA: "lyricUpload",
+
+  /** Index data using Maestro */
+  INDEX_REPOSITORY: "maestroIndex",
 
   /** Upload schema to SONG server */
   song_upload_schema: "songUploadSchema",
@@ -52,6 +55,7 @@ export const ProfileDescriptions = {
   [Profiles.LECTERN_UPLOAD]: "Upload schema to Lectern server",
   [Profiles.LYRIC_REGISTER]: "Register a Lectern dictionary with Lyric",
   [Profiles.LYRIC_DATA]: "Load data into Lyric service",
+  [Profiles.INDEX_REPOSITORY]: "Repository Indexing",
   [Profiles.song_upload_schema]: "Upload schema to SONG server",
   [Profiles.song_create_study]: "Create study in SONG server",
   [Profiles.song_submit_analysis]: "Submit analysis to SONG server",

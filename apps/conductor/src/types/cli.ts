@@ -49,6 +49,12 @@ export interface Config {
     outputDir?: string;
     manifestFile?: string;
   };
+  maestroIndex?: {
+    url?: string;
+    repositoryCode?: string;
+    organization?: string;
+    id?: string;
+  };
   batchSize: number;
   delimiter: string;
 }

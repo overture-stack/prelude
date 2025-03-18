@@ -45,4 +45,5 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 Implementation: Stepwise instructions on what to do.
 
 Validation How can we verify the implementation was successful. What is the expected output?
-|
+
+composer -p generateSongSchema -f ./data/fileData/file-metadata.json

@@ -123,8 +123,8 @@ function getCSVFiles(dirPath: string): string[] {
  * Command for loading data into Lyric
  */
 export class LyricUploadCommand extends Command {
-  private readonly MAX_RETRIES = 10;
-  private readonly RETRY_DELAY = 20000; // 20 seconds
+  private readonly MAX_RETRIES = 1;
+  private readonly RETRY_DELAY = 5000;
 
   constructor() {
     super("Lyric Data Loading");

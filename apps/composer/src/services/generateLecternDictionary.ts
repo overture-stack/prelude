@@ -93,8 +93,8 @@ export function generateDictionary(
     name: dictionaryName,
     description: description,
     version: version,
-    schemas: [],
     meta: {},
+    schemas: [],
   };
 
   Logger.debug`${dictionaryName} dictionary generated`;

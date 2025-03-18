@@ -1,0 +1,47 @@
+{
+  "data": {
+    "gender": "Female",
+    "donor_id": "DO0647",
+    "vital_status": "Alive",
+    "diagnosis": [
+      {
+        "stage": "Stage I",
+        "donor_id": "DO0647",
+        "cancer_type": "C50.4",
+        "diagnosis_id": "PD059949",
+        "primary_site": "Breast",
+        "staging_system": "AJCC 8th edition",
+        "age_at_diagnosis": 48,
+        "specimen": [
+          {
+            "sample_id": "SP059950",
+            "sample_type": "Total DNA",
+            "specimen_id": "SP059950",
+            "diagnosis_id": "PD059949",
+            "specimen_type": "Primary tumour",
+            "tissue_source": "Solid tissue"
+          }
+        ],
+        "followup": [
+          {
+            "followup_id": "FO059949",
+            "diagnosis_id": "PD059949",
+            "disease_status": "No evidence of disease",
+            "followup_interval": 180
+          }
+        ],
+        "treatment": [
+          {
+            "drug_name": "None",
+            "diagnosis_id": "PD059949",
+            "treatment_id": "TR059949",
+            "treatment_type": "Surgery",
+            "treatment_start": 0,
+            "treatment_duration": 1,
+            "treatment_response": "Complete response"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -10,7 +10,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 import { Logger } from "../utils/logger";
-import { ConductorError, ErrorCodes, handleError } from "../utils/errors";
+import { ConductorError, ErrorCodes } from "../utils/errors";
 
 /**
  * Command execution result
@@ -139,7 +139,7 @@ export abstract class Command {
           } command completed successfully in ${executionTime.toFixed(2)}s`
         );
       } else {
-        Logger.error(
+        Logger.debug(
           `${this.name} command failed after ${executionTime.toFixed(2)}s: ${
             result.errorMessage
           }`

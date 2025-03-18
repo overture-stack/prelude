@@ -25,7 +25,7 @@ import { ConductorError, ErrorCodes, handleError } from "../utils/errors";
 import { Logger } from "../utils/logger";
 
 // Import individual commands
-import { UploadCommand } from "./uploadCommand";
+import { UploadCommand } from "./uploadCsvCommand";
 import { IndexManagementCommand } from "./indexManagementCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
 import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
@@ -36,6 +36,7 @@ import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand";
 import { ScoreManifestUploadCommand } from "./scoreManifestUploadCommand";
 import { SongPublishAnalysisCommand } from "./songPublishAnalysisCommand";
 import { SongScoreSubmitCommand } from "./songScoreSubmitCommand";
+import { MaestroIndexCommand } from "./maestroIndexCommand";
 
 /**
  * Type definition for command class constructors.
@@ -89,6 +90,7 @@ const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.LECTERN_UPLOAD]: LecternUploadCommand,
   [Profiles.LYRIC_REGISTER]: LyricRegistrationCommand,
   [Profiles.LYRIC_DATA]: LyricUploadCommand,
+  [Profiles.INDEX_REPOSITORY]: MaestroIndexCommand,
   [Profiles.song_upload_schema]: SongUploadSchemaCommand,
   [Profiles.song_create_study]: SongCreateStudyCommand,
   [Profiles.song_submit_analysis]: SongSubmitAnalysisCommand,

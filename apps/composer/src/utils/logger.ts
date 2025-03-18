@@ -235,7 +235,6 @@ export class Logger {
       console.log(chalk.gray`  - ${file}`);
     });
   }
-
   static showReferenceCommands(): void {
     this.header("Command Examples");
 
@@ -354,10 +353,30 @@ export class Logger {
     this.generic(
       chalk.gray("--delimiter <char>       CSV delimiter (default: ,)")
     );
+    this.generic(
+      chalk.gray(
+        "--ignore-fields <fields...> Field names to exclude from mapping"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--skip-metadata          Skip adding submission metadata to mapping"
+      )
+    );
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: composer -p generateElasticearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
+        "Example: composer -p generateElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "Example with ignored fields: composer -p generateElasticsearchMapping -f donor_data.json --ignore-fields entityName organization isValid id"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "Example without metadata: composer -p generateElasticsearchMapping -f donor_data.json --skip-metadata"
       )
     );
     this.generic("");

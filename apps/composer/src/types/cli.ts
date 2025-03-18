@@ -8,6 +8,8 @@ export interface Config {
     index: string;
     shards: number;
     replicas: number;
+    ignoredFields?: string[]; // Fields to exclude from mapping
+    skipMetadata?: boolean; // Option to skip submission metadata
   };
   delimiter: string;
 }
@@ -19,7 +21,7 @@ export interface CLIOutput {
   force?: boolean;
   config: Config;
   outputPath?: string;
-  outputPathProvided?: boolean; // Added this property
+  outputPathProvided?: boolean;
   arrangerConfigDir?: string;
   envConfig: EnvConfig;
   delimiter?: string;
@@ -55,6 +57,8 @@ export interface EnvConfig {
   esIndex?: string;
   esShards?: number;
   esReplicas?: number;
+  esIgnoredFields?: string[];
+  esSkipMetadata?: boolean; // Environment variable for skip metadata option
 
   // CSV options
   csvDelimiter?: string;

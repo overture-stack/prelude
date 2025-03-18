@@ -98,11 +98,7 @@ export function configureCommandOptions(program: Command): void {
     .option("-c, --category-name <name>", "Category name")
     .option("--dict-name <name>", "Dictionary name")
     .option("-v, --dictionary-version <version>", "Dictionary version")
-    .option(
-      "-e, --default-centric-entity <entity>",
-      "Default centric entity",
-      process.env.DEFAULT_CENTRIC_ENTITY || "clinical_data"
-    )
+    .option("-e, --default-centric-entity <entity>", "Default centric entity")
     .option("-o, --output <path>", "Output directory for response logs")
     .option("--force", "Force overwrite of existing files")
     .action(() => {
@@ -111,7 +107,7 @@ export function configureCommandOptions(program: Command): void {
 
   // Lyric data loading command
   program
-    .command("lyricData")
+    .command("lyricUpload")
     .description("Load data into Lyric service")
     .option(
       "-u, --lyric-url <url>",
@@ -273,6 +269,35 @@ export function configureCommandOptions(program: Command): void {
       "Authentication token",
       process.env.AUTH_TOKEN || "123"
     )
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // Add this to the configureCommandOptions function, after the other commands
+
+  // Repository indexing command
+  program
+    .command("maestroIndex")
+    .description("Index a repository with optional filtering")
+    .option(
+      "--index-url <url>",
+      "Indexing service URL",
+      process.env.INDEX_URL || "http://localhost:11235"
+    )
+    .option(
+      "--repository-code <code>",
+      "Repository code to index",
+      process.env.REPOSITORY_CODE
+    )
+    .option(
+      "--organization <name>",
+      "Organization name filter",
+      process.env.ORGANIZATION
+    )
+    .option("--id <id>", "Specific ID to index", process.env.ID)
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Skip confirmation prompts")
+    .option("--debug", "Enable detailed debug logging")
     .action(() => {
       /* Handled by main.ts */
     });

@@ -59,6 +59,11 @@ The Phase Two architecture includes these components:
 
 ## Step 2: Set Up Data Dictionary
 
+
+Justification for splitting data into multiple schemas: 
+
+each row in your csv is a donor, a donor can have multiple diagnosis. you can't represent that into a single row. One donor to many diagnosis represents a nested data structure that requires a multiple schemas.
+
 ### A) Prepare Your Clinical Data
 
 Depending on your requirements, you may need to separate your data into multiple schemas to support distributed submission processes.

@@ -41,7 +41,7 @@ export function configureCommandOptions(program: Command): Command {
       "-f, --files <paths...>",
       "Input file paths (CSV or JSON, space separated)"
     )
-    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("-i, --index <n>", "Elasticsearch index name", "data")
     .option("--shards <number>", "Number of Elasticsearch shards", "1")
     .option("--replicas <number>", "Number of Elasticsearch replicas", "1")
     .option(
@@ -53,7 +53,7 @@ export function configureCommandOptions(program: Command): Command {
       "Arranger document type (file or analysis)",
       "file"
     )
-    .option("-n, --name <name>", "Dictionary/Schema name")
+    .option("-n, --name <n>", "Dictionary/Schema name")
     .option(
       "-d, --description <text>",
       "Dictionary description",
@@ -62,6 +62,15 @@ export function configureCommandOptions(program: Command): Command {
     .option("-v, --version <version>", "Dictionary version", "1.0.0")
     .option("--file-types <types...>", "Allowed file types for Song schema")
     .option("--delimiter <char>", "CSV delimiter", ",")
+    .option(
+      "--ignore-fields <fields...>",
+      "Field names to exclude from Elasticsearch mapping"
+    )
+    .option(
+      "--skip-metadata",
+      "Skip adding submission metadata to Elasticsearch mapping"
+    )
+    .option("--force", "Force overwrite of existing files without prompting")
     .helpOption("-h, --help", "Display help for command")
     .addHelpText("after", () => {
       Logger.showReferenceCommands();
@@ -87,11 +96,14 @@ export function parseCommandLineArgs(opts: any): CLIOutput {
     debug: opts.debug || false,
     filePaths: opts.files || [],
     outputPath: opts.output,
+    force: opts.force || false,
     config: {
       elasticsearch: {
         index: opts.index || "data",
         shards: parseInt(opts.shards || "1", 10),
         replicas: parseInt(opts.replicas || "1", 10),
+        ignoredFields: opts.ignoreFields || [],
+        skipMetadata: opts.skipMetadata || false, // Add skip metadata option
       },
       delimiter: opts.delimiter || ",",
     },

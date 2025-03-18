@@ -4,16 +4,25 @@ import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
 import { generateMappingFromCSV } from "../services/generateEsMappingFromCSV";
-import { generateMappingFromJson } from "../services/generateEsMappingFromJSON";
+import {
+  generateMappingFromJson,
+  // Renamed to avoid conflict
+  MappingOptions as JsonMappingOptions,
+} from "../services/generateEsMappingFromJSON";
 import { validateCSVHeaders } from "../validations";
 import { parseCSVLine } from "../utils/csvParser";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
+import { ElasticsearchMapping } from "../types/elasticsearch";
+import { ElasticsearchField } from "../types/elasticsearch";
 
+// Local interface for mapping options
 interface MappingOptions {
   index_pattern?: string;
   number_of_shards?: number;
   number_of_replicas?: number;
+  ignoredFields?: string[];
+  skipMetadata?: boolean;
 }
 
 export class MappingCommand extends Command {
@@ -24,6 +33,68 @@ export class MappingCommand extends Command {
     super("Elasticsearch Mapping", CONFIG_PATHS.elasticsearch.dir);
     // Override the default filename from the base class
     this.defaultOutputFileName = "mapping.json";
+  }
+
+  /**
+   * Recursively count fields in an Elasticsearch mapping
+   */
+  private countFields(properties: Record<string, ElasticsearchField>): number {
+    let count = 0;
+
+    const recurseCount = (props: Record<string, ElasticsearchField>) => {
+      for (const [, field] of Object.entries(props)) {
+        count++;
+
+        // Recursively count nested object or nested type properties
+        if (field.properties) {
+          recurseCount(field.properties);
+        }
+      }
+    };
+
+    recurseCount(properties);
+    return count;
+  }
+
+  /**
+   * Analyze field types in an Elasticsearch mapping
+   */
+  private analyzeFieldTypes(properties: Record<string, ElasticsearchField>): {
+    topLevelFields: number;
+    nestedFields: number;
+    typeDistribution: Record<string, number>;
+  } {
+    let topLevelFields = 0;
+    let nestedFields = 0;
+    const typeDistribution: Record<string, number> = {};
+
+    const analyzeRecursive = (
+      props: Record<string, ElasticsearchField>,
+      isTopLevel: boolean = true
+    ) => {
+      for (const [, field] of Object.entries(props)) {
+        // Count top-level vs nested fields
+        if (isTopLevel) topLevelFields++;
+        else nestedFields++;
+
+        // Track field types
+        const type = field.type;
+        typeDistribution[type] = (typeDistribution[type] || 0) + 1;
+
+        // Recursively analyze nested properties
+        if (field.properties) {
+          analyzeRecursive(field.properties, false);
+        }
+      }
+    };
+
+    analyzeRecursive(properties);
+
+    return {
+      topLevelFields,
+      nestedFields,
+      typeDistribution,
+    };
   }
 
   /**
@@ -105,6 +176,8 @@ export class MappingCommand extends Command {
         index_pattern: cliOutput.config.elasticsearch?.index || "default",
         number_of_shards: cliOutput.config.elasticsearch?.shards || 1,
         number_of_replicas: cliOutput.config.elasticsearch?.replicas || 0,
+        ignoredFields: cliOutput.config.elasticsearch?.ignoredFields || [],
+        skipMetadata: cliOutput.config.elasticsearch?.skipMetadata || false,
       };
 
       Logger.debugObject("Mapping options", mappingOptions);
@@ -129,7 +202,7 @@ export class MappingCommand extends Command {
       fs.writeFileSync(outputPath, JSON.stringify(finalMapping, null, 2));
 
       // Show summary
-      this.logMappingSummary(finalMapping, outputPath);
+      this.logMappingSummary(finalMapping, outputPath, mappingOptions);
 
       // Track total execution time
       const executionTime = Date.now() - startTime;
@@ -227,7 +300,8 @@ export class MappingCommand extends Command {
     return generateMappingFromCSV(
       Array.from(allHeaders),
       sampleData,
-      options.index_pattern || "default"
+      options.index_pattern || "default",
+      { skipMetadata: options.skipMetadata }
     );
   }
 
@@ -237,34 +311,72 @@ export class MappingCommand extends Command {
   ) {
     const filePath = filePaths[0];
     Logger.info`Processing JSON file: ${path.basename(filePath)}`;
+
+    // Convert from local MappingOptions to JsonMappingOptions
+    const jsonOptions: JsonMappingOptions = {
+      ignoredFields: options.ignoredFields,
+      skipMetadata: options.skipMetadata, // Pass the skipMetadata option
+    };
+
     return generateMappingFromJson(
       filePath,
-      options.index_pattern || "default"
+      options.index_pattern || "default",
+      jsonOptions
     );
   }
+  private logMappingSummary(
+    mapping: ElasticsearchMapping,
+    outputPath: string,
+    options: MappingOptions
+  ): void {
+    try {
+      // Index pattern info
+      Logger.info(`Index Pattern created: ${mapping.index_patterns[0]}`);
 
-  private logMappingSummary(mapping: any, outputPath: string): void {
-    // Index pattern info
-    Logger.info`Index Pattern created: ${mapping.index_patterns[0]}`;
+      // Aliases info
+      const aliasNames = Object.keys(mapping.aliases);
+      if (aliasNames.length > 0) {
+        Logger.info(`Alias(es) used: ${aliasNames.join(", ")}`);
+      } else {
+        Logger.info("No aliases defined");
+      }
 
-    // Aliases info
-    const aliasNames = Object.keys(mapping.aliases);
-    if (aliasNames.length > 0) {
-      Logger.info`Alias(es) used: ${aliasNames.join(", ")}`;
-    } else {
-      Logger.info("No aliases defined");
+      // Fields info with count
+      const fieldCount = this.countFields(mapping.mappings.properties);
+
+      // Breakdown of field types
+      const fieldBreakdown = this.analyzeFieldTypes(
+        mapping.mappings.properties
+      );
+
+      // Log detailed field information
+      Logger.info(
+        `Field Analysis: ${fieldCount} total fields\n` +
+          `  • Top-level fields: ${fieldBreakdown.topLevelFields}\n` +
+          `  • Nested array fields: ${fieldBreakdown.nestedFields}\n` +
+          `  • Field types: ${Object.entries(fieldBreakdown.typeDistribution)
+            .map(([type, count]) => `${count} ${type}`)
+            .join(", ")}`
+      );
+
+      // Metadata skipping info
+      if (options.skipMetadata) {
+        Logger.info("Submission metadata excluded from mapping");
+      }
+
+      // Shards and replicas
+      Logger.info(`Shards: ${mapping.settings.number_of_shards}`);
+      Logger.info(`Replicas: ${mapping.settings.number_of_replicas}`);
+
+      // Ensure success logging
+      Logger.success("Elasticsearch mapping generated successfully");
+
+      // Use generic logging for file path to avoid template literal issues
+      Logger.generic(`Mapping template saved to: ${outputPath}`);
+    } catch (error) {
+      // Fallback logging in case of any unexpected errors
+      Logger.error("Error in logging mapping summary");
+      Logger.debug(`${error}`);
     }
-
-    // Fields info with count
-    const fieldCount = Object.keys(
-      mapping.mappings.properties.data.properties
-    ).length;
-    Logger.info`Total Fields Generated: ${fieldCount}`;
-
-    // Shards and replicas
-    Logger.info`Shards: ${mapping.settings.number_of_shards}`;
-    Logger.info`Replicas: ${mapping.settings.number_of_replicas}`;
-    Logger.success`Mapping template saved to:`;
-    Logger.generic(`    - ${outputPath}`);
   }
 }

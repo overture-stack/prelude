@@ -117,7 +117,7 @@ export class SongCommand extends Command {
         );
       }
 
-      // Validate JSON structure
+      // Validate JSON structure - only require experiment object
       if (!sampleData || !sampleData.experiment) {
         Logger.debug("Invalid JSON structure - missing experiment object");
         throw new ComposerError(
@@ -135,12 +135,13 @@ export class SongCommand extends Command {
 
       Logger.debug`Using schema name: ${schemaName}`;
 
-      // Configure schema options
-      const songOptions = cliOutput.songConfig?.fileTypes
-        ? { fileTypes: cliOutput.songConfig.fileTypes }
-        : undefined;
+      // Configure schema options with both fileTypes and externalValidations
+      const songOptions = {
+        fileTypes: cliOutput.songConfig?.fileTypes || [],
+        externalValidations: [],
+      };
 
-      if (songOptions?.fileTypes) {
+      if (songOptions.fileTypes.length > 0) {
         Logger.debug(
           `Configured file types: ${songOptions.fileTypes.join(", ")}`
         );
@@ -174,7 +175,7 @@ export class SongCommand extends Command {
 
       Logger.success`Schema template saved to ${outputPath}`;
       Logger.warn(
-        "Enums and required fields are not inferred, make sure to update your schema accordingly, including fileTypes."
+        "Remember to update your schema with any specific validation requirements, including fileTypes and externalValidations options."
       );
     } catch (error) {
       Logger.debug`Error during execution: ${error}`;

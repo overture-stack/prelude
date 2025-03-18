@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -6,14 +7,113 @@ import { ConductorError, ErrorCodes } from "../utils/errors";
 import { LyricService } from "../services/lyric/lyricService";
 
 /**
+ * Interface for Lectern schema response
+ */
+interface LecternSchema {
+  name: string;
+  description?: string;
+  fields?: any[];
+  meta?: any;
+}
+
+/**
+ * Interface for Lectern dictionary response
+ */
+interface LecternDictionary {
+  _id: string;
+  name: string;
+  version: string;
+  schemas: LecternSchema[];
+}
+
+/**
  * Command for registering a dictionary with the Lyric service
  */
 export class LyricRegistrationCommand extends Command {
-  private readonly MAX_RETRIES = 3;
+  private readonly MAX_RETRIES = 1;
   private readonly RETRY_DELAY = 5000; // 5 seconds
 
   constructor() {
     super("Lyric Dictionary Registration");
+  }
+
+  /**
+   * Fetches dictionary schema from Lectern to validate centric entity
+   * @param lecternUrl Lectern server URL
+   * @param dictionaryName Dictionary name
+   * @param dictionaryVersion Dictionary version
+   * @returns Promise resolving to array of schema names
+   */
+  private async fetchDictionarySchemas(
+    lecternUrl: string,
+    dictionaryName: string,
+    dictionaryVersion: string
+  ): Promise<string[]> {
+    try {
+      // Normalize URL
+      const baseUrl = lecternUrl.endsWith("/")
+        ? lecternUrl.slice(0, -1)
+        : lecternUrl;
+
+      // First, get all dictionaries to find the ID
+      Logger.debug(`Fetching dictionaries from ${baseUrl}/dictionaries`);
+      const dictionariesResponse = await axios.get(`${baseUrl}/dictionaries`);
+
+      if (
+        !dictionariesResponse.data ||
+        !Array.isArray(dictionariesResponse.data)
+      ) {
+        throw new Error("Invalid response from Lectern");
+      }
+
+      // Find the specific dictionary by name and version
+      const dictionary = dictionariesResponse.data.find(
+        (dict: any) =>
+          dict.name === dictionaryName && dict.version === dictionaryVersion
+      );
+
+      if (!dictionary || !dictionary._id) {
+        throw new Error(
+          `Dictionary '${dictionaryName}' version '${dictionaryVersion}' not found in Lectern`
+        );
+      }
+
+      const dictId = dictionary._id;
+
+      // Now fetch the dictionary details with schemas
+      Logger.debug(
+        `Fetching dictionary schema from ${baseUrl}/dictionaries/${dictId}`
+      );
+      const response = await axios.get(`${baseUrl}/dictionaries/${dictId}`);
+
+      if (!response.data) {
+        throw new Error("Invalid dictionary schema response: empty data");
+      }
+
+      // Ensure we have a properly typed response with schemas
+      const dictionary_data = response.data as LecternDictionary;
+
+      if (!dictionary_data.schemas || !Array.isArray(dictionary_data.schemas)) {
+        throw new Error(
+          "Invalid dictionary schema response: missing or invalid schemas array"
+        );
+      }
+
+      // Extract schema names
+      const schemaNames = dictionary_data.schemas.map((schema) => schema.name);
+      Logger.debug(
+        `Available schemas in dictionary: ${schemaNames.join(", ")}`
+      );
+
+      return schemaNames;
+    } catch (error) {
+      Logger.debug(
+        `Error fetching schema information: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+      throw error;
+    }
   }
 
   /**
@@ -27,12 +127,24 @@ export class LyricRegistrationCommand extends Command {
     try {
       // Extract configuration from options or environment
       const lyricUrl = options.lyricUrl || process.env.LYRIC_URL;
+      const lecternUrl =
+        options.lecternUrl ||
+        process.env.LECTERN_URL ||
+        "http://localhost:3031";
       const categoryName = options.categoryName || process.env.CATEGORY_NAME;
       const dictionaryName = options.dictName || process.env.DICTIONARY_NAME;
       const dictionaryVersion =
         options.dictionaryVersion || process.env.DICTIONARY_VERSION;
       const defaultCentricEntity =
         options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY;
+
+      // Check if required parameters are provided
+      if (!lyricUrl || !categoryName || !dictionaryName || !dictionaryVersion) {
+        throw new ConductorError(
+          "Missing required parameters. Ensure all required parameters are provided.",
+          ErrorCodes.INVALID_ARGS
+        );
+      }
 
       // Create Lyric service
       const lyricService = new LyricService(lyricUrl);
@@ -49,6 +161,82 @@ export class LyricRegistrationCommand extends Command {
               "Verify the Lyric service is running and accessible at the provided URL",
           }
         );
+      }
+
+      // Warn that centric entity is required by the API even though Swagger marks it as optional
+      if (!defaultCentricEntity) {
+        // Try to fetch entities to suggest valid options
+        try {
+          const entities = await this.fetchDictionarySchemas(
+            lecternUrl,
+            dictionaryName,
+            dictionaryVersion
+          );
+
+          if (entities.length > 0) {
+            throw new ConductorError(
+              "The Lyric API requires a defaultCentricEntity parameter.\n Use -e or --default-centric-entity to specify a valid entity from the dictionary.\n ",
+              ErrorCodes.INVALID_ARGS,
+              {
+                availableEntities: entities,
+                suggestion: `Available entities are: ${entities.join(", ")}`,
+              }
+            );
+          }
+        } catch (error) {
+          // If we couldn't fetch schemas, use a simpler error
+          if (!(error instanceof ConductorError)) {
+            Logger.error(
+              `Could not fetch available entities: ${
+                error instanceof Error ? error.message : String(error)
+              }`
+            );
+            throw new ConductorError(
+              "The Lyric API requires a defaultCentricEntity parameter.",
+              ErrorCodes.INVALID_ARGS,
+              {
+                suggestion: `Use -e or --default-centric-entity to specify a valid entity from the dictionary`,
+              }
+            );
+          }
+          throw error;
+        }
+      }
+
+      // Validate centric entity against dictionary schemas if provided
+      let availableEntities: string[] = [];
+      try {
+        availableEntities = await this.fetchDictionarySchemas(
+          lecternUrl,
+          dictionaryName,
+          dictionaryVersion
+        );
+
+        if (!availableEntities.includes(defaultCentricEntity)) {
+          throw new ConductorError(
+            `Entity '${defaultCentricEntity}' does not exist in this dictionary`,
+            ErrorCodes.VALIDATION_FAILED,
+            {
+              availableEntities: availableEntities,
+              suggestion: `Choose one of the available entities: ${availableEntities.join(
+                ", "
+              )}`,
+            }
+          );
+        }
+
+        Logger.debug(
+          `Confirmed entity '${defaultCentricEntity}' exists in dictionary.`
+        );
+      } catch (error) {
+        // If we can't validate the schema, log a warning but continue
+        // This prevents the command from failing if Lectern is unreachable
+        Logger.warn(
+          `Could not validate centric entity against dictionary schema: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+        Logger.warn(`Proceeding with registration without validation...`);
       }
 
       // Print registration information
@@ -79,6 +267,56 @@ export class LyricRegistrationCommand extends Command {
           break;
         } catch (error) {
           lastError = error;
+
+          // Special handling for entity not found errors
+          if (
+            error instanceof ConductorError &&
+            error.message.includes("Entity") &&
+            error.message.includes("does not exist in this dictionary")
+          ) {
+            // If we already have the list of available entities, use it
+            if (availableEntities.length > 0) {
+              throw new ConductorError(
+                `Entity '${defaultCentricEntity}' does not exist in this dictionary`,
+                ErrorCodes.VALIDATION_FAILED,
+                {
+                  availableEntities: availableEntities,
+                  suggestion: `Available entities are: ${availableEntities.join(
+                    ", "
+                  )}. Try again with: conductor lyricRegister -c ${categoryName} --dict-name ${dictionaryName} -v ${dictionaryVersion} -e [entity]`,
+                }
+              );
+            } else {
+              // Otherwise try to fetch them now for the error message
+              try {
+                const schemas = await this.fetchDictionarySchemas(
+                  lecternUrl,
+                  dictionaryName,
+                  dictionaryVersion
+                );
+
+                throw new ConductorError(
+                  `Entity '${defaultCentricEntity}' does not exist in this dictionary`,
+                  ErrorCodes.VALIDATION_FAILED,
+                  {
+                    availableEntities: schemas,
+                    suggestion: `Available entities are: ${schemas.join(
+                      ", "
+                    )}. Try again with: conductor lyricRegister -c ${categoryName} --dict-name ${dictionaryName} -v ${dictionaryVersion} -e [entity]`,
+                  }
+                );
+              } catch (schemaError) {
+                // If we can't fetch schemas, just show a generic message
+                throw new ConductorError(
+                  `Entity '${defaultCentricEntity}' does not exist in this dictionary`,
+                  ErrorCodes.VALIDATION_FAILED,
+                  {
+                    suggestion: `Check the dictionary schema and use a valid entity name with -e parameter`,
+                  }
+                );
+              }
+            }
+          }
 
           // If it's a bad request (invalid parameters), don't retry
           if (
@@ -124,6 +362,9 @@ export class LyricRegistrationCommand extends Command {
       Logger.generic(chalk.gray(`    - Category: ${categoryName}`));
       Logger.generic(chalk.gray(`    - Dictionary: ${dictionaryName}`));
       Logger.generic(chalk.gray(`    - Version: ${dictionaryVersion}`));
+      Logger.generic(
+        chalk.gray(`    - Centric Entity: ${defaultCentricEntity}`)
+      );
       Logger.generic(" ");
 
       return {
@@ -162,9 +403,25 @@ export class LyricRegistrationCommand extends Command {
           }
         }
 
-        // Add suggestions for other error types when in debug mode
-        if (details.suggestion && options.debug) {
-          Logger.info(`\nSuggestion: ${details.suggestion}`);
+        // Special handling for entity not found errors
+        if (
+          error.message.includes("Entity") &&
+          error.message.includes("does not exist") &&
+          details.availableEntities
+        ) {
+          Logger.info(
+            `\nAvailable entities in this dictionary are: ${details.availableEntities.join(
+              ", "
+            )}`
+          );
+          if (details.suggestion) {
+            Logger.tip(details.suggestion);
+          }
+        }
+
+        // Add suggestions for other error types
+        if (details.suggestion) {
+          Logger.tip(details.suggestion);
         }
       }
 
@@ -191,10 +448,9 @@ export class LyricRegistrationCommand extends Command {
 
   /**
    * Validates command line arguments.
-   * This implementation ensures that Lyric URL is provided.
    *
    * @param cliOutput - The parsed command line arguments
-   * @throws ConductorError if validation fails
+   * @returns A promise that resolves when validation is complete or rejects with an error
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
@@ -235,5 +491,11 @@ export class LyricRegistrationCommand extends Command {
         ErrorCodes.INVALID_ARGS
       );
     }
+
+    // Note about centric entity - technically optional in our interface but required by API
+    // We'll validate in execute() and provide helpful errors rather than failing early here
+
+    // Validation passed
+    return;
   }
 }

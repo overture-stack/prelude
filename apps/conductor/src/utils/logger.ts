@@ -299,6 +299,39 @@ export class Logger {
     );
     this.generic("");
 
+    // Repository Indexing commands
+    this.generic(chalk.bold.magenta("Repository Indexing Commands:"));
+    this.generic(
+      chalk.white("conductor maestroIndex --repository-code lyric.overture")
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray(
+        "--repository-code <code>  Repository code to index (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--index-url <url>       Indexing service URL (default: http://localhost:11235)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--organization <name>   Filter indexing to a specific organization"
+      )
+    );
+    this.generic(
+      chalk.gray("--id <id>               Index only a specific document ID")
+    );
+    this.generic(chalk.gray("-o, --output <path>     Output path for logs"));
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor maestroIndex --repository-code lyric.overture --organization OICR"
+      )
+    );
+    this.generic("");
+
     // Lectern Upload commands
     this.generic(chalk.bold.magenta("Lectern Schema Upload Command:"));
     this.generic(chalk.white("conductor lecternUpload -s dictionary.json"));
@@ -329,7 +362,7 @@ export class Logger {
     this.generic(chalk.bold.magenta("Lyric Register Dictionary Command:"));
     this.generic(
       chalk.white(
-        "conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0"
+        "conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0 -e entity1"
       )
     );
     this.generic(chalk.gray("Options:"));
@@ -338,20 +371,26 @@ export class Logger {
         "-u, --lyric-url <url>     Lyric server URL (default: http://localhost:3030)"
       )
     );
-    this.generic(chalk.gray("-c, --category-name <name> Category name"));
-    this.generic(chalk.gray("--dict-name <name>        Dictionary name"));
     this.generic(
-      chalk.gray("-v, --dictionary-version <version> Dictionary version")
+      chalk.gray("-c, --category-name <name> Category name (required)")
+    );
+    this.generic(
+      chalk.gray("--dict-name <name>        Dictionary name (required)")
     );
     this.generic(
       chalk.gray(
-        "-e, --default-centric-entity <entity> Default centric entity (default: clinical_data)"
+        "-v, --dictionary-version <version> Dictionary version (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-e, --default-centric-entity <entity> Default centric entity (required) - must be a valid schema in the dictionary"
       )
     );
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: conductor lyricRegister -c my-category --dict-name my-dictionary -v 2.0"
+        "Example: conductor lyricRegister -c my-category --dict-name my-dictionary -v 2.0 -e donor"
       )
     );
     this.generic("");
