@@ -1,7 +1,5 @@
 {
-  "index_patterns": [
-    "datatable1-*"
-  ],
+  "index_patterns": ["datatable1-*"],
   "aliases": {
     "datatable1_centric": {}
   },
@@ -10,43 +8,104 @@
       "data": {
         "type": "object",
         "properties": {
-          "Name": {
+          "gender": {
             "type": "keyword"
           },
-          "Profile": {
+          "donor_id": {
             "type": "keyword"
           },
-          "Ranking": {
-            "type": "keyword",
-            "null_value": "No Data"
+          "vital_status": {
+            "type": "keyword"
           },
-          "submission_metadata": {
-            "type": "object",
+          "diagnosis": {
+            "type": "nested",
             "properties": {
-              "submitter_id": {
-                "type": "keyword",
-                "null_value": "No Data"
+              "stage": {
+                "type": "keyword"
               },
-              "processing_started": {
-                "type": "date"
+              "donor_id": {
+                "type": "keyword"
               },
-              "processed_at": {
-                "type": "date"
+              "cancer_type": {
+                "type": "keyword"
               },
-              "source_file": {
-                "type": "keyword",
-                "null_value": "No Data"
+              "diagnosis_id": {
+                "type": "keyword"
               },
-              "record_number": {
+              "primary_site": {
+                "type": "keyword"
+              },
+              "staging_system": {
+                "type": "keyword"
+              },
+              "age_at_diagnosis": {
                 "type": "integer"
               },
-              "hostname": {
-                "type": "keyword",
-                "null_value": "No Data"
+              "followup": {
+                "type": "nested",
+                "properties": {
+                  "followup_id": {
+                    "type": "keyword"
+                  },
+                  "diagnosis_id": {
+                    "type": "keyword"
+                  },
+                  "disease_status": {
+                    "type": "keyword"
+                  },
+                  "followup_interval": {
+                    "type": "integer"
+                  }
+                }
               },
-              "username": {
-                "type": "keyword",
-                "null_value": "No Data"
+              "specimen": {
+                "type": "nested",
+                "properties": {
+                  "sample_id": {
+                    "type": "keyword"
+                  },
+                  "sample_type": {
+                    "type": "keyword"
+                  },
+                  "specimen_id": {
+                    "type": "keyword"
+                  },
+                  "diagnosis_id": {
+                    "type": "keyword"
+                  },
+                  "specimen_type": {
+                    "type": "keyword"
+                  },
+                  "tissue_source": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "treatment": {
+                "type": "nested",
+                "properties": {
+                  "drug_name": {
+                    "type": "keyword"
+                  },
+                  "diagnosis_id": {
+                    "type": "keyword"
+                  },
+                  "treatment_id": {
+                    "type": "keyword"
+                  },
+                  "treatment_type": {
+                    "type": "keyword"
+                  },
+                  "treatment_start": {
+                    "type": "integer"
+                  },
+                  "treatment_duration": {
+                    "type": "integer"
+                  },
+                  "treatment_response": {
+                    "type": "keyword"
+                  }
+                }
               }
             }
           }

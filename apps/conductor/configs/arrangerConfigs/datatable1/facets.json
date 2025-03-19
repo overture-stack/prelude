@@ -3,53 +3,138 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "data__Name",
+        "fieldName": "data__gender",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Profile",
+        "fieldName": "data__donor_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Ranking",
+        "fieldName": "data__vital_status",
         "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__submitter_id",
-        "show": false
+        "active": true,
+        "fieldName": "data__diagnosis__stage",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__processing_started",
-        "show": false
+        "active": true,
+        "fieldName": "data__diagnosis__donor_id",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__processed_at",
-        "show": false
+        "active": true,
+        "fieldName": "data__diagnosis__cancer_type",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__source_file",
-        "show": false
+        "active": true,
+        "fieldName": "data__diagnosis__diagnosis_id",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__record_number",
-        "show": false
+        "active": true,
+        "fieldName": "data__diagnosis__primary_site",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__hostname",
-        "show": false
+        "active": true,
+        "fieldName": "data__diagnosis__staging_system",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__username",
-        "show": false
+        "active": true,
+        "fieldName": "data__diagnosis__age_at_diagnosis",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__followup__followup_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__followup__diagnosis_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__followup__disease_status",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__followup__followup_interval",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__specimen__sample_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__specimen__sample_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__specimen__specimen_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__specimen__diagnosis_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__specimen__specimen_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__specimen__tissue_source",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__treatment__drug_name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__treatment__diagnosis_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__treatment__treatment_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__treatment__treatment_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__treatment__treatment_start",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__treatment__treatment_duration",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__treatment__treatment_response",
+        "show": true
       }
     ]
   }
