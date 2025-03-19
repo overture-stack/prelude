@@ -1,132 +1,48 @@
 {
   "extended": [
     {
-      "displayName": "Data",
-      "fieldName": "data"
+      "displayName": "Data Name",
+      "fieldName": "data.Name"
     },
     {
-      "displayName": "Data Gender",
-      "fieldName": "data.gender"
+      "displayName": "Data Profile",
+      "fieldName": "data.Profile"
     },
     {
-      "displayName": "Data Donor Id",
-      "fieldName": "data.donor_id"
+      "displayName": "Data Ranking",
+      "fieldName": "data.Ranking"
     },
     {
-      "displayName": "Data Vital Status",
-      "fieldName": "data.vital_status"
+      "displayName": "Data Submission Metadata",
+      "fieldName": "data.submission_metadata"
     },
     {
-      "displayName": "Data Diagnosis",
-      "fieldName": "data.diagnosis"
+      "displayName": "Data Submission Metadata Submitter Id",
+      "fieldName": "data.submission_metadata.submitter_id"
     },
     {
-      "displayName": "Data Diagnosis Stage",
-      "fieldName": "data.diagnosis.stage"
+      "displayName": "Data Submission Metadata Processing Started",
+      "fieldName": "data.submission_metadata.processing_started"
     },
     {
-      "displayName": "Data Diagnosis Donor Id",
-      "fieldName": "data.diagnosis.donor_id"
+      "displayName": "Data Submission Metadata Processed At",
+      "fieldName": "data.submission_metadata.processed_at"
     },
     {
-      "displayName": "Data Diagnosis Cancer Type",
-      "fieldName": "data.diagnosis.cancer_type"
+      "displayName": "Data Submission Metadata Source File",
+      "fieldName": "data.submission_metadata.source_file"
     },
     {
-      "displayName": "Data Diagnosis Diagnosis Id",
-      "fieldName": "data.diagnosis.diagnosis_id"
+      "displayName": "Data Submission Metadata Record Number",
+      "fieldName": "data.submission_metadata.record_number"
     },
     {
-      "displayName": "Data Diagnosis Primary Site",
-      "fieldName": "data.diagnosis.primary_site"
+      "displayName": "Data Submission Metadata Hostname",
+      "fieldName": "data.submission_metadata.hostname"
     },
     {
-      "displayName": "Data Diagnosis Staging System",
-      "fieldName": "data.diagnosis.staging_system"
-    },
-    {
-      "displayName": "Data Diagnosis Age At Diagnosis",
-      "fieldName": "data.diagnosis.age_at_diagnosis"
-    },
-    {
-      "displayName": "Data Diagnosis Followup",
-      "fieldName": "data.diagnosis.followup"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Followup Id",
-      "fieldName": "data.diagnosis.followup.followup_id"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Diagnosis Id",
-      "fieldName": "data.diagnosis.followup.diagnosis_id"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Disease Status",
-      "fieldName": "data.diagnosis.followup.disease_status"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Followup Interval",
-      "fieldName": "data.diagnosis.followup.followup_interval"
-    },
-    {
-      "displayName": "Data Diagnosis Specimen",
-      "fieldName": "data.diagnosis.specimen"
-    },
-    {
-      "displayName": "Data Diagnosis Specimen Sample Id",
-      "fieldName": "data.diagnosis.specimen.sample_id"
-    },
-    {
-      "displayName": "Data Diagnosis Specimen Sample Type",
-      "fieldName": "data.diagnosis.specimen.sample_type"
-    },
-    {
-      "displayName": "Data Diagnosis Specimen Specimen Id",
-      "fieldName": "data.diagnosis.specimen.specimen_id"
-    },
-    {
-      "displayName": "Data Diagnosis Specimen Diagnosis Id",
-      "fieldName": "data.diagnosis.specimen.diagnosis_id"
-    },
-    {
-      "displayName": "Data Diagnosis Specimen Specimen Type",
-      "fieldName": "data.diagnosis.specimen.specimen_type"
-    },
-    {
-      "displayName": "Data Diagnosis Specimen Tissue Source",
-      "fieldName": "data.diagnosis.specimen.tissue_source"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment",
-      "fieldName": "data.diagnosis.treatment"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment Drug Name",
-      "fieldName": "data.diagnosis.treatment.drug_name"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment Diagnosis Id",
-      "fieldName": "data.diagnosis.treatment.diagnosis_id"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment Treatment Id",
-      "fieldName": "data.diagnosis.treatment.treatment_id"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment Treatment Type",
-      "fieldName": "data.diagnosis.treatment.treatment_type"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment Treatment Start",
-      "fieldName": "data.diagnosis.treatment.treatment_start"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment Treatment Duration",
-      "fieldName": "data.diagnosis.treatment.treatment_duration"
-    },
-    {
-      "displayName": "Data Diagnosis Treatment Treatment Response",
-      "fieldName": "data.diagnosis.treatment.treatment_response"
+      "displayName": "Data Submission Metadata Username",
+      "fieldName": "data.submission_metadata.username"
     }
   ]
 }

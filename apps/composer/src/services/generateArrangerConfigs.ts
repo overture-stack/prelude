@@ -42,46 +42,109 @@ function formatDisplayName(fieldName: string): string {
 // ---- Path and Query Generation ----
 
 /**
- * Generates JSON path and GraphQL query for nested fields
- * Only generates for fields that contain dots (nested fields)
- * Example: 'user.address.city' →
- *   jsonPath: '$.user.address.city'
- *   query: 'user { address { city } }'
+ * Generates a proper JSON path for a nested field in Elasticsearch
+ * Correctly formats paths for nested arrays with hits.edges[*].node structure
+ *
+ * @param fieldPath Array of path segments to the field
+ * @param fieldTypeMap Map of field paths to their Elasticsearch types
+ * @returns Properly formatted jsonPath string
  */
-function generateJsonPathAndQuery(
-  fieldName: string
-): { jsonPath: string; query: string } | undefined {
-  if (!fieldName.includes(".")) {
+function generateJsonPath(
+  fieldPath: string[],
+  fieldTypeMap: Map<string, string>
+): string | undefined {
+  if (fieldPath.length <= 1) {
     return undefined;
   }
 
-  const parts = fieldName.split(".");
-  const jsonPath = `$.${parts.join(".")}`;
-  const query =
-    parts
-      .map((part, index) => {
-        if (index === parts.length - 1) {
-          return `${part}`;
-        }
-        return `${part} {`;
-      })
-      .join(" ") + " }".repeat(parts.length - 1);
+  // Start with root
+  let path = "$";
+  let currentPathSegments: string[] = [];
 
-  return { jsonPath, query };
+  // Build the path segment by segment with appropriate nesting structure
+  for (let i = 0; i < fieldPath.length; i++) {
+    const segment = fieldPath[i];
+    currentPathSegments.push(segment);
+
+    // Add the current segment to the path
+    path += `.${segment}`;
+
+    // Check if this segment is a nested type and not the last segment
+    if (i < fieldPath.length - 1) {
+      const currentPath = currentPathSegments.join(".");
+      const fieldType = fieldTypeMap.get(currentPath);
+
+      // Add the hits.edges[*].node structure for nested types
+      if (fieldType === "nested") {
+        path += ".hits.edges[*].node";
+      }
+    }
+  }
+
+  return path;
+}
+
+/**
+ * Generates a GraphQL query string for a nested field
+ * Creates a properly nested query structure following Arranger's requirements
+ *
+ * @param fieldPath Array of path segments to the field
+ * @param fieldTypeMap Map of field paths to their Elasticsearch types
+ * @returns GraphQL query string
+ */
+function generateGraphQLQuery(
+  fieldPath: string[],
+  fieldTypeMap: Map<string, string>
+): string | undefined {
+  if (fieldPath.length <= 1) {
+    return undefined;
+  }
+
+  // Build the query from bottom up
+  let query = fieldPath[fieldPath.length - 1];
+  let currentPathSegments: string[] = [...fieldPath];
+
+  // Remove the last element as we've already added it
+  currentPathSegments.pop();
+
+  // Work backwards through the path to create the nested structure
+  while (currentPathSegments.length > 0) {
+    // Get the last segment in our current path
+    const segment = currentPathSegments.pop();
+
+    // Build the path string to check if this is a nested field
+    const checkPath = fieldPath
+      .slice(0, currentPathSegments.length + 1)
+      .join(".");
+    const fieldType = fieldTypeMap.get(checkPath);
+
+    // For fields that are marked as 'nested' type in Elasticsearch
+    if (fieldType === "nested") {
+      query = `${segment} { hits { edges { node { ${query} } } } }`;
+    } else {
+      // Standard object nesting
+      query = `${segment} { ${query} }`;
+    }
+  }
+
+  return query;
 }
 
 // ---- Field Processing ----
 
 /**
  * Processes Elasticsearch mapping fields to generate Arranger configurations
- * Handles nested fields recursively and generates:
- * - Extended fields with display names
- * - Table columns with visibility settings
- * - Facet aggregations for various field types
+ * Handles nested fields recursively and generates extended fields, table columns, and facet aggregations
+ *
+ * @param properties The Elasticsearch mapping properties to process
+ * @param parentPath Optional array of parent path segments
+ * @param fieldTypeMap Map of field paths to their Elasticsearch types
+ * @returns Object containing extended fields, table columns, and facet aggregations
  */
 function processFields(
   properties: Record<string, ElasticsearchField>,
-  parentPath: string[] = []
+  parentPath: string[] = [],
+  fieldTypeMap: Map<string, string> = new Map()
 ): {
   extendedFields: ExtendedField[];
   tableColumns: TableColumn[];
@@ -93,33 +156,58 @@ function processFields(
   const tableColumns: TableColumn[] = [];
   const facetAggregations: FacetAggregation[] = [];
 
+  // Process each field in the Elasticsearch mapping
   for (const [fieldName, field] of Object.entries(properties)) {
+    // Skip fields with problematic characters that would cause GraphQL errors
+    if (fieldName.includes(".") || fieldName.includes("-")) {
+      Logger.debug`Skipping field with problematic name: ${fieldName}`;
+      continue;
+    }
+
     const currentPath = [...parentPath, fieldName];
     const formattedFieldName = formatFieldName(currentPath);
 
-    // Handle nested and object types more comprehensively
+    // Track if this is a submission_metadata field
+    const isSubmissionMetadata =
+      fieldName === "submission_metadata" ||
+      currentPath.includes("submission_metadata");
+
+    if (isSubmissionMetadata) {
+      Logger.debug`Processing submission_metadata field (will be hidden by default): ${fieldName}`;
+    }
+
+    // Store this field's type in the map for reference when building queries
+    fieldTypeMap.set(formattedFieldName, field.type);
+
+    // Add to extended fields with display name and isArray flag for nested arrays
+    const extendedField: ExtendedField = {
+      displayName: formatDisplayName(formattedFieldName),
+      fieldName: formattedFieldName,
+    };
+
+    // Add isArray property for nested type fields
+    if (field.type === "nested") {
+      extendedField.isArray = true;
+    }
+
+    extendedFields.push(extendedField);
+    Logger.debug`Added extended field: ${formattedFieldName}`;
+
+    // Handle nested and object types
     if (field.type === "nested" || field.type === "object") {
-      Logger.debug(`Processing nested/object field: ${formattedFieldName}`);
+      Logger.debug`Processing nested/object field: ${formattedFieldName}`;
 
-      // Add the nested/object field itself as an extended field
-      const extendedField = {
-        displayName: formatDisplayName(formattedFieldName),
-        fieldName: formattedFieldName,
-      };
-      extendedFields.push(extendedField);
-
-      // Add as table column
-      const tableColumn: TableColumn = {
-        canChangeShow: true,
-        fieldName: formattedFieldName,
-        show: currentPath.length === 1, // Show by default if it's a top-level field
-        sortable: false, // Nested fields generally aren't sortable directly
-      };
-      tableColumns.push(tableColumn);
+      // Skip adding nested/object fields to table columns
+      // We only want primitive fields in the table
+      Logger.debug`Skipping table column for nested/object field: ${formattedFieldName}`;
 
       // Recursively process nested properties if they exist
       if (field.properties) {
-        const nestedResults = processFields(field.properties, currentPath);
+        const nestedResults = processFields(
+          field.properties,
+          currentPath,
+          fieldTypeMap
+        );
 
         // Add the results from nested processing
         extendedFields.push(...nestedResults.extendedFields);
@@ -127,51 +215,48 @@ function processFields(
         facetAggregations.push(...nestedResults.facetAggregations);
       }
     }
-    // Regular field processing
+    // Process regular (non-object) fields
     else {
-      // Add to extended fields
-      const extendedField = {
-        displayName: formatDisplayName(formattedFieldName),
-        fieldName: formattedFieldName,
-      };
-      extendedFields.push(extendedField);
-      Logger.debug`Added extended field: ${JSON.stringify(extendedField)}`;
-
-      // Add to table columns
+      // Add to table columns - primitive fields are sortable
       const tableColumn: TableColumn = {
         canChangeShow: true,
         fieldName: formattedFieldName,
-        show: currentPath.length === 1, // Show by default if it's a top-level field
+        // Show if it's shallow enough in the tree and not submission_metadata
+        show:
+          isShallowField(currentPath, parentPath[0]) && !isSubmissionMetadata,
         sortable: true,
       };
 
-      // Add jsonPath and query for nested fields
-      const pathQuery = generateJsonPathAndQuery(formattedFieldName);
-      if (pathQuery) {
-        tableColumn.jsonPath = pathQuery.jsonPath;
-        tableColumn.query = pathQuery.query;
+      // Add special display type for size fields
+      if (fieldName === "size" || fieldName.endsWith("_size")) {
+        tableColumn.displayType = "bytes";
+      }
+
+      // Add jsonPath and query for nested fields (2+ segments)
+      if (currentPath.length > 1) {
+        const jsonPath = generateJsonPath(currentPath, fieldTypeMap);
+        const query = generateGraphQLQuery(currentPath, fieldTypeMap);
+
+        if (jsonPath && query) {
+          tableColumn.jsonPath = jsonPath;
+          tableColumn.query = query;
+        }
       }
 
       tableColumns.push(tableColumn);
-      Logger.debug`Added table column: ${JSON.stringify(tableColumn)}`;
+      Logger.debug`Added table column: ${formattedFieldName}`;
 
-      // Add to facet aggregations for various field types
-      if (
-        field.type === "keyword" ||
-        field.type === "text" ||
-        field.type === "integer" ||
-        field.type === "float" ||
-        field.type === "date"
-      ) {
+      // Add to facet aggregations for searchable field types
+      if (isSearchableField(field)) {
         const facetAggregation = {
-          active: true,
+          active: !isSubmissionMetadata, // Not active if it's submission_metadata
           fieldName: formatFacetFieldName(currentPath),
-          show: true,
+          show: !isSubmissionMetadata, // Not shown if it's submission_metadata
         };
         facetAggregations.push(facetAggregation);
-        Logger.debug(
-          `Added facet aggregation: ${JSON.stringify(facetAggregation)}`
-        );
+        Logger.debug`Added facet: ${formatFacetFieldName(
+          currentPath
+        )} (active: ${!isSubmissionMetadata})`;
       }
     }
   }
@@ -179,20 +264,54 @@ function processFields(
   return { extendedFields, tableColumns, facetAggregations };
 }
 
-// ---- Main Config Generation ----
+/**
+ * Determines if a field should be displayed by default based on its path depth
+ */
+function isShallowField(path: string[], containerField?: string): boolean {
+  // Fields directly at the root level are shown
+  if (path.length <= 2) {
+    return true;
+  }
+
+  // Fields at the 3rd level are shown if under a container like 'data'
+  if (path.length === 3 && isContainerField(containerField)) {
+    return true;
+  }
+
+  // All other fields are hidden by default
+  return false;
+}
 
 /**
- * Generates Arranger configurations from an Elasticsearch mapping
+ * Determines if a field is a container object (like 'data')
+ */
+function isContainerField(fieldName?: string): boolean {
+  if (!fieldName) return false;
+
+  // Only consider "data" as a container field
+  return fieldName.toLowerCase() === "data";
+}
+
+/**
+ * Determines if a field is searchable (can be used in facets)
+ */
+function isSearchableField(field: ElasticsearchField): boolean {
+  return ["keyword", "text", "integer", "float", "date", "boolean"].includes(
+    field.type
+  );
+}
+
+/**
+ * Main function to generate Arranger configurations from Elasticsearch mapping
  * Creates four configuration files:
  * - base.json: Basic index configuration
  * - extended.json: Field display names and metadata
  * - table.json: Table column configuration
  * - facets.json: Search facet configuration
- *   TODO update documentType to be dynamic based in user input
  */
 export function generateArrangerConfigs(
   mapping: ElasticsearchMapping,
-  indexName: string,
+  indexName: string = "data",
   documentType: "file" | "analysis" = "file"
 ): {
   base: ArrangerBaseConfig;
@@ -204,14 +323,73 @@ export function generateArrangerConfigs(
   Logger.info`Document type: ${documentType}`;
 
   try {
+    // Extract the mapping properties, preserving the structure
+    let mappingProperties = mapping.mappings.properties;
+    let basePath: string[] = [];
+
+    // Create a map to store field types for reference during query generation
+    const fieldTypeMap = new Map<string, string>();
+
+    // Store the initial mapping structure for better debugging
+    Logger.debug("Analyzing initial mapping structure");
+
+    // Find all field types from the Elasticsearch mapping and store them
+    function recursivelyTrackFieldTypes(
+      properties: Record<string, ElasticsearchField>,
+      path: string[] = []
+    ): void {
+      for (const [fieldName, field] of Object.entries(properties)) {
+        const currentPath = [...path, fieldName];
+        const formattedPath = currentPath.join(".");
+
+        // Store this field's type
+        fieldTypeMap.set(formattedPath, field.type);
+        Logger.debug(`Field: ${formattedPath}, Type: ${field.type}`);
+
+        // Recursively process nested properties
+        if (field.properties) {
+          recursivelyTrackFieldTypes(field.properties, currentPath);
+        }
+      }
+    }
+
+    // Track field types for the entire mapping
+    recursivelyTrackFieldTypes(mappingProperties);
+
+    // Detect if we have a top-level container field like 'data'
+    // and set up the base path accordingly
+    for (const [topFieldName, topField] of Object.entries(mappingProperties)) {
+      if (topField.type === "object" && topField.properties) {
+        Logger.info`Found top-level object field '${topFieldName}', will use as base path`;
+        basePath = [topFieldName];
+        break;
+      }
+    }
+
+    // Process fields with or without a base path
+    Logger.info`Using base path: ${
+      basePath.length ? basePath.join(".") : "(none)"
+    }`;
+
+    // Extract fields to process - if we have a base path, use properties from that field
+    const fieldsToProcess =
+      basePath.length > 0
+        ? (mappingProperties[basePath[0]] as ElasticsearchField).properties ||
+          {}
+        : mappingProperties;
+
+    // Process the fields, passing along the field type map
     const { extendedFields, tableColumns, facetAggregations } = processFields(
-      mapping.mappings.properties
+      fieldsToProcess,
+      basePath,
+      fieldTypeMap
     );
 
     Logger.info`Generated ${extendedFields.length} extended fields`;
     Logger.info`Generated ${tableColumns.length} table columns`;
     Logger.info`Generated ${facetAggregations.length} facet aggregations`;
 
+    // Create configurations
     const configs = {
       base: {
         documentType,
@@ -232,22 +410,11 @@ export function generateArrangerConfigs(
       },
     };
 
-    Logger.debugObject("Configuration summary", configs);
+    Logger.debug("Configuration generated successfully");
     return configs;
   } catch (error) {
     Logger.error("Error generating Arranger configurations");
-    Logger.error("Error details");
+    Logger.error(`${error}`);
     throw error;
   }
 }
-
-/* Usage Example:
-const mapping = // Your Elasticsearch mapping
-const configs = generateArrangerConfigs(mapping, 'your-index-name');
-
-// Write configs to files
-fs.writeFileSync('base.json', JSON.stringify(configs.base, null, 2));
-fs.writeFileSync('extended.json', JSON.stringify(configs.extended, null, 2));
-fs.writeFileSync('table.json', JSON.stringify(configs.table, null, 2));
-fs.writeFileSync('facets.json', JSON.stringify(configs.facets, null, 2));
-*/

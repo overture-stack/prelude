@@ -3,249 +3,83 @@
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "data",
+        "fieldName": "data.Name",
         "show": true,
-        "sortable": false
+        "sortable": true,
+        "jsonPath": "$.data.Name",
+        "query": "data { Name }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.gender",
+        "fieldName": "data.Profile",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Profile",
+        "query": "data { Profile }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Ranking",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Ranking",
+        "query": "data { Ranking }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.submitter_id",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.gender",
-        "query": "data { gender }"
+        "jsonPath": "$.data.submission_metadata.submitter_id",
+        "query": "data { submission_metadata { submitter_id } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.donor_id",
+        "fieldName": "data.submission_metadata.processing_started",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.donor_id",
-        "query": "data { donor_id }"
+        "jsonPath": "$.data.submission_metadata.processing_started",
+        "query": "data { submission_metadata { processing_started } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.vital_status",
+        "fieldName": "data.submission_metadata.processed_at",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.vital_status",
-        "query": "data { vital_status }"
+        "jsonPath": "$.data.submission_metadata.processed_at",
+        "query": "data { submission_metadata { processed_at } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.diagnosis",
-        "show": false,
-        "sortable": false
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.stage",
+        "fieldName": "data.submission_metadata.source_file",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.diagnosis.stage",
-        "query": "data { diagnosis { stage } }"
+        "jsonPath": "$.data.submission_metadata.source_file",
+        "query": "data { submission_metadata { source_file } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.diagnosis.donor_id",
+        "fieldName": "data.submission_metadata.record_number",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.diagnosis.donor_id",
-        "query": "data { diagnosis { donor_id } }"
+        "jsonPath": "$.data.submission_metadata.record_number",
+        "query": "data { submission_metadata { record_number } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.diagnosis.cancer_type",
+        "fieldName": "data.submission_metadata.hostname",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.diagnosis.cancer_type",
-        "query": "data { diagnosis { cancer_type } }"
+        "jsonPath": "$.data.submission_metadata.hostname",
+        "query": "data { submission_metadata { hostname } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.diagnosis.diagnosis_id",
+        "fieldName": "data.submission_metadata.username",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.diagnosis.diagnosis_id",
-        "query": "data { diagnosis { diagnosis_id } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.primary_site",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.primary_site",
-        "query": "data { diagnosis { primary_site } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.staging_system",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.staging_system",
-        "query": "data { diagnosis { staging_system } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.age_at_diagnosis",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.age_at_diagnosis",
-        "query": "data { diagnosis { age_at_diagnosis } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup",
-        "show": false,
-        "sortable": false
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.followup_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.followup_id",
-        "query": "data { diagnosis { followup { followup_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.diagnosis_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.diagnosis_id",
-        "query": "data { diagnosis { followup { diagnosis_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.disease_status",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.disease_status",
-        "query": "data { diagnosis { followup { disease_status } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.followup_interval",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.followup_interval",
-        "query": "data { diagnosis { followup { followup_interval } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.specimen",
-        "show": false,
-        "sortable": false
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.specimen.sample_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.specimen.sample_id",
-        "query": "data { diagnosis { specimen { sample_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.specimen.sample_type",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.specimen.sample_type",
-        "query": "data { diagnosis { specimen { sample_type } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.specimen.specimen_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.specimen.specimen_id",
-        "query": "data { diagnosis { specimen { specimen_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.specimen.diagnosis_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.specimen.diagnosis_id",
-        "query": "data { diagnosis { specimen { diagnosis_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.specimen.specimen_type",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.specimen.specimen_type",
-        "query": "data { diagnosis { specimen { specimen_type } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.specimen.tissue_source",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.specimen.tissue_source",
-        "query": "data { diagnosis { specimen { tissue_source } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment",
-        "show": false,
-        "sortable": false
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment.drug_name",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.treatment.drug_name",
-        "query": "data { diagnosis { treatment { drug_name } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment.diagnosis_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.treatment.diagnosis_id",
-        "query": "data { diagnosis { treatment { diagnosis_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment.treatment_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.treatment.treatment_id",
-        "query": "data { diagnosis { treatment { treatment_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment.treatment_type",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.treatment.treatment_type",
-        "query": "data { diagnosis { treatment { treatment_type } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment.treatment_start",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.treatment.treatment_start",
-        "query": "data { diagnosis { treatment { treatment_start } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment.treatment_duration",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.treatment.treatment_duration",
-        "query": "data { diagnosis { treatment { treatment_duration } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.treatment.treatment_response",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.treatment.treatment_response",
-        "query": "data { diagnosis { treatment { treatment_response } } }"
+        "jsonPath": "$.data.submission_metadata.username",
+        "query": "data { submission_metadata { username } }"
       }
     ]
   }

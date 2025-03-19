@@ -13,6 +13,7 @@ export interface ArrangerBaseConfig {
 export interface ExtendedField {
   displayName: string;
   fieldName: string;
+  isArray?: boolean;
 }
 
 export interface ArrangerExtendedConfig {
@@ -26,6 +27,7 @@ export interface TableColumn {
   sortable: boolean;
   jsonPath?: string;
   query?: string;
+  displayType?: string;
 }
 
 export interface ArrangerTableConfig {
