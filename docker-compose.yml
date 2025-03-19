@@ -24,10 +24,10 @@ services:
       # Dynamic indices are configured with a count and indexed variables
       ES_INDEX_COUNT: 1
       # First index
-      ES_INDEX_0_NAME: datatable1-index
-      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/mapping.json
-      ES_INDEX_0_TEMPLATE_NAME: data-index
-      ES_INDEX_0_ALIAS_NAME: data_centric
+      ES_INDEX_0_NAME: data-index
+      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/datatable1-mapping.json
+      ES_INDEX_0_TEMPLATE_NAME: datatable1-index
+      ES_INDEX_0_ALIAS_NAME: datatable1_centric
       # Second index
       # ES_INDEX_1_NAME: file-index
       # ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json

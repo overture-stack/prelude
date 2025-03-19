@@ -26,7 +26,7 @@ import SQON from '@overture-stack/sqon-builder';
 import { isEmpty } from 'lodash';
 
 export const arrangerFetcher = createArrangerFetcher({
-	ARRANGER_API: INTERNAL_API_PROXY.DATASET_1_ARRANGER,
+	ARRANGER_API: INTERNAL_API_PROXY.DATATABLE_1_ARRANGER,
 });
 
 const saveSetMutation = `mutation ($sqon: JSON!)  {

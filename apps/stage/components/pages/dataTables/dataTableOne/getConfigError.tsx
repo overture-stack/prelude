@@ -25,9 +25,9 @@ import { getConfig } from '@/global/config';
 import { css, useTheme } from '@emotion/react';
 import { ReactNode } from 'react';
 const ArrangerAdminUILink = () => {
-	const { NEXT_PUBLIC_ARRANGER_DATASET_1_ADMIN_UI } = getConfig();
+	const { NEXT_PUBLIC_ARRANGER_DATATABLE_1_ADMIN_UI } = getConfig();
 	return (
-		<StyledLink href={NEXT_PUBLIC_ARRANGER_DATASET_1_ADMIN_UI} target="_blank">
+		<StyledLink href={NEXT_PUBLIC_ARRANGER_DATATABLE_1_ADMIN_UI} target="_blank">
 			Arranger Admin UI
 		</StyledLink>
 	);

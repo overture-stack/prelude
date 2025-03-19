@@ -1,5 +1,0 @@
-donor_id;gender;primary_site;vital_status;diagnosis_id;age_at_diagnosis;cancer_type;staging_system;stage;specimen_id;specimen_type;tissue_source;sample_id
-DO0599;Female;Breast;Alive;PD059901;52;C50.1;AJCC 8th edition;Stage IIA;SP0599;Primary tumour;Solid tissue;SA0599
-DO0600;Male;Prostate gland;Alive;PD059902;68;C61;Gleason grade group system;Grade Group 2;SP0600;Primary tumour;Solid tissue;SA0600
-DO0601;Female;Ovary;Deceased;PD059903;59;C56;FIGO staging system;Stage IIIC;SP0601;Primary tumour;Solid tissue;SA0601
-DO0602;Male;Lung;Alive;PD059904;64;C34.1;AJCC 8th edition;Stage IIB;SP0602;Primary tumour;Solid tissue;SA0602

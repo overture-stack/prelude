@@ -1,6 +1,0 @@
-donor_id,gender,primary_site,vital_status,diagnosis_id,age_at_diagnosis,cancer_type,staging_system,stage,specimen_id,specimen_type,tissue_source,sample_id,sample_type,treatment_id,treatment_type,treatment_duration,treatment_response,followup_id,followup_interval,disease_status
-DO0599,Female,Breast,Alive,PD059901,52,C50.1,AJCC 8th edition,Stage IIA,SP0599,Primary tumour,Solid tissue,SA0599,Total DNA,TR0599,Chemotherapy,120,Complete response,FU0599,180,No evidence of disease
-DO0600,Male,Prostate gland,Alive,PD059902,68,C61,Gleason grade group system,Grade Group 2,SP0600,Primary tumour,Solid tissue,SA0600,Total DNA,TR0600,Hormonal therapy,240,Partial response,FU0600,150,Stable disease
-DO0601,Female,Ovary,Deceased,PD059903,59,C56,FIGO staging system,Stage IIIC,SP0601,Primary tumour,Solid tissue,SA0601,Total DNA,TR0601,Chemotherapy,90,Disease progression,FU0601,120,Progression NOS
-DO0602,Male,Lung,Alive,PD059904,64,C34.1,AJCC 8th edition,Stage IIB,SP0602,Primary tumour,Solid tissue,SA0602,Total DNA,TR0602,Radiation therapy,60,Partial response,FU0602,90,Stable disease
-DO0603,Female,Thyroid gland,Alive,PD059905,45,C73,AJCC 8th edition,Stage I,SP0603,Primary tumour,Solid tissue,SA0603,Total DNA,TR0603,Surgery,1,Complete response,FU0603,180,No evidence of disease

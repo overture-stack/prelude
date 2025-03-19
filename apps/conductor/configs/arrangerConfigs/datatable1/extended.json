@@ -49,6 +49,26 @@
       "fieldName": "data.diagnosis.age_at_diagnosis"
     },
     {
+      "displayName": "Data Diagnosis Followup",
+      "fieldName": "data.diagnosis.followup"
+    },
+    {
+      "displayName": "Data Diagnosis Followup Followup Id",
+      "fieldName": "data.diagnosis.followup.followup_id"
+    },
+    {
+      "displayName": "Data Diagnosis Followup Diagnosis Id",
+      "fieldName": "data.diagnosis.followup.diagnosis_id"
+    },
+    {
+      "displayName": "Data Diagnosis Followup Disease Status",
+      "fieldName": "data.diagnosis.followup.disease_status"
+    },
+    {
+      "displayName": "Data Diagnosis Followup Followup Interval",
+      "fieldName": "data.diagnosis.followup.followup_interval"
+    },
+    {
       "displayName": "Data Diagnosis Specimen",
       "fieldName": "data.diagnosis.specimen"
     },
@@ -75,26 +95,6 @@
     {
       "displayName": "Data Diagnosis Specimen Tissue Source",
       "fieldName": "data.diagnosis.specimen.tissue_source"
-    },
-    {
-      "displayName": "Data Diagnosis Followup",
-      "fieldName": "data.diagnosis.followup"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Followup Id",
-      "fieldName": "data.diagnosis.followup.followup_id"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Diagnosis Id",
-      "fieldName": "data.diagnosis.followup.diagnosis_id"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Disease Status",
-      "fieldName": "data.diagnosis.followup.disease_status"
-    },
-    {
-      "displayName": "Data Diagnosis Followup Followup Interval",
-      "fieldName": "data.diagnosis.followup.followup_interval"
     },
     {
       "displayName": "Data Diagnosis Treatment",

@@ -5,40 +5,6 @@
   "meta": {},
   "schemas": [
     {
-      "name": "donor",
-      "description": "Schema generated from donor.csv",
-      "fields": [
-        {
-          "name": "donor_id",
-          "description": "Field containing donor_id data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "donor_id"
-          }
-        },
-        {
-          "name": "gender",
-          "description": "Field containing gender data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "gender"
-          }
-        },
-        {
-          "name": "vital_status",
-          "description": "Field containing vital_status data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "vital_status"
-          }
-        }
-      ],
-      "meta": {
-        "createdAt": "2025-03-18T14:20:53.505Z",
-        "sourceFile": "donor.csv"
-      }
-    },
-    {
       "name": "diagnosis",
       "description": "Schema generated from diagnosis.csv",
       "restrictions": {
@@ -108,8 +74,42 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-18T14:20:53.497Z",
+        "createdAt": "2025-03-19T00:01:46.274Z",
         "sourceFile": "diagnosis.csv"
+      }
+    },
+    {
+      "name": "donor",
+      "description": "Schema generated from donor.csv",
+      "fields": [
+        {
+          "name": "donor_id",
+          "description": "Field containing donor_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "donor_id"
+          }
+        },
+        {
+          "name": "gender",
+          "description": "Field containing gender data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gender"
+          }
+        },
+        {
+          "name": "vital_status",
+          "description": "Field containing vital_status data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "vital_status"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-19T00:01:46.282Z",
+        "sourceFile": "donor.csv"
       }
     },
     {
@@ -158,7 +158,7 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-18T14:20:53.506Z",
+        "createdAt": "2025-03-19T00:01:46.283Z",
         "sourceFile": "followup.csv"
       }
     },
@@ -224,7 +224,7 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-18T14:20:53.507Z",
+        "createdAt": "2025-03-19T00:01:46.285Z",
         "sourceFile": "specimen.csv"
       }
     },
@@ -298,7 +298,7 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-18T14:20:53.509Z",
+        "createdAt": "2025-03-19T00:01:46.285Z",
         "sourceFile": "treatment.csv"
       }
     }

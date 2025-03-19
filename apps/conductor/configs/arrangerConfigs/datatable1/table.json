@@ -95,6 +95,44 @@
       },
       {
         "canChangeShow": true,
+        "fieldName": "data.diagnosis.followup",
+        "show": false,
+        "sortable": false
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.diagnosis.followup.followup_id",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.diagnosis.followup.followup_id",
+        "query": "data { diagnosis { followup { followup_id } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.diagnosis.followup.diagnosis_id",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.diagnosis.followup.diagnosis_id",
+        "query": "data { diagnosis { followup { diagnosis_id } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.diagnosis.followup.disease_status",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.diagnosis.followup.disease_status",
+        "query": "data { diagnosis { followup { disease_status } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.diagnosis.followup.followup_interval",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.diagnosis.followup.followup_interval",
+        "query": "data { diagnosis { followup { followup_interval } } }"
+      },
+      {
+        "canChangeShow": true,
         "fieldName": "data.diagnosis.specimen",
         "show": false,
         "sortable": false
@@ -146,44 +184,6 @@
         "sortable": true,
         "jsonPath": "$.data.diagnosis.specimen.tissue_source",
         "query": "data { diagnosis { specimen { tissue_source } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup",
-        "show": false,
-        "sortable": false
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.followup_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.followup_id",
-        "query": "data { diagnosis { followup { followup_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.diagnosis_id",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.diagnosis_id",
-        "query": "data { diagnosis { followup { diagnosis_id } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.disease_status",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.disease_status",
-        "query": "data { diagnosis { followup { disease_status } } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.diagnosis.followup.followup_interval",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.diagnosis.followup.followup_interval",
-        "query": "data { diagnosis { followup { followup_interval } } }"
       },
       {
         "canChangeShow": true,

@@ -55,9 +55,9 @@ export interface PageContentProps {
 }
 
 const {
-	NEXT_PUBLIC_ARRANGER_DATASET_2_API,
-	NEXT_PUBLIC_ARRANGER_DATASET_2_DOCUMENT_TYPE,
-	NEXT_PUBLIC_ARRANGER_DATASET_2_INDEX,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_2_API,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
 } = getConfig();
 
 const configsQuery = `
@@ -76,8 +76,8 @@ const DataSetOneRepositoryPage = (): ReactElement => {
 			endpoint: 'graphql/hasValidConfig',
 			body: JSON.stringify({
 				variables: {
-					documentType: NEXT_PUBLIC_ARRANGER_DATASET_2_DOCUMENT_TYPE,
-					index: NEXT_PUBLIC_ARRANGER_DATASET_2_INDEX,
+					documentType: NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
+					index: NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
 				},
 				query: configsQuery,
 			}),
@@ -103,8 +103,8 @@ const DataSetOneRepositoryPage = (): ReactElement => {
 
 	const ConfigError = getConfigError({
 		hasConfig: arrangerHasConfig,
-		index: NEXT_PUBLIC_ARRANGER_DATASET_2_INDEX,
-		documentType: NEXT_PUBLIC_ARRANGER_DATASET_2_DOCUMENT_TYPE,
+		index: NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
+		documentType: NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
 	});
 
 	return (
@@ -135,9 +135,9 @@ const DataSetOneRepositoryPage = (): ReactElement => {
 				</ErrorNotification>
 			) : (
 				<ArrangerDataProvider
-					apiUrl={NEXT_PUBLIC_ARRANGER_DATASET_2_API}
+					apiUrl={NEXT_PUBLIC_ARRANGER_DATATABLE_2_API}
 					customFetcher={arrangerFetcher}
-					documentType={NEXT_PUBLIC_ARRANGER_DATASET_2_DOCUMENT_TYPE}
+					documentType={NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE}
 					theme={{
 						colors: {
 							common: {

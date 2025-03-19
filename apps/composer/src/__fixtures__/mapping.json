@@ -1,8 +1,0 @@
-{
-  "mappings": {
-    "properties": {
-      "bonjour": { "type": "keyword" },
-      "field2": { "type": "integer" }
-    }
-  }
-}

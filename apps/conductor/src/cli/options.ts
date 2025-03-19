@@ -142,7 +142,7 @@ export function configureCommandOptions(program: Command): void {
     .option(
       "-r, --retry-delay <milliseconds>",
       "Delay between retry attempts in milliseconds",
-      process.env.RETRY_DELAY || "20000"
+      process.env.RETRY_DELAY || "1000"
     )
     .option("-o, --output <path>", "Output directory for response logs")
     .option("--force", "Force overwrite of existing files")

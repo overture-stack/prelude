@@ -8,8 +8,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 const proxy = httpProxy.createProxyServer();
 
 const {
-	NEXT_PUBLIC_ARRANGER_DATASET_1_API,
-	NEXT_PUBLIC_ARRANGER_DATASET_2_API,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_1_API,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_2_API,
 	NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_API,
 	NEXT_PUBLIC_SONG_API,
 	NEXT_PUBLIC_LYRIC_API,
@@ -70,12 +70,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		if (req.url?.startsWith(INTERNAL_API_PROXY.MOLECULAR_ARRANGER)) {
 			path = removeFromPath(req?.url, INTERNAL_API_PROXY.MOLECULAR_ARRANGER);
 			target = NEXT_PUBLIC_ARRANGER_MOLECULAR_DATA_API;
-		} else if (req.url?.startsWith(INTERNAL_API_PROXY.DATASET_1_ARRANGER)) {
-			path = removeFromPath(req?.url, INTERNAL_API_PROXY.DATASET_1_ARRANGER);
-			target = NEXT_PUBLIC_ARRANGER_DATASET_1_API;
-		} else if (req.url?.startsWith(INTERNAL_API_PROXY.DATASET_2_ARRANGER)) {
-			path = removeFromPath(req?.url, INTERNAL_API_PROXY.DATASET_2_ARRANGER);
-			target = NEXT_PUBLIC_ARRANGER_DATASET_2_API;
+		} else if (req.url?.startsWith(INTERNAL_API_PROXY.DATATABLE_1_ARRANGER)) {
+			path = removeFromPath(req?.url, INTERNAL_API_PROXY.DATATABLE_1_ARRANGER);
+			target = NEXT_PUBLIC_ARRANGER_DATATABLE_1_API;
+		} else if (req.url?.startsWith(INTERNAL_API_PROXY.DATATABLE_2_ARRANGER)) {
+			path = removeFromPath(req?.url, INTERNAL_API_PROXY.DATATABLE_2_ARRANGER);
+			target = NEXT_PUBLIC_ARRANGER_DATATABLE_2_API;
 		}
 		// Handle Service API requests
 		else if (path?.startsWith('/api/song/')) {

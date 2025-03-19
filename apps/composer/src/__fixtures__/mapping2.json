@@ -1,8 +1,0 @@
-{
-  "mappings": {
-    "properties": {
-      "holla": { "type": "keyword" },
-      "field2": { "type": "integer" }
-    }
-  }
-}

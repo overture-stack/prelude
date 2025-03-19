@@ -53,6 +53,26 @@
       },
       {
         "active": true,
+        "fieldName": "data__diagnosis__followup__followup_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__followup__diagnosis_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__followup__disease_status",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__diagnosis__followup__followup_interval",
+        "show": true
+      },
+      {
+        "active": true,
         "fieldName": "data__diagnosis__specimen__sample_id",
         "show": true
       },
@@ -79,26 +99,6 @@
       {
         "active": true,
         "fieldName": "data__diagnosis__specimen__tissue_source",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "data__diagnosis__followup__followup_id",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "data__diagnosis__followup__diagnosis_id",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "data__diagnosis__followup__disease_status",
-        "show": true
-      },
-      {
-        "active": true,
-        "fieldName": "data__diagnosis__followup__followup_interval",
         "show": true
       },
       {

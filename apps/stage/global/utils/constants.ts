@@ -33,8 +33,8 @@ export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
 	MOLECULAR = '/molecular',
-	DATASET_1 = '/datatable1',
-	DATASET_2 = '/datatable2',
+	DATATABLE_1 = '/datatable1',
+	DATATABLE_2 = '/datatable2',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
 	SONG = '/swaggerDocs/song',
@@ -61,8 +61,8 @@ const PROXY_API_PATH = '/api';
 const PROXY_PROTECTED_API_PATH = '/api/protected';
 
 export const INTERNAL_API_PROXY = {
-	DATASET_1_ARRANGER: urlJoin(PROXY_API_PATH, 'dataset_1_arranger'),
-	DATASET_2_ARRANGER: urlJoin(PROXY_API_PATH, 'dataset_2_arranger'),
+	DATATABLE_1_ARRANGER: urlJoin(PROXY_API_PATH, 'dataset_1_arranger'),
+	DATATABLE_2_ARRANGER: urlJoin(PROXY_API_PATH, 'dataset_2_arranger'),
 	MOLECULAR_ARRANGER: urlJoin(PROXY_API_PATH, 'molecular_arranger'),
 	PROTECTED_ARRANGER: urlJoin(PROXY_PROTECTED_API_PATH, 'arranger'),
 	PROTECTED_KEYCLOAK_APIKEY_ENDPOINT: urlJoin(PROXY_PROTECTED_API_PATH, 'keycloak/apikey'),

@@ -1,44 +1,44 @@
 {
   "data": {
     "gender": "Female",
-    "donor_id": "DO0647",
-    "vital_status": "Alive",
+    "donor_id": "DO0603",
+    "vital_status": "Deceased",
     "diagnosis": [
       {
-        "stage": "Stage I",
-        "donor_id": "DO0647",
-        "cancer_type": "C50.4",
-        "diagnosis_id": "PD059949",
-        "primary_site": "Breast",
-        "staging_system": "AJCC 8th edition",
-        "age_at_diagnosis": 48,
+        "stage": "Stage IIIC",
+        "donor_id": "DO0603",
+        "cancer_type": "C56",
+        "diagnosis_id": "PD059905",
+        "primary_site": "Ovary",
+        "staging_system": "FIGO staging system",
+        "age_at_diagnosis": 58,
+        "followup": [
+          {
+            "followup_id": "FO059905",
+            "diagnosis_id": "PD059905",
+            "disease_status": "Progression NOS",
+            "followup_interval": 150
+          }
+        ],
         "specimen": [
           {
-            "sample_id": "SP059950",
+            "sample_id": "SP059906",
             "sample_type": "Total DNA",
-            "specimen_id": "SP059950",
-            "diagnosis_id": "PD059949",
+            "specimen_id": "SP059906",
+            "diagnosis_id": "PD059905",
             "specimen_type": "Primary tumour",
             "tissue_source": "Solid tissue"
           }
         ],
-        "followup": [
-          {
-            "followup_id": "FO059949",
-            "diagnosis_id": "PD059949",
-            "disease_status": "No evidence of disease",
-            "followup_interval": 180
-          }
-        ],
         "treatment": [
           {
-            "drug_name": "None",
-            "diagnosis_id": "PD059949",
-            "treatment_id": "TR059949",
-            "treatment_type": "Surgery",
-            "treatment_start": 0,
-            "treatment_duration": 1,
-            "treatment_response": "Complete response"
+            "drug_name": "Carboplatin",
+            "diagnosis_id": "PD059905",
+            "treatment_id": "TR059905",
+            "treatment_type": "Chemotherapy",
+            "treatment_start": 20,
+            "treatment_duration": 120,
+            "treatment_response": "Disease progression"
           }
         ]
       }
