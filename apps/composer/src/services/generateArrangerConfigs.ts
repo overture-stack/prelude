@@ -30,11 +30,17 @@ function formatFacetFieldName(path: string[]): string {
 
 /**
  * Formats field names for display by capitalizing words and replacing separators
- * Example: 'user.first_name' → 'User First Name'
+ * Removes container prefix (like 'data') for cleaner display
+ * Example: 'data.user.first_name' → 'User First Name'
  */
 function formatDisplayName(fieldName: string): string {
-  return fieldName
-    .split(/[._]/)
+  // Split by dots and remove the container field if present
+  const parts = fieldName.split(/[._]/);
+  if (parts.length > 1 && isContainerField(parts[0])) {
+    parts.shift(); // Remove the container field
+  }
+
+  return parts
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }

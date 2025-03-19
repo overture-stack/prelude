@@ -1,47 +1,47 @@
 {
   "extended": [
     {
-      "displayName": "Data Name",
+      "displayName": "Name",
       "fieldName": "data.Name"
     },
     {
-      "displayName": "Data Profile",
+      "displayName": "Profile",
       "fieldName": "data.Profile"
     },
     {
-      "displayName": "Data Ranking",
+      "displayName": "Ranking",
       "fieldName": "data.Ranking"
     },
     {
-      "displayName": "Data Submission Metadata",
+      "displayName": "Submission Metadata",
       "fieldName": "data.submission_metadata"
     },
     {
-      "displayName": "Data Submission Metadata Submitter Id",
+      "displayName": "Submission Metadata Submitter Id",
       "fieldName": "data.submission_metadata.submitter_id"
     },
     {
-      "displayName": "Data Submission Metadata Processing Started",
+      "displayName": "Submission Metadata Processing Started",
       "fieldName": "data.submission_metadata.processing_started"
     },
     {
-      "displayName": "Data Submission Metadata Processed At",
+      "displayName": "Submission Metadata Processed At",
       "fieldName": "data.submission_metadata.processed_at"
     },
     {
-      "displayName": "Data Submission Metadata Source File",
+      "displayName": "Submission Metadata Source File",
       "fieldName": "data.submission_metadata.source_file"
     },
     {
-      "displayName": "Data Submission Metadata Record Number",
+      "displayName": "Submission Metadata Record Number",
       "fieldName": "data.submission_metadata.record_number"
     },
     {
-      "displayName": "Data Submission Metadata Hostname",
+      "displayName": "Submission Metadata Hostname",
       "fieldName": "data.submission_metadata.hostname"
     },
     {
-      "displayName": "Data Submission Metadata Username",
+      "displayName": "Submission Metadata Username",
       "fieldName": "data.submission_metadata.username"
     }
   ]
