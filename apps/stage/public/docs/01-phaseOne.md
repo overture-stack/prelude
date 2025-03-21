@@ -126,7 +126,7 @@ To verify successful data preparation:
 
 Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
 
-### Installing Composer
+### A) Install Composer
 
 1. Move to the Composer App directory:
 
@@ -144,7 +144,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
 3. **Validate:** From the root directory test that Composer is working by running `composer -h` you should be able to see help text outlining the available commands.
 
-### Generating our Elasticsearch index mappings
+### B) Generate Elasticsearch index mappings
 
 1. Run the following Composer command to generate elasticsearch index mappings using your data files:
 
@@ -212,7 +212,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
    **Next Step:** Once you're satisfied with the mapping configuration, you're ready to move on to the next step, generating and confuring the Arranger configuration files.
 
-### Generating our Arranger configuration files
+### C) Generating our Arranger configuration files
 
 1.  Run the following Composer command to generate Arranger configuration files using your index mapping templates:
 

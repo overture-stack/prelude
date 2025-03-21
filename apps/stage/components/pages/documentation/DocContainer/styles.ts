@@ -263,27 +263,6 @@ const styles = {
 			width: 100%;
 		}
 
-		/* Hide ID anchors in headings */
-		h1 [id],
-		h2 [id],
-		h3 [id],
-		h4 [id],
-		h5 [id],
-		h6 [id] {
-			display: none;
-		}
-
-		/* Hide the {#id} part that might be in headings */
-		h1::after,
-		h2::after,
-		h3::after,
-		h4::after,
-		h5::after,
-		h6::after {
-			content: '';
-			display: none;
-		}
-
 		h1:first-of-type {
 			visibility: hidden;
 			height: 0;
@@ -320,7 +299,7 @@ const styles = {
 		}
 
 		h2 {
-			font-size: 24px;
+			font-size: 28px;
 			font-weight: 900;
 			line-height: 40px;
 			margin-bottom: 20px;
@@ -342,7 +321,7 @@ const styles = {
 		}
 
 		h3 {
-			font-size: 20px;
+			font-size: 24px;
 			font-weight: 900;
 			color: #000;
 			/* Tablet-specific heading size */
@@ -360,7 +339,7 @@ const styles = {
 		}
 
 		h4 {
-			font-size: 16px;
+			font-size: 20px;
 			margin-bottom: 20px;
 			/* Tablet-specific heading size */
 			@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
@@ -396,14 +375,13 @@ const styles = {
 		details > :not(summary) {
 			transform-origin: top left;
 			opacity: 0;
-			max-height: 0;
 			overflow: hidden;
 			transition: all 0.3s ease-out;
 		}
 
 		details[open] > :not(summary) {
 			opacity: 1;
-			max-height: 1000px; /* Arbitrary large value */
+			height: auto;
 			margin-top: 1rem;
 			padding-left: 1.75rem;
 			transition-delay: 0.15s;
@@ -411,8 +389,19 @@ const styles = {
 
 		details[open] ul {
 			padding-left: 4rem;
+			margin-bottom: 0.5rem;
 		}
 
+		details[open] pre {
+			margin-left: 25px;
+			width: 90%;
+		}
+		,
+		details[open] code {
+			overflow-x: auto;
+		}
+
+		,
 		summary {
 			cursor: pointer;
 			position: relative;
@@ -458,7 +447,7 @@ const styles = {
 		}
 		p {
 			line-height: 1.5;
-			font-size: 16px;
+			font-size: 18px;
 			font-weight: 400;
 		}
 		,
@@ -629,6 +618,7 @@ const styles = {
 			font-size: 0.9375rem;
 			line-height: 2;
 			overflow-x: auto;
+			overflow-y: auto;
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				font-size: 0.875rem;
@@ -638,6 +628,7 @@ const styles = {
 		pre {
 			padding: 1rem;
 			overflow-x: auto;
+			overflow-y: auto;
 			border: 1px solid ${theme.colors.border};
 			margin: 1rem 0;
 			box-shadow: ${theme.boxShadow};

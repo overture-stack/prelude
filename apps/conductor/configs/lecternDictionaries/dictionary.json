@@ -5,16 +5,48 @@
   "meta": {},
   "schemas": [
     {
+      "name": "donor",
+      "description": "Schema generated from donor.csv",
+      "foreignKey": [
+        {
+          "schema": "diagnosis",
+          "mappings": [{ "local": "{{Local ID}}", "foreign": "{{Foreign ID}}" }]
+        }
+      ],
+      "fields": [
+        {
+          "name": "donor_id",
+          "description": "Field containing donor_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "donor_id"
+          }
+        },
+        {
+          "name": "gender",
+          "description": "Field containing gender data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gender"
+          }
+        },
+        {
+          "name": "vital_status",
+          "description": "Field containing vital_status data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "vital_status"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-20T16:11:06.493Z",
+        "sourceFile": "donor.csv"
+      }
+    },
+    {
       "name": "diagnosis",
       "description": "Schema generated from diagnosis.csv",
-      "restrictions": {
-        "foreignKey": [
-          {
-            "schema": "donor",
-            "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
-          }
-        ]
-      },
       "fields": [
         {
           "name": "diagnosis_id",
@@ -74,70 +106,28 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-19T00:01:46.274Z",
+        "createdAt": "2025-03-20T16:11:06.491Z",
         "sourceFile": "diagnosis.csv"
-      }
-    },
-    {
-      "name": "donor",
-      "description": "Schema generated from donor.csv",
-      "fields": [
-        {
-          "name": "donor_id",
-          "description": "Field containing donor_id data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "donor_id"
-          }
-        },
-        {
-          "name": "gender",
-          "description": "Field containing gender data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "gender"
-          }
-        },
-        {
-          "name": "vital_status",
-          "description": "Field containing vital_status data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "vital_status"
-          }
-        }
-      ],
-      "meta": {
-        "createdAt": "2025-03-19T00:01:46.282Z",
-        "sourceFile": "donor.csv"
       }
     },
     {
       "name": "followup",
       "description": "Schema generated from followup.csv",
-      "restrictions": {
-        "foreignKey": [
-          {
-            "schema": "diagnosis",
-            "mappings": [{ "local": "diagnosis_id", "foreign": "diagnosis_id" }]
-          }
-        ]
-      },
       "fields": [
+        {
+          "name": "treatment_id",
+          "description": "Field containing treatment_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "treatment_id"
+          }
+        },
         {
           "name": "followup_id",
           "description": "Field containing followup_id data",
           "valueType": "string",
           "meta": {
             "displayName": "followup_id"
-          }
-        },
-        {
-          "name": "diagnosis_id",
-          "description": "Field containing diagnosis_id data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "diagnosis_id"
           }
         },
         {
@@ -158,102 +148,28 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-19T00:01:46.283Z",
+        "createdAt": "2025-03-20T16:11:06.494Z",
         "sourceFile": "followup.csv"
-      }
-    },
-    {
-      "name": "specimen",
-      "description": "Schema generated from specimen.csv",
-      "restrictions": {
-        "foreignKey": [
-          {
-            "schema": "diagnosis",
-            "mappings": [{ "local": "diagnosis_id", "foreign": "diagnosis_id" }]
-          }
-        ]
-      },
-      "fields": [
-        {
-          "name": "specimen_id",
-          "description": "Field containing specimen_id data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "specimen_id"
-          }
-        },
-        {
-          "name": "diagnosis_id",
-          "description": "Field containing diagnosis_id data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "diagnosis_id"
-          }
-        },
-        {
-          "name": "specimen_type",
-          "description": "Field containing specimen_type data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "specimen_type"
-          }
-        },
-        {
-          "name": "tissue_source",
-          "description": "Field containing tissue_source data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "tissue_source"
-          }
-        },
-        {
-          "name": "sample_id",
-          "description": "Field containing sample_id data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "sample_id"
-          }
-        },
-        {
-          "name": "sample_type",
-          "description": "Field containing sample_type data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "sample_type"
-          }
-        }
-      ],
-      "meta": {
-        "createdAt": "2025-03-19T00:01:46.285Z",
-        "sourceFile": "specimen.csv"
       }
     },
     {
       "name": "treatment",
       "description": "Schema generated from treatment.csv",
-      "restrictions": {
-        "foreignKey": [
-          {
-            "schema": "diagnosis",
-            "mappings": [{ "local": "diagnosis_id", "foreign": "diagnosis_id" }]
-          }
-        ]
-      },
       "fields": [
+        {
+          "name": "donor_id",
+          "description": "Field containing donor_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "donor_id"
+          }
+        },
         {
           "name": "treatment_id",
           "description": "Field containing treatment_id data",
           "valueType": "string",
           "meta": {
             "displayName": "treatment_id"
-          }
-        },
-        {
-          "name": "diagnosis_id",
-          "description": "Field containing diagnosis_id data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "diagnosis_id"
           }
         },
         {
@@ -287,18 +203,10 @@
           "meta": {
             "displayName": "treatment_response"
           }
-        },
-        {
-          "name": "drug_name",
-          "description": "Field containing drug_name data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "drug_name"
-          }
         }
       ],
       "meta": {
-        "createdAt": "2025-03-19T00:01:46.285Z",
+        "createdAt": "2025-03-20T16:11:06.495Z",
         "sourceFile": "treatment.csv"
       }
     }
