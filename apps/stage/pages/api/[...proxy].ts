@@ -44,12 +44,18 @@ proxy.on('proxyReq', function (proxyReq, req, _res) {
 });
 
 // Response handling
-proxy.on('proxyRes', function (proxyRes, _req, res) {
+proxy.on('proxyRes', function (proxyRes, req, res) {
 	const response = res as ServerResponse;
 	response.setHeader('Access-Control-Allow-Origin', '*');
 	response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 	response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 	response.setHeader('Access-Control-Allow-Credentials', 'true');
+
+	// Log response status
+	console.log('Proxy Response:', {
+		status: proxyRes.statusCode,
+		path: (req as NextApiRequest).url,
+	});
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -79,21 +85,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		}
 		// Handle Service API requests
 		else if (path?.startsWith('/api/song/')) {
-			path = path.replace('/api/song', '');
-			target = NEXT_PUBLIC_SONG_API;
-
-			// Handle Swagger endpoints
-			if (path.match(/\/(swagger-api|v2\/api-docs|swagger-ui.html|api-docs)$/)) {
+			// Special case for Swagger API docs - try multiple possible paths
+			if (path.match(/\/(api-docs|swagger|docs|openapi|v2\/api-docs)/)) {
 				path = '/v2/api-docs';
+			} else {
+				path = path.replace('/api/song', '');
 			}
+			target = NEXT_PUBLIC_SONG_API;
 		} else if (path?.startsWith('/api/lyric/')) {
-			path = path.replace('/api/lyric', '');
+			// Special case for Swagger API docs - try multiple possible paths
+			if (path.match(/\/(api-docs|swagger|docs|openapi|v2\/api-docs)/)) {
+				path = '/api-docs';
+			} else {
+				path = path.replace('/api/lyric', '');
+			}
 			target = NEXT_PUBLIC_LYRIC_API;
 		} else if (path?.startsWith('/api/lectern/')) {
-			path = path.replace('/api/lectern', '');
+			// Special case for Swagger API docs - try multiple possible paths
+			if (path.match(/\/(api-docs|swagger|docs|openapi|v2\/api-docs)/)) {
+				path = '/api-docs';
+			} else {
+				path = path.replace('/api/lectern', '');
+			}
 			target = NEXT_PUBLIC_LECTERN_API;
 		} else if (path?.startsWith('/api/score/')) {
-			path = path.replace('/api/score', '');
+			// Special case for Swagger API docs - try multiple possible paths
+			if (path.match(/\/(api-docs|swagger|docs|openapi|v2\/api-docs)/)) {
+				path = '/v2/api-docs';
+			} else {
+				path = path.replace('/api/score', '');
+			}
 			target = NEXT_PUBLIC_SCORE_API;
 		} else {
 			return res.status(404).json({ error: 'Service not found', path });
@@ -114,6 +135,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			path: req.url,
 			target,
 			method: req.method,
+			originalUrl: path,
 		});
 
 		return new Promise((resolve, reject) => {

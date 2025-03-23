@@ -66,7 +66,7 @@ const configsQuery = `
 	}
 `;
 
-const DataSetOneRepositoryPage = (): ReactElement => {
+const DataSetTwoRepositoryPage = (): ReactElement => {
 	const theme = useTheme();
 	const [arrangerHasConfig, setArrangerHasConfig] = useState<boolean>(false);
 	const [loadingArrangerConfig, setLoadingArrangerConfig] = useState<boolean>(true);
@@ -91,7 +91,7 @@ const DataSetOneRepositoryPage = (): ReactElement => {
 					return setLoadingArrangerConfig(false);
 				}
 
-				throw new Error('Could not validate Arranger Dataset1 server configuration!');
+				throw new Error('Could not validate Arranger Dataset2 server configuration!');
 			})
 			.catch(async (err) => {
 				console.warn(err);
@@ -108,7 +108,7 @@ const DataSetOneRepositoryPage = (): ReactElement => {
 	});
 
 	return (
-		<PageLayout subtitle="Dataset 1 Data Explorer">
+		<PageLayout subtitle="Dataset 2 Data Explorer">
 			{loadingArrangerConfig ? (
 				<div
 					css={css`
@@ -117,22 +117,34 @@ const DataSetOneRepositoryPage = (): ReactElement => {
 						justify-content: center;
 						align-items: center;
 						background-color: ${theme.colors.grey_2};
+						height: 100vh;
 					`}
 				>
 					<Loader />
 				</div>
 			) : ConfigError ? (
-				<ErrorNotification
-					title={'Stage Configuration Error'}
-					size="lg"
+				<div
 					css={css`
+						display: flex;
 						flex-direction: column;
 						justify-content: center;
 						align-items: center;
+						min-height: calc(100vh - 120px); /* Adjust for header/footer */
+						padding: 2rem;
+						width: 100%;
 					`}
 				>
-					{ConfigError}
-				</ErrorNotification>
+					<div
+						css={css`
+							max-width: 800px;
+							width: 100%;
+						`}
+					>
+						<ErrorNotification title={'Stage Configuration Error'} size="lg">
+							{ConfigError}
+						</ErrorNotification>
+					</div>
+				</div>
 			) : (
 				<ArrangerDataProvider
 					apiUrl={NEXT_PUBLIC_ARRANGER_DATATABLE_2_API}
@@ -160,4 +172,4 @@ const DataSetOneRepositoryPage = (): ReactElement => {
 	);
 };
 
-export default DataSetOneRepositoryPage;
+export default DataSetTwoRepositoryPage;

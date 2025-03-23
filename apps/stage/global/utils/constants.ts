@@ -43,6 +43,10 @@ export enum INTERNAL_PATHS {
 	SCORE = '/swaggerDocs/score',
 }
 
+// external Swagger links
+export const LECTERN_SWAGGER = 'http://localhost:3031/api-docs';
+export const LYRIC_SWAGGER = 'http://localhost:3030/api-docs';
+
 // external docs links
 export const HELP_URL = 'https://github.com/overture-stack/docs/discussions/new?category=support';
 export const EMAIL_SETTING_URL = 'admin@example.com';

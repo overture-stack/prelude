@@ -67,10 +67,21 @@ const Score = () => {
 		layout: 'BaseLayout',
 		requestInterceptor: (req) => {
 			console.log('Intercepting request:', req.url);
-			// Ensure all requests go through our proxy
-			if (!req.url.startsWith('/api/score')) {
+
+			// Check if the URL is already absolute (starts with http:// or https://)
+			if (req.url.match(/^https?:\/\//)) {
+				// Extract the path portion of the URL (everything after the domain)
+				const urlObj = new URL(req.url);
+				const pathWithQuery = urlObj.pathname + urlObj.search;
+
+				// Replace the URL with our proxy path + the extracted path
+				req.url = `/api/score${pathWithQuery.startsWith('/') ? '' : '/'}${pathWithQuery}`;
+			}
+			// For relative URLs, just prepend our proxy path if needed
+			else if (!req.url.startsWith('/api/score')) {
 				req.url = `/api/score${req.url.startsWith('/') ? '' : '/'}${req.url}`;
 			}
+
 			console.log('Modified request:', req.url);
 			return req;
 		},

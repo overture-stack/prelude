@@ -24,29 +24,21 @@ import { signIn } from 'next-auth/react';
 
 import PageLayout from '../../PageLayout';
 
-import { IconProps } from '../../theme/icons/types';
 import { getConfig } from '../../../global/config';
+import { IconProps } from '../../theme/icons/types';
 
-import { usePageQuery } from '../../../global/hooks/usePageContext';
-import { trim } from 'lodash';
-import ErrorNotification from '../../ErrorNotification';
-import providerMap, { ProviderDetail } from '../../../global/utils/providerTypeMap';
-import { ProviderType } from '../../../global/types/types';
 import { AUTH_PROVIDER, USER_PATH } from '@/global/utils/constants';
+import { trim } from 'lodash';
+import { usePageQuery } from '../../../global/hooks/usePageContext';
+import { ProviderType } from '../../../global/types/types';
+import providerMap, { ProviderDetail } from '../../../global/utils/providerTypeMap';
+import ErrorNotification from '../../ErrorNotification';
 
-const LoginButton = ({
-	Icon,
-	title,
-	path,
-}: {
-	Icon: React.ComponentType<IconProps>;
-	title: string;
-	path: string;
-}) => {
-	const { NEXT_PUBLIC_AUTH_PROVIDER } =
-		getConfig();
+const LoginButton = ({ Icon, title, path }: { Icon: React.ComponentType<IconProps>; title: string; path: string }) => {
+	const { NEXT_PUBLIC_AUTH_PROVIDER } = getConfig();
 
-	const disabled = !path;
+	const disabled = true;
+	// const disabled = !path;
 
 	const handleLogin = () => {
 		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
@@ -59,7 +51,7 @@ const LoginButton = ({
 	return (
 		<a
 			href={'#'}
-			onClick={handleLogin}
+			// onClick={handleLogin} // Uncomment this and set disabled to !path for phase4 update
 			css={css`
 				text-decoration: none;
 			`}
@@ -158,7 +150,7 @@ const LoginPage = () => {
 							`
 						}
 					>
-						Log in
+						Coming Soon
 					</h1>
 					{query.session_expired && (
 						<div
@@ -194,8 +186,7 @@ const LoginPage = () => {
 							font-weight: normal;
 						`}
 					>
-						Please choose one of the following log in methods to access your API token for data
-						download:
+						Keycloak integration and setup will be included in Prelude version 2.0.0
 					</span>
 					{NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK ? (
 						<LoginButton

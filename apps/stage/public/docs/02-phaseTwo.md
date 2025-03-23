@@ -31,7 +31,7 @@ Your Phase One data file may need to be divided into multiple segments represent
 
 The Phase Two architecture includes these components:
 
-![Phase 2 Architecture](/docs/images/phase2.png "Phase 2 Architecture")
+![Phase 2 Architecture](/docs/images/phase2.png 'Phase 2 Architecture')
 
 | Component                                                                    | Purpose                                                               |
 | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
@@ -65,7 +65,7 @@ Depending on your data complexity you will need to organize information into mul
 
 For demonstration purposes, we've separated our clinical cancer dataset from Phase One's `dataTable1.csv` into four logical files:
 
-![Enitity Relationship](/docs/images/entityRelationshipDiagram.png "Entity Relationship Diagram")
+![Enitity Relationship](/docs/images/entityRelationshipDiagram.png 'Entity Relationship Diagram')
 
 | File              | Owner                                       | Relationship                                                                             |
 | ----------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -132,14 +132,14 @@ We will first update our top-level dictionary metadata:
 
 ```json
 {
-  "name": "example-dictionary",
-  "description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
-  "version": "1.0",
-  "meta": {
-    "createdAt": "2025-03-20T10:30:00.000Z",
-    "createdBy": "Mitchell Shiell",
-    "primaryContact": "mshiell@oicr.on.ca"
-  }
+	"name": "example-dictionary",
+	"description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
+	"version": "1.0",
+	"meta": {
+		"createdAt": "2025-03-20T10:30:00.000Z",
+		"createdBy": "Mitchell Shiell",
+		"primaryContact": "mshiell@oicr.on.ca"
+	}
 }
 ```
 
@@ -808,4 +808,9 @@ In these commands:
 - [Lectern Documentation](https://docs.overture.bio/docs/core-software/Lectern/overview)
 - [Lyric Documentation](https://docs.overture.bio/docs/core-software/Lyric/overview/)
 - [Maestro Documentation](https://docs.overture.bio/docs/core-software/Maestro/overview)
-- [Overture Support Forum](https://docs.overture.bio/community/support)
+
+Support & Contributions
+
+For support, feature requests, and bug reports, please see our [Support Guide](/support).
+
+For detailed information on how to contribute to this project, please see our Contributing Guide.

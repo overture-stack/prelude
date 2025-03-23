@@ -6,7 +6,7 @@ import { createRef, ReactElement } from 'react';
 
 import { getConfig } from '../../global/config';
 import useAuthContext from '../../global/hooks/useAuthContext';
-import { INTERNAL_PATHS, LOGIN_PATH, USER_PATH } from '../../global/utils/constants';
+import { INTERNAL_PATHS, LECTERN_SWAGGER, LOGIN_PATH, LYRIC_SWAGGER, USER_PATH } from '../../global/utils/constants';
 import { InternalLink, StyledLinkAsButton } from '../Link';
 import defaultTheme from '../theme';
 import UserDropdown from '../UserDropdown';
@@ -119,16 +119,12 @@ const NavBar = (): ReactElement => {
 					<Dropdown
 						css={linkStyles}
 						data={[
-							<InternalLink path={INTERNAL_PATHS.LYRIC}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.LYRIC) })}>
-									Lyric API
-								</StyledListLink>
-							</InternalLink>,
-							<InternalLink path={INTERNAL_PATHS.LECTERN}>
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.LECTERN) })}>
-									Lectern API
-								</StyledListLink>
-							</InternalLink>,
+							<a href={LYRIC_SWAGGER} target="_blank" rel="noopener noreferrer">
+								<StyledListLink>Lyric API</StyledListLink>
+							</a>,
+							<a href={LECTERN_SWAGGER} target="_blank" rel="noopener noreferrer">
+								<StyledListLink>Lectern API</StyledListLink>
+							</a>,
 							<InternalLink path={INTERNAL_PATHS.SONG}>
 								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SONG) })}>
 									Song API

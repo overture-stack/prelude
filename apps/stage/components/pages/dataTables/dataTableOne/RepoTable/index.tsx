@@ -53,7 +53,7 @@ const getTableConfigs = ({
 
 			// appearance
 			background: theme.colors.white,
-			borderColor: theme.colors.grey_3,
+			borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
 			css: css`
 				${theme.shadow.default}
 			`,
@@ -127,7 +127,7 @@ const getTableConfigs = ({
 				},
 			},
 			HeaderRow: {
-				borderColor: theme.colors.grey_3,
+				borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
 				css: css`
 					${theme.typography.data}
 				`,
@@ -148,7 +148,7 @@ const getTableConfigs = ({
 				hoverBackground: theme.colors.grey_highlight,
 				lineHeight: '1.5rem',
 				selectedBackground: theme.colors.accent_highlight,
-				verticalBorderColor: theme.colors.grey_3,
+				verticalBorderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
 			},
 			TableWrapper: {
 				margin: '0.5rem 0',
@@ -161,7 +161,7 @@ const RepoTable = () => {
 	const theme = useTheme();
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 	const customExporters = [
-		{ label: 'Download', fileName: `dataset-1-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
+		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
 
 	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATATABLE_1_ARRANGER, customExporters, theme }));

@@ -1,100 +1,142 @@
-# Prelude Pre-release
+# Overture Documentation Portal
 
-Prelude is a tool that enables teams to incrementally build their data platform.
-By breaking down data portal development into phased steps, teams can
-systematically verify requirements and user workflows while minimizing technical
-overhead.
+A comprehensive documentation portal for the Overture data platform implementation, built with Next.js and featuring a responsive, mobile-friendly design with intuitive navigation.
 
-This process enables teams to:
+## Overview
 
-- Validate project requirements with hands-on testing
-- Gain a clear understanding of user workflows and interactions
-- Documented data management processes
-- Define security and access control needs
-- Build a solid foundation for production deployment planning
+This documentation portal provides a structured, user-friendly interface for accessing Overture's Prelude documentation. It features:
 
-## Development Phases
+- Responsive sidebar navigation with mobile support
+- Markdown content rendering with automatic table of contents
+- Section-based navigation with previous/next links
+- Copy-to-clipboard functionality for headings
+- Dynamic content loading
 
-Development progresses through four distinct phases, each building upon the
-previous phase's foundation while introducing new capabilities.
+## Getting Started
 
-| Phase                                            | Description                                                                                       | Software Components                                                                 | Status         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------- |
-| **Phase1:** Data Exploration & Theming           | Display your tabular data in a themable portal with our front-end and back-end search components. | Composer, Elasticsearch, Arranger, Stage                                            | 🟢 Working     |
-| **Phase2:** Tabular Data Management & Validation | Implementation of tabular data submission, storage and validation.                                | All the above with Lyric, LyricDb (Postgres), Lectern and LecternDb (MongoDb) added | 🟡 Pending     |
-| **Phase3:** File Data & Metadata Management      | Implement back-end file management.                                                               | All the above with Song, Score, SongDb (Postgres) and Object Storage (Minio)        | 🟡 Pending     |
-| **PhaseFour:** Identity and Access management    | Configure Keycloak to authenticate users and authorize what they have access too.                 | Empahsis on data access control planning and Keycloak configuration                 | ⚪ Not Started |
+### Prerequisites
 
-## Prerequisites
+- **Docker Desktop 4.39.0+** with:
+  - 8-core CPU minimum
+  - 8 GB memory
+  - 2 GB swap
+  - 64 GB virtual disk
+- **Node.js 18+ and npm 9+**
 
-### Required Software
+### First Steps
 
-- Node.js 18 or higher
-- npm 9 or higher
-- Docker Desktop 4.32.0 or higher
-  ([Download here](https://www.docker.com/products/docker-desktop/))
+Start by running the pre-deployment check to ensure your environment is properly configured:
 
-### Docker Resource Requirements
-
-> [!important] Allocate sufficient resources to Docker:
->
-> - Minimum CPU: `8 cores`
-> - Memory: `8 GB`
-> - Swap: `2 GB`
-> - Virtual disk: `64 GB`
->
-> Adjust these in Docker Desktop settings under "Resources".
-
-### Running the portal
-
-#### Step 1: Installation & Setup
-
-1. **Clone the repo branch**
-
-```
-git clone -b preludeV2.1 https://github.com/overture-stack/conductor.git
+```bash
+make phase0
 ```
 
-2. **Build the Stage image using the dockerfile** For phase1 run:
+This command will verify your system meets all requirements and provide guidance on any necessary adjustments.
+
+### Deployment Options
+
+The portal can be deployed in phases, with each phase adding additional functionality:
+
+```bash
+# Deploy Phase 1: Data Exploration & Theming
+make phase1
+
+# Deploy Phase 2: Tabular Data Management
+make phase2
+
+# Deploy Phase 3: File Management
+make phase3
+
+# Run Stage in development mode
+make stage-dev
+
+# Reset all containers and volumes
+make reset
+```
+
+### Accessing the Portal
+
+Once running, access the documentation portal at: [http://localhost:3000](http://localhost:3000)
+
+## Documentation Structure
+
+The documentation is organized into phases matching the Prelude development workflow:
+
+- **Introduction**: Overview of the Prelude toolkit and its components
+- **Phase One**: Data Exploration & Theming (Elasticsearch, Arranger, Stage)
+- **Phase Two**: Tabular Data Management (Lyric, Lectern, Postgres, MongoDB)
+- **Phase Three**: File Management (Song, Score, Object Storage)
+- **Phase Four**: Identity & Access (Coming in future release)
+- **Support**: How to get help and contribute
+
+## Development
+
+### Local Development Environment
+
+To modify the documentation portal itself:
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   cd apps/stage
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+### Updating Documentation Content
+
+Documentation content is stored as Markdown files in the `public/docs` directory. To add or update content:
+
+1. Files are prefixed with numbers (`00-`, `01-`, etc.) to control ordering
+2. Each file should start with a top-level heading (`# Title`)
+3. Place images in `public/docs/images/`
+4. Use standard Markdown syntax for formatting
+
+## Project Structure
+
+The project follows a modular structure with two main applications: Conductor (for data management) and Stage (for the front-end portal).
 
 ```
-cd apps/stage
-docker build -t localstageimage:1.0 .
+├── apps/
+│   ├── composer/                 # Config generation tool
+│   │   └── src/                  # Source code
+│   │       ├── cli/              # CLI interface
+│   │       ├── commands/         # Command implementations
+│   │       ├── services/         # Core functions for config generation
+│   │       └── utils/            # Utility functions
+│   │
+│   ├── conductor/                # Data management tool
+│   │   ├── src/                  # Source code
+│   │   │   ├── cli/              # CLI interface
+│   │   │   ├── commands/         # Command implementations
+│   │   │   ├── services/         # Core services (ES, Lectern, etc.)
+│   │   │   └── utils/            # Utility functions
+│   │   ├── configs/              # Configuration files
+│   │   │   ├── arrangerConfigs/  # Arranger UI configurations
+│   │   │   ├── elasticsearchConfigs/ # Elasticsearch mappings
+│   │   │   ├── lecternDictionaries/ # Data dictionaries
+│   │   │   └── songSchemas/      # Song schemas
+│   │   └── scripts/              # Deployment and service scripts
+│   │       ├── deployments/      # Phase deployment scripts
+│   │       └── services/         # Service management scripts
+│   │
+│   └── stage/                    # Frontend portal
+│       ├── components/
+│       │   ├── pages/            # Page-specific components
+│       │   └── theme/            # Theming
+│       ├── pages/                # Next.js pages
+│       └── public/               # Static assets
+│           └── docs/             # Markdown documentation files
+│               └── images/       # Documentation images
+│
+├── configs/                      # Symlink to conductor configs
+├── data/                         # Data files
+└── docs/                         # Symlink to Stage docs
 ```
 
-After editing your stage folder make sure you run the above build command before
-deploying locally using this docker compose setup.
+## Support
 
-#### Step 2: Deployment
-
-Run one of the following commands **from the root of the repository**:
-
-| Environment          | Unix/macOS       | Windows |
-| -------------------- | ---------------- | ------- |
-| Phase One Platform   | `make phase1`    | pending |
-| Phase Two Platform   | pending          | pending |
-| Phase Three Platform | pending          | pending |
-| Stage Development    | `make stage-dev` | pending |
-
-Following startup the front end portal will be available at your
-`localhost:3000`
-
-### Helper Commands
-
-| Description                                                                                 | Unix/macOS              | Windows |
-| ------------------------------------------------------------------------------------------- | ----------------------- | ------- |
-| Shuts down all containers                                                                   | `make down`             | pending |
-| Shuts down all containers and removes volumes                                               | `make reset`            | pending |
-| Submits pre-configured demo data                                                            | `make load-data`        | pending |
-| Generates index mappings and arranger configurations using the default tabularData.csv file | `make generate-configs` | pending |
-| Removes all documents from elasticsearch                                                    | `make clean-data`       | pending |
-
-## Documentation
-
-Detailed documentation can be found in multiple locations:
-
-- The `/docs` folder at the root of this repository
-- README files within each root directory containing information on the folder's
-  purpose and usage
-- Frontend documentation available after deployment at
-  `http://localhost:3000/documentation`
+For assistance, reach out via the [community support channels](https://docs.overture.bio/community/support), for private inquiries email us at [contact@overture.bio](mailto:contact@overture.bio).
