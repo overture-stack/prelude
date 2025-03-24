@@ -33,10 +33,10 @@ export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
 	MOLECULAR = '/molecular',
-	DATATABLE_1 = '/dataTableOne',
-	DATATABLE_2 = '/dataTableTwo',
-	DATATABLE_3 = '/dataTableThree',
-	DATATABLE_4 = '/dataTableFour',
+	DATATABLE_1 = '/correlationData',
+	DATATABLE_2 = '/mRNAData',
+	DATATABLE_3 = '/mutationData',
+	DATATABLE_4 = '/proteinData',
 	DATATABLE_5 = '/dataTableFive',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',

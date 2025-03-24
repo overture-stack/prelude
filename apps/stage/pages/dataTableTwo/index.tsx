@@ -1,4 +1,4 @@
-import DataTableTwo from '../../components/pages/activeDataTables/dataTableTwo';
+import DataTableTwo from '../../components/pages/activeDataTables/mutationData';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetTwoExplorationPage = createPage({

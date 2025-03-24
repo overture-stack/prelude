@@ -28,10 +28,18 @@ export function discoverDataTables(): DataTableInfo[] {
 
 		// Convert to data table info
 		return directories.map((dir) => {
-			// Format the title (capitalize first letter, add spaces between camelCase)
-			const title = dir.name
-				.replace(/([A-Z])/g, ' $1') // Add space before capital letters
-				.replace(/^./, (str) => str.toUpperCase()); // Capitalize first letter
+			// Special case handling for known acronyms
+			let title = dir.name;
+
+			// Handle specific cases like mRNAData
+			if (title === 'mRNAData') {
+				title = 'mRNA Data';
+			} else {
+				// Format the title (capitalize first letter, add spaces between camelCase)
+				title = title
+					.replace(/([A-Z])/g, ' $1') // Add space before capital letters
+					.replace(/^./, (str) => str.toUpperCase()); // Capitalize first letter
+			}
 
 			// Use known path if available, otherwise create a path based on name
 			const path = `/${dir.name}`;
