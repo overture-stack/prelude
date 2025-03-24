@@ -26,7 +26,7 @@ import DismissIcon from '../theme/icons/dismiss';
 import Error from '../theme/icons/error';
 import Info from '../theme/icons/info';
 
-type AlertLevel = 'error' | 'warning' | 'info';
+export type AlertLevel = 'error' | 'warning' | 'info';
 
 export type AlertDef = {
 	level: AlertLevel;
@@ -36,12 +36,12 @@ export type AlertDef = {
 	id: string;
 };
 
-const isAlertLevel = (level: any): level is AlertLevel => {
+export const isAlertLevel = (level: any): level is AlertLevel => {
 	return level === 'error' || level === 'warning' || level === 'info';
 };
 
 export const isAlertDef = (obj: any): obj is AlertDef => {
-	return obj.id && obj.title && obj.dismissable !== undefined && isAlertLevel(obj.level);
+	return obj?.id && obj?.title && obj?.dismissable !== undefined && isAlertLevel(obj?.level);
 };
 
 export const isAlertDefs = (obj: any): obj is AlertDef[] => {
@@ -77,12 +77,13 @@ const ALERT_VARIANTS: Record<AlertLevel, AlertVariant> = {
 	},
 };
 
-export const SystemAlert: React.ComponentType<SystemAlertProps> = ({ alert, onClose }) => {
+export const SystemAlert: React.FC<SystemAlertProps> = ({ alert, onClose }) => {
 	function createMarkup(msg: string) {
 		return { __html: msg };
 	}
 
 	const { backgroundColor, textColor, icon } = ALERT_VARIANTS[alert.level];
+
 	return (
 		<div
 			css={css`
@@ -91,11 +92,14 @@ export const SystemAlert: React.ComponentType<SystemAlertProps> = ({ alert, onCl
 				justify-content: space-between;
 				align-items: flex-start;
 				background-color: ${backgroundColor};
+				width: 100%;
+				z-index: 1000;
 			`}
 		>
 			<div
 				css={css`
 					display: flex;
+					flex: 1;
 				`}
 			>
 				<div
@@ -106,7 +110,11 @@ export const SystemAlert: React.ComponentType<SystemAlertProps> = ({ alert, onCl
 				>
 					{icon}
 				</div>
-				<div>
+				<div
+					css={css`
+						flex: 1;
+					`}
+				>
 					<div
 						css={css`
 							color: ${textColor};
@@ -120,7 +128,7 @@ export const SystemAlert: React.ComponentType<SystemAlertProps> = ({ alert, onCl
 						<div
 							css={css`
 								color: ${textColor};
-								margin-bottom: px;
+								margin-bottom: 5px;
 								${defaultTheme.typography.regular};
 							`}
 							dangerouslySetInnerHTML={createMarkup(alert.message)}
@@ -134,8 +142,12 @@ export const SystemAlert: React.ComponentType<SystemAlertProps> = ({ alert, onCl
 					css={css`
 						cursor: pointer;
 						margin: 20px;
+						display: flex;
+						align-items: center;
 					`}
 					onClick={onClose}
+					role="button"
+					aria-label="Dismiss alert"
 				>
 					<DismissIcon height={15} width={15} fill={defaultTheme.colors.black} />
 				</div>

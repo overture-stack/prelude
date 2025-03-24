@@ -6,7 +6,15 @@ import { createRef, ReactElement } from 'react';
 
 import { getConfig } from '../../global/config';
 import useAuthContext from '../../global/hooks/useAuthContext';
-import { INTERNAL_PATHS, LECTERN_SWAGGER, LOGIN_PATH, LYRIC_SWAGGER, USER_PATH } from '../../global/utils/constants';
+import {
+	INTERNAL_PATHS,
+	LECTERN_SWAGGER,
+	LOGIN_PATH,
+	LYRIC_SWAGGER,
+	SCORE_SWAGGER,
+	SONG_SWAGGER,
+	USER_PATH,
+} from '../../global/utils/constants';
 import { InternalLink, StyledLinkAsButton } from '../Link';
 import defaultTheme from '../theme';
 import UserDropdown from '../UserDropdown';
@@ -103,6 +111,9 @@ const NavBar = (): ReactElement => {
 					align-items: center;
 					justify-content: space-between;
 					width: 100%;
+					a {
+						text-decoration: none;
+					}
 				`}
 			>
 				<div
@@ -125,16 +136,16 @@ const NavBar = (): ReactElement => {
 							<a href={LECTERN_SWAGGER} target="_blank" rel="noopener noreferrer">
 								<StyledListLink>Lectern API</StyledListLink>
 							</a>,
-							<InternalLink path={INTERNAL_PATHS.SONG}>
+							<a href={SONG_SWAGGER} target="_blank" rel="noopener noreferrer">
 								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SONG) })}>
 									Song API
 								</StyledListLink>
-							</InternalLink>,
-							<InternalLink path={INTERNAL_PATHS.SCORE}>
+							</a>,
+							<a href={SCORE_SWAGGER} target="_blank" rel="noopener noreferrer">
 								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SCORE) })}>
 									Score API
 								</StyledListLink>
-							</InternalLink>,
+							</a>,
 						]}
 						label="APIs"
 					/>

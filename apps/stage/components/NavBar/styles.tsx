@@ -21,7 +21,6 @@
 
 import { css, SerializedStyles } from '@emotion/react';
 import styled from '@emotion/styled';
-
 import defaultTheme from '../theme';
 
 export const linkStyles = (theme?: typeof defaultTheme): SerializedStyles => css`
@@ -73,8 +72,8 @@ export const StyledLink = styled.a`
 	${({ theme }: { theme?: typeof defaultTheme }) => linkStyles(theme)}
 `;
 
-export const StyledListLink = styled.a`
-	${({ theme }: { theme?: typeof defaultTheme }) => css`
+export const StyledListLink = styled.a<{ theme?: typeof defaultTheme }>`
+	${({ theme }) => css`
 		align-items: center;
 		background-color: ${theme?.colors.white};
 		border: 1px solid ${theme?.colors.grey_2};
@@ -93,7 +92,7 @@ export const StyledListLink = styled.a`
 			background-color: ${theme?.colors.grey_1};
 		}
 
-		&.active {
+		&:active {
 			background-color: ${theme?.colors.grey_2};
 			color: ${theme?.colors.accent};
 			cursor: default;

@@ -263,13 +263,13 @@ services:
       NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable3_centric
       # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://song:8080
+      NEXT_PUBLIC_SCORE_API: http://score:8087
       NEXT_PUBLIC_LYRIC_API: http://lyric:3030
       NEXT_PUBLIC_LECTERN_API: http://lectern:3031
-      NEXT_PUBLIC_SCORE_API: http://score:8087
       # Auth Variables
       NEXTAUTH_SECRET: your-secure-secret-here
       # System Alerts
-      # NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
+      NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
       # CORS Configuration
       NEXT_PUBLIC_CORS_ENABLED: "true"
       NEXT_PUBLIC_CORS_ALLOWED_ORIGINS: "*"

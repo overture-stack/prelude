@@ -35,7 +35,7 @@ This separation of concerns allows for efficient file handling with rich metadat
 
 Phase Three adds file management components to the existing architecture:
 
-![Phase 3 Architecture Diagram](/docs/images/phase3.png 'Phase 3 Architecture Diagram')
+![Phase 3 Architecture Diagram](/docs/images/phase3.png "Phase 3 Architecture Diagram")
 
 > **Note:** Full integration between file metadata and tabular data from Phase Two will be included in a future update. For more information, see the footnotes section at the bottom of this page.
 
@@ -89,15 +89,15 @@ A minimal Analysis Schema contains just the required structure:
 
 ```json
 {
-	"name": "sequencing_experiment",
-	"options": {},
-	"schema": {
-		"type": "object",
-		"required": ["experiment"],
-		"properties": {
-			"experiment": {}
-		}
-	}
+  "name": "sequencing_experiment",
+  "options": {},
+  "schema": {
+    "type": "object",
+    "required": ["experiment"],
+    "properties": {
+      "experiment": {}
+    }
+  }
 }
 ```
 
@@ -177,38 +177,38 @@ Create a file metadata template that serves as an example to generate your Song 
 
 ```json
 {
-	"analysisType": {
-		"name": "sequencing_experiment",
-		"version": 1
-	},
-	"experiment": {
-		"platform": "ILLUMINA",
-		"instrumentModel": "HiSeq 2500",
-		"libraryStrategy": "WGS",
-		"sequencingCenter": "OICR"
-	},
-	"sample": {
-		"submitterSampleId": "SA-123",
-		"matchedNormalSubmitterSampleId": "SA-456",
-		"sampleType": "DNA",
-		"specimen": {
-			"submitterSpecimenId": "SP-123",
-			"specimenType": "Normal",
-			"donor": {
-				"submitterDonorId": "DO0599",
-				"gender": "Male"
-			}
-		}
-	},
-	"files": [
-		{
-			"fileName": "test_rg3.bam",
-			"fileSize": 133684363564,
-			"fileType": "BAM",
-			"fileMd5sum": "9a793e90d0d1e11301ea8da996446e59",
-			"fileAccess": "controlled"
-		}
-	]
+  "analysisType": {
+    "name": "sequencing_experiment",
+    "version": 1
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "instrumentModel": "HiSeq 2500",
+    "libraryStrategy": "WGS",
+    "sequencingCenter": "OICR"
+  },
+  "sample": {
+    "submitterSampleId": "SA-123",
+    "matchedNormalSubmitterSampleId": "SA-456",
+    "sampleType": "DNA",
+    "specimen": {
+      "submitterSpecimenId": "SP-123",
+      "specimenType": "Normal",
+      "donor": {
+        "submitterDonorId": "DO0599",
+        "gender": "Male"
+      }
+    }
+  },
+  "files": [
+    {
+      "fileName": "test_rg3.bam",
+      "fileSize": 133684363564,
+      "fileType": "BAM",
+      "fileMd5sum": "9a793e90d0d1e11301ea8da996446e59",
+      "fileAccess": "controlled"
+    }
+  ]
 }
 ```
 
@@ -301,41 +301,40 @@ Create a file called `analysis.json` in the `data/fileData/upload` directory:
 
 ```json
 {
-	"studyId": "cancer-genomics",
-	"analysisType": {
-		"name": "sequencing_experiment",
-		"version": 1
-	},
-	"experiment": {
-		"platform": "ILLUMINA",
-		"instrumentModel": "HiSeq 2500",
-		"libraryStrategy": "WGS",
-		"sequencingCenter": "OICR"
-	},
-	"samples": [
-		{
-			"submitterSampleId": "SA-123",
-			"matchedNormalSubmitterSampleId": "SA-456",
-			"sampleType": "DNA",
-			"specimen": {
-				"submitterSpecimenId": "SP-123",
-				"specimenType": "Normal",
-				"donor": {
-					"submitterDonorId": "DO0599",
-					"gender": "Male"
-				}
-			}
-		}
-	],
-	"files": [
-		{
-			"fileName": "test_rg3.bam",
-			"fileSize": 10485760,
-			"fileType": "BAM",
-			"fileMd5sum": "REPLACE_WITH_ACTUAL_MD5",
-			"fileAccess": "controlled"
-		}
-	]
+  "studyId": "cancer-genomics",
+  "analysisType": {
+    "name": "sequencing_experiment",
+    "version": 1
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "instrumentModel": "HiSeq 2500",
+    "libraryStrategy": "WGS",
+    "sequencingCenter": "OICR"
+  },
+  "samples": [
+    {
+      "submitterSampleId": "SA-123",
+      "matchedNormalSubmitterSampleId": "SA-456",
+      "sampleType": "DNA",
+      "specimen": {
+        "submitterSpecimenId": "SP-123",
+        "specimenType": "Normal",
+        "donor": {
+          "submitterDonorId": "DO0599",
+          "gender": "Male"
+        }
+      }
+    }
+  ],
+  "files": [
+    {
+      "fileName": "test_rg3.bam",
+      "fileType": "BAM",
+      "fileMd5sum": "REPLACE_WITH_ACTUAL_MD5",
+      "fileAccess": "controlled"
+    }
+  ]
 }
 ```
 
@@ -476,9 +475,9 @@ To enable file access through the Stage portal:
    stage:
      environment:
        # Add file download configuration
-       NEXT_PUBLIC_DOWNLOAD_ENABLED: 'true'
-       NEXT_PUBLIC_DOWNLOAD_URL: 'http://localhost:8087/download'
-       NEXT_PUBLIC_SONG_URL: 'http://localhost:8080'
+       NEXT_PUBLIC_DOWNLOAD_ENABLED: "true"
+       NEXT_PUBLIC_DOWNLOAD_URL: "http://localhost:8087/download"
+       NEXT_PUBLIC_SONG_URL: "http://localhost:8080"
    ```
 
 2. Restart Stage:

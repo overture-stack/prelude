@@ -1,27 +1,50 @@
+import { css } from '@emotion/react';
 import React, { useEffect, useState } from 'react';
-import { AlertDef, SystemAlert } from './helper';
+import { AlertDef, isAlertDefs, SystemAlert } from './helper';
 
 type SystemAlertsProps = {
-	alerts?: AlertDef[]; // alerts prop is now optional
+	alerts?: AlertDef[]; // alerts prop is optional
 	resetOnRefresh?: boolean; // Reset dismissed alerts on refresh
 };
 
 const SystemAlerts: React.FC<SystemAlertsProps> = ({ alerts, resetOnRefresh = false }) => {
 	const [dismissedAlertIds, setDismissedAlertIds] = useState<string[]>([]);
 
-	// Fallback to environment variable if alerts prop is not provided
-	const alertsFromEnv = process.env.NEXT_PUBLIC_SYSTEM_ALERTS ? JSON.parse(process.env.NEXT_PUBLIC_SYSTEM_ALERTS) : [];
+	// Safely parse the environment variable
+	const getAlertsFromEnv = (): AlertDef[] => {
+		try {
+			// Read from NEXT_PUBLIC_SYSTEM_ALERTS environment variable
+			const envAlerts = process.env.NEXT_PUBLIC_SYSTEM_ALERTS;
 
-	// Determine the final alerts to display
-	const finalAlerts: AlertDef[] = alerts || alertsFromEnv; // Explicitly typing finalAlerts
+			if (typeof envAlerts === 'string' && envAlerts.trim() !== '') {
+				const parsed = JSON.parse(envAlerts);
+				if (isAlertDefs(parsed)) {
+					return parsed;
+				} else {
+					console.warn('System alerts in environment variable are not in the expected format', parsed);
+				}
+			}
+		} catch (error) {
+			console.error('Error parsing system alerts from environment variable:', error);
+		}
+		return [];
+	};
+
+	// Determine the final alerts to display - prioritize props over environment variables
+	const finalAlerts: AlertDef[] = alerts || getAlertsFromEnv();
 
 	useEffect(() => {
 		if (resetOnRefresh) {
 			localStorage.removeItem('SYSTEM_ALERTS_DISMISSED_IDS');
 			setDismissedAlertIds([]); // Reset the state
 		} else {
-			const storedDismissedIds = JSON.parse(localStorage.getItem('SYSTEM_ALERTS_DISMISSED_IDS') || '[]');
-			setDismissedAlertIds(storedDismissedIds);
+			try {
+				const storedDismissedIds = JSON.parse(localStorage.getItem('SYSTEM_ALERTS_DISMISSED_IDS') || '[]');
+				setDismissedAlertIds(Array.isArray(storedDismissedIds) ? storedDismissedIds : []);
+			} catch (error) {
+				console.error('Error parsing dismissed alert IDs from localStorage:', error);
+				setDismissedAlertIds([]);
+			}
 		}
 	}, [resetOnRefresh]);
 
@@ -34,12 +57,25 @@ const SystemAlerts: React.FC<SystemAlertsProps> = ({ alerts, resetOnRefresh = fa
 	// Filter out dismissed alerts
 	const displayAlerts = finalAlerts.filter((alert: AlertDef) => !dismissedAlertIds.includes(alert.id));
 
+	if (displayAlerts.length === 0) {
+		return null;
+	}
+
 	return (
-		<>
+		<div
+			css={css`
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				width: 100%;
+				z-index: 2000;
+			`}
+		>
 			{displayAlerts.map((alert) => (
 				<SystemAlert alert={alert} key={alert.id} onClose={() => handleClose(alert.id)} />
 			))}
-		</>
+		</div>
 	);
 };
 

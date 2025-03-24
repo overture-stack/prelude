@@ -7,18 +7,7 @@ const styles = {
 		width: 100%;
 		height: 100%;
 		position: relative;
-		overflow: hidden;	const sidebarStyles = {
-		width: '280px',
-		minWidth: '280px',
-		background: '#f5f6f7',
-		borderRight: '1px solid #e2e8f0',
-		position: 'fixed',
-		left: '0',
-		overflowY: 'auto',
-		paddingTop: '1.5rem',
-		paddingBottom: '2rem',
-		zIndex: 10,
-	} as const;
+		overflow: hidden;
 	`,
 
 	contentWrapper: css`
@@ -40,7 +29,7 @@ const styles = {
 		min-width: 280px;
 		background: ${theme.colors.sidebar};
 		border-right: 1px solid ${theme.colors.border};
-		position: fixed; // Changed to fixed
+		position: fixed;
 		left: 0;
 		overflow-y: auto;
 		padding-bottom: 2rem;
@@ -73,7 +62,7 @@ const styles = {
 
 		/* Mobile adjustments */
 		@media (max-width: ${theme.breakpoints.md}) {
-			position: fixed; /* Fixed position for slide-out mobile menu */
+			position: fixed;
 			top: 0;
 			left: 0;
 			bottom: 0;
@@ -227,7 +216,6 @@ const styles = {
 		width: calc(100% - 280px);
 		margin-left: 280px;
 		box-sizing: border-box;
-		padding-top: 1.5rem;
 		margin-top: 120px;
 
 		/* Tablet adjustments */
@@ -253,12 +241,12 @@ const styles = {
 		color: ${theme.colors.text};
 		overflow-wrap: break-word;
 		word-wrap: break-word;
-		word-break: break-word; /* Only breaks words when necessary */
+		word-break: break-word;
 		hyphens: auto;
 
 		/* Tablet-specific content adjustments */
 		@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
-			padding-right: 1rem; /* Add some padding on the right for tablets */
+			padding-right: 1rem;
 			max-width: 100%;
 			width: 100%;
 		}
@@ -324,7 +312,7 @@ const styles = {
 			font-size: 24px;
 			font-weight: 900;
 			color: #000;
-			/* Tablet-specific heading size */
+
 			@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
 				font-size: 1.4rem;
 			}
@@ -341,7 +329,7 @@ const styles = {
 		h4 {
 			font-size: 20px;
 			margin-bottom: 20px;
-			/* Tablet-specific heading size */
+
 			@media (min-width: ${theme.breakpoints.md}) and (max-width: ${theme.breakpoints.lg}) {
 				font-size: 1.2rem;
 			}
@@ -396,12 +384,11 @@ const styles = {
 			margin-left: 25px;
 			width: 90%;
 		}
-		,
+
 		details[open] code {
 			overflow-x: auto;
 		}
 
-		,
 		summary {
 			cursor: pointer;
 			position: relative;
@@ -445,22 +432,19 @@ const styles = {
 			border-radius: 3px;
 			padding: 0.1em 0.3em;
 		}
+
 		p {
 			line-height: 1.5;
 			font-size: 18px;
 			font-weight: 400;
 		}
-		,
+
 		ul,
 		ol {
 			margin: 1.25rem 0;
 			max-width: 100%;
 			overflow-wrap: break-word;
 			font-size: 16px;
-		}
-
-		ul,
-		ol {
 			padding-left: 2rem;
 
 			@media (max-width: ${theme.breakpoints.sm}) {
@@ -478,7 +462,8 @@ const styles = {
 			text-decoration: none;
 			border-bottom: 1px solid transparent;
 			transition: ${theme.transitions.standard};
-			word-break: break-all; /* Allow links to break anywhere */
+			word-break: break-word;
+			overflow-wrap: break-word;
 
 			&:hover {
 				border-bottom-color: ${theme.colors.primary};
@@ -502,6 +487,7 @@ const styles = {
 				font-style: italic;
 			}
 		}
+
 		table {
 			width: 100%;
 			margin: 2rem 0;
@@ -512,15 +498,11 @@ const styles = {
 			border-radius: 0.5rem;
 			overflow: hidden;
 			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-			/* Ensure full width and even column distribution */
 			table-layout: fixed;
 			max-width: 100%;
-
-			/* Responsive horizontal scroll */
 			display: table;
 			overflow-x: auto;
-			-webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+			-webkit-overflow-scrolling: touch;
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				margin: 1.5rem 0;
@@ -528,19 +510,16 @@ const styles = {
 				border-radius: 0.375rem;
 			}
 
-			/* Ensure columns fill space evenly */
 			th,
 			td {
-				width: 50%; /* Equal width for both columns */
+				width: 50%;
 			}
 
-			/* Table Head Styling */
 			thead {
 				background: ${theme.colors.sidebar};
 				border-bottom: 2px solid ${theme.colors.border};
 			}
 
-			/* Header Cells */
 			th {
 				padding: 1rem 1.25rem;
 				text-align: left;
@@ -559,7 +538,6 @@ const styles = {
 				}
 			}
 
-			/* Body Cells */
 			td {
 				padding: 1rem 1.25rem;
 				text-align: left;
@@ -575,28 +553,23 @@ const styles = {
 				}
 			}
 
-			/* Alternate Row Coloring */
 			tbody tr:nth-of-type(even) {
-				background-color: ${theme.colors.primaryLight}20; /* Very subtle background */
+				background-color: ${theme.colors.primaryLight}20;
 			}
 
-			/* Hover Effect */
 			tbody tr:hover {
 				background-color: ${theme.colors.primaryLight}40;
 			}
 
-			/* Remove Border from Last Row */
 			tbody tr:last-child td {
 				border-bottom: none;
 			}
 
-			/* Responsive Considerations */
 			@media (max-width: ${theme.breakpoints.sm}) {
 				font-size: 0.8125rem;
 			}
 		}
 
-		/* Scrollbar Styling for Overflow */
 		table::-webkit-scrollbar {
 			height: 8px;
 		}
@@ -618,7 +591,6 @@ const styles = {
 			font-size: 0.9375rem;
 			line-height: 2;
 			overflow-x: auto;
-			overflow-y: auto;
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				font-size: 0.875rem;
@@ -627,8 +599,6 @@ const styles = {
 
 		pre {
 			padding: 1rem;
-			overflow-x: auto;
-			overflow-y: auto;
 			border: 1px solid ${theme.colors.border};
 			margin: 1rem 0;
 			box-shadow: ${theme.boxShadow};
@@ -648,7 +618,7 @@ const styles = {
 		code {
 			padding: 0.2rem 0.4rem;
 			border-radius: 0.25rem;
-			word-break: break-all;
+			word-break: normal;
 		}
 
 		img {
@@ -664,6 +634,7 @@ const styles = {
 				margin: 1.5rem auto;
 			}
 		}
+
 		strong {
 			font-weight: 900;
 			color: #000;
