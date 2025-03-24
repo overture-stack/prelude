@@ -429,10 +429,7 @@ This step guides you through customizing Stage UI to incorporate multiple data e
 
 4. **Creating New Data Exploration Pages**:
 
-   To add a new data table in Stage:
-   a.
-   b.
-   c.
+A) Create a new table component
 
 5. **Customize Stage Theming** (Optional):
 

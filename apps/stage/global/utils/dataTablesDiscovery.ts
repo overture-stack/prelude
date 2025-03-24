@@ -14,7 +14,7 @@ export interface DataTableInfo {
  */
 export function discoverDataTables(): DataTableInfo[] {
 	try {
-		const dataTablesPath = path.join(process.cwd(), 'components', 'pages', 'dataTables');
+		const dataTablesPath = path.join(process.cwd(), 'components', 'pages', 'activeDataTables');
 
 		// Check if directory exists
 		if (!fs.existsSync(dataTablesPath)) {
