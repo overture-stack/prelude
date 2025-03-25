@@ -194,6 +194,12 @@ export abstract class Command {
       Logger.debug(
         `Using directory: ${directoryPath}, fileName: ${outputFileName}`
       );
+    } else {
+      // If outputPath is a directory, use the default filename
+      outputFileName = this.defaultOutputFileName;
+      Logger.debug(
+        `Output path is a directory, using default filename: ${outputFileName}`
+      );
     }
 
     // Create the output directory if it doesn't exist
@@ -204,21 +210,12 @@ export abstract class Command {
       ? fs.readdirSync(directoryPath)
       : [];
 
-    // Filter existing files that would be overwritten
+    // Check for exact file match only
     const filesToOverwrite = existingEntries.filter((entry) => {
       const fullPath = path.join(directoryPath, entry);
 
-      // If specific file name is given, only check that exact file
-      if (outputFileName) {
-        return entry === outputFileName && fs.statSync(fullPath).isFile();
-      }
-
-      // If no specific file name, check if entry is a file and would match generated output
-      return (
-        fs.statSync(fullPath).isFile() &&
-        (entry.endsWith(".json") ||
-          entry.startsWith(this.defaultOutputFileName.split(".")[0]))
-      );
+      // Only check if this exact file exists and is a file (not a directory)
+      return entry === outputFileName && fs.statSync(fullPath).isFile();
     });
 
     // If no files would be overwritten, continue without prompting
