@@ -1,4 +1,4 @@
-import DataTableTwo from '../../components/pages/activeDataTables/mutationData';
+import MRNATable from '../../components/pages/activeDataTables/mRNATable';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetTwoExplorationPage = createPage({
@@ -7,7 +7,7 @@ const DataSetTwoExplorationPage = createPage({
 	},
 	isPublic: true,
 })(() => {
-	return <DataTableTwo />;
+	return <MRNATable />;
 });
 
 export default DataSetTwoExplorationPage;

@@ -38,7 +38,7 @@ const PageContent = () => {
 	const sidebarWidth = showSidebar ? theme.dimensions.facets.width : 0;
 
 	// TODO: abstract this param handling into an Arranger integration.
-	const { sqon, setSQON } = useArrangerData({ callerName: 'DataTableOne-PageContent' });
+	const { sqon, setSQON } = useArrangerData({ callerName: 'CorrelationData-PageContent' });
 	const [firstRender, setFirstRender] = useState<boolean>(true);
 	const [currentFilters, setCurrentFilters] = useUrlParamState<SQONType | null>('filters', null, {
 		prepare: (v) => v.replace('"field"', '"fieldName"'),

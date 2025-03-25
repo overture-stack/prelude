@@ -247,7 +247,7 @@ export class Logger {
     this.generic("");
 
     // Upload commands
-    this.generic(chalk.bold.magenta("Upload Commands:"));
+    this.generic(chalk.bold.magenta("CSV Upload Commands:"));
     this.generic(chalk.white("conductor upload -f data.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
@@ -266,36 +266,6 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray("Example: conductor upload -f data.csv -i my-index -b 2000")
-    );
-    this.generic("");
-
-    // Setup Indices commands
-    this.generic(chalk.bold.magenta("Setup Indices Commands:"));
-    this.generic(
-      chalk.white(
-        "conductor indexManagement -t template.json -n template_name -i index_name"
-      )
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-t, --template-file <path>  Template JSON file path (required)"
-      )
-    );
-    this.generic(
-      chalk.gray("-n, --template-name <name>  Template name (required)")
-    );
-    this.generic(
-      chalk.gray("-i, --index-name <name>     Index name (required)")
-    );
-    this.generic(
-      chalk.gray("-a, --alias-name <name>     Alias name (optional)")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor indexManagement -t mapping.json -n my_template -i my_index -a my_alias"
-      )
     );
     this.generic("");
 
@@ -624,63 +594,6 @@ export class Logger {
     this.generic(
       chalk.gray(
         "Example: conductor songPublishAnalysis -a 4d9ed1c5-1053-4377-9ed1-c51053f3771f -i my-study"
-      )
-    );
-    this.generic("");
-
-    // SONG and Score Combined Submission commands
-    this.generic(
-      chalk.bold.magenta("SONG and Score Combined Submission Command:")
-    );
-    this.generic(
-      chalk.white("conductor songScoreSubmit -p analysis.json -d ./data")
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-p, --analysis-path <path>  Path to analysis JSON file (default: ./analysis.json)"
-      )
-    );
-    this.generic(
-      chalk.gray("-i, --study-id <id>       Study ID (default: demo)")
-    );
-    this.generic(
-      chalk.gray(
-        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-s, --score-url <url>     Score server URL (default: http://localhost:8087)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-d, --data-dir <path>     Directory containing data files (default: ./data/fileData)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-o, --output-dir <path>   Directory for manifest file output (default: ./output)"
-      )
-    );
-    this.generic(
-      chalk.gray("-m, --manifest-file <path> Path for manifest file (optional)")
-    );
-    this.generic(
-      chalk.gray(
-        "-t, --auth-token <token>  Authentication token (default: 123)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--ignore-undefined-md5    Ignore files with undefined MD5 checksums"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor songScoreSubmit -p analysis.json -i my-study -d ./data/files"
       )
     );
     this.generic("");

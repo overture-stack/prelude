@@ -1,4 +1,4 @@
-import DataTableThree from '../../components/pages/activeDataTables/mRNAData';
+import MutationTable from '../../components/pages/activeDataTables/mutationTable';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetThreeExplorationPage = createPage({
@@ -7,7 +7,7 @@ const DataSetThreeExplorationPage = createPage({
 	},
 	isPublic: true,
 })(() => {
-	return <DataTableThree />;
+	return <MutationTable />;
 });
 
 export default DataSetThreeExplorationPage;

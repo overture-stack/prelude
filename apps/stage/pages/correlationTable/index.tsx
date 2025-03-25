@@ -1,4 +1,4 @@
-import DataTableOne from '../../components/pages/activeDataTables/correlationData';
+import CorrelationTable from '../../components/pages/activeDataTables/correlationTable';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetOneExplorationPage = createPage({
@@ -7,7 +7,7 @@ const DataSetOneExplorationPage = createPage({
 	},
 	isPublic: true,
 })(() => {
-	return <DataTableOne />;
+	return <CorrelationTable />;
 });
 
 export default DataSetOneExplorationPage;

@@ -31,9 +31,10 @@ export function discoverDataTables(): DataTableInfo[] {
 			// Special case handling for known acronyms
 			let title = dir.name;
 
-			// Handle specific cases like mRNAData
 			if (title === 'mRNAData') {
 				title = 'mRNA Data';
+			} else if (title === 'mRNATable') {
+				title = 'mRNA Table';
 			} else {
 				// Format the title (capitalize first letter, add spaces between camelCase)
 				title = title

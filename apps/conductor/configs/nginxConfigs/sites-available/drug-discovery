@@ -1,0 +1,56 @@
+server {
+    listen 80;
+    listen [::]:80;
+    
+    server_name localhost;
+
+    # Frontend
+    location / {
+        proxy_pass http://stage:3000;
+        include proxy_params;
+    }
+
+    # Arranger APIs
+    location /correlation-api/ {
+        proxy_pass http://arranger-datatable1:5050/;
+        include proxy_params;
+    }
+
+    location /mutation-api/ {
+        proxy_pass http://arranger-datatable2:5051/;
+        include proxy_params;
+    }
+
+    location /mrna-api/ {
+        proxy_pass http://arranger-datatable3:5052/;
+        include proxy_params;
+    }
+
+    location /protein-api/ {
+        proxy_pass http://arranger-datatable4:5053/;
+        include proxy_params;
+    }
+
+    # Additional services
+
+    location /lyric/ {
+        proxy_pass http://lyric:3030/;
+        include proxy_params;
+    }
+
+    location /lectern/ {
+        proxy_pass http://lectern:3031/;
+        include proxy_params;
+    }
+
+    location /maestro/ {
+        proxy_pass http://maestro:11235/;
+        include proxy_params;
+    }
+
+    # Elasticsearch endpoint
+    location /es/ {
+        proxy_pass http://elasticsearch:9200/;
+        include proxy_params;
+    }
+}

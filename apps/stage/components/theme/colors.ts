@@ -19,13 +19,16 @@
  *
  */
 
-const home = {
-	hero: '#0B75A2',
-	main: '#F2F5F8',
-	button: '#00A88F',
-	highlight: '#109ED9',
+// Teal/Green shades from the Primary palette
+const primary = {
+	primary: '#02394A',
+	primary_dark: '#043565',
+	primary_light: '#00DDBE',
+	primary_lighter: '#40E6CF',
+	primary_lightest: '#99F1E5',
+	primary_pale: '#CCF8F2',
+	primary_palest: '#E5FBF8',
 };
-
 const base = {
 	white: '#fff',
 	black: '#282A35',
@@ -40,17 +43,6 @@ const grey = {
 	grey_5: '#5E6068',
 	grey_6: '#282A35',
 	grey_highlight: '#DFDFE1',
-};
-
-// Teal/Green shades from the Primary palette
-const primary = {
-	primary: '#00A88F',
-	primary_dark: '#00C4A7',
-	primary_light: '#00DDBE',
-	primary_lighter: '#40E6CF',
-	primary_lightest: '#99F1E5',
-	primary_pale: '#CCF8F2',
-	primary_palest: '#E5FBF8',
 };
 
 // Blue shades from the Secondary palette
@@ -167,7 +159,6 @@ export default {
 	...success,
 	...error,
 	...warning,
-	...home,
 };
 
 // Clean update for future

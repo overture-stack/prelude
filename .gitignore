@@ -3,3 +3,7 @@
 node_modules
 __MACOSX
 dist
+correlation-data.csv
+mrna-data.csv
+mutation-data.csv
+protein-data.csv

@@ -35,10 +35,11 @@ services:
       # ES_INDEX_1_ALIAS_NAME: file_centric
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
-      ARRANGER_COUNT: 1
+      ARRANGER_COUNT: 4
       ARRANGER_0_URL: http://arranger-datatable1:5050
       ARRANGER_1_URL: http://arranger-datatable2:5051
-      # ARRANGER_2_URL: http://arranger-datatable3:5052
+      ARRANGER_2_URL: http://arranger-datatable3:5052
+      ARRANGER_3_URL: http://arranger-datatable4:5053
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
       # Service Connections
@@ -199,30 +200,55 @@ services:
     networks:
       - conductor-network
 
-  # arranger-datatable3:
-  #   profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
-  #   image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-  #   container_name: arranger-datatable3
-  #   platform: linux/amd64
-  #   depends_on:
-  #     conductor:
-  #       condition: service_healthy
-  #   ports:
-  #     - "5052:5052" # Use unique ports for each Arranger instance
-  #   volumes:
-  #     - ./apps/conductor/configs/arrangerConfigs/datatable3:/app/modules/server/configs # Point to the relevant generated config
-  #   environment:
-  #     # Elasticsearch Variables
-  #     ES_HOST: http://elasticsearch:9200
-  #     ES_USER: elastic
-  #     ES_PASS: myelasticpassword
-  #     ES_ARRANGER_SET_INDEX: datatable3_arranger_set
-  #     # Arranger Variables
-  #     PORT: 5052 # Required
-  #     DEBUG: false
-  #     ENABLE_LOGS: false
-  #   networks:
-  #     - conductor-network
+  arranger-datatable3:
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-datatable3
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - "5052:5052" # Use unique ports for each Arranger instance
+    volumes:
+      - ./apps/conductor/configs/arrangerConfigs/datatable3:/app/modules/server/configs # Point to the relevant generated config
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: datatable3_arranger_set
+      # Arranger Variables
+      PORT: 5052 # Required
+      DEBUG: false
+      ENABLE_LOGS: false
+    networks:
+      - conductor-network
+
+  arranger-datatable4:
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-datatable4
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - "5053:5053" # Use unique ports for each Arranger instance
+    volumes:
+      - ./apps/conductor/configs/arrangerConfigs/datatable4:/app/modules/server/configs # Point to the relevant generated config
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: datatable4_arranger_set
+      # Arranger Variables
+      PORT: 5053 # Required
+      DEBUG: false
+      ENABLE_LOGS: false
+    networks:
+      - conductor-network
 
   # ------------------------------------------------------------------------------------#
   # Stage                                                                               #
@@ -244,7 +270,7 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Overture Prelude Portal
+      NEXT_PUBLIC_LAB_NAME: DDP
       NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
