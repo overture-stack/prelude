@@ -1,0 +1,73 @@
+{
+  "index_patterns": [
+    "data-*"
+  ],
+  "aliases": {
+    "data_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "Cancer_Type": {
+            "type": "keyword"
+          },
+          "Hugo_Symbol_A": {
+            "type": "keyword"
+          },
+          "Hugo_Symbol_B": {
+            "type": "keyword"
+          },
+          "Spearman_Correlation": {
+            "type": "float"
+          },
+          "Spearman_P_Value": {
+            "type": "float"
+          },
+          "Pearson_Correlation": {
+            "type": "float"
+          },
+          "Pearson_P_Value": {
+            "type": "float"
+          },
+          "Spearman_Correlation_Square": {
+            "type": "float"
+          },
+          "Pearson_Correlation_Square": {
+            "type": "float"
+          },
+          "Dataset_Name": {
+            "type": "keyword"
+          },
+          "Is_Oncogene_A": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_Tumour_Suppressor_Gene_A": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_Oncogene_B": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_Tumour_Suppressor_Gene_B": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_WDR_A": {
+            "type": "boolean"
+          },
+          "Is_WDR_B": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

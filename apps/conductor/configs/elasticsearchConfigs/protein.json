@@ -1,0 +1,85 @@
+{
+  "index_patterns": [
+    "data-*"
+  ],
+  "aliases": {
+    "data_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "Hugo_Symbol_A": {
+            "type": "keyword"
+          },
+          "Hugo_Symbol_B": {
+            "type": "keyword"
+          },
+          "neighborhood": {
+            "type": "integer"
+          },
+          "neighborhood_transferred": {
+            "type": "integer"
+          },
+          "fusion": {
+            "type": "integer"
+          },
+          "cooccurence": {
+            "type": "integer"
+          },
+          "homology": {
+            "type": "integer"
+          },
+          "coexpression": {
+            "type": "integer"
+          },
+          "coexpression_transferred": {
+            "type": "integer"
+          },
+          "experiments": {
+            "type": "integer"
+          },
+          "experiments_transferred": {
+            "type": "integer"
+          },
+          "database": {
+            "type": "integer"
+          },
+          "database_transferred": {
+            "type": "integer"
+          },
+          "textmining": {
+            "type": "integer"
+          },
+          "textmining_transferred": {
+            "type": "integer"
+          },
+          "combined_score": {
+            "type": "integer"
+          },
+          "Is_Oncogene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_Tumor_Suppressor_Gene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_WDR": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "dataset_name": {
+            "type": "keyword",
+            "null_value": "No Data"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "index_patterns": [
+    "data-*"
+  ],
+  "aliases": {
+    "data_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "Cancer_Type": {
+            "type": "keyword"
+          },
+          "Hugo_Symbol": {
+            "type": "keyword"
+          },
+          "Gene_Id_Entrez": {
+            "type": "integer"
+          },
+          "Hotspot": {
+            "type": "integer"
+          },
+          "Number_of_Mutated_Samples": {
+            "type": "integer"
+          },
+          "Total_Number_of_Samples": {
+            "type": "integer"
+          },
+          "Overall_Mutation_Frequency": {
+            "type": "float"
+          },
+          "Dataset_Name": {
+            "type": "keyword"
+          },
+          "Is_Oncogene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_Tumour_Suppressor_Gene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Is_WDR": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}
