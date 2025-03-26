@@ -1,4 +1,4 @@
-# Overture Documentation Portal
+# Prelude - Version 1.0.0-beta
 
 Prelude is a toolkit designed for the planning and development stages of Overture data platform implementation. It helps teams incrementally build and validate platform requirements, enabling them to:
 
@@ -58,8 +58,6 @@ These configurations provide a foundation for Overture components, ensuring cons
   - Create Song studies
   - Update Song with analysis schemas
   - Upload and publish file data with Song and Score
-
-The guides here provide detailed instructions for using Conductor.
 
 ## Getting Started
 
