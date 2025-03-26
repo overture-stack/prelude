@@ -1,16 +1,65 @@
 # Overture Documentation Portal
 
-A comprehensive documentation portal for the Overture data platform implementation, built with Next.js and featuring a responsive, mobile-friendly design with intuitive navigation.
+Prelude is a toolkit designed for the planning and development stages of Overture data platform implementation. It helps teams incrementally build and validate platform requirements, enabling them to:
 
-## Overview
+- Systematically verify requirements and user workflows
+- Minimize technical overhead during planning and prototyping
+- Create a comprehensive blueprint for production deployment
 
-This documentation portal provides a structured, user-friendly interface for accessing Overture's Prelude documentation. It features:
+> [!IMPORTANT]
+> Prelude is not intended for production environments. It serves as a preparatory tool to ensure successful production deployments. We are actively enhancing resources to support teams transitioning from Prelude to production.
 
-- Responsive sidebar navigation with mobile support
-- Markdown content rendering with automatic table of contents
-- Section-based navigation with previous/next links
-- Copy-to-clipboard functionality for headings
-- Dynamic content loading
+We welcome feedback and suggestions—please share them via [our ideas forum](https://github.com/overture-stack/docs/discussions/new?category=ideas).
+
+## Development Phases
+
+Prelude is structured into four incremental phases:
+
+![Development Phases](/docs/images/DevelopmentPhases.png "Prelude Development Phases")
+
+| **Phase**                               | **Focus**                           | **Components**                    |
+| --------------------------------------- | ----------------------------------- | --------------------------------- |
+| **Phase 1:** Data Exploration & Theming | Data visualization in the portal    | Elasticsearch, Arranger, Stage    |
+| **Phase 2:** Tabular Data Management    | Backend data storage and validation | Lyric, Lectern, Postgres, MongoDB |
+| **Phase 3:** File Management            | File storage and metadata tracking  | Song, Score, Object Storage       |
+| **_Phase 4:_** Identity & Access        | Security and user management        | Keycloak integration              |
+
+**Phase 4** is not included in Prelude v1 and will be implemented in a future release.
+
+## Supplemental Tools
+
+### Composer
+
+**Composer** transforms your data into base Overture configurations, generating:
+
+- **Elasticsearch Mappings** – Defines the structure and indexing settings for your data
+- **Arranger UI Configs** – Configures the user interface for data exploration and visualization
+- **Lectern Dictionary Schema** – Creates data dictionaries and schemas for tabular data
+- **Song Schema** – Generates schema configurations for file metadata
+
+These configurations provide a foundation for Overture components, ensuring consistent data representation and interoperability.
+
+### Conductor
+
+**Conductor** streamlines interactions with Overture APIs, offering:
+
+- **Elasticsearch Management**
+
+  - Transform and load CSV data into Elasticsearch
+
+- **Metadata and Schema Handling**
+
+  - Validate and submit schema dictionaries to Lectern
+  - Register Lectern dictionaries with Lyric
+
+- **Data Management**
+
+  - Upload tabular data to Lyric
+  - Create Song studies
+  - Update Song with analysis schemas
+  - Upload and publish file data with Song and Score
+
+The guides here provide detailed instructions for using Conductor.
 
 ## Getting Started
 
