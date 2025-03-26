@@ -1,4 +1,4 @@
-import Correlations from '../../components/pages/activeDataTables/correlations';
+import Correlations from '../../components/pages/activeDataTables/geneCorrelations';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetOneExplorationPage = createPage({
