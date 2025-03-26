@@ -96,6 +96,7 @@ const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProp
 		},
 	},
 });
+
 const QueryBar = () => {
 	const theme = useTheme();
 	useArrangerTheme(getThemeCustomisations(theme));

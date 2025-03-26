@@ -1,4 +1,4 @@
-import MRNATable from '../../components/pages/activeDataTables/mRNATable';
+import GeneExpression from '../../components/pages/activeDataTables/geneExpression';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetTwoExplorationPage = createPage({
@@ -7,7 +7,7 @@ const DataSetTwoExplorationPage = createPage({
 	},
 	isPublic: true,
 })(() => {
-	return <MRNATable />;
+	return <GeneExpression />;
 });
 
 export default DataSetTwoExplorationPage;

@@ -14,7 +14,7 @@
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
  *  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
- *  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING INs
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -32,9 +32,13 @@ import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/T
 import { useMemo } from 'react';
 import urlJoin from 'url-join';
 
+import { InternalLink, StyledLinkAsButton } from '@/components/Link';
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
-import { INTERNAL_API_PROXY } from '@/global/utils/constants';
+import { INTERNAL_API_PROXY, INTERNAL_PATHS } from '@/global/utils/constants';
+import { withData } from '@overture-stack/arranger-components/dist/DataContext';
+import { SQON } from '@overture-stack/sqon-builder';
+import stringify from 'fast-json-stable-stringify';
 
 const getTableConfigs = ({
 	apiHost,
@@ -157,6 +161,29 @@ const getTableConfigs = ({
 	},
 });
 
+const CrossTableFilterButton = withData(({ sqon }: { sqon?: SQON }) => {
+	const urlParams = new window.URLSearchParams({ filters: stringify(sqon) }).toString();
+
+	return (
+		<InternalLink path={`${INTERNAL_PATHS.DATATABLE_2}?${urlParams}`}>
+			<StyledLinkAsButton
+				css={css`
+					width: 20%;
+					padding: 8px 12px;
+					font-size: 14px;
+					border-radius: 4px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 6px;
+				`}
+			>
+				Apply filter to Gene Expression Table
+			</StyledLinkAsButton>
+		</InternalLink>
+	);
+});
+
 const RepoTable = () => {
 	const theme = useTheme();
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -164,7 +191,7 @@ const RepoTable = () => {
 		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
 
-	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATATABLE_4_ARRANGER, customExporters, theme }));
+	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATATABLE_1_ARRANGER, customExporters, theme }));
 
 	return useMemo(
 		() => (
@@ -179,6 +206,7 @@ const RepoTable = () => {
 					`}
 				>
 					<TableContextProvider>
+						<CrossTableFilterButton />
 						<Toolbar />
 						<Table />
 						<Pagination />

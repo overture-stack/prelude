@@ -30,11 +30,11 @@ import {
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
 import { useMemo } from 'react';
-import urlJoin from 'url-join';
 
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
 import { INTERNAL_API_PROXY } from '@/global/utils/constants';
+import urlJoin from 'url-join';
 
 const getTableConfigs = ({
 	apiHost,

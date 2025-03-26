@@ -1,4 +1,4 @@
-import ProteinTable from '../../components/pages/activeDataTables/proteinTable';
+import ProteinExpression from '../../components/pages/activeDataTables/proteinInteractions';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetFourExplorationPage = createPage({
@@ -7,7 +7,7 @@ const DataSetFourExplorationPage = createPage({
 	},
 	isPublic: true,
 })(() => {
-	return <ProteinTable />;
+	return <ProteinExpression />;
 });
 
 export default DataSetFourExplorationPage;
