@@ -25,22 +25,22 @@ services:
       ES_INDEX_COUNT: 4
       # Correlation index
       ES_INDEX_0_NAME: correlation-index
-      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/correlation.json
+      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/geneCorrelation.json
       ES_INDEX_0_TEMPLATE_NAME: correlation-index
       ES_INDEX_0_ALIAS_NAME: correlation_centric
       # mRNA index
       ES_INDEX_1_NAME: mrna-index
-      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/mrna.json
+      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/geneExpression.json
       ES_INDEX_1_TEMPLATE_NAME: mrna-index
       ES_INDEX_1_ALIAS_NAME: mrna_centric
       # Mutation index
       ES_INDEX_2_NAME: mutation-index
-      ES_INDEX_2_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/mutation.json
+      ES_INDEX_2_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/geneMutations.json
       ES_INDEX_2_TEMPLATE_NAME: mutation-index
       ES_INDEX_2_ALIAS_NAME: mutation_centric
       # Protein index
       ES_INDEX_3_NAME: protein-index
-      ES_INDEX_3_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/protein.json
+      ES_INDEX_3_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/proteinInteractions.json
       ES_INDEX_3_TEMPLATE_NAME: protein-index
       ES_INDEX_3_ALIAS_NAME: protein_centric
       # Arranger Services Configuration

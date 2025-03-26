@@ -1,0 +1,178 @@
+{
+  "name": "proteinInteractions",
+  "description": "Generated dictionary from CSV files",
+  "version": "1.0",
+  "meta": {},
+  "schemas": [
+    {
+      "name": "proteininteractions",
+      "description": "Schema generated from proteinInteractions.csv",
+      "fields": [
+        {
+          "name": "Hugo_Symbol_A",
+          "description": "Field containing Hugo_Symbol_A data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Hugo_Symbol_A"
+          }
+        },
+        {
+          "name": "Hugo_Symbol_B",
+          "description": "Field containing Hugo_Symbol_B data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Hugo_Symbol_B"
+          }
+        },
+        {
+          "name": "neighborhood",
+          "description": "Field containing neighborhood data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "neighborhood"
+          }
+        },
+        {
+          "name": "neighborhood_transferred",
+          "description": "Field containing neighborhood_transferred data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "neighborhood_transferred"
+          }
+        },
+        {
+          "name": "fusion",
+          "description": "Field containing fusion data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "fusion"
+          }
+        },
+        {
+          "name": "cooccurence",
+          "description": "Field containing cooccurence data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "cooccurence"
+          }
+        },
+        {
+          "name": "homology",
+          "description": "Field containing homology data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "homology"
+          }
+        },
+        {
+          "name": "coexpression",
+          "description": "Field containing coexpression data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "coexpression"
+          }
+        },
+        {
+          "name": "coexpression_transferred",
+          "description": "Field containing coexpression_transferred data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "coexpression_transferred"
+          }
+        },
+        {
+          "name": "experiments",
+          "description": "Field containing experiments data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "experiments"
+          }
+        },
+        {
+          "name": "experiments_transferred",
+          "description": "Field containing experiments_transferred data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "experiments_transferred"
+          }
+        },
+        {
+          "name": "database",
+          "description": "Field containing database data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "database"
+          }
+        },
+        {
+          "name": "database_transferred",
+          "description": "Field containing database_transferred data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "database_transferred"
+          }
+        },
+        {
+          "name": "textmining",
+          "description": "Field containing textmining data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "textmining"
+          }
+        },
+        {
+          "name": "textmining_transferred",
+          "description": "Field containing textmining_transferred data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "textmining_transferred"
+          }
+        },
+        {
+          "name": "combined_score",
+          "description": "Field containing combined_score data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "combined_score"
+          }
+        },
+        {
+          "name": "Is_Oncogene",
+          "description": "Field containing Is_Oncogene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Is_Oncogene"
+          }
+        },
+        {
+          "name": "Is_Tumor_Suppressor_Gene",
+          "description": "Field containing Is_Tumor_Suppressor_Gene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Is_Tumor_Suppressor_Gene"
+          }
+        },
+        {
+          "name": "Is_WDR",
+          "description": "Field containing Is_WDR data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Is_WDR"
+          }
+        },
+        {
+          "name": "dataset_name",
+          "description": "Field containing dataset_name data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dataset_name"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-26T21:41:15.691Z",
+        "sourceFile": "proteinInteractions.csv"
+      }
+    }
+  ]
+}

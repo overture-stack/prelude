@@ -1,0 +1,82 @@
+{
+  "name": "geneExpression",
+  "description": "Generated dictionary from CSV files",
+  "version": "1.0",
+  "meta": {},
+  "schemas": [
+    {
+      "name": "geneexpression",
+      "description": "Schema generated from geneExpression.csv",
+      "fields": [
+        {
+          "name": "Gene_Id_Entrez",
+          "description": "Field containing Gene_Id_Entrez data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "Gene_Id_Entrez"
+          }
+        },
+        {
+          "name": "Average_Expression",
+          "description": "Field containing Average_Expression data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "Average_Expression"
+          }
+        },
+        {
+          "name": "Number_of_Tumour_Samples",
+          "description": "Field containing Number_of_Tumour_Samples data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "Number_of_Tumour_Samples"
+          }
+        },
+        {
+          "name": "Cancer_Type",
+          "description": "Field containing Cancer_Type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Cancer_Type"
+          }
+        },
+        {
+          "name": "Dataset_Name",
+          "description": "Field containing Dataset_Name data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Dataset_Name"
+          }
+        },
+        {
+          "name": "Is_Oncogene",
+          "description": "Field containing Is_Oncogene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Is_Oncogene"
+          }
+        },
+        {
+          "name": "Is_Tumor_Suppressor_Gene",
+          "description": "Field containing Is_Tumor_Suppressor_Gene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Is_Tumor_Suppressor_Gene"
+          }
+        },
+        {
+          "name": "Is_WDR",
+          "description": "Field containing Is_WDR data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Is_WDR"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-26T21:40:02.017Z",
+        "sourceFile": "geneExpression.csv"
+      }
+    }
+  ]
+}
