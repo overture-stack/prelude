@@ -6,7 +6,7 @@ const HomeHero = (): ReactElement => {
 	return (
 		<section
 			css={css`
-				background-color: ${defaultTheme.colors.hero};
+				background-color: ${defaultTheme.colors.primary};
 				color: ${defaultTheme.colors.white};
 				height: 120px;
 				display: flex;
