@@ -15,7 +15,7 @@ We welcome feedback and suggestions—please share them via [our ideas forum](ht
 
 Prelude is structured into four incremental phases:
 
-![Development Phases](/docs/images/DevelopmentPhases.png "Prelude Development Phases")
+![Development Phases](apps/stage/public/docs/images/DevelopmentPhases.png "Prelude Development Phases")
 
 | **Phase**                               | **Focus**                           | **Components**                    |
 | --------------------------------------- | ----------------------------------- | --------------------------------- |
