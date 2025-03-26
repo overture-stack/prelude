@@ -1,0 +1,61 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "data__Cancer_Type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Hugo_Symbol",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Gene_Id_Entrez",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Hotspot",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Number_of_Mutated_Samples",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Total_Number_of_Samples",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Overall_Mutation_Frequency",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Dataset_Name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_Oncogene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_Tumour_Suppressor_Gene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_WDR",
+        "show": true
+      }
+    ]
+  }
+}

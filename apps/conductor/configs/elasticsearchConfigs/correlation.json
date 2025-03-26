@@ -1,9 +1,7 @@
 {
-  "index_patterns": [
-    "data-*"
-  ],
+  "index_patterns": ["correlation-*"],
   "aliases": {
-    "data_centric": {}
+    "correlation_centric": {}
   },
   "mappings": {
     "properties": {

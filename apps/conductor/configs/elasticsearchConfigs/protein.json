@@ -1,9 +1,7 @@
 {
-  "index_patterns": [
-    "data-*"
-  ],
+  "index_patterns": ["protein-*"],
   "aliases": {
-    "data_centric": {}
+    "protein_centric": {}
   },
   "mappings": {
     "properties": {

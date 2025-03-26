@@ -1,9 +1,7 @@
 {
-  "index_patterns": [
-    "data-*"
-  ],
+  "index_patterns": ["mrna-*"],
   "aliases": {
-    "data_centric": {}
+    "mrna_centric": {}
   },
   "mappings": {
     "properties": {

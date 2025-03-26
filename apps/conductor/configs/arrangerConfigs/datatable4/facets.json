@@ -1,0 +1,106 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "data__Hugo_Symbol_A",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Hugo_Symbol_B",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__neighborhood",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__neighborhood_transferred",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__fusion",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__cooccurence",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__homology",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__coexpression",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__coexpression_transferred",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__experiments",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__experiments_transferred",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__database",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__database_transferred",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__textmining",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__textmining_transferred",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__combined_score",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_Oncogene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_Tumor_Suppressor_Gene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_WDR",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dataset_name",
+        "show": true
+      }
+    ]
+  }
+}

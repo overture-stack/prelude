@@ -22,17 +22,27 @@ services:
       DEBUG: false
       # Elasticsearch Index Configuration
       # Dynamic indices are configured with a count and indexed variables
-      ES_INDEX_COUNT: 1
-      # First index
-      ES_INDEX_0_NAME: datatable1-index
-      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/datatable1-mapping.json
-      ES_INDEX_0_TEMPLATE_NAME: datatable1-index
-      ES_INDEX_0_ALIAS_NAME: datatable1_centric
-      # Second index
-      # ES_INDEX_1_NAME: file-index
-      # ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/file_data_index_template.json
-      # ES_INDEX_1_TEMPLATE_NAME: file_template
-      # ES_INDEX_1_ALIAS_NAME: file_centric
+      ES_INDEX_COUNT: 4
+      # Correlation index
+      ES_INDEX_0_NAME: correlation-index
+      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/correlation.json
+      ES_INDEX_0_TEMPLATE_NAME: correlation-index
+      ES_INDEX_0_ALIAS_NAME: correlation_centric
+      # mRNA index
+      ES_INDEX_1_NAME: mrna-index
+      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/mrna.json
+      ES_INDEX_1_TEMPLATE_NAME: mrna-index
+      ES_INDEX_1_ALIAS_NAME: mrna_centric
+      # Mutation index
+      ES_INDEX_2_NAME: mutation-index
+      ES_INDEX_2_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/mutation.json
+      ES_INDEX_2_TEMPLATE_NAME: mutation-index
+      ES_INDEX_2_ALIAS_NAME: mutation_centric
+      # Protein index
+      ES_INDEX_3_NAME: protein-index
+      ES_INDEX_3_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/protein.json
+      ES_INDEX_3_TEMPLATE_NAME: protein-index
+      ES_INDEX_3_ALIAS_NAME: protein_centric
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
       ARRANGER_COUNT: 4
@@ -270,7 +280,7 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: DDP
+      NEXT_PUBLIC_LAB_NAME: D.D.P
       NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
@@ -278,15 +288,19 @@ services:
       # Datatable1 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: correlation_centric
       # Datatable2 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
       NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
+      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: mrna_centric
       # Datatable2 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable3:5052
       NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable3_centric
+      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: mutation_centric
+      # Datatable4 Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger-datatable4:5053
+      NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: protein_centric
       # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://song:8080
       NEXT_PUBLIC_SCORE_API: http://score:8087
@@ -295,7 +309,7 @@ services:
       # Auth Variables
       NEXTAUTH_SECRET: your-secure-secret-here
       # System Alerts
-      NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
+      # NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
       # CORS Configuration
       NEXT_PUBLIC_CORS_ENABLED: "true"
       NEXT_PUBLIC_CORS_ALLOWED_ORIGINS: "*"

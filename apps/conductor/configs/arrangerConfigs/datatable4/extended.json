@@ -1,0 +1,84 @@
+{
+  "extended": [
+    {
+      "displayName": "Hugo Symbol A",
+      "fieldName": "data.Hugo_Symbol_A"
+    },
+    {
+      "displayName": "Hugo Symbol B",
+      "fieldName": "data.Hugo_Symbol_B"
+    },
+    {
+      "displayName": "Neighborhood",
+      "fieldName": "data.neighborhood"
+    },
+    {
+      "displayName": "Neighborhood Transferred",
+      "fieldName": "data.neighborhood_transferred"
+    },
+    {
+      "displayName": "Fusion",
+      "fieldName": "data.fusion"
+    },
+    {
+      "displayName": "Cooccurence",
+      "fieldName": "data.cooccurence"
+    },
+    {
+      "displayName": "Homology",
+      "fieldName": "data.homology"
+    },
+    {
+      "displayName": "Coexpression",
+      "fieldName": "data.coexpression"
+    },
+    {
+      "displayName": "Coexpression Transferred",
+      "fieldName": "data.coexpression_transferred"
+    },
+    {
+      "displayName": "Experiments",
+      "fieldName": "data.experiments"
+    },
+    {
+      "displayName": "Experiments Transferred",
+      "fieldName": "data.experiments_transferred"
+    },
+    {
+      "displayName": "Database",
+      "fieldName": "data.database"
+    },
+    {
+      "displayName": "Database Transferred",
+      "fieldName": "data.database_transferred"
+    },
+    {
+      "displayName": "Textmining",
+      "fieldName": "data.textmining"
+    },
+    {
+      "displayName": "Textmining Transferred",
+      "fieldName": "data.textmining_transferred"
+    },
+    {
+      "displayName": "Combined Score",
+      "fieldName": "data.combined_score"
+    },
+    {
+      "displayName": "Is Oncogene",
+      "fieldName": "data.Is_Oncogene"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene",
+      "fieldName": "data.Is_Tumor_Suppressor_Gene"
+    },
+    {
+      "displayName": "Is WDR",
+      "fieldName": "data.Is_WDR"
+    },
+    {
+      "displayName": "Dataset Name",
+      "fieldName": "data.dataset_name"
+    }
+  ]
+}
