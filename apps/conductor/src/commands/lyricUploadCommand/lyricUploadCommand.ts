@@ -1,130 +1,30 @@
-import { Command, CommandResult } from "./baseCommand";
-import { CLIOutput } from "../types/cli";
-import { Logger } from "../utils/logger";
+import { Command, CommandResult } from "../baseCommand";
+import { CLIOutput } from "../../types/cli";
+import { Logger } from "../../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
-import axios from "axios";
-const { exec } = require("child_process");
 
-/**
- * Interface for Lyric submission response
- */
-interface LyricSubmissionResponse {
-  submissionId: string;
-  status: string;
-  [key: string]: any;
-}
+import { ConductorError, ErrorCodes } from "../../utils/errors";
 
-/**
- * Expands directory paths to individual file paths, filtering by extension if specified
- * @param paths Array of file or directory paths
- * @param extensions Optional array of extensions to filter by (e.g., ['.csv', '.json'])
- * @returns Array of expanded file paths
- */
-function expandDirectoryPaths(
-  paths: string[],
-  extensions?: string[]
-): string[] {
-  if (!paths || paths.length === 0) {
-    return [];
-  }
+// Import services and utilities
+import { LyricCategoriesService } from "./services/lyric-categories.service";
+import { LecternSchemasService } from "./services/lectern-schemas.service";
+import { FilePreparationService } from "./services/file-preparation.service";
+import { ErrorHandlerUtility } from "./utils/error-handler";
 
-  let expandedPaths: string[] = [];
-
-  paths.forEach((inputPath) => {
-    try {
-      const stats = fs.statSync(inputPath);
-
-      if (stats.isDirectory()) {
-        Logger.debug(`Processing directory: ${inputPath}`);
-
-        // Read all files in the directory
-        const filesInDir = fs
-          .readdirSync(inputPath)
-          .map((file) => path.join(inputPath, file))
-          .filter((file) => {
-            try {
-              const fileStat = fs.statSync(file);
-
-              // Skip if not a file
-              if (!fileStat.isFile()) {
-                return false;
-              }
-
-              // Filter by extension if specified
-              if (extensions && extensions.length > 0) {
-                const ext = path.extname(file).toLowerCase();
-                return extensions.includes(ext);
-              }
-
-              return true;
-            } catch (error) {
-              Logger.debug(`Error accessing file ${file}: ${error}`);
-              return false;
-            }
-          });
-
-        if (filesInDir.length === 0) {
-          if (extensions && extensions.length > 0) {
-            Logger.warn(
-              `No files with extensions ${extensions.join(
-                ", "
-              )} found in directory: ${inputPath}`
-            );
-          } else {
-            Logger.warn(`Directory is empty: ${inputPath}`);
-          }
-        } else {
-          Logger.debug(
-            `Found ${filesInDir.length} files in directory ${inputPath}`
-          );
-          expandedPaths = [...expandedPaths, ...filesInDir];
-        }
-      } else {
-        // It's a file, check extension if needed
-        if (extensions && extensions.length > 0) {
-          const ext = path.extname(inputPath).toLowerCase();
-          if (extensions.includes(ext)) {
-            expandedPaths.push(inputPath);
-          } else {
-            Logger.debug(
-              `Skipping file with unsupported extension: ${inputPath}`
-            );
-          }
-        } else {
-          expandedPaths.push(inputPath);
-        }
-      }
-    } catch (error) {
-      Logger.debug(`Error accessing path ${inputPath}: ${error}`);
-      throw new ConductorError(
-        `Cannot access path: ${inputPath}`,
-        ErrorCodes.FILE_NOT_FOUND,
-        error
-      );
-    }
-  });
-
-  return expandedPaths;
-}
-
-/**
- * Gets all CSV files from the provided directory
- * @param dirPath Directory path to scan
- * @returns Array of CSV file paths
- */
-function getCSVFiles(dirPath: string): string[] {
-  return expandDirectoryPaths([dirPath], [".csv"]);
-}
+// Import interfaces
+// Import interfaces
+import { LyricSubmissionResponse } from "./interfaces/submission-error.interface";
+import { LyricCategory } from "./interfaces/lyric-category.interface";
 
 /**
  * Command for loading data into Lyric
  */
 export class LyricUploadCommand extends Command {
-  private readonly MAX_RETRIES = 1;
-  private readonly RETRY_DELAY = 5000;
+  private readonly MAX_RETRIES = 10;
+  private readonly RETRY_DELAY = 20000; // 20 seconds
 
   constructor() {
     super("Lyric Data Loading");
@@ -153,7 +53,8 @@ export class LyricUploadCommand extends Command {
       cliOutput.config.lectern?.url ||
       process.env.LECTERN_URL ||
       "http://localhost:3031";
-    const dataDirectory = this.resolveDataDirectory(cliOutput);
+    const dataDirectoryOrFile =
+      FilePreparationService.resolveDataPath(cliOutput);
     const categoryId =
       cliOutput.config.lyric?.categoryId || process.env.CATEGORY_ID || "1";
     const organization =
@@ -176,31 +77,94 @@ export class LyricUploadCommand extends Command {
       Logger.info(`\x1b[1;36mStarting data loading process...\x1b[0m`);
       Logger.info(`Lyric URL: ${lyricUrl}`);
       Logger.info(`Lectern URL: ${lecternUrl}`);
-      Logger.info(`Data Directory: ${dataDirectory}`);
+      Logger.info(`Data Source: ${dataDirectoryOrFile}`);
       Logger.info(`Category ID: ${categoryId}`);
       Logger.info(`Organization: ${organization}`);
       Logger.info(`Max Retries: ${maxRetries}`);
 
-      // Find all CSV files in the directory
-      const csvFilePaths = this.findCSVFiles(dataDirectory);
+      // 1. Get available cacdtegories from Lyric (for better error handling)
+      const availableCategories = await LyricCategoriesService.fetchCategories(
+        lyricUrl
+      );
 
-      if (csvFilePaths.length === 0) {
+      // 2. Validate the category ID early
+      const isValidCategory = LyricCategoriesService.validateCategoryId(
+        categoryId,
+        availableCategories
+      );
+      if (!isValidCategory) {
         throw new ConductorError(
-          `No CSV files found in ${dataDirectory}`,
-          ErrorCodes.FILE_NOT_FOUND,
+          `Invalid category ID: ${categoryId}`,
+          ErrorCodes.INVALID_ARGS,
           {
-            suggestion: "Make sure your directory contains valid CSV files.",
+            availableCategories,
+            suggestion: `Please use a valid category ID. Available categories are: ${LyricCategoriesService.formatCategories(
+              availableCategories
+            )}`,
           }
         );
       }
 
-      Logger.info(`Found ${csvFilePaths.length} CSV files to submit:`);
-      csvFilePaths.forEach((file) => {
+      // 3. Get available schemas from Lectern
+      Logger.info(`Fetching available schemas from Lectern...`);
+      const schemas = await LecternSchemasService.fetchSchemas(lecternUrl);
+
+      if (schemas.length === 0) {
+        throw new ConductorError(
+          "No schemas found in Lectern. Cannot proceed without valid schemas.",
+          ErrorCodes.CONNECTION_ERROR,
+          {
+            suggestion:
+              "Make sure your Lectern instance is properly configured with at least one dictionary and schema.",
+          }
+        );
+      }
+
+      // Display available schemas
+      Logger.info(`Available schemas in Lectern:`);
+      schemas.forEach((schema, index) => {
+        Logger.info(`${index + 1}. ${schema.name}`);
+      });
+
+      // 4. Find all CSV files to upload
+      const originalCsvFilePaths =
+        FilePreparationService.findCSVFiles(dataDirectoryOrFile);
+
+      if (originalCsvFilePaths.length === 0) {
+        throw new ConductorError(
+          `No CSV files found at path: ${dataDirectoryOrFile}`,
+          ErrorCodes.FILE_NOT_FOUND,
+          {
+            suggestion:
+              "Make sure you have valid CSV files at the specified path.",
+          }
+        );
+      }
+
+      Logger.info(`Found ${originalCsvFilePaths.length} CSV files:`);
+      originalCsvFilePaths.forEach((file) => {
         Logger.info(`- ${path.basename(file)}`);
       });
 
-      // Submit all files to Lyric using curl
-      const result = await this.submitFilesWithCurl({
+      // 5. Rename files if needed to match schema names
+      const csvFilePaths = await FilePreparationService.prepareFilesForUpload(
+        originalCsvFilePaths,
+        schemas
+      );
+
+      if (csvFilePaths.length === 0) {
+        throw new ConductorError(
+          "No valid files to submit after schema matching.",
+          ErrorCodes.INVALID_ARGS,
+          {
+            suggestion:
+              "Rename your CSV files to match one of the available schemas or use the auto-rename feature.",
+          }
+        );
+      }
+
+      // 6. Submit the properly named files to Lyric
+      const result = await this.submitFiles({
         categoryId,
         organization,
         csvFilePaths,
@@ -227,106 +191,9 @@ export class LyricUploadCommand extends Command {
   }
 
   /**
-   * Resolves the data directory with fallback and validation
-   * @param cliOutput The CLI configuration and inputs
-   * @returns A resolved, absolute path to the data directory
+   * Submit files to Lyric service
    */
-  private resolveDataDirectory(cliOutput: CLIOutput): string {
-    // First check command-line options.dataDirectory which is set by -d flag
-    const fromCommandLine = cliOutput.options?.dataDirectory;
-
-    // Then check the config object and environment
-    const fromConfig = cliOutput.config.lyric?.dataDirectory;
-    const fromEnv = process.env.LYRIC_DATA;
-
-    // Use the first available source, with fallback to "./data"
-    const rawDataDirectory =
-      fromCommandLine || fromConfig || fromEnv || "./data";
-
-    // Log where we found the directory path
-    if (fromCommandLine) {
-      Logger.debug(
-        `Using data directory from command line: ${fromCommandLine}`
-      );
-    } else if (fromConfig) {
-      Logger.debug(`Using data directory from config: ${fromConfig}`);
-    } else if (fromEnv) {
-      Logger.debug(`Using data directory from environment: ${fromEnv}`);
-    } else {
-      Logger.debug(`Using default data directory: ./data`);
-    }
-
-    // Resolve to an absolute path
-    const resolvedPath = path.resolve(process.cwd(), rawDataDirectory);
-    Logger.debug(`Resolved data directory path: ${resolvedPath}`);
-
-    // Validate the directory exists
-    if (!fs.existsSync(resolvedPath)) {
-      throw new ConductorError(
-        `Data directory not found: ${resolvedPath}`,
-        ErrorCodes.FILE_NOT_FOUND,
-        {
-          providedPath: rawDataDirectory,
-          resolvedPath,
-          suggestion: "Make sure the directory exists and is accessible.",
-        }
-      );
-    }
-
-    // Validate it's actually a directory
-    if (!fs.statSync(resolvedPath).isDirectory()) {
-      throw new ConductorError(
-        `Path exists but is not a directory: ${resolvedPath}`,
-        ErrorCodes.INVALID_ARGS,
-        {
-          providedPath: rawDataDirectory,
-          resolvedPath,
-          suggestion: "Provide a valid directory path, not a file path.",
-        }
-      );
-    }
-
-    return resolvedPath;
-  }
-
-  /**
-   * Finds all CSV files in the directory
-   * @param directory Directory to search
-   * @returns Array of CSV file paths (with full paths)
-   */
-  private findCSVFiles(directory: string): string[] {
-    try {
-      // Use the utility function to get all CSV files
-      const csvFilePaths = getCSVFiles(directory);
-
-      if (csvFilePaths.length === 0) {
-        Logger.warn(`No CSV files found in directory: ${directory}`);
-      } else {
-        Logger.debug(`Found ${csvFilePaths.length} CSV files in ${directory}`);
-      }
-
-      return csvFilePaths;
-    } catch (error) {
-      throw new ConductorError(
-        `Error reading directory contents: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-        ErrorCodes.FILE_NOT_FOUND,
-        {
-          directory,
-          error: error instanceof Error ? error.message : String(error),
-          suggestion: "Check directory permissions and path spelling.",
-        }
-      );
-    }
-  }
-
-  /**
-   * Submit files to Lyric using curl
-   * @param params Parameters for submission
-   * @returns Lyric submission response
-   */
-  private async submitFilesWithCurl(params: {
+  private async submitFiles(params: {
     categoryId: string;
     organization: string;
     csvFilePaths: string[];
@@ -354,7 +221,11 @@ export class LyricUploadCommand extends Command {
       const validFiles = csvFilePaths.filter((filePath) => {
         try {
           const stats = fs.statSync(filePath);
-          return stats.isFile() && stats.size > 0;
+          return (
+            stats.isFile() &&
+            stats.size > 0 &&
+            path.extname(filePath).toLowerCase() === ".csv"
+          );
         } catch (err) {
           Logger.warn(
             `Skipping ${path.basename(filePath)} - error accessing file: ${
@@ -375,16 +246,28 @@ export class LyricUploadCommand extends Command {
         );
       }
 
-      // Build curl command
-      let command = `curl -X 'POST' '${url}' -H 'accept: application/json' -H 'Content-Type: multipart/form-data'`;
+      // Create a FormData object for the submission
+      const formData = new FormData();
 
-      // Add each file
+      // Add each file to the form data
       for (const filePath of validFiles) {
-        command += ` -F 'files=@${filePath};type=text/csv'`;
+        try {
+          const fileContent = fs.readFileSync(filePath);
+          const fileName = path.basename(filePath);
+          const blob = new Blob([fileContent], { type: "text/csv" });
+          formData.append("files", blob, fileName);
+          Logger.debug(`Added file to submission: ${fileName}`);
+        } catch (error) {
+          Logger.warn(
+            `Error reading file ${filePath}: ${
+              error instanceof Error ? error.message : String(error)
+            }`
+          );
+        }
       }
 
       // Add organization
-      command += ` -F 'organization=${organization}'`;
+      formData.append("organization", organization);
 
       // Log the submission information
       Logger.info(`\x1b[1;36mSubmitting Data:\x1b[0m`);
@@ -396,30 +279,16 @@ export class LyricUploadCommand extends Command {
       );
       Logger.info(`Organization: ${organization}`);
 
-      // Execute the curl command
-      Logger.debug(`Executing curl command: ${command}`);
-      const { stdout, stderr } = await this.execCommand(command);
+      // Submit the data
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Accept: "application/json",
+        },
+      });
 
-      if (stderr && stderr.trim()) {
-        Logger.debug(`Curl stderr output: ${stderr}`);
-      }
-
-      // Parse the JSON response from curl
-      let responseData;
-      try {
-        responseData = JSON.parse(stdout);
-      } catch (parseError) {
-        Logger.error(`Failed to parse curl response as JSON: ${stdout}`);
-        throw new ConductorError(
-          `Failed to parse curl response: ${
-            parseError instanceof Error
-              ? parseError.message
-              : String(parseError)
-          }`,
-          ErrorCodes.CONNECTION_ERROR,
-          { stdout, stderr }
-        );
-      }
+      // Type the response data properly
+      const responseData = response.data as { submissionId?: string };
 
       // Extract submission ID from response
       const submissionId = responseData?.submissionId;
@@ -449,19 +318,96 @@ export class LyricUploadCommand extends Command {
           status: "COMMITTED",
         };
       } else {
+        // Fetch and display detailed validation errors
+        const errorDetails =
+          await ErrorHandlerUtility.fetchDetailedValidationErrors(
+            submissionId,
+            lyricUrl
+          );
+        // Try to log and process errors with more context
+        Logger.error(
+          `Detailed validation errors for submission ${submissionId}:`
+        );
+        Logger.error(`Total Errors: ${errorDetails.totalErrors || 0}`);
+        // Display the detailed validation errors
+        ErrorHandlerUtility.displayValidationErrors(
+          errorDetails,
+          path.basename(validFiles[0]),
+          lyricUrl
+        );
+        // Try to extract more context from raw error data if available
+        const additionalContext = errorDetails.rawErrorData
+          ? { rawErrorData: errorDetails.rawErrorData }
+          : {};
         throw new ConductorError(
-          `Submission has unexpected status: ${status}`,
+          `Submission has unexpected status: ${status}. Validation failed.`,
           ErrorCodes.VALIDATION_FAILED,
           {
             submissionId,
             status,
-            suggestion: "Check Lyric server logs for validation details.",
+            totalErrors: errorDetails.totalErrors,
+            errorSamples: errorDetails.errorSamples,
+            suggestion:
+              "Check the detailed error report above to correct your data file.",
+            ...additionalContext,
           }
         );
       }
     } catch (error) {
       if (error instanceof ConductorError) {
         throw error;
+      }
+
+      // Handle axios errors specifically
+      if (this.isAxiosError(error)) {
+        const axiosError = error as any;
+
+        // Check for category ID errors
+        if (
+          axiosError.response?.status === 400 &&
+          axiosError.response?.data?.message?.includes("categoryId is invalid")
+        ) {
+          // Fetch available categories to provide in the error message
+          try {
+            const availableCategories =
+              await LyricCategoriesService.fetchCategories(params.lyricUrl);
+            throw new ConductorError(
+              "Invalid category ID",
+              ErrorCodes.INVALID_ARGS,
+              {
+                providedCategoryId: categoryId,
+                availableCategories,
+                suggestion: `Please use a valid category ID. Available categories are: ${LyricCategoriesService.formatCategories(
+                  availableCategories
+                )}`,
+              }
+            );
+          } catch (innerError) {
+            // Fall back to generic error if we can't fetch categories
+            throw new ConductorError(
+              "Invalid category ID",
+              ErrorCodes.INVALID_ARGS,
+              {
+                providedCategoryId: categoryId,
+                suggestion:
+                  "Please use a valid category ID. Use the numeric ID instead of the name.",
+              }
+            );
+          }
+        }
+
+        throw new ConductorError(
+          `Data submission failed: ${axiosError.response?.status || ""} ${
+            axiosError.message
+          }`,
+          ErrorCodes.CONNECTION_ERROR,
+          {
+            status: axiosError.response?.status,
+            statusText: axiosError.response?.statusText,
+            data: axiosError.response?.data,
+            suggestion: "Check network connection and Lyric server status.",
+          }
+        );
       }
 
       throw new ConductorError(
@@ -479,11 +425,6 @@ export class LyricUploadCommand extends Command {
 
   /**
    * Wait for validation to complete
-   * @param submissionId Submission ID to check
-   * @param lyricUrl Lyric URL
-   * @param maxRetries Maximum number of retries
-   * @param retryDelay Delay between retries in milliseconds
-   * @returns Final validation status
    */
   private async waitForValidation(
     submissionId: string,
@@ -599,10 +540,6 @@ export class LyricUploadCommand extends Command {
 
   /**
    * Commit a submission
-   * @param categoryId Category ID
-   * @param submissionId Submission ID
-   * @param lyricUrl Lyric URL
-   * @returns True if commit successful
    */
   private async commitSubmission(
     categoryId: string,
@@ -614,7 +551,7 @@ export class LyricUploadCommand extends Command {
 
       // Make commit request
       const commitUrl = `${lyricUrl}/submission/category/${categoryId}/commit/${submissionId}`;
-      const response = await axios.post(commitUrl, null, {
+      await axios.post(commitUrl, null, {
         headers: {
           accept: "application/json",
         },
@@ -666,38 +603,7 @@ export class LyricUploadCommand extends Command {
   }
 
   /**
-   * Execute a command via child_process.exec
-   * @param command Command to execute
-   * @returns Promise resolving to stdout and stderr
-   */
-  private async execCommand(
-    command: string
-  ): Promise<{ stdout: string; stderr: string }> {
-    return new Promise((resolve, reject) => {
-      exec(
-        command,
-        { maxBuffer: 10 * 1024 * 1024 },
-        (error: Error | null, stdout: string, stderr: string) => {
-          if (error) {
-            reject(
-              new ConductorError(
-                `Command execution failed: ${error.message}`,
-                ErrorCodes.CONNECTION_ERROR,
-                { error, stderr, command }
-              )
-            );
-            return;
-          }
-          resolve({ stdout, stderr });
-        }
-      );
-    });
-  }
-
-  /**
    * Type guard to check if an error is an Axios error
-   * @param error Error to check
-   * @returns True if error is an Axios error
    */
   private isAxiosError(error: any): boolean {
     return Boolean(
@@ -710,9 +616,6 @@ export class LyricUploadCommand extends Command {
 
   /**
    * Handle execution errors with helpful user feedback
-   * @param error The caught error
-   * @param lyricUrl The Lyric URL for context
-   * @returns CommandResult with error details
    */
   private handleExecutionError(
     error: unknown,
@@ -720,8 +623,18 @@ export class LyricUploadCommand extends Command {
   ): CommandResult {
     // Special handling for common error scenarios
     if (error instanceof ConductorError) {
+      // Category validation errors
+      if (
+        error.code === ErrorCodes.INVALID_ARGS &&
+        error.details?.availableCategories
+      ) {
+        ErrorHandlerUtility.handleCategoryError(
+          error,
+          error.details.availableCategories as LyricCategory[]
+        );
+      }
       // Validation failures
-      if (error.code === ErrorCodes.VALIDATION_FAILED) {
+      else if (error.code === ErrorCodes.VALIDATION_FAILED) {
         Logger.info(
           "\nSubmission validation failed. Please check your data files for errors."
         );
@@ -735,6 +648,16 @@ export class LyricUploadCommand extends Command {
           Logger.info(
             `You can check the submission details at: ${lyricUrl}/submission/${error.details.submissionId}`
           );
+        }
+
+        if (error.details?.errors) {
+          Logger.info(`\nErrors found during submission:`);
+          error.details.errors.forEach((err: any) => {
+            Logger.info(`- ${err.type}: ${err.message}`);
+            if (err.batchName) {
+              Logger.info(`  File: ${err.batchName}`);
+            }
+          });
         }
       }
       // File not found
@@ -782,8 +705,6 @@ export class LyricUploadCommand extends Command {
 
   /**
    * Validates command line arguments
-   * @param cliOutput The CLI configuration and inputs
-   * @returns A CommandResult indicating success or failure
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     // Ensure config exists
@@ -798,12 +719,11 @@ export class LyricUploadCommand extends Command {
     const lyricUrl = cliOutput.config.lyric?.url || process.env.LYRIC_URL;
     const lecternUrl = cliOutput.config.lectern?.url || process.env.LECTERN_URL;
 
-    // Try to get data directory from CLI first, then config, then env
-    const dataDirectoryFromCli = cliOutput.options?.dataDirectory;
-    const dataDirectoryFromConfig = cliOutput.config.lyric?.dataDirectory;
-    const dataDirectoryFromEnv = process.env.LYRIC_DATA;
-    const dataDirectory =
-      dataDirectoryFromCli || dataDirectoryFromConfig || dataDirectoryFromEnv;
+    // Try to get data path from CLI first, then config, then env
+    const dataPathFromCli = cliOutput.options?.dataDirectory;
+    const dataPathFromConfig = cliOutput.config.lyric?.dataDirectory;
+    const dataPathFromEnv = process.env.LYRIC_DATA;
+    const dataPath = dataPathFromCli || dataPathFromConfig || dataPathFromEnv;
 
     // Validate required parameters
     if (!lyricUrl) {
@@ -820,9 +740,9 @@ export class LyricUploadCommand extends Command {
       );
     }
 
-    if (!dataDirectory) {
+    if (!dataPath) {
       throw new ConductorError(
-        "No data directory provided. Use --data-directory (-d) option or set LYRIC_DATA environment variable.",
+        "No data directory or file provided. Use --data-directory (-d) option or set LYRIC_DATA environment variable.",
         ErrorCodes.INVALID_ARGS
       );
     }

@@ -1,68 +1,100 @@
 {
   "extended": [
     {
-      "displayName": "Cancer Type",
-      "fieldName": "data.Cancer_Type"
+      "displayName": "N",
+      "fieldName": "data.N"
     },
     {
       "displayName": "Hugo Symbol A",
       "fieldName": "data.Hugo_Symbol_A"
     },
     {
+      "displayName": "Entrez Gene Id A",
+      "fieldName": "data.Entrez_Gene_Id_A"
+    },
+    {
       "displayName": "Hugo Symbol B",
       "fieldName": "data.Hugo_Symbol_B"
     },
     {
-      "displayName": "Spearman Correlation",
-      "fieldName": "data.Spearman_Correlation"
+      "displayName": "Entrez Gene Id B",
+      "fieldName": "data.Entrez_Gene_Id_B"
     },
     {
-      "displayName": "Spearman P Value",
-      "fieldName": "data.Spearman_P_Value"
+      "displayName": "SpearmanCorr",
+      "fieldName": "data.SpearmanCorr"
     },
     {
-      "displayName": "Pearson Correlation",
-      "fieldName": "data.Pearson_Correlation"
+      "displayName": "SpearmanP",
+      "fieldName": "data.SpearmanP"
     },
     {
-      "displayName": "Pearson P Value",
-      "fieldName": "data.Pearson_P_Value"
+      "displayName": "PearsonCorr",
+      "fieldName": "data.PearsonCorr"
     },
     {
-      "displayName": "Spearman Correlation Square",
-      "fieldName": "data.Spearman_Correlation_Square"
+      "displayName": "PearsonP",
+      "fieldName": "data.PearsonP"
     },
     {
-      "displayName": "Pearson Correlation Square",
-      "fieldName": "data.Pearson_Correlation_Square"
+      "displayName": "SpearmanCorrSquare",
+      "fieldName": "data.SpearmanCorrSquare"
+    },
+    {
+      "displayName": "PearsonCorrSquare",
+      "fieldName": "data.PearsonCorrSquare"
+    },
+    {
+      "displayName": "Cancer Type",
+      "fieldName": "data.Cancer_Type"
     },
     {
       "displayName": "Dataset Name",
       "fieldName": "data.Dataset_Name"
     },
     {
-      "displayName": "Is Oncogene A",
-      "fieldName": "data.Is_Oncogene_A"
+      "displayName": "Is Oncogene",
+      "fieldName": "data.Is_Oncogene"
     },
     {
-      "displayName": "Is Tumour Suppressor Gene A",
-      "fieldName": "data.Is_Tumour_Suppressor_Gene_A"
+      "displayName": "Is Tumor Suppressor Gene",
+      "fieldName": "data.Is_Tumor_Suppressor_Gene"
     },
     {
-      "displayName": "Is Oncogene B",
-      "fieldName": "data.Is_Oncogene_B"
+      "displayName": "Is WDR",
+      "fieldName": "data.Is_WDR"
     },
     {
-      "displayName": "Is Tumour Suppressor Gene B",
-      "fieldName": "data.Is_Tumour_Suppressor_Gene_B"
+      "displayName": "Submission Metadata",
+      "fieldName": "data.submission_metadata"
     },
     {
-      "displayName": "Is WDR A",
-      "fieldName": "data.Is_WDR_A"
+      "displayName": "Submission Metadata Submitter Id",
+      "fieldName": "data.submission_metadata.submitter_id"
     },
     {
-      "displayName": "Is WDR B",
-      "fieldName": "data.Is_WDR_B"
+      "displayName": "Submission Metadata Processing Started",
+      "fieldName": "data.submission_metadata.processing_started"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "data.submission_metadata.processed_at"
+    },
+    {
+      "displayName": "Submission Metadata Source File",
+      "fieldName": "data.submission_metadata.source_file"
+    },
+    {
+      "displayName": "Submission Metadata Record Number",
+      "fieldName": "data.submission_metadata.record_number"
+    },
+    {
+      "displayName": "Submission Metadata Hostname",
+      "fieldName": "data.submission_metadata.hostname"
+    },
+    {
+      "displayName": "Submission Metadata Username",
+      "fieldName": "data.submission_metadata.username"
     }
   ]
 }

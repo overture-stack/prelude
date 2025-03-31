@@ -23,3 +23,22 @@ for optimal data management:
   development and testing
 - No strict minimum or maximum size limits exist beyond Docker and Elasticsearch
   resource constraints
+
+# Setup Commands
+
+conductor lecternUpload -s ./configs/lecternDictionaries/drugDiscoveryDictionary.json
+
+conductor lyricRegister -c correlations --dict-name drugDiscoveryDictionary -v 1.0 -e genecorrelations
+conductor lyricRegister -c mutations --dict-name drugDiscoveryDictionary -v 1.0 -e genemutations
+conductor lyricRegister -c expression --dict-name drugDiscoveryDictionary -v 1.0 -e geneexpression
+conductor lyricRegister -c protein --dict-name drugDiscoveryDictionary -v 1.0 -e proteininteractions
+
+conductor lyricUpload -d ./data/genecorrelations.csv -c 1
+conductor lyricUpload -d ./data/genemutations.csv -c 2
+conductor lyricUpload -d ./data/geneexpression.csv -c 3
+conductor lyricUpload -d ./data/proteininteractions.csv - 4
+
+conductor maestroIndex --repository-code correlation
+conductor maestroIndex --repository-code mutation
+conductor maestroIndex --repository-code expression
+conductor maestroIndex --repository-code protein

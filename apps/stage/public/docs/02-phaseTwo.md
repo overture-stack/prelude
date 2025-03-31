@@ -31,7 +31,7 @@ Your Phase One data file may need to be divided into multiple segments represent
 
 The Phase Two architecture includes these components:
 
-![Phase 2 Architecture](/docs/images/phase2.png 'Phase 2 Architecture')
+![Phase 2 Architecture](/docs/images/phase2.png "Phase 2 Architecture")
 
 | Component                                                                    | Purpose                                                               |
 | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
@@ -65,7 +65,7 @@ Depending on your data complexity you will need to organize information into mul
 
 For demonstration purposes, we've separated our clinical cancer dataset from Phase One's `dataTable1.csv` into four logical files:
 
-![Enitity Relationship](/docs/images/entityRelationshipDiagram.png 'Entity Relationship Diagram')
+![Enitity Relationship](/docs/images/entityRelationshipDiagram.png "Entity Relationship Diagram")
 
 | File              | Owner                                       | Relationship                                                                             |
 | ----------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -132,14 +132,14 @@ We will first update our top-level dictionary metadata:
 
 ```json
 {
-	"name": "example-dictionary",
-	"description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
-	"version": "1.0",
-	"meta": {
-		"createdAt": "2025-03-20T10:30:00.000Z",
-		"createdBy": "Mitchell Shiell",
-		"primaryContact": "mshiell@oicr.on.ca"
-	}
+  "name": "example-dictionary",
+  "description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
+  "version": "1.0",
+  "meta": {
+    "createdAt": "2025-03-20T10:30:00.000Z",
+    "createdBy": "Mitchell Shiell",
+    "primaryContact": "mshiell@oicr.on.ca"
+  }
 }
 ```
 
@@ -787,6 +787,8 @@ To upload the data files:
 ```bash
 conductor lyricUpload -d ./data/segmentedData/-c clinical-cancer -g OICR
 ```
+
+> **Note:** Lyric requires CSV files to be named exactly after the schema they correspond to in the Lectern dictionary. For example, if there's a schema named "patient" in the Lectern dictionary, your CSV file must be named patient.csv.
 
   <details>
   <summary>Command Breakdown</summary>

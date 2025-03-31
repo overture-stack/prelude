@@ -8,57 +8,84 @@
       "data": {
         "type": "object",
         "properties": {
-          "Cancer_Type": {
-            "type": "keyword"
+          "N": {
+            "type": "integer"
           },
           "Hugo_Symbol_A": {
             "type": "keyword"
           },
+          "Entrez_Gene_Id_A": {
+            "type": "integer"
+          },
           "Hugo_Symbol_B": {
             "type": "keyword"
           },
-          "Spearman_Correlation": {
+          "Entrez_Gene_Id_B": {
+            "type": "integer"
+          },
+          "SpearmanCorr": {
             "type": "float"
           },
-          "Spearman_P_Value": {
+          "SpearmanP": {
             "type": "float"
           },
-          "Pearson_Correlation": {
+          "PearsonCorr": {
             "type": "float"
           },
-          "Pearson_P_Value": {
+          "PearsonP": {
             "type": "float"
           },
-          "Spearman_Correlation_Square": {
+          "SpearmanCorrSquare": {
             "type": "float"
           },
-          "Pearson_Correlation_Square": {
+          "PearsonCorrSquare": {
             "type": "float"
+          },
+          "Cancer_Type": {
+            "type": "keyword"
           },
           "Dataset_Name": {
             "type": "keyword"
           },
-          "Is_Oncogene_A": {
+          "Is_Oncogene": {
+            "type": "keyword"
+          },
+          "Is_Tumor_Suppressor_Gene": {
+            "type": "keyword"
+          },
+          "Is_WDR": {
             "type": "keyword",
             "null_value": "No Data"
           },
-          "Is_Tumour_Suppressor_Gene_A": {
-            "type": "keyword",
-            "null_value": "No Data"
-          },
-          "Is_Oncogene_B": {
-            "type": "keyword",
-            "null_value": "No Data"
-          },
-          "Is_Tumour_Suppressor_Gene_B": {
-            "type": "keyword",
-            "null_value": "No Data"
-          },
-          "Is_WDR_A": {
-            "type": "boolean"
-          },
-          "Is_WDR_B": {
-            "type": "boolean"
+          "submission_metadata": {
+            "type": "object",
+            "properties": {
+              "submitter_id": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "processing_started": {
+                "type": "date"
+              },
+              "processed_at": {
+                "type": "date"
+              },
+              "source_file": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "record_number": {
+                "type": "integer"
+              },
+              "hostname": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "username": {
+                "type": "keyword",
+                "null_value": "No Data"
+              }
+            }
           }
         }
       }

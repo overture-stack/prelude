@@ -3,11 +3,11 @@
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "data.Cancer_Type",
+        "fieldName": "data.N",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Cancer_Type",
-        "query": "data { Cancer_Type }"
+        "jsonPath": "$.data.N",
+        "query": "data { N }"
       },
       {
         "canChangeShow": true,
@@ -19,6 +19,14 @@
       },
       {
         "canChangeShow": true,
+        "fieldName": "data.Entrez_Gene_Id_A",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Entrez_Gene_Id_A",
+        "query": "data { Entrez_Gene_Id_A }"
+      },
+      {
+        "canChangeShow": true,
         "fieldName": "data.Hugo_Symbol_B",
         "show": true,
         "sortable": true,
@@ -27,51 +35,67 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Spearman_Correlation",
+        "fieldName": "data.Entrez_Gene_Id_B",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Spearman_Correlation",
-        "query": "data { Spearman_Correlation }"
+        "jsonPath": "$.data.Entrez_Gene_Id_B",
+        "query": "data { Entrez_Gene_Id_B }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Spearman_P_Value",
+        "fieldName": "data.SpearmanCorr",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Spearman_P_Value",
-        "query": "data { Spearman_P_Value }"
+        "jsonPath": "$.data.SpearmanCorr",
+        "query": "data { SpearmanCorr }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Pearson_Correlation",
+        "fieldName": "data.SpearmanP",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Pearson_Correlation",
-        "query": "data { Pearson_Correlation }"
+        "jsonPath": "$.data.SpearmanP",
+        "query": "data { SpearmanP }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Pearson_P_Value",
+        "fieldName": "data.PearsonCorr",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Pearson_P_Value",
-        "query": "data { Pearson_P_Value }"
+        "jsonPath": "$.data.PearsonCorr",
+        "query": "data { PearsonCorr }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Spearman_Correlation_Square",
+        "fieldName": "data.PearsonP",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Spearman_Correlation_Square",
-        "query": "data { Spearman_Correlation_Square }"
+        "jsonPath": "$.data.PearsonP",
+        "query": "data { PearsonP }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Pearson_Correlation_Square",
+        "fieldName": "data.SpearmanCorrSquare",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Pearson_Correlation_Square",
-        "query": "data { Pearson_Correlation_Square }"
+        "jsonPath": "$.data.SpearmanCorrSquare",
+        "query": "data { SpearmanCorrSquare }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.PearsonCorrSquare",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.PearsonCorrSquare",
+        "query": "data { PearsonCorrSquare }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Cancer_Type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Cancer_Type",
+        "query": "data { Cancer_Type }"
       },
       {
         "canChangeShow": true,
@@ -83,51 +107,83 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Is_Oncogene_A",
+        "fieldName": "data.Is_Oncogene",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Is_Oncogene_A",
-        "query": "data { Is_Oncogene_A }"
+        "jsonPath": "$.data.Is_Oncogene",
+        "query": "data { Is_Oncogene }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Is_Tumour_Suppressor_Gene_A",
+        "fieldName": "data.Is_Tumor_Suppressor_Gene",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Is_Tumour_Suppressor_Gene_A",
-        "query": "data { Is_Tumour_Suppressor_Gene_A }"
+        "jsonPath": "$.data.Is_Tumor_Suppressor_Gene",
+        "query": "data { Is_Tumor_Suppressor_Gene }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Is_Oncogene_B",
+        "fieldName": "data.Is_WDR",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.Is_Oncogene_B",
-        "query": "data { Is_Oncogene_B }"
+        "jsonPath": "$.data.Is_WDR",
+        "query": "data { Is_WDR }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Is_Tumour_Suppressor_Gene_B",
-        "show": true,
+        "fieldName": "data.submission_metadata.submitter_id",
+        "show": false,
         "sortable": true,
-        "jsonPath": "$.data.Is_Tumour_Suppressor_Gene_B",
-        "query": "data { Is_Tumour_Suppressor_Gene_B }"
+        "jsonPath": "$.data.submission_metadata.submitter_id",
+        "query": "data { submission_metadata { submitter_id } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Is_WDR_A",
-        "show": true,
+        "fieldName": "data.submission_metadata.processing_started",
+        "show": false,
         "sortable": true,
-        "jsonPath": "$.data.Is_WDR_A",
-        "query": "data { Is_WDR_A }"
+        "jsonPath": "$.data.submission_metadata.processing_started",
+        "query": "data { submission_metadata { processing_started } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.Is_WDR_B",
-        "show": true,
+        "fieldName": "data.submission_metadata.processed_at",
+        "show": false,
         "sortable": true,
-        "jsonPath": "$.data.Is_WDR_B",
-        "query": "data { Is_WDR_B }"
+        "jsonPath": "$.data.submission_metadata.processed_at",
+        "query": "data { submission_metadata { processed_at } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.source_file",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.source_file",
+        "query": "data { submission_metadata { source_file } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.record_number",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.record_number",
+        "query": "data { submission_metadata { record_number } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.hostname",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.hostname",
+        "query": "data { submission_metadata { hostname } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.username",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.username",
+        "query": "data { submission_metadata { username } }"
       }
     ]
   }

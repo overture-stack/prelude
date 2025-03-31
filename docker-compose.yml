@@ -177,7 +177,7 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: data_arranger_set
+      ES_ARRANGER_SET_INDEX: correlation_arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
@@ -198,11 +198,10 @@ services:
     volumes:
       - ./apps/conductor/configs/arrangerConfigs/datatable2:/app/modules/server/configs # Point to the relevant generated config
     environment:
-      # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: datatable2_arranger_set
+      ES_ARRANGER_SET_INDEX: mutation_arranger_set
       # Arranger Variables
       PORT: 5051 # Required
       DEBUG: false
@@ -227,7 +226,7 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: datatable3_arranger_set
+      ES_ARRANGER_SET_INDEX: mrna_arranger_set
       # Arranger Variables
       PORT: 5052 # Required
       DEBUG: false
@@ -252,7 +251,7 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: datatable4_arranger_set
+      ES_ARRANGER_SET_INDEX: protein_arranger_set
       # Arranger Variables
       PORT: 5053 # Required
       DEBUG: false
@@ -487,18 +486,44 @@ services:
       # Maestro Base Variables
       MAESTRO_FAILURELOG_ENABLED: true
       MAESTRO_FAILURELOG_DIR: app/logs/maestro
-      MAESTRO_LOGGING_LEVEL_ROOT: INFO
+      MAESTRO_LOGGING_LEVEL_ROOT: DEBUG
       MAESTRO_DISABLEEVENTINDEXING: true
-      # Repository Configuration - Lyric
+      # Correlation
       MAESTRO_REPOSITORIES_0_BASE_URL: http://lyric:3030
-      # in the old world we added these to each document in elasticsearch,
-      MAESTRO_REPOSITORIES_0_CODE: lyric.overture
+      MAESTRO_REPOSITORIES_0_CODE: correlation
       MAESTRO_REPOSITORIES_0_NAME: Overture Lyric
       MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_0_INDEX_NAME: datatable1-index
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: correlation-index
       MAESTRO_REPOSITORIES_0_TYPE: LYRIC
       MAESTRO_REPOSITORIES_0_LYRIC_VALID_DATA_ONLY: true
       MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 1
+      # Mutation
+      MAESTRO_REPOSITORIES_1_BASE_URL: http://lyric:3030
+      MAESTRO_REPOSITORIES_1_CODE: mutation
+      MAESTRO_REPOSITORIES_1_NAME: Overture Lyric
+      MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_1_INDEX_NAME: mutation-index
+      MAESTRO_REPOSITORIES_1_TYPE: LYRIC
+      MAESTRO_REPOSITORIES_1_LYRIC_VALID_DATA_ONLY: true
+      MAESTRO_REPOSITORIES_1_LYRIC_CATEGORY_ID: 2
+      # Gene Expression
+      MAESTRO_REPOSITORIES_2_BASE_URL: http://lyric:3030
+      MAESTRO_REPOSITORIES_2_CODE: expression
+      MAESTRO_REPOSITORIES_2_NAME: Overture Lyric
+      MAESTRO_REPOSITORIES_2_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_2_INDEX_NAME: mrna-index
+      MAESTRO_REPOSITORIES_2_TYPE: LYRIC
+      MAESTRO_REPOSITORIES_2_LYRIC_VALID_DATA_ONLY: true
+      MAESTRO_REPOSITORIES_2_LYRIC_CATEGORY_ID: 3
+      # Protein Interactions
+      MAESTRO_REPOSITORIES_3_BASE_URL: http://lyric:3030
+      MAESTRO_REPOSITORIES_3_CODE: protein
+      MAESTRO_REPOSITORIES_3_NAME: Overture Lyric
+      MAESTRO_REPOSITORIES_3_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_3_INDEX_NAME: protein-index
+      MAESTRO_REPOSITORIES_3_TYPE: LYRIC
+      MAESTRO_REPOSITORIES_3_LYRIC_VALID_DATA_ONLY: true
+      MAESTRO_REPOSITORIES_3_LYRIC_CATEGORY_ID: 4
       # Elasticsearch Settings (Required)
       MAESTRO_ELASTICSEARCH_NODES: http://elasticsearch:9200
       MAESTRO_ELASTICSEARCH_VERSION: 7
@@ -510,16 +535,16 @@ services:
       MAESTRO_ELASTICSEARCH_CLIENT_DOCS_PER_BULK_REQ_MAX: 5000
       MAESTRO_ELASTICSEARCH_CLIENT_CONNECTION_TIMEOUT: 5000
       # Repository Configuration - Song
-      MAESTRO_REPOSITORIES_1_BASE_URL: http://song:8080
-      MAESTRO_REPOSITORIES_1_CODE: song.overture
-      MAESTRO_REPOSITORIES_1_NAME: Overture Song
-      MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_1_INDEX_NAME: file-index
-      MAESTRO_REPOSITORIES_1_TYPE: SONG
-      MAESTRO_REPOSITORIES_1_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
-      MAESTRO_REPOSITORIES_1_SONG_ANALYSIS_CENTRIC_ENABLED: true
-      MAESTRO_REPOSITORIES_1_SONG_ORGANIZATION: OICR
-      MAESTRO_REPOSITORIES_1_SONG_COUNTRY: CA
+      MAESTRO_REPOSITORIES_5_BASE_URL: http://song:8080
+      MAESTRO_REPOSITORIES_5_CODE: song.overture
+      MAESTRO_REPOSITORIES_5_NAME: Overture Song
+      MAESTRO_REPOSITORIES_5_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_5_INDEX_NAME: file-index
+      MAESTRO_REPOSITORIES_5_TYPE: SONG
+      MAESTRO_REPOSITORIES_5_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
+      MAESTRO_REPOSITORIES_5_SONG_ANALYSIS_CENTRIC_ENABLED: true
+      MAESTRO_REPOSITORIES_5_SONG_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_5_SONG_COUNTRY: CA
     volumes:
       - maestro-data:/app/app-data
     networks:

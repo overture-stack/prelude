@@ -29,7 +29,7 @@ import { UploadCommand } from "./uploadCsvCommand";
 import { IndexManagementCommand } from "./indexManagementCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
 import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
-import { LyricUploadCommand } from "./lyricUploadCommand";
+import { LyricUploadCommand } from "./lyricUploadCommand/lyricUploadCommand";
 import { SongUploadSchemaCommand } from "./songUploadSchemaCommand";
 import { SongCreateStudyCommand } from "./songCreateStudyCommand";
 import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand";

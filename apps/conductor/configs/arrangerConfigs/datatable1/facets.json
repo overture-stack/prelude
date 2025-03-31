@@ -3,7 +3,7 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "data__Cancer_Type",
+        "fieldName": "data__N",
         "show": true
       },
       {
@@ -13,37 +13,52 @@
       },
       {
         "active": true,
+        "fieldName": "data__Entrez_Gene_Id_A",
+        "show": true
+      },
+      {
+        "active": true,
         "fieldName": "data__Hugo_Symbol_B",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Spearman_Correlation",
+        "fieldName": "data__Entrez_Gene_Id_B",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Spearman_P_Value",
+        "fieldName": "data__SpearmanCorr",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Pearson_Correlation",
+        "fieldName": "data__SpearmanP",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Pearson_P_Value",
+        "fieldName": "data__PearsonCorr",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Spearman_Correlation_Square",
+        "fieldName": "data__PearsonP",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Pearson_Correlation_Square",
+        "fieldName": "data__SpearmanCorrSquare",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PearsonCorrSquare",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Cancer_Type",
         "show": true
       },
       {
@@ -53,33 +68,53 @@
       },
       {
         "active": true,
-        "fieldName": "data__Is_Oncogene_A",
+        "fieldName": "data__Is_Oncogene",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Is_Tumour_Suppressor_Gene_A",
+        "fieldName": "data__Is_Tumor_Suppressor_Gene",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__Is_Oncogene_B",
+        "fieldName": "data__Is_WDR",
         "show": true
       },
       {
-        "active": true,
-        "fieldName": "data__Is_Tumour_Suppressor_Gene_B",
-        "show": true
+        "active": false,
+        "fieldName": "data__submission_metadata__submitter_id",
+        "show": false
       },
       {
-        "active": true,
-        "fieldName": "data__Is_WDR_A",
-        "show": true
+        "active": false,
+        "fieldName": "data__submission_metadata__processing_started",
+        "show": false
       },
       {
-        "active": true,
-        "fieldName": "data__Is_WDR_B",
-        "show": true
+        "active": false,
+        "fieldName": "data__submission_metadata__processed_at",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__source_file",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__record_number",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__hostname",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__username",
+        "show": false
       }
     ]
   }

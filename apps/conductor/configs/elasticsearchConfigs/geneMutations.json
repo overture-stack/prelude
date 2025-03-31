@@ -18,7 +18,7 @@
             "type": "integer"
           },
           "Hotspot": {
-            "type": "integer"
+            "type": "boolean"
           },
           "Number_of_Mutated_Samples": {
             "type": "integer"
