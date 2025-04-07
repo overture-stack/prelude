@@ -244,7 +244,7 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Overture Prelude Portal
+      NEXT_PUBLIC_LAB_NAME: ISCB-Africa ASBCB 2025
       NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
@@ -269,7 +269,7 @@ services:
       # Auth Variables
       NEXTAUTH_SECRET: your-secure-secret-here
       # System Alerts
-      NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
+      # NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
       # CORS Configuration
       NEXT_PUBLIC_CORS_ENABLED: "true"
       NEXT_PUBLIC_CORS_ALLOWED_ORIGINS: "*"

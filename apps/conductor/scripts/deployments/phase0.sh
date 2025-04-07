@@ -1,5 +1,5 @@
 #!/bin/sh
-# Comprehensive Pre-Deployment Checks for Conductor Application
+# Comprehensive Pre-Deployment Checks for Prelude Application
 
 # Minimum Requirements
 DOCKER_ENGINE_MIN_VERSION="20.0.0"  # Docker engine version requirement
@@ -65,7 +65,7 @@ main() {
 \033[1;36m╚═════════════════════════════════╝\033[0m\n"
 
     # Check Docker
-    printf "\n\033[1;35m[1/3]\033[0m Checking Docker...\n"
+    printf "\n\033[1;35m[1/3]\033[1m Checking Docker...\n"
     
     # Check Docker CLI installation
     if ! command -v docker >/dev/null 2>&1; then
@@ -91,8 +91,8 @@ main() {
     fi
     printf "\033[1;36mInfo:\033[0m Docker daemon is running\033[0m\n"
 
-    # Check Docker Resources
-    printf "\n\033[1;35m[2/3]\033[0m Checking Docker Resources\n"
+    # Check Docker Resources    
+    printf "\n\033[1;35m[2/3]\033[1m Checking Docker Resources\n"
     DOCKER_INFO=$(docker info 2>/dev/null)
     
     # CPU Cores Check
@@ -124,7 +124,7 @@ main() {
     fi
 
     # Node.js Check
-    printf "\n\033[1;35m[3/3]\033[0m Checking Node.js\n"
+    printf "\n\033[1;35m[3/3]\033[1m Checking Node.js\n"
     if ! command -v node >/dev/null 2>&1; then
         printf "\n\033[1;31mError:\033[0m Node.js is not installed\033[0m\n"
         print_requirements

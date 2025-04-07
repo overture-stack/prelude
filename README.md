@@ -1,13 +1,9 @@
 # Prelude - Version 1.0.0-beta
 
-Prelude is a toolkit designed for the planning and development stages of Overture data platform implementation. It helps teams incrementally build and validate platform requirements, enabling them to:
-
-- Systematically verify requirements and user workflows
-- Minimize technical overhead during planning and prototyping
-- Create a comprehensive blueprint for production deployment
+Prelude is a toolkit for the planning and development stages of Overture data platform implementation. It helps teams incrementally build and validate platform requirements.
 
 > [!IMPORTANT]
-> Prelude is not intended for production environments. It serves as a preparatory tool to ensure successful production deployments. We are actively enhancing resources to support teams transitioning from Prelude to production.
+> Prelude is not intended for production environments. It serves as a preparatory tool to ensure successful production deployments.
 
 We welcome feedback and suggestions—please share them via [our ideas forum](https://github.com/overture-stack/docs/discussions/new?category=ideas).
 
@@ -24,11 +20,9 @@ Prelude is structured into four incremental phases:
 | **Phase 3:** File Management            | File storage and metadata tracking  | Song, Score, Object Storage       |
 | **_Phase 4:_** Identity & Access        | Security and user management        | Keycloak integration              |
 
-**Phase 4** is not included in Prelude v1 and will be implemented in a future release.
+**Phase 4** will be implemented in a future release.
 
 ## Supplemental Tools
-
-### Composer
 
 **Composer** transforms your data into base Overture configurations, generating:
 
@@ -38,8 +32,6 @@ Prelude is structured into four incremental phases:
 - **Song Schema** – Generates schema configurations for file metadata
 
 These configurations provide a foundation for Overture components, ensuring consistent data representation and interoperability.
-
-### Conductor
 
 **Conductor** streamlines interactions with Overture APIs, offering:
 
@@ -61,53 +53,52 @@ These configurations provide a foundation for Overture components, ensuring cons
 
 ## Getting Started
 
-### Prerequisites
+You will need:
 
 - **Docker Desktop 4.39.0+** with:
   - 8-core CPU minimum
   - 8 GB memory
   - 2 GB swap
   - 64 GB virtual disk
-- **Node.js 18+ and npm 9+**
+- **Node.js 20.18.1+ and npm 9+**
 
-### First Steps
+Run the pre-deployment check to verify your environment:
 
-Start by running the pre-deployment check to ensure your environment is properly configured:
+| OS          | Command           |
+| ----------- | ----------------- |
+| Linux/macOS | `make phase0`     |
+| Windows     | `make.bat phase0` |
 
-```bash
-make phase0
-```
-
-This command will verify your system meets all requirements and provide guidance on any necessary adjustments.
+The CLI will provide you with instructions on next steps.
 
 ### Deployment Options
 
-The portal can be deployed in phases, with each phase adding additional functionality:
+| Phase                 | Description                      | Linux/macOS      | Windows              |
+| --------------------- | -------------------------------- | ---------------- | -------------------- |
+| **Phase 1**           | Data Exploration & Theming       | `make phase1`    | `make.bat phase1`    |
+| **Phase 2**           | Tabular Data Management          | `make phase2`    | `make.bat phase2`    |
+| **Phase 3**           | File Management                  | `make phase3`    | `make.bat phase3`    |
+| **Development**       | Run Stage in development mode    | `make stage-dev` | `make.bat stage-dev` |
+| **System Management** | Reset all containers and volumes | `make reset`     | `make.bat reset`     |
 
-```bash
-# Deploy Phase 1: Data Exploration & Theming
-make phase1
+### Available Commands
 
-# Deploy Phase 2: Tabular Data Management
-make phase2
+| Command     | Description                                   |
+| ----------- | --------------------------------------------- |
+| `help`      | Display available commands                    |
+| `phase0`    | Run pre-deployment checks                     |
+| `phase1`    | Start Phase 1 deployment                      |
+| `phase2`    | Start Phase 2 deployment                      |
+| `phase3`    | Start Phase 3 deployment                      |
+| `stage-dev` | Start Stage development environment           |
+| `down`      | Gracefully shutdown all containers            |
+| `reset`     | Remove all containers and volumes (DATA LOSS) |
 
-# Deploy Phase 3: File Management
-make phase3
+## Accessing the Portal
 
-# Run Stage in development mode
-make stage-dev
+Once running, you can access the portal at: [http://localhost:3000](http://localhost:3000)
 
-# Reset all containers and volumes
-make reset
-```
-
-### Accessing the Portal
-
-Once running, access the documentation portal at: [http://localhost:3000](http://localhost:3000)
-
-## Documentation Structure
-
-The documentation is organized into phases matching the Prelude development workflow:
+The documentation found on the portal and within the `/docs` folder is organized into phases matching the Prelude development workflow:
 
 - **Introduction**: Overview of the Prelude toolkit and its components
 - **Phase One**: Data Exploration & Theming (Elasticsearch, Arranger, Stage)
