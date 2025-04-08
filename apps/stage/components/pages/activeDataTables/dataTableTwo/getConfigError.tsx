@@ -107,28 +107,21 @@ const getConfigError = ({
 	index && documentType ? (
 		!hasConfig && (
 			<span>
-				No active configurations for the DMS portal were found. Please make sure the index and GraphQL document type
-				specified in the DMS{' '}
-				<span
-					css={css`
-						font-weight: bold;
-					`}
-				>
-					config.yaml
-				</span>{' '}
-				file during installation have been created in the <ArrangerAdminUILink />. <GenericHelpMessage />
+				<strong>If you just ran phase1, this is expected.</strong> Otherwise, if you're setting up Table Two, ensure
+				your index and Arranger configurations are correct, referenced properly in the Docker Compose, and that
+				environment variables for Conductor, Arranger, and Stage are all set correctly.
 			</span>
 		)
 	) : (
 		<span>
-			One or more of the following values required by the DMS portal do not exist. Please make sure the values are
-			specified in the DMS{' '}
+			One or more of the following values required by the portal do not exist. Please make sure the values are specified
+			in the{' '}
 			<span
 				css={css`
 					font-weight: bold;
 				`}
 			>
-				config.yaml
+				docker-compose.yml
 			</span>{' '}
 			file during installation and have been used to create your project in the <ArrangerAdminUILink />.{' '}
 			<GenericHelpMessage />

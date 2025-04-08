@@ -78,28 +78,28 @@ const getConfigError = ({
 	index && documentType ? (
 		!hasConfig && (
 			<span>
-				No active configurations for the DMS portal were found. Please make sure the index and GraphQL document type
-				specified in the DMS{' '}
+				No active configurations for the portal were found. Please make sure the index and GraphQL document type
+				specified in the{' '}
 				<span
 					css={css`
 						font-weight: bold;
 					`}
 				>
-					config.yaml
+					docker-compose.yml
 				</span>{' '}
 				file during installation have been created in the <ArrangerAdminUILink />. <GenericHelpMessage />
 			</span>
 		)
 	) : (
 		<span>
-			One or more of the following values required by the DMS portal do not exist. Please make sure the values are
-			specified in the DMS{' '}
+			One or more of the following values required by the portal do not exist. Please make sure the values are specified
+			in the{' '}
 			<span
 				css={css`
 					font-weight: bold;
 				`}
 			>
-				config.yaml
+				docker-compose.yml
 			</span>{' '}
 			file during installation and have been used to create your project in the <ArrangerAdminUILink />.{' '}
 			<GenericHelpMessage />

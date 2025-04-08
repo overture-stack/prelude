@@ -140,7 +140,7 @@ const DataSetTwoRepositoryPage = (): ReactElement => {
 							width: 100%;
 						`}
 					>
-						<ErrorNotification title={'Stage Configuration Error'} size="lg">
+						<ErrorNotification title={'Stage Configuration Not Found'} size="lg">
 							{ConfigError}
 						</ErrorNotification>
 					</div>

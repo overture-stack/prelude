@@ -59,7 +59,7 @@ const ErrorContentContainer = styled('div')<{ size: ErrorSize }>`
 		${theme.shadow.default};
 		${theme.typography.subheading};
 		font-weight: normal;
-		background-color: ${theme.colors.error_1};
+		background-color: ${theme.colors.grey_1};
 		color: ${theme.colors.accent_dark};
 		${getContainerStyles(size)};
 		max-width: 600px;
