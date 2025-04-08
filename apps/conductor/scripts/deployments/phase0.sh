@@ -147,11 +147,12 @@ main() {
     printf "Total Memory:         \033[0;32m%s\033[0m\n" "$TOTAL_MEMORY"
     printf "Disk Space:           \033[0;32m%s GB\033[0m\n" "$DISK_GB"
     printf "Node.js:              \033[0;32m%s\033[0m\n" "$NODE_VERSION"
-    printf "\nTo setup stage move into its directory\n"
+    printf "\n\033[1;35m\033[1m🧭 Next Steps:\033[0m\n"
+    printf "\n1. To setup stage move into its directory\n"
     printf "\033[1;33mcd apps/stage\033[0m\n"
-    printf "\nAnd then run:\n"
+    printf "\n2. Run the following build command:\n"
     printf "\033[1;33mdocker build -t stageimage:1.0 .\033[0m\n"
-    printf "\nOnce built you should be able to successfully run:\n"
+    printf "\n3. Once built, move back to the root directory and run:\n"
     printf "\033[1;33mmake phase1\033[0m\n"
 }
 

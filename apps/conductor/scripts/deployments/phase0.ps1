@@ -164,11 +164,16 @@ function Main {
     Write-Host "Disk Space:           $DISK_GB GB" -ForegroundColor Green
     Write-Host "Node.js:              $NODE_VERSION" -ForegroundColor Green
     
-    Write-Host "`nTo setup stage move into its directory" 
+    # Updated Next Steps with better formatting, matching the Linux script
+    Write-Host "`n`e[1;35m`e[1m🧭 Next Steps:`e[0m" -ForegroundColor Magenta
+    
+    Write-Host "`n1. To setup stage move into its directory"
     Write-Host "cd apps/stage" -ForegroundColor Yellow
-    Write-Host "`nAnd then run:"
+    
+    Write-Host "`n2. Run the following build command:"
     Write-Host "docker build -t stageimage:1.0 ." -ForegroundColor Yellow
-    Write-Host "`nOnce built you should be able to successfully run:"
+    
+    Write-Host "`n3. Once built, move back to the root directory and run:"
     Write-Host "make.bat phase1" -ForegroundColor Yellow
 }
 
