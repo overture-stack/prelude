@@ -33,7 +33,7 @@ The CLI will provide you with instructions on next steps.
 
 Prelude is structured into four incremental phases:
 
-![Development Phases](apps/stage/public/docs/images/DevelopmentPhases.png "Prelude Development Phases")
+![Development Phases](apps/stage/public/docs/images/preludeOverview.png "Prelude Development Phases")
 
 | **Phase**                               | **Focus**                                           | **Components**                                  |
 | --------------------------------------- | --------------------------------------------------- | ----------------------------------------------- |

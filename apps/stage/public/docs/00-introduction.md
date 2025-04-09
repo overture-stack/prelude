@@ -16,7 +16,7 @@ We welcome feedback and suggestions—please share them via our [ideas forum](ht
 
 Prelude is structured into four incremental phases:
 
-![Development Phases](./images/DevelopmentPhases.png "Prelude Development Phases")
+![Development Phases](/docs/images/preludeOverview.png "Prelude Development Phases")
 
 | **Phase**                               | **Focus**                                           | **Components/Tools**                            |
 | --------------------------------------- | --------------------------------------------------- | ----------------------------------------------- |
@@ -32,28 +32,50 @@ Prelude is structured into four incremental phases:
 
 ### Composer
 
-Transforms your data (CSV or JSON) into base Overture configurations including Elasticsearch Mappings, Arranger UI Configs, Lectern Dictionary and Schema, Song Schema. This utility greatly reduces tedious manual configurations.
+Composer is a configuration generator tool for Overture. It streamlines the creation of configuration files required by various Overture components.
 
 Depending on the command Composer can input CSV or JSON file(s) that represent your data and output the following:
 
-| Output                            | Purpose                                                              |
-| --------------------------------- | -------------------------------------------------------------------- |
-| **Elasticsearch Mappings**        | Defines the structure and indexing settings for your data            |
-| **Arranger UI Configs**           | Configures the user interface for data exploration and visualization |
-| **Lectern Dictionary and Schema** | Creates data dictionaries and schemas for tabular data               |
-| **Song Schema**                   | Generates schema configurations for file metadata                    |
+| Output                            | Purpose                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Elasticsearch Mappings**        | Defines the structure and indexing settings for your data                                        |
+| **Arranger UI Configs**           | Configures the user interface for data exploration and visualization                             |
+| **Lectern Dictionary and Schema** | Creates data dictionaries and schemas for tabular data with flat or hierarchical data structures |
+| **Song Schema**                   | Generates schema configurations for file metadata                                                |
 
 ### Conductor
 
-Conductor runs the automated deployments from the `/apps/conductor/scripts` directory. It can also be run as a command line client made to streamline interactions with various Overture API endpoints.
+Conductor streamlines managment and interaction with Overture microservices in two ways:
 
-As summary of command line client interactions is provided in the table below:
+1. **Deployment Automation**: Conductor manages and orchestrates Overture deployments through scripts found in the `scripts` directory. These are initiated from the docker-compose. This provides a consistent and reliable environment setup.
 
-| Feature                      | Description                                                                                                |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **CSV to Elasticsearch ETL** | Validate, transform and load CSV data to a specified elasticsearch index.                                  |
-| **Configuration Management** | Submit dictionaries to Lectern, Register Lectern dictionaries with Lyric, Update Song Schema and study Ids |
-| **Data Management**          | Upload tabular data to Lyric, Upload and publish file data and metadata.                                   |
+2. **Command-Line Interface**: Conductor offers a unified CLI for interacting with various Overture service APIs. The command line client includes additional validations and helpful error logging to improve the user experience.
+
+As summary of command line client interactions is provided in the dropdown below:
+
+<details>
+<summary>Conductor Commands</summary>
+
+#### CSV to Elasticsearch ETL
+
+- `conductor upload` - Upload and transform CSV data to Elasticsearch with configurable batch size and delimiters
+
+#### Data Management
+
+- `conductor lyricUpload` - Upload tabular data to Lyric
+- `conductor songSubmitAnalysis` - Submit analysis metadata to Song
+- `conductor scoreManifestUpload` - Generate and upload file manifests
+- `conductor songPublishAnalysis` - Publish analysis data
+- `conductor maestroIndex` - Index repository content (supports organization filtering and specific document indexing)
+
+#### Configuration Management
+
+- `conductor lecternUpload` - Upload dictionaries to Lectern
+- `conductor lyricRegister` - Register dictionaries with Lyric
+- `conductor songUploadSchema` - Upload Song schemas
+- `conductor songCreateStudy` - Create Song studies
+
+</details>
 
 ## Getting Started
 
@@ -118,8 +140,6 @@ make phase1
 ### 5. Access the Portal
 
 Once running, access the portal at: [http://localhost:3000](http://localhost:3000).
-
-All Prelude documentation is available in the **Documentation** tab here or on our [documentation site](https://docs.overture.bio/other-software/prelude).
 
 ## Support
 

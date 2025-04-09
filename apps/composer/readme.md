@@ -1,6 +1,6 @@
 # Composer
 
-Composer is a configuration generator tool for Overture. It streamlines the creation and management of configuration files required by various Overture components.
+Composer is a configuration generator tool for Overture. It streamlines the creation of configuration files required by various Overture components.
 
 ## Key Features
 

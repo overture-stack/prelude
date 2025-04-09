@@ -242,7 +242,7 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: ISCB-Africa ASBCB 2025
+      NEXT_PUBLIC_LAB_NAME: Prelude
       NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
