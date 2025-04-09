@@ -40,20 +40,20 @@ echo -e "\033[1;36m║    Spinning up the StageDev Environment    ║\033[0m"
 echo -e "\033[1;36m╚════════════════════════════════════════════╝\033[0m\n"
 
 # Elasticsearch Check
-echo -e "\033[1;35m[1/5]\033[0m Checking Elasticsearch (this may take a few minutes)"
+echo -e "\033[1;35m[1/4]\033[0m Checking Elasticsearch (this may take a few minutes)"
 rs "${SCRIPT_DIR}/elasticsearch/elasticsearch_check.sh"
 
 # Elasticsearch Setup
-echo -e "\n\033[1;35m[2/5]\033[0m Setting up Elasticsearch Indices"
+echo -e "\n\033[1;35m[2/4]\033[0m Setting up Elasticsearch Indices"
 rs "$SCRIPT_DIR/elasticsearch/setup_indices.sh"
 
 # Update Conductor to Healthy Status
-echo -e "\n\033[1;35m[3/5]\033[0m Updating Conductor health status"
+echo -e "\n\033[1;35m[3/4]\033[0m Updating Conductor health status"
 echo "healthy" > conductor/volumes/health/conductor_health
 echo -e "\033[1;36mConductor:\033[0m Updating Container Status. Health check file created"
 
 # Check Arranger
-echo -e "\n\033[1;35m[5/5]\033[0m Checking Arranger Instances"
+echo -e "\n\033[1;35m[4/4]\033[0m Checking Arranger Instances"
 rs "$SCRIPT_DIR/arranger/arranger_check.sh"
 
 # Remove Health Check File

@@ -139,7 +139,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
    ```
    npm install
    npm run build
-   npm install -g
+   npm install -g .
    ```
 
 3. **Validate:** From the root directory test that Composer is working by running `composer -h` you should be able to see help text outlining the available commands.
@@ -395,57 +395,170 @@ After updating your docker-compose.yml file, verify the configuration:
 
 This step guides you through customizing Stage UI to incorporate multiple data exploration tables and update the theming to match your organization's branding.
 
-1. **Reset your environment** to ensure a clean state:
+### Set up local Stage development environment
 
-   ```bash
-   make reset
+To run Stage locally for development and customization:
+
+```bash
+# Navigate to the Stage directory
+cd apps/stage
+
+# Copy and update the following environment file
+cp .env.stageDev .env
+
+# Install dependencies
+npm ci
+
+# Start the development server
+npm run dev
+```
+
+Depending on port availability your development server will either be accessible at: http://localhost:3001 or http://localhost:3000
+
+### Creating New Data Exploration Pages
+
+To add a new data exploration table to your portal:
+
+1. **Activate a pre-configured data table**:
+
+- Move the desired component from `components/inactiveDataTables/` to `components/pages/activeDataTables/`
+- These components are already configured with variable declarations and definitions in:
+  - `./next.config.js`
+  - `./global/config.ts`
+  - `./global/utils/constants.ts`
+  - `./pages/api/[...proxy].ts`
+
+2. **Enable the page route**:
+
+- Move the corresponding folder from `./inactivePages/` to `./pages/` directory
+- Open the `index.tsx` file within this folder and uncomment the code
+- Save the changes
+
+3. **Update environment configurations**:
+
+- Add the corresponding variables to your `.env` file
+- Update the `docker-compose.yml` with the appropriate service configurations
+
+4. **Access your data table**:
+
+- The new data table will automatically appear in the navigation menu
+- It will also be accessible from the homepage data tables section
+
+### Theming
+
+Stage provides extensive theming capabilities to help you customize the look and feel of your data portal. This section outlines the key files and directories to modify when implementing your organization's branding.
+
+#### Core Theme Assets
+
+- **Logo**: Replace `/public/images/logo.svg` with your organization's logo to update the navbar branding
+- **Favicon**: Update `/public/favicon.ico` to change the browser tab icon
+
+#### Theme Configuration Files
+
+The theming system is organized into several key files:
+
+- **Main Theme**: `/apps/stage/components/theme/` contains files that define the global color palette, typography, spacing, and other fundamental design elements
+- **Documentation Theme**: the `/components/pages/documentation/DocContainer/` dicrectory contains a `theme.ts` & a `style.ts` which controls the documentation section styling including colors, fonts, and spacing
+
+#### Color Customization
+
+To update the color palette to match your organization's branding:
+
+```typescript
+// In theme.ts
+const theme = {
+  colors: {
+    primary: "#0B75A2", // Main brand color
+    primary_green: "#00A88F", // Secondary brand color
+    sidebar: "#f5f6f7", // Sidebar background
+    text: "#2d3748", // Main text color
+    textSecondary: "#4a5568", // Secondary text color
+    // Additional color settings...
+  },
+  // Other theme properties...
+};
+```
+
+#### Component Customization
+
+Notable component directories for customization:
+
+- **Home Page**: `/components/pages/home/` - Contains all components for the landing page
+- **Documentation Pages**: `/components/pages/documentation/` - Documentation-specific components
+- **Data Tables**: `/components/pages/activeDataTables/` - Data exploration page components
+- **Navigation**: `/components/Navbar/NavBar.tsx` - Customizes the top navigation bar
+
+#### Responsive Design
+
+The theme includes breakpoint settings that can be customized in the theme files:
+
+```typescript
+// In theme.ts
+breakpoints: {
+  xs: '480px',
+  sm: '640px',
+  md: '768px',
+  lg: '1024px',
+  xl: '1280px',
+  xxl: '1536px',
+},
+```
+
+#### Automatic Navigation Updates
+
+The system automatically handles certain navigation elements:
+
+- **Documentation Pages**: Files in the `/public/docs/` directory are automatically listed in the documentation sidebar in order defined by their numeric prefix (e.g., `00-` appears first)
+- **Data Tables**: Components within `/components/pages/activeDataTables/` are automatically included in navigation menus
+
+#### Typography Customization
+
+The application's typography is controlled through two main systems:
+
+1. **Base Font Family** - Set in `/components/theme/typography.ts`:
+
+   ```typescript
+   const baseFont = css`
+     font-family: "Lato", sans-serif;
+   `;
    ```
 
-2. **Run Stage complementary services** in development mode:
+2. **Typography Variants** - Predefined styles for different text elements:
 
-   ```bash
-   make stage-dev
+   ```typescript
+   // Examples from typography.ts
+   const heading = css`...`; // 18px bold for section titles
+   const subheading = css`...`; // 16px bold for secondary headings
+   const data = css`...`; // 13px normal for general text content
    ```
 
-3. **Set up local Stage development environment**:
-
-   To run Stage locally for development and customization:
-
-   ```bash
-   # Navigate to the Stage directory
-   cd apps/stage
-
-   # Copy the example environment file
-   cp .env.stageDev .env
-
-   # Install dependencies
-   npm ci
-
-   # Start the development server
-   npm run dev
+3. **Documentation Theme** - Typography settings specific to documentation pages in `/components/pages/documentation/DocContainer/theme.ts`:
+   ```typescript
+   // In theme.ts
+   fonts: {
+     base: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif',
+     mono: 'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+     heading: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif',
+   },
    ```
 
-   Your development server will be accessible at: http://localhost:3000
+Modify these files to implement consistent typography changes throughout the application.
 
-4. **Creating New Data Exploration Pages**:
+#### Advanced Theming
 
-A) Create a new table component
+For more extensive customization:
 
-5. **Customize Stage Theming** (Optional):
+- Use the `@emotion/react` CSS-in-JS library that's already integrated
+- Modify component-specific styles found within each component file
+- Consider creating custom theme extensions in `/components/theme/` for specialized styling needs
 
-Update theme colors to match your organization's branding:
+By focusing on these key areas, you can quickly theme the portal to match your organization's visual identity while maintaining the portal's functionality.
 
-Update the logo by replacing the image file at `apps/stage/public/images/logo.svg`
-
-Customize x.y.x
-
-**Next Steps:** Once you have completed the Stage customization, you're ready to upload your data to make it available in the Elasticsearch indices and visible in your data exploration tables.
-
-## Step 5: Uploading your data (To Be Updated)
+## Step 5: Uploading your data
 
 With Arranger, Stage, and Elasticsearch now configured, it's time to upload our data. We will use Conductor to transform our CSV files into Elasticsearch documents and upload them into the portal.
 
-### Installing Composer
+### Installing Conductor
 
 1. Move to the Conductor App directory:
 
@@ -458,7 +571,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
    ```
    npm install
    npm run build
-   npm install -g
+   npm install -g .
    ```
 
 3. **Validate:** From the root directory test that Conductor is working by running `conductor -h` you should be able to see help text outlining the available commands.
