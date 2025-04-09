@@ -1,0 +1,214 @@
+{
+  "name": "example-dictionary",
+  "description": "Generated dictionary from CSV files",
+  "version": "1.0",
+  "meta": {},
+  "schemas": [
+    {
+      "name": "donor",
+      "description": "Schema generated from donor.csv",
+      "foreignKey": [
+        {
+          "schema": "diagnosis",
+          "mappings": [{ "local": "{{Local ID}}", "foreign": "{{Foreign ID}}" }]
+        }
+      ],
+      "fields": [
+        {
+          "name": "donor_id",
+          "description": "Field containing donor_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "donor_id"
+          }
+        },
+        {
+          "name": "gender",
+          "description": "Field containing gender data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gender"
+          }
+        },
+        {
+          "name": "vital_status",
+          "description": "Field containing vital_status data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "vital_status"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-20T16:11:06.493Z",
+        "sourceFile": "donor.csv"
+      }
+    },
+    {
+      "name": "diagnosis",
+      "description": "Schema generated from diagnosis.csv",
+      "fields": [
+        {
+          "name": "diagnosis_id",
+          "description": "Field containing diagnosis_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "diagnosis_id"
+          }
+        },
+        {
+          "name": "donor_id",
+          "description": "Field containing donor_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "donor_id"
+          }
+        },
+        {
+          "name": "primary_site",
+          "description": "Field containing primary_site data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "primary_site"
+          }
+        },
+        {
+          "name": "age_at_diagnosis",
+          "description": "Field containing age_at_diagnosis data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "age_at_diagnosis"
+          }
+        },
+        {
+          "name": "cancer_type",
+          "description": "Field containing cancer_type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "cancer_type"
+          }
+        },
+        {
+          "name": "staging_system",
+          "description": "Field containing staging_system data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "staging_system"
+          }
+        },
+        {
+          "name": "stage",
+          "description": "Field containing stage data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "stage"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-20T16:11:06.491Z",
+        "sourceFile": "diagnosis.csv"
+      }
+    },
+    {
+      "name": "followup",
+      "description": "Schema generated from followup.csv",
+      "fields": [
+        {
+          "name": "treatment_id",
+          "description": "Field containing treatment_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "treatment_id"
+          }
+        },
+        {
+          "name": "followup_id",
+          "description": "Field containing followup_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "followup_id"
+          }
+        },
+        {
+          "name": "followup_interval",
+          "description": "Field containing followup_interval data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "followup_interval"
+          }
+        },
+        {
+          "name": "disease_status",
+          "description": "Field containing disease_status data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "disease_status"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-20T16:11:06.494Z",
+        "sourceFile": "followup.csv"
+      }
+    },
+    {
+      "name": "treatment",
+      "description": "Schema generated from treatment.csv",
+      "fields": [
+        {
+          "name": "donor_id",
+          "description": "Field containing donor_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "donor_id"
+          }
+        },
+        {
+          "name": "treatment_id",
+          "description": "Field containing treatment_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "treatment_id"
+          }
+        },
+        {
+          "name": "treatment_type",
+          "description": "Field containing treatment_type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "treatment_type"
+          }
+        },
+        {
+          "name": "treatment_start",
+          "description": "Field containing treatment_start data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "treatment_start"
+          }
+        },
+        {
+          "name": "treatment_duration",
+          "description": "Field containing treatment_duration data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "treatment_duration"
+          }
+        },
+        {
+          "name": "treatment_response",
+          "description": "Field containing treatment_response data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "treatment_response"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-03-20T16:11:06.495Z",
+        "sourceFile": "treatment.csv"
+      }
+    }
+  ]
+}

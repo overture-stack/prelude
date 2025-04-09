@@ -1,0 +1,118 @@
+{
+  "index_patterns": ["datatable1-*"],
+  "aliases": {
+    "datatable1_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "donor_id": {
+            "type": "keyword"
+          },
+          "gender": {
+            "type": "keyword"
+          },
+          "primary_site": {
+            "type": "keyword"
+          },
+          "vital_status": {
+            "type": "keyword"
+          },
+          "diagnosis_id": {
+            "type": "keyword"
+          },
+          "age_at_diagnosis": {
+            "type": "integer"
+          },
+          "cancer_type": {
+            "type": "keyword"
+          },
+          "staging_system": {
+            "type": "keyword"
+          },
+          "stage": {
+            "type": "keyword"
+          },
+          "specimen_id": {
+            "type": "keyword"
+          },
+          "specimen_type": {
+            "type": "keyword"
+          },
+          "tissue_source": {
+            "type": "keyword"
+          },
+          "sample_id": {
+            "type": "keyword"
+          },
+          "sample_type": {
+            "type": "keyword"
+          },
+          "treatment_id": {
+            "type": "keyword"
+          },
+          "treatment_type": {
+            "type": "keyword"
+          },
+          "treatment_start": {
+            "type": "integer"
+          },
+          "treatment_duration": {
+            "type": "integer"
+          },
+          "treatment_response": {
+            "type": "keyword"
+          },
+          "drug_name": {
+            "type": "keyword"
+          },
+          "followup_id": {
+            "type": "keyword"
+          },
+          "followup_interval": {
+            "type": "integer"
+          },
+          "disease_status": {
+            "type": "keyword"
+          },
+          "submission_metadata": {
+            "type": "object",
+            "properties": {
+              "submitter_id": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "processing_started": {
+                "type": "date"
+              },
+              "processed_at": {
+                "type": "date"
+              },
+              "source_file": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "record_number": {
+                "type": "integer"
+              },
+              "hostname": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "username": {
+                "type": "keyword",
+                "null_value": "No Data"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

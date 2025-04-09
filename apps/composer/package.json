@@ -1,0 +1,37 @@
+{
+  "name": "composer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "test": "node --test --require ts-node/register src/__tests__/*.test.ts",
+    "test:watch": "node --test --watch --require ts-node/register src/__tests__/*.test.ts",
+    "test:coverage": "node --test --experimental-test-coverage --require ts-node/register src/__tests__/*.test.ts",
+    "test:song": "node --test --require ts-node/register --test-name-pattern=\"SongCommand\" src/__tests__/*.test.ts",
+    "test:lectern": "node --test --require ts-node/register --test-name-pattern=\"LecternCommand\" src/__tests__/*.test.ts",
+    "test:mapping": "node --test --require ts-node/register --test-name-pattern=\"MappingCommand\" src/__tests__/*.test.ts",
+    "test:arranger": "node --test --require ts-node/register --test-name-pattern=\"ArrangerCommand\" src/__tests__/*.test.ts"
+  },
+  "bin": {
+    "composer": "./dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.17.14",
+    "@types/chalk": "^0.4.31",
+    "@types/node": "^22.9.3",
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "csv-parse": "^5.6.0",
+    "ts-node": "^10.9.2",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.7.2"
+  }
+}

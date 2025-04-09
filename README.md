@@ -1,58 +1,191 @@
-# Conductor
+# Prelude - Version 1.0.0-beta
 
-Conductor is a flexible Docker Compose setup that simplifies the process of spinning up Overture development and deployment configurations using Docker profiles and extensible scripting events.
+Prelude is a toolkit for the planning and development stages of Overture data platform implementation. It helps teams incrementally build and validate platform requirements.
 
-> <div>
-> <img align="left" src="ov-logo.png" height="50"/>
-> </div>
->
-> Conductor is part of [Overture](https://www.overture.bio/), a collection of open-source software microservices used to create platforms for researchers to organize and share genomics data.\*
+> [!IMPORTANT]
+> Prelude is not intended for production environments. It serves as a preparatory tool to ensure successful production deployments.
 
-## Documentation
+We welcome feedback and suggestions—please share them via [our ideas forum](https://github.com/overture-stack/docs/discussions/new?category=ideas).
 
-Technical resources for those working with or contributing to the project are available from our official documentation site, the following content can also be read and updated within the `/docs` folder of this repository.
+## Development Phases
 
-- **[Getting Started](https://docs.overture.bio/guides/getting-started#overture-platform-quick-start)**
-- **[Conductor Documentation](https://docs.overture.bio/docs/other-software/conductor/)**
+Prelude is structured into four incremental phases:
 
-## Requirements
+![Development Phases](apps/stage/public/docs/images/DevelopmentPhases.png "Prelude Development Phases")
 
-- [Docker Version 4.39.0+](https://www.docker.com/products/docker-desktop/)
+| **Phase**                               | **Focus**                           | **Components**                    |
+| --------------------------------------- | ----------------------------------- | --------------------------------- |
+| **Phase 1:** Data Exploration & Theming | Data visualization in the portal    | Elasticsearch, Arranger, Stage    |
+| **Phase 2:** Tabular Data Management    | Backend data storage and validation | Lyric, Lectern, Postgres, MongoDB |
+| **Phase 3:** File Management            | File storage and metadata tracking  | Song, Score, Object Storage       |
+| **_Phase 4:_** Identity & Access        | Security and user management        | Keycloak integration              |
 
-> [!NOTE]
-> Docker needs to be allocated with sufficient resources:
->
-> - Minimum CPU: 8 cores
-> - Memory: 8 GB
-> - Swap: 2 GB
-> - Virtual disk: 64 GB
->
-> Adjust these in Docker Desktop settings under "Resources".
+**Phase 4** will be implemented in a future release.
 
-## Support & Contributions
+## Supplemental Tools
 
-- For support, feature requests, and bug reports, please see our [Support Guide](https://docs.overture.bio/community/support).
+### Composer
 
-- For detailed information on how to contribute to this project, please see our [Contributing Guide](https://docs.overture.bio/docs/contribution).
+Transforms your data (CSV or JSON) into base Overture configurations including Elasticsearch Mappings, Arranger UI Configs, Lectern Dictionary and Schema, Song Schema. This utility greatly reduces tedious manual configurations.
 
-## Related Software
+Depending on the command Composer can input CSV or JSON file(s) that represent your data and output the following:
 
-The Overture Platform includes the following Overture Components:
+| Output                            | Purpose                                                              |
+| --------------------------------- | -------------------------------------------------------------------- |
+| **Elasticsearch Mappings**        | Defines the structure and indexing settings for your data            |
+| **Arranger UI Configs**           | Configures the user interface for data exploration and visualization |
+| **Lectern Dictionary and Schema** | Creates data dictionaries and schemas for tabular data               |
+| **Song Schema**                   | Generates schema configurations for file metadata                    |
 
-</br>
+### Conductor
 
-| Software                                                | Description                                                                               |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [Score](https://github.com/overture-stack/score/)       | Transfer data to and from any cloud-based storage system                                  |
-| [Song](https://github.com/overture-stack/song/)         | Catalog and manage metadata associated to file data spread across cloud storage systems   |
-| [Maestro](https://github.com/overture-stack/maestro/)   | Organizing your distributed data into a centralized Elasticsearch index                   |
-| [Arranger](https://github.com/overture-stack/arranger/) | A search API with reusable search UI components                                           |
-| [Stage](https://github.com/overture-stack/stage)        | A React-based web portal scaffolding                                                      |
-| [Lyric](https://github.com/overture-stack/lyric)        | A model-agnostic, tabular data submission system                                          |
-| [Lectern](https://github.com/overture-stack/lectern)    | Schema Manager, designed to validate, store, and manage collections of data dictionaries. |
+Conductor runs the automated deployments from the `/apps/conductor/scripts` directory. It can also be run as a command line client made to streamline interactions with various Overture API endpoints.
 
-If you'd like to get started using our platform [check out our quickstart guides](https://docs.overture.bio/guides/getting-started)
+As summary of command line client interactions is provided in the table below:
 
-## Funding Acknowledgement
+| Feature                      | Description                                                                                                |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **CSV to Elasticsearch ETL** | Validate, transform and load CSV data to a specified elasticsearch index.                                  |
+| **Configuration Management** | Submit dictionaries to Lectern, Register Lectern dictionaries with Lyric, Update Song Schema and study Ids |
+| **Data Management**          | Upload tabular data to Lyric, Upload and publish file data and metadata.                                   |
 
-Overture is supported by grant #U24CA253529 from the National Cancer Institute at the US National Institutes of Health, and additional funding from Genome Canada, the Canada Foundation for Innovation, the Canadian Institutes of Health Research, Canarie, and the Ontario Institute for Cancer Research.
+## Getting Started
+
+You will need:
+
+- **Docker Desktop 4.39.0+** with:
+  - 8-core CPU minimum
+  - 8 GB memory
+  - 2 GB swap
+  - 64 GB virtual disk
+- **Node.js 20.18.1+ and npm 9+**
+- **Linux/macOS environment**
+
+> [!NOTE] > **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
+
+Run the pre-deployment check to verify your environment:
+
+```bash
+make phase0
+```
+
+The CLI will provide you with instructions on next steps.
+
+### Deployment Options
+
+| Phase                 | Description                      | Command          |
+| --------------------- | -------------------------------- | ---------------- |
+| **Phase 1**           | Data Exploration & Theming       | `make phase1`    |
+| **Phase 2**           | Tabular Data Management          | `make phase2`    |
+| **Phase 3**           | File Management                  | `make phase3`    |
+| **Development**       | Run Stage in development mode    | `make stage-dev` |
+| **System Management** | Reset all containers and volumes | `make reset`     |
+
+### Available Commands
+
+| Command     | Description                                   |
+| ----------- | --------------------------------------------- |
+| `help`      | Display available commands                    |
+| `phase0`    | Run pre-deployment checks                     |
+| `phase1`    | Start Phase 1 deployment                      |
+| `phase2`    | Start Phase 2 deployment                      |
+| `phase3`    | Start Phase 3 deployment                      |
+| `stage-dev` | Start Stage development environment           |
+| `down`      | Gracefully shutdown all containers            |
+| `reset`     | Remove all containers and volumes (DATA LOSS) |
+
+## Accessing the Portal
+
+Once running, you can access the portal at: [http://localhost:3000](http://localhost:3000)
+
+The documentation found on the portal and within the `/docs` folder is organized into phases matching the Prelude development workflow:
+
+- **Introduction**: Overview of the Prelude toolkit and its components
+- **Phase One**: Data Exploration & Theming (Elasticsearch, Arranger, Stage)
+- **Phase Two**: Tabular Data Management (Lyric, Lectern, Postgres, MongoDB)
+- **Phase Three**: File Management (Song, Score, Object Storage)
+- **Phase Four**: Identity & Access (Coming in future release)
+- **Support**: How to get help and contribute
+
+## Development
+
+### Local Development Environment
+
+To modify the documentation portal itself:
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   cd apps/stage
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+### Updating Documentation Content
+
+Documentation content is stored as Markdown files in the `public/docs` directory. To add or update content:
+
+1. Files are prefixed with numbers (`00-`, `01-`, etc.) to control ordering
+2. Each file should start with a top-level heading (`# Title`)
+3. Place images in `public/docs/images/`
+4. Use standard Markdown syntax for formatting
+
+## Project Structure
+
+The project follows a modular structure with two main applications: Conductor (for data management) and Stage (for the front-end portal).
+
+```
+├── apps/
+│   ├── composer/                 # Config generation tool
+│   │   └── src/                  # Source code
+│   │       ├── cli/              # CLI interface
+│   │       ├── commands/         # Command implementations
+│   │       ├── services/         # Core functions for config generation
+│   │       └── utils/            # Utility functions
+│   │
+│   ├── conductor/                # Data management tool
+│   │   ├── src/                  # Source code
+│   │   │   ├── cli/              # CLI interface
+│   │   │   ├── commands/         # Command implementations
+│   │   │   ├── services/         # Core services (ES, Lectern, etc.)
+│   │   │   └── utils/            # Utility functions
+│   │   ├── configs/              # Configuration files
+│   │   │   ├── arrangerConfigs/  # Arranger UI configurations
+│   │   │   ├── elasticsearchConfigs/ # Elasticsearch mappings
+│   │   │   ├── lecternDictionaries/ # Data dictionaries
+│   │   │   └── songSchemas/      # Song schemas
+│   │   └── scripts/              # Deployment and service scripts
+│   │       ├── deployments/      # Phase deployment scripts
+│   │       └── services/         # Service management scripts
+│   │
+│   └── stage/                    # Frontend portal
+│       ├── components/
+│       │   ├── pages/            # Page-specific components
+│       │   └── theme/            # Theming
+│       ├── pages/                # Next.js pages
+│       └── public/               # Static assets
+│           └── docs/             # Markdown documentation files
+│               └── images/       # Documentation images
+│
+├── configs/                      # Symlink to conductor configs
+├── data/                         # Data files
+└── docs/                         # Symlink to Stage docs
+```
+
+## Windows Support
+
+Prelude is designed to run in Linux/macOS environments. Windows users should:
+
+1. Install [WSL2 (Windows Subsystem for Linux)](https://learn.microsoft.com/en-us/windows/wsl/install)
+2. Use Ubuntu or another Linux distribution within WSL2
+3. Run all Prelude commands from the Bash terminal in your WSL2 environment
+4. Install Docker Desktop with WSL2 integration enabled
+
+WSL2 provides a full Linux kernel and compatibility layer, allowing you to run Prelude's Linux commands without modification.
+
+## Support
+
+For assistance, reach out via the [community support channels](https://docs.overture.bio/community/support), for private inquiries email us at [contact@overture.bio](mailto:contact@overture.bio).

@@ -1,0 +1,57 @@
+{
+  "name": "MyNewSchema",
+  "version": "1",
+  "options": {
+    "fileTypes": ["VCF", "TBI"]
+  },
+  "schema": {
+    "type": "object",
+    "required": ["workflow", "experiment"],
+    "properties": {
+      "workflow": {
+        "type": "object",
+        "required": [
+          "workflowName",
+          "workflowShortName",
+          "workflowVersion",
+          "inputs",
+          "runId",
+          "sessionId"
+        ],
+        "properties": {
+          "workflowName": { "type": "string" },
+          "workflowShortName": { "type": "string" },
+          "workflowVersion": { "type": "string" },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["analysisType", "analysisId"],
+              "properties": {
+                "analysisType": { "type": "string" },
+                "analysisId": { "type": "string" }
+              }
+            }
+          },
+          "runId": { "type": "string" },
+          "sessionId": { "type": "string" }
+        }
+      },
+      "experiment": {
+        "type": "object",
+        "required": [
+          "platform",
+          "experimentalStrategy",
+          "sequencingCenter",
+          "sequencingDate"
+        ],
+        "properties": {
+          "platform": { "type": "string" },
+          "experimentalStrategy": { "type": "string" },
+          "sequencingCenter": { "type": "string" },
+          "sequencingDate": { "type": "string" }
+        }
+      }
+    }
+  }
+}

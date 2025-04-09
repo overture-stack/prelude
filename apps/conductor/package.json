@@ -1,0 +1,36 @@
+{
+  "name": "conductor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "test": "node --test src/__tests__/*.test.js",
+    "test:watch": "node --test --watch src/__tests__/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage src/__tests__/*.test.js"
+  },
+  "bin": {
+    "conductor": "./dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.17.14",
+    "@types/axios": "^0.9.36",
+    "axios": "^1.8.1",
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "csv-parse": "^5.6.0",
+    "ts-node": "^10.9.2",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/commander": "^2.12.5",
+    "@types/node": "^22.9.3",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.7.2"
+  }
+}
