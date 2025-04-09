@@ -1,161 +1,113 @@
-# Complete Conductor CLI Testing Commands
+# Conductor
 
-## Basic File Format Tests
+Conductor streamlines managment and interaction with Overture microservices in two ways:
 
-1. **Valid CSV:**
+1. **Deployment Automation**: Conductor manages and orchestrates Overture deployments through scripts found in the `scripts` directory. These are initiated from the docker-compose. This provides a consistent and reliable environment setup.
 
-   ```bash
-   conductor -f ./data/valid.csv
-   ```
+2. **Command-Line Interface**: Conductor offers a unified CLI for interacting with various Overture service APIs. The command line client includes additional validations and helpful error logging to improve the user experience.
 
-2. **Malformed CSV:**
+## Installation
 
-   ```bash
-   conductor -f ./data/malformed.csv
-   ```
+### Prerequisites
 
-3. **Semicolon Delimiter Without Flag:**
+- Node.js 14+
+- npm or yarn
 
-   ```bash
-   conductor -f ./data/semicolon.csv
-   ```
+### Installing from the project directory
 
-4. **Semicolon Delimiter With Flag:**
+Since Conductor is located in the `apps/conductor` directory of the Prelude repo, you can install it locally from that directory:
 
-   ```bash
-   conductor -f ./data/semicolon.csv --delimiter ";"
-   ```
+```bash
+cd apps/conductor
+npm install
+npm install -g .
+```
 
-5. **Empty File:**
+This installs Conductor globally, making conductor commands available in your terminal.
 
-   ```bash
-   conductor -f ./data/empty.csv
-   ```
+### Alternative: Using without global installation
 
-6. **Headers Only:**
+If you prefer not to install globally, you can run Conductor directly from the project directory:
 
-   ```bash
-   conductor -f ./data/headers_only.csv
-   ```
+```bash
+cd apps/conductor
+npm install
+npm start -- <command> [options]
+```
 
-7. **Invalid Headers:**
+For example:
 
-   ```bash
-   conductor -f ./data/invalid_headers.csv
-   ```
+```bash
+npm start -- upload -f ../../data/sample.csv -i my-index
+```
 
-8. **Large Dataset:**
-   ```bash
-   conductor -f ./data/large.csv
-   ```
+## Usage
 
-## Configuration Options
+All available and documented commands can be found by running conductor -h.
 
-9. **Custom Index:**
+### Lyric Data Management Workflow
+
+1. Upload schema to Lectern:
 
    ```bash
-   conductor -f ./data/valid.csv -i custom-index
+   conductor lecternUpload -s dictionary.json
    ```
 
-10. **Output Logs:**
+2. Register dictionary with Lyric:
 
-    ```bash
-    conductor -f ./data/valid.csv -o ./logs/test-output.log
-    ```
+   ```bash
+   conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0 -e entity1
+   ```
 
-11. **Custom Elasticsearch URL:**
+3. Load data into Lyric:
+   ```bash
+   conductor lyricData -d ./clinical-data -c 1 -g "Research Organization"
+   ```
 
-    ```bash
-    conductor -f ./data/valid.csv --url http://localhost:9200
-    ```
+### Complete SONG/SCORE Workflow
 
-12. **With Authentication:**
+1. Create a study in SONG:
 
-    ```bash
-    conductor -f ./data/valid.csv -u elastic -p password
-    ```
+   ```bash
+   conductor songCreateStudy -i my-study -n "My Research Study" -g MyOrg
+   ```
 
-13. **Full Connection Settings:**
+2. Upload a schema to SONG:
 
-    ```bash
-    conductor -f ./data/valid.csv --url http://localhost:9200 -u elastic -p password -i test-index
-    ```
+   ```bash
+   conductor songUploadSchema -s analysis-schema.json
+   ```
 
-14. **Custom Batch Size:**
+3. Submit an analysis to SONG:
 
-    ```bash
-    conductor -f ./data/valid.csv -b 500
-    ```
+   ```bash
+   conductor songSubmitAnalysis -a analysis.json -i my-study
+   ```
 
-15. **Debug Mode:**
-    ```bash
-    conductor -f ./data/valid.csv --debug
-    ```
+4. Upload files to SCORE:
 
-## Error Cases
+   ```bash
+   conductor scoreManifestUpload -a <analysis-id> -d ./data
+   ```
 
-16. **Multiple Files (Valid):**
+5. Publish the analysis:
+   ```bash
+   conductor songPublishAnalysis -a <analysis-id> -i my-study
+   ```
 
-    ```bash
-    conductor -f ./data/valid.csv ./data/headers_only.csv
-    ```
+### Repository Indexing Commands
 
-17. **Multiple Files (Mixed Valid/Invalid):**
+```bash
+conductor maestroIndex --repository-code lyric.overture
+```
 
-    ```bash
-    conductor -f ./data/valid.csv ./data/invalid.txt
-    ```
+Repository codes are set within the docker compose and are defined within the Maestro services environment variables.
 
-18. **Missing Required Arguments:**
+## Troubleshooting
 
-    ```bash
-    conductor
-    ```
+If you encounter issues:
 
-19. **Invalid File Extensions:**
-
-    ```bash
-    conductor -f ./data/valid.csv.txt
-    ```
-
-20. **File Not Found:**
-
-    ```bash
-    conductor -f ./data/nonexistent.csv
-    ```
-
-21. **Invalid Connection:**
-
-    ```bash
-    conductor -f ./data/valid.csv --url http://wronghost:9200
-    ```
-
-22. **Authentication Error:**
-
-    ```bash
-    conductor -f ./data/valid.csv -u wronguser -p wrongpass
-    ```
-
-23. **Invalid Index Name:**
-
-    ```bash
-    conductor -f ./data/valid.csv -i "invalid%index"
-    ```
-
-24. **Invalid Batch Size:**
-
-    ```bash
-    conductor -f ./data/valid.csv -b -1
-    ```
-
-25. **Invalid Batch Size (Non-Numeric):**
-    ```bash
-    conductor -f ./data/valid.csv -b xyz
-    ```
-
-## Help Command
-
-26. **Help Command:**
-    ```bash
-    conductor --help
-    ```
+1. Run with `--debug` flag for detailed logging
+2. Ensure services are running and accessible
+3. Check connection URLs and authentication credentials
+4. Validate input files match expected formats

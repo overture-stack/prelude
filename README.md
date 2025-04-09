@@ -7,19 +7,41 @@ Prelude is a toolkit for the planning and development stages of Overture data pl
 
 We welcome feedback and suggestions—please share them via [our ideas forum](https://github.com/overture-stack/docs/discussions/new?category=ideas).
 
+## Getting Started
+
+You will need:
+
+- **Docker Desktop 4.39.0+** with:
+  - 8-core CPU minimum
+  - 8 GB memory
+  - 2 GB swap
+  - 64 GB virtual disk
+- **Node.js 20.18.1+ and npm 9+**
+- **Linux/macOS environment**
+
+> [!NOTE] > **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
+
+Run the pre-deployment check to verify your environment:
+
+```bash
+make phase0
+```
+
+The CLI will provide you with instructions on next steps.
+
 ## Development Phases
 
 Prelude is structured into four incremental phases:
 
 ![Development Phases](apps/stage/public/docs/images/DevelopmentPhases.png "Prelude Development Phases")
 
-| **Phase**                               | **Focus**                           | **Components**                    |
-| --------------------------------------- | ----------------------------------- | --------------------------------- |
+| **Phase**                               | **Focus**                                           | **Components**                                  |
+| --------------------------------------- | --------------------------------------------------- | ----------------------------------------------- |
 | **Phase 0:** Pre-Deployment Check       | Making sure you have all the required prerequisites | Docker, appropriate resources for docker & Node |
-| **Phase 1:** Data Exploration & Theming | Data visualization in the portal    | Elasticsearch, Arranger, Stage    |
-| **Phase 2:** Tabular Data Management    | Backend data storage and validation | Lyric, Lectern, Postgres, MongoDB |
-| **Phase 3:** File Management            | File storage and metadata tracking  | Song, Score, Object Storage       |
-| **_Phase 4:_** Identity & Access        | Security and user management        | Keycloak integration              |
+| **Phase 1:** Data Exploration & Theming | Data visualization in the portal                    | Elasticsearch, Arranger, Stage                  |
+| **Phase 2:** Tabular Data Management    | Backend data storage and validation                 | Lyric, Lectern, Postgres, MongoDB               |
+| **Phase 3:** File Management            | File storage and metadata tracking                  | Song, Score, Object Storage                     |
+| **_Phase 4:_** Identity & Access        | Security and user management                        | Keycloak integration                            |
 
 **Phase 4** will be implemented in a future release.
 
@@ -50,39 +72,16 @@ As summary of command line client interactions is provided in the table below:
 | **Configuration Management** | Submit dictionaries to Lectern, Register Lectern dictionaries with Lyric, Update Song Schema and study Ids |
 | **Data Management**          | Upload tabular data to Lyric, Upload and publish file data and metadata.                                   |
 
-## Getting Started
-
-You will need:
-
-- **Docker Desktop 4.39.0+** with:
-  - 8-core CPU minimum
-  - 8 GB memory
-  - 2 GB swap
-  - 64 GB virtual disk
-- **Node.js 20.18.1+ and npm 9+**
-- **Linux/macOS environment**
-
-> [!NOTE]
-> **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
-
-Run the pre-deployment check to verify your environment:
-
-```bash
-make phase0
-```
-
-The CLI will provide you with instructions on next steps.
-
 ### Deployment specific Make Commands
 
-| Phase                 | Description                      | Command          |
-| --------------------- | -------------------------------- | ---------------- |
-| **Phase 0**           | Pre-Deployment Check             | `make phase0`    |
-| **Phase 1**           | Data Exploration & Theming       | `make phase1`    |
-| **Phase 2**           | Tabular Data Management          | `make phase2`    |
-| **Phase 3**           | File Management                  | `make phase3`    |
-| **Stage Dev**         | Run Stage in development mode    | `make stage-dev` |
-| **Reset**             | Reset all containers and volumes | `make reset`     |
+| Phase         | Description                      | Command          |
+| ------------- | -------------------------------- | ---------------- |
+| **Phase 0**   | Pre-Deployment Check             | `make phase0`    |
+| **Phase 1**   | Data Exploration & Theming       | `make phase1`    |
+| **Phase 2**   | Tabular Data Management          | `make phase2`    |
+| **Phase 3**   | File Management                  | `make phase3`    |
+| **Stage Dev** | Run Stage in development mode    | `make stage-dev` |
+| **Reset**     | Reset all containers and volumes | `make reset`     |
 
 ## Accessing the Portal
 

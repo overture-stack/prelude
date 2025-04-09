@@ -319,7 +319,7 @@ export class Logger {
     // Elasticsearch Mapping Generation
     this.generic(chalk.bold.magenta("Generate Elasticsearch Mapping:"));
     this.generic(
-      chalk.white("composer -p generateElasticearchMapping -f data.csv")
+      chalk.white("composer -p generateElasticsearchMapping -f data.csv")
     );
     this.generic(chalk.gray("Options:"));
     this.generic(
