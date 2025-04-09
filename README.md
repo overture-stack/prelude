@@ -15,6 +15,7 @@ Prelude is structured into four incremental phases:
 
 | **Phase**                               | **Focus**                           | **Components**                    |
 | --------------------------------------- | ----------------------------------- | --------------------------------- |
+| **Phase 0:** Pre-Deployment Check       | Making sure you have all the required prerequisites | Docker, appropriate resources for docker & Node |
 | **Phase 1:** Data Exploration & Theming | Data visualization in the portal    | Elasticsearch, Arranger, Stage    |
 | **Phase 2:** Tabular Data Management    | Backend data storage and validation | Lyric, Lectern, Postgres, MongoDB |
 | **Phase 3:** File Management            | File storage and metadata tracking  | Song, Score, Object Storage       |
@@ -72,28 +73,16 @@ make phase0
 
 The CLI will provide you with instructions on next steps.
 
-### Deployment Options
+### Deployment specific Make Commands
 
 | Phase                 | Description                      | Command          |
 | --------------------- | -------------------------------- | ---------------- |
+| **Phase 0**           | Pre-Deployment Check             | `make phase0`    |
 | **Phase 1**           | Data Exploration & Theming       | `make phase1`    |
 | **Phase 2**           | Tabular Data Management          | `make phase2`    |
 | **Phase 3**           | File Management                  | `make phase3`    |
-| **Development**       | Run Stage in development mode    | `make stage-dev` |
-| **System Management** | Reset all containers and volumes | `make reset`     |
-
-### Available Commands
-
-| Command     | Description                                   |
-| ----------- | --------------------------------------------- |
-| `help`      | Display available commands                    |
-| `phase0`    | Run pre-deployment checks                     |
-| `phase1`    | Start Phase 1 deployment                      |
-| `phase2`    | Start Phase 2 deployment                      |
-| `phase3`    | Start Phase 3 deployment                      |
-| `stage-dev` | Start Stage development environment           |
-| `down`      | Gracefully shutdown all containers            |
-| `reset`     | Remove all containers and volumes (DATA LOSS) |
+| **Stage Dev**         | Run Stage in development mode    | `make stage-dev` |
+| **Reset**             | Reset all containers and volumes | `make reset`     |
 
 ## Accessing the Portal
 
