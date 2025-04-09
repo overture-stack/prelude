@@ -55,10 +55,6 @@ As summary of command line client interactions is provided in the table below:
 | **Configuration Management** | Submit dictionaries to Lectern, Register Lectern dictionaries with Lyric, Update Song Schema and study Ids |
 | **Data Management**          | Upload tabular data to Lyric, Upload and publish file data and metadata.                                   |
 
-### Additional Information
-
-- Relevant API swagger docs can be found from the API dropdown. These swagger APIs are only available when running phases that include the respective service
-
 ## Getting Started
 
 _If you’re reading from the Prelude documentation page, this section may be redundant._
@@ -85,7 +81,24 @@ make Phase0
   - 8 GB memory
   - 2 GB swap
   - 64 GB virtual disk
-- **Node.js 18+ and npm 9+**
+- **Node.js 20.18.1+ and npm 9+**
+- **Linux/macOS environment**
+
+**Note For Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
+
+<details>
+<summary>Windows Support</summary>
+
+Windows users should:
+
+1. Install [WSL2 (Windows Subsystem for Linux)](https://learn.microsoft.com/en-us/windows/wsl/install)
+2. Use Ubuntu or another Linux distribution within WSL2
+3. Run all Prelude commands from the Bash terminal in your WSL2 environment
+4. Install Docker Desktop with WSL2 integration enabled`
+
+WSL2 provides a full Linux kernel and compatibility layer, allowing you to run Prelude's Linux commands without modification.
+
+</details>
 
 ### 3. Build the local Stage UI image
 

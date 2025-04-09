@@ -24,32 +24,30 @@ Prelude is structured into four incremental phases:
 
 ## Supplemental Tools
 
-**Composer** transforms your data into base Overture configurations, generating:
+### Composer
 
-- **Elasticsearch Mappings** – Defines the structure and indexing settings for your data
-- **Arranger UI Configs** – Configures the user interface for data exploration and visualization
-- **Lectern Dictionary Schema** – Creates data dictionaries and schemas for tabular data
-- **Song Schema** – Generates schema configurations for file metadata
+Transforms your data (CSV or JSON) into base Overture configurations including Elasticsearch Mappings, Arranger UI Configs, Lectern Dictionary and Schema, Song Schema. This utility greatly reduces tedious manual configurations.
 
-These configurations provide a foundation for Overture components, ensuring consistent data representation and interoperability.
+Depending on the command Composer can input CSV or JSON file(s) that represent your data and output the following:
 
-**Conductor** streamlines interactions with Overture APIs, offering:
+| Output                            | Purpose                                                              |
+| --------------------------------- | -------------------------------------------------------------------- |
+| **Elasticsearch Mappings**        | Defines the structure and indexing settings for your data            |
+| **Arranger UI Configs**           | Configures the user interface for data exploration and visualization |
+| **Lectern Dictionary and Schema** | Creates data dictionaries and schemas for tabular data               |
+| **Song Schema**                   | Generates schema configurations for file metadata                    |
 
-- **Elasticsearch Management**
+### Conductor
 
-  - Transform and load CSV data into Elasticsearch
+Conductor runs the automated deployments from the `/apps/conductor/scripts` directory. It can also be run as a command line client made to streamline interactions with various Overture API endpoints.
 
-- **Metadata and Schema Handling**
+As summary of command line client interactions is provided in the table below:
 
-  - Validate and submit schema dictionaries to Lectern
-  - Register Lectern dictionaries with Lyric
-
-- **Data Management**
-
-  - Upload tabular data to Lyric
-  - Create Song studies
-  - Update Song with analysis schemas
-  - Upload and publish file data with Song and Score
+| Feature                      | Description                                                                                                |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **CSV to Elasticsearch ETL** | Validate, transform and load CSV data to a specified elasticsearch index.                                  |
+| **Configuration Management** | Submit dictionaries to Lectern, Register Lectern dictionaries with Lyric, Update Song Schema and study Ids |
+| **Data Management**          | Upload tabular data to Lyric, Upload and publish file data and metadata.                                   |
 
 ## Getting Started
 
@@ -61,25 +59,27 @@ You will need:
   - 2 GB swap
   - 64 GB virtual disk
 - **Node.js 20.18.1+ and npm 9+**
+- **Linux/macOS environment**
+
+> [!NOTE] > **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
 
 Run the pre-deployment check to verify your environment:
 
-| OS          | Command           |
-| ----------- | ----------------- |
-| Linux/macOS | `make phase0`     |
-| Windows     | `make.bat phase0` |
+```bash
+make phase0
+```
 
 The CLI will provide you with instructions on next steps.
 
 ### Deployment Options
 
-| Phase                 | Description                      | Linux/macOS      | Windows              |
-| --------------------- | -------------------------------- | ---------------- | -------------------- |
-| **Phase 1**           | Data Exploration & Theming       | `make phase1`    | `make.bat phase1`    |
-| **Phase 2**           | Tabular Data Management          | `make phase2`    | `make.bat phase2`    |
-| **Phase 3**           | File Management                  | `make phase3`    | `make.bat phase3`    |
-| **Development**       | Run Stage in development mode    | `make stage-dev` | `make.bat stage-dev` |
-| **System Management** | Reset all containers and volumes | `make reset`     | `make.bat reset`     |
+| Phase                 | Description                      | Command          |
+| --------------------- | -------------------------------- | ---------------- |
+| **Phase 1**           | Data Exploration & Theming       | `make phase1`    |
+| **Phase 2**           | Tabular Data Management          | `make phase2`    |
+| **Phase 3**           | File Management                  | `make phase3`    |
+| **Development**       | Run Stage in development mode    | `make stage-dev` |
+| **System Management** | Reset all containers and volumes | `make reset`     |
 
 ### Available Commands
 
@@ -174,6 +174,17 @@ The project follows a modular structure with two main applications: Conductor (f
 ├── data/                         # Data files
 └── docs/                         # Symlink to Stage docs
 ```
+
+## Windows Support
+
+Prelude is designed to run in Linux/macOS environments. Windows users should:
+
+1. Install [WSL2 (Windows Subsystem for Linux)](https://learn.microsoft.com/en-us/windows/wsl/install)
+2. Use Ubuntu or another Linux distribution within WSL2
+3. Run all Prelude commands from the Bash terminal in your WSL2 environment
+4. Install Docker Desktop with WSL2 integration enabled
+
+WSL2 provides a full Linux kernel and compatibility layer, allowing you to run Prelude's Linux commands without modification.
 
 ## Support
 
