@@ -61,7 +61,8 @@ You will need:
 - **Node.js 20.18.1+ and npm 9+**
 - **Linux/macOS environment**
 
-> [!NOTE] > **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
+> [!NOTE]
+> **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
 
 Run the pre-deployment check to verify your environment:
 
