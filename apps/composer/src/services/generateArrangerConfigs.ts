@@ -315,7 +315,7 @@ function isSearchableField(field: ElasticsearchField): boolean {
  * - table.json: Table column configuration
  * - facets.json: Search facet configuration
  */
-export function generateArrangerConfigs(
+export function ArrangerConfigs(
   mapping: ElasticsearchMapping,
   indexName: string = "data",
   documentType: "file" | "analysis" = "file"

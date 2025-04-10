@@ -242,7 +242,7 @@ export class Logger {
     this.generic(chalk.bold.magenta("Generate Lectern Dictionary:"));
     this.generic(
       chalk.white(
-        "composer -p generateLecternDictionary -f clinical.csv demographics.csv"
+        "composer -p LecternDictionary -f clinical.csv demographics.csv"
       )
     );
     this.generic(chalk.gray("Options:"));
@@ -278,16 +278,14 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: composer -p generateLecternDictionary -f clinical.csv demographics.csv -o dictionary.json -n 'Clinical Dictionary' -v '2.0.0'"
+        "Example: composer -p LecternDictionary -f clinical.csv demographics.csv -o dictionary.json -n 'Clinical Dictionary' -v '2.0.0'"
       )
     );
     this.generic("");
 
     // Song Schema Generation
     this.generic(chalk.bold.magenta("Generate Song Schema:"));
-    this.generic(
-      chalk.white("composer -p generateSongSchema -f schema-template.json")
-    );
+    this.generic(chalk.white("composer -p SongSchema -f schema-template.json"));
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray("-p, --profile <profile> Execution profile (default: default)")
@@ -311,16 +309,14 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: composer -p generateSongSchema -f data-model.json -o song-schema.json -n 'Analysis Schema' --file-types bam vcf fastq"
+        "Example: composer -p SongSchema -f data-model.json -o song-schema.json -n 'Analysis Schema' --file-types bam vcf fastq"
       )
     );
     this.generic("");
 
     // Elasticsearch Mapping Generation
     this.generic(chalk.bold.magenta("Generate Elasticsearch Mapping:"));
-    this.generic(
-      chalk.white("composer -p generateElasticsearchMapping -f data.csv")
-    );
+    this.generic(chalk.white("composer -p ElasticsearchMapping -f data.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray("-p, --profile <profile> Execution profile (default: default)")
@@ -366,26 +362,24 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: composer -p generateElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
+        "Example: composer -p ElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
       )
     );
     this.generic(
       chalk.gray(
-        "Example with ignored fields: composer -p generateElasticsearchMapping -f donor_data.json --ignore-fields entityName organization isValid id"
+        "Example with ignored fields: composer -p ElasticsearchMapping -f donor_data.json --ignore-fields entityName organization isValid id"
       )
     );
     this.generic(
       chalk.gray(
-        "Example without metadata: composer -p generateElasticsearchMapping -f donor_data.json --skip-metadata"
+        "Example without metadata: composer -p ElasticsearchMapping -f donor_data.json --skip-metadata"
       )
     );
     this.generic("");
 
     // Arranger Configuration Generation
     this.generic(chalk.bold.magenta("Generate Arranger Configs:"));
-    this.generic(
-      chalk.white("composer -p generateArrangerConfigs -f metadata.csv")
-    );
+    this.generic(chalk.white("composer -p ArrangerConfigs -f metadata.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray("-p, --profile <profile> Execution profile (default: default)")
@@ -411,7 +405,7 @@ export class Logger {
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: composer -p generateArrangerConfigs -f mapping.json -o arranger-config/ --arranger-doc-type analysis -i clinical_data"
+        "Example: composer -p ArrangerConfigs -f mapping.json -o arranger-config/ --arranger-doc-type analysis -i clinical_data"
       )
     );
     this.generic("");

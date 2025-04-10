@@ -3,10 +3,7 @@ import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
-import {
-  generateSongSchema,
-  validateSongSchema,
-} from "../services/generateSongSchema";
+import { SongSchema, validateSongSchema } from "../services/generateSongSchema";
 import { validateFile, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
 import { Logger } from "../utils/logger";
@@ -149,11 +146,7 @@ export class SongCommand extends Command {
 
       // Generate and validate schema
       Logger.info("Generating schema");
-      const songSchema = generateSongSchema(
-        sampleData,
-        schemaName,
-        songOptions
-      );
+      const songSchema = SongSchema(sampleData, schemaName, songOptions);
 
       Logger.debug("Validating generated schema");
       if (!validateSongSchema(songSchema)) {

@@ -4,7 +4,6 @@ import { ComposerError, ErrorCodes } from "../utils/errors";
 import { validateEnvironment } from "../validations";
 import { loadEnvironmentConfig } from "./environment";
 import { getDefaultOutputPath } from "./profiles";
-import { validateCliOptions } from "./validation";
 import { configureCommandOptions } from "./options";
 import { Logger } from "../utils/logger";
 import * as fs from "fs";
@@ -105,13 +104,13 @@ export async function setupCLI(): Promise<CLIOutput> {
     };
 
     // Add profile-specific config
-    if (profile === "generateLecternDictionary") {
+    if (profile === "LecternDictionary") {
       cliOutput.dictionaryConfig = {
         name: options.name,
         description: options.description,
         version: options.version,
       };
-    } else if (profile === "generateSongSchema") {
+    } else if (profile === "SongSchema") {
       // For Song schema, try to extract file types from the input file if not specified
       let fileTypes = options.fileTypes;
 
@@ -145,7 +144,7 @@ export async function setupCLI(): Promise<CLIOutput> {
       Logger.debug(
         `Song schema config: ${JSON.stringify(cliOutput.songConfig)}`
       );
-    } else if (profile === "generateArrangerConfigs") {
+    } else if (profile === "ArrangerConfigs") {
       cliOutput.arrangerConfig = {
         documentType:
           (options.arrangerDocType as "file" | "analysis") || "file",

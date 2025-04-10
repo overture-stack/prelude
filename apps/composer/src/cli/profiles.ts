@@ -4,7 +4,7 @@ import { Logger } from "../utils/logger";
 import { getDefaultOutputPathForProfile } from "../utils/paths";
 
 export const PROFILE_DESCRIPTIONS = new Map([
-  [Profiles.GENERATE_SONG_SCHEMA, "Generate SONG schema from JSON metadata"],
+  [Profiles.GENERATE_SONG_SCHEMA, "Generate Song schema from JSON metadata"],
   [
     Profiles.GENERATE_LECTERN_DICTIONARY,
     "Generate Lectern dictionary from CSV files",

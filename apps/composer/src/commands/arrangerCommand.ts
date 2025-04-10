@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
-import { generateArrangerConfigs } from "../services/generateArrangerConfigs";
+import { ArrangerConfigs } from "../services/generateArrangerConfigs";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
 
@@ -149,7 +149,7 @@ export class ArrangerCommand extends Command {
       this.createDirectoryIfNotExists(outputDir);
 
       Logger.debug("Generating Arranger configurations");
-      const configs = generateArrangerConfigs(
+      const configs = ArrangerConfigs(
         mapping,
         cliOutput.config.elasticsearch?.index
       );

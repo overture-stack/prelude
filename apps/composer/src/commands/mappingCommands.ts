@@ -372,7 +372,7 @@ export class MappingCommand extends Command {
       Logger.success("Elasticsearch mapping generated successfully");
 
       // Use generic logging for file path to avoid template literal issues
-      Logger.generic(`Mapping template saved to: ${outputPath}`);
+      Logger.generic(`    - Saved to: ${outputPath}`);
     } catch (error) {
       // Fallback logging in case of any unexpected errors
       Logger.error("Error in logging mapping summary");

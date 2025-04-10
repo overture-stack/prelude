@@ -2,7 +2,7 @@
 
 ## Overview
 
-**This guide is for** those in phase one of Prelude's deployment process. The primary goal is to set up and configure Stage, Arranger, and Elasticsearch such that you will be able to access and exploring your tabular data through data exploration pages.
+**This guide is for** those in phase one of Prelude's deployment process. The primary goal is to get your data into the portal UI for search and exploration.
 
 **By the end of this guide you will be able to:**
 
@@ -23,25 +23,15 @@
   - [Stage](https://docs.overture.bio/docs/core-software/Stage/overview)
 - Optionally we use [Elasticvue](https://elasticvue.com/installation) for viewing, maintaining, configuring, and troubleshooting Elasticsearch
 
-### Quick Setup Verification
-
-If you are starting from this point or want to ensure your system is ready, run the following command from the root of the Prelude directory:
-
-```bash
-make phase0
-```
-
-This command performs a pre-deployment check and provides all the information you need to set up your system for success.
-
 ## Background Information
 
-Phase One focuses on configuring how your data will be displayed in the front-end portal. During this phase, you'll determine the number of data tables needed and their configurations. This is also the ideal time to apply custom theming to your portal. The goal is to establish the look and feel of the user experience before proceeding to more complex back-end data management configurations.
+Phase One focuses on configuring how your data will be displayed in the front-end portal. During this phase, you'll determine the number of data tables needed and their configurations. We will also provide information for applying custom theming to your portal. The goal is to establish the look and feel of the user experience before proceeding to more complex back-end data management configurations.
 
 ### Architecture Overview
 
 The phase architecture is diagramed below and detailed in the following table:
 
-![Phase 1 Architecture Diagram](/docs/images/phase1.png "Phase 1 Architecture Diagram")
+![Phase 1 Architecture Diagram](/docs/images/phase1.png 'Phase 1 Architecture Diagram')
 
 | Component                                                                                                  | Description                                                                                                  |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -61,7 +51,7 @@ your project. Below are guidelines for data management:
 - **Data Privacy**: When working with sensitive data, add your data files to `.gitignore` before committing to GitHub to prevent accidental exposure.
 - **Data Size**: There are no strict size limitations beyond the resource constraints of Docker and Elasticsearch. For development and testing, we recommend using a representative sample of approximately 500 records.
 
-Each CSV file in the `data` folder should represent an independent dataset that you want to view within the exploration tables.
+  > **For phase 1 your CSV file(s) will represent the structure of the data table(s).**
 
 ### Implementation
 
@@ -72,7 +62,7 @@ Each CSV file in the `data` folder should represent an independent dataset that 
    - Represents a distinct, independent dataset
    - Contains a representative sample of data
 
-You should also ensure that your headers do not conflict with any elasticsearch or graphQL naming conventions, a summary of invalid characters and reserved words is provided in the dropdown below.
+**Ensure your headers do not conflict with any Elasticsearch or GraphQL naming conventions.** A summary of invalid characters and reserved words is provided in the dropdown below.
 
 <details>
 <summary>Header Naming Conventions</summary>
@@ -96,8 +86,6 @@ You should also ensure that your headers do not conflict with any elasticsearch 
 - **Good**: `user_id,first_name,last_name,email_address`
 - **Bad**: `User ID!,First Name,Email@Address`
 
-Following these guidelines ensures smooth Elasticsearch indexing and prevents data ingestion issues.
-
 </details>
 
 ### Validation
@@ -120,11 +108,9 @@ To verify successful data preparation:
   - No sensitive information is exposed
 - Confirm your `.gitignore` includes data files if necessary
 
-**Next Steps:** After completing data preparation, you'll be ready to generate your Arranger and Stage configuration files.
+**Next Steps:** After completing data preparation, you'll be ready to generate your Elasticsearch and Arranger configuration files.
 
 ## Step 2: Update portal configurations
-
-Introduction: Provide a brief overview of what this step accomplishes and why it's necessary
 
 ### A) Install Composer
 
@@ -142,14 +128,14 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
    npm install -g .
    ```
 
-3. **Validate:** From the root directory test that Composer is working by running `composer -h` you should be able to see help text outlining the available commands.
+3. **Validate:** From the root directory test that Composer is working by running `composer -h`. You should be able to see help text outlining the available commands.
 
 ### B) Generate Elasticsearch index mappings
 
-1. Run the following Composer command to generate elasticsearch index mappings using your data files:
+1. Run the following Composer command to generate Elasticsearch index mappings using your data files:
 
    ```
-   composer -p generateElasticsearchMapping -f ./data/datatable1.csv -i datatable1 -o ./configs/elasticsearchConfigs/datatable1-mapping.json
+   composer -p ElasticsearchMapping -f ./data/datatable1.csv -i datatable1 -o ./configs/elasticsearchConfigs/datatable1-mapping.json
    ```
 
     <details>
@@ -157,18 +143,18 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
    In this command:
 
-   - `-p generateElasticsearchMapping`: Specifies the operation to generate an Elasticsearch mapping schema
+   - `-p ElasticsearchMapping`: Specifies the operation to generate an Elasticsearch mapping schema
    - `-f ./data/datatable1.csv`: Specifies the input data file to analyze
    - `-i datatable1`: Sets the Elasticsearch index name to "datatable1"
    - `-o ./configs/elasticsearchConfigs/datatable1-mapping.json`: Sets the output path for the generated mapping file
 
    The command analyzes the structure of datatable1.csv and creates an appropriate Elasticsearch mapping configuration, which defines how the data will be indexed and searched in Elasticsearch.
 
-   A detailed overview of all available options for the generateElasticsearchMapping command can be seen by running `composer -h`
+   A detailed overview of all available options for the ElasticsearchMapping command can be seen by running `composer -h`.
 
     </details>
 
-   ![Output](/docs/images/generateElasticsearchMapping.png "Terminal output from generateElasticsearchMapping")
+   ![Output](/docs/images/ElasticsearchMapping.png 'Terminal output from ElasticsearchMapping')
 
 2. Validate and review the generated mapping template(s):
 
@@ -181,7 +167,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
    <details>
    <summary>Key Elements to Review</summary>
 
-   - **Field Types:** Most fields are set as `keyword` type for exact matching, with numeric values like `age_at_diagnosis`, `treatment_start`, and `followup_interval` appropriately set as `integer` types
+   - **Field Types:** Most fields are set as `keyword` type for exact matching, with numeric values like `age_at_diagnosis`, `treatment_start`, and `followup_interval` appropriately set as `integer` types.
 
    - **Metadata Structure:** The auto-generated `submission_metadata` object contains important tracking fields:
      ```json
@@ -205,19 +191,19 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
        "number_of_replicas": 0
      }
      ```
-     These settings are appropriate for development but can and should be adjusted as we move foward.
+     These settings are appropriate for development but can and should be adjusted as we move forward.
      </details>
 
-3. Repeat the above steps for your remaining datasets, make sure to name your indices and files appropriatly.
+3. Repeat the above steps for your remaining datasets. Make sure to name your indices and files appropriately.
 
-   **Next Step:** Once you're satisfied with the mapping configuration, you're ready to move on to the next step, generating and confuring the Arranger configuration files.
+   **Next Step:** Once you're satisfied with the mapping configuration, you're ready to move on to the next step: generating and configuring the Arranger configuration files.
 
 ### C) Generating our Arranger configuration files
 
 1.  Run the following Composer command to generate Arranger configuration files using your index mapping templates:
 
     ```
-    composer -p generateArrangerConfigs -f ./configs/elasticsearchConfigs/datatable1-mapping.json -o ./configs/arrangerConfigs/datatable1/
+    composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/datatable1-mapping.json -o ./configs/arrangerConfigs/datatable1/
     ```
 
     <details>
@@ -225,21 +211,21 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
     In this command:
 
-    - `-p generateArrangerConfigs`: Specifies the operation to generate Arranger configuration files
+    - `-p ArrangerConfigs`: Specifies the operation to generate Arranger configuration files
     - `-f ./configs/elasticsearchConfigs/datatable1-mapping.json`: Specifies the input Elasticsearch mapping file to use as a template
     - `-o ./configs/arrangerConfigs/datatable1/`: Sets the output directory for the generated Arranger configuration files
 
     The command analyzes the Elasticsearch mapping structure and creates appropriate Arranger configuration files, which define how data will be displayed, filtered, and queried in the Arranger UI.
 
-    A detailed overview of all available options for the generateArrangerConfigs command can be seen by running `composer -h generateArrangerConfigs`
+    A detailed overview of all available options for the ArrangerConfigs command can be seen by running `composer -h ArrangerConfigs`.
 
     </details>
 
-    ![Output](/docs/images/generateArrangerConfigs.png "Terminal output from generateArrangerConfigs")
+    ![Output](/docs/images/ArrangerConfigs.png 'Terminal output from ArrangerConfigs')
 
-2.  Validate and review the generated arranger configuration file:
+2.  Validate and review the generated Arranger configuration file:
 
-    - **Directory structure:** should now look like the following
+    - **Directory structure:** should now look like the following:
 
       ```
       configs
@@ -254,7 +240,7 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
 
       ```
 
-    - **Base.json:** update the index field of your base.json file to match relevant index alias. In this case `datatable1-index`.
+    - **Base.json:** Update the index field of your base.json file to match relevant index alias. In this case `datatable1-index`.
 
       ```
       {
@@ -263,9 +249,9 @@ Introduction: Provide a brief overview of what this step accomplishes and why it
       }
       ```
 
-    - **Extended.json** `fieldNames` should be accurate in the extended.json, take time to review and update the `displayNames` as these will be how fields are read from the front-end UI.
-    - **Table.json** By default `canChangeShow`, `show`, and `sortable` are set to true. Update these fields accordingly. For information see our documentation covering [Arrangers table configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#table-configuration-tablejson)
-    - **Facets.json** By default `active` and `show` are set to true. Update these fields accordingly. The order of the elements will also match the order of the facets as they appear in the facet panel, update accordingly. For information see our documentation covering [Arrangers facet configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#facet-configuration-facetsjson)
+    - **Extended.json:** `fieldNames` should be accurate in the extended.json. Take time to review and update the `displayNames` as these will be how fields are read from the front-end UI.
+    - **Table.json:** By default `canChangeShow`, `show`, and `sortable` are set to true. Update these fields accordingly. For information see our documentation covering [Arranger's table configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#table-configuration-tablejson).
+    - **Facets.json:** By default `active` and `show` are set to true. Update these fields accordingly. The order of the elements will also match the order of the facets as they appear in the facet panel, update accordingly. For information see our documentation covering [Arranger's facet configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#facet-configuration-facetsjson).
 
 3.  Repeat the above steps for your remaining datasets.
 
@@ -301,7 +287,7 @@ This step configures your docker-compose.yml file to properly connect your data 
 
    ```yaml
    arranger-datatable1:
-     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+     profiles: ['phase1', 'phase2', 'phase3', 'stageDev', 'default']
      image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
      container_name: arranger-datatable1 # Rename to match above
      platform: linux/amd64
@@ -309,7 +295,7 @@ This step configures your docker-compose.yml file to properly connect your data 
        conductor:
          condition: service_healthy
      ports:
-       - "5050:5050" # Use unique ports for each Arranger instance
+       - '5050:5050' # Use unique ports for each Arranger instance
      volumes:
        - ./configs/arrangerConfigs/datatable1:/app/modules/server/configs # Point to the relevant generated config
      environment:
@@ -324,8 +310,8 @@ This step configures your docker-compose.yml file to properly connect your data 
        ENABLE_LOGS: false
    ```
 
-   - Make sure to use unique ports for each Arranger instance, this includes updating the ports section as well as the `PORT` environment variable for each Arranger instance
-   - Make sure you point the volume path provided to the relevant arranger config
+   - Make sure to use unique ports for each Arranger instance. This includes updating the ports section as well as the `PORT` environment variable for each Arranger instance.
+   - Make sure you point the volume path provided to the relevant Arranger config.
 
 3. **Update the Arranger Count in Conductor**:
 
@@ -338,18 +324,18 @@ This step configures your docker-compose.yml file to properly connect your data 
    # ARRANGER_1_URL: http://arranger-datatable2:5051
    ```
 
-   - Here `ARRANGER_1_URL` is commented, make sure to uncomment any additionally added arranger URLs
+   - Here `ARRANGER_1_URL` is commented. Make sure to uncomment any additionally added Arranger URLs.
 
 4. **Ensure all services are on the same network**:
 
-   The following should be included with each added service
+   The following should be included with each added service:
 
    ```yaml
    networks:
      - conductor-network
    ```
 
-5. **pre-configure the Stage Environment variable**:
+5. **Pre-configure the Stage Environment variable**:
 
    Update the Stage service environment variables to connect to your Arranger instances:
 
@@ -389,7 +375,7 @@ After updating your docker-compose.yml file, verify the configuration:
 
    The deployment script should verify all services are running correctly.
 
-**Next Steps:** We will run through the process of adding a third data table to stage.
+**Next Steps:** We will run through the process of adding a third data table to Stage.
 
 ## Step 4: Updating Stage (Optional)
 
@@ -458,7 +444,7 @@ Stage provides extensive theming capabilities to help you customize the look and
 The theming system is organized into several key files:
 
 - **Main Theme**: `/apps/stage/components/theme/` contains files that define the global color palette, typography, spacing, and other fundamental design elements
-- **Documentation Theme**: the `/components/pages/documentation/DocContainer/` dicrectory contains a `theme.ts` & a `style.ts` which controls the documentation section styling including colors, fonts, and spacing
+- **Documentation Theme**: the `/components/pages/documentation/DocContainer/` directory contains a `theme.ts` & a `style.ts` which controls the documentation section styling including colors, fonts, and spacing
 
 #### Color Customization
 
@@ -467,15 +453,15 @@ To update the color palette to match your organization's branding:
 ```typescript
 // In theme.ts
 const theme = {
-  colors: {
-    primary: "#0B75A2", // Main brand color
-    primary_green: "#00A88F", // Secondary brand color
-    sidebar: "#f5f6f7", // Sidebar background
-    text: "#2d3748", // Main text color
-    textSecondary: "#4a5568", // Secondary text color
-    // Additional color settings...
-  },
-  // Other theme properties...
+	colors: {
+		primary: '#0B75A2', // Main brand color
+		primary_green: '#00A88F', // Secondary brand color
+		sidebar: '#f5f6f7', // Sidebar background
+		text: '#2d3748', // Main text color
+		textSecondary: '#4a5568', // Secondary text color
+		// Additional color settings...
+	},
+	// Other theme properties...
 };
 ```
 
@@ -519,7 +505,7 @@ The application's typography is controlled through two main systems:
 
    ```typescript
    const baseFont = css`
-     font-family: "Lato", sans-serif;
+   	font-family: 'Lato', sans-serif;
    `;
    ```
 
@@ -574,7 +560,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
    npm install -g .
    ```
 
-3. **Validate:** From the root directory test that Conductor is working by running `conductor -h` you should be able to see help text outlining the available commands.
+3. **Validate:** From the root directory test that Conductor is working by running `conductor -h`. You should be able to see help text outlining the available commands.
 
 4. Run the Conductor `upload` command to upload your data:
 
@@ -598,7 +584,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
 
    The command processes your CSV file, transforms it according to the index mapping structure, and uploads it to Elasticsearch in batches.
 
-   Full command reference can be seen by running `conductor upload -h`
+   Full command reference can be seen by running `conductor upload -h`.
    </details>
 
 5. Monitor the upload process:

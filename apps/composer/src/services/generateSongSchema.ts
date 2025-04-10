@@ -141,7 +141,7 @@ export function generateSongFields(data: Record<string, any>): {
  * Focuses on required experiment section and optional workflow section
  *
  * @example
- * generateSongSchema(
+ * SongSchema(
  *   {
  *     workflow: { name: "analysis" },
  *     experiment: { id: "exp1" }
@@ -158,7 +158,7 @@ export function generateSongFields(data: Record<string, any>): {
  *   }
  * }
  */
-export function generateSongSchema(
+export function SongSchema(
   sampleData: Record<string, any>,
   schemaName: string,
   options?: SongOptions
@@ -310,7 +310,7 @@ const sampleData = {
   }
 };
 
-const schema = generateSongSchema(
+const schema = SongSchema(
   sampleData,
   "dna_seq_schema",
   { fileTypes: ["fastq", "bam"] }

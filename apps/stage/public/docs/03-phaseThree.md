@@ -212,14 +212,14 @@ Create a file metadata template that serves as an example to generate your Song 
 }
 ```
 
-This template will be used next with the `generateSongSchema` command to create a validation schema. When creating this template, include field structures and examples that represent your typical data, as these will inform the validation rules in the generated schema.
+This template will be used next with the `SongSchemad to create a validation schema. When creating this template, include field structures and examples that represent your typical data, as these will inform the validation rules in the generated schema.
 
 ## Step 4: Generate a Song Schema Using Composer
 
 Now we'll use Composer to generate a Song schema that will validate metadata submissions:
 
 ```bash
-composer -p generateSongSchema -f ./data/fileData/file-metadata.json -o ./configs/songSchemas/ -n sequencing_experiment --file-types bam cram
+composer -p SongSchema -f ./data/fileData/file-metadata.json -o ./configs/songSchemas/ -n sequencing_experiment --file-types bam cram
 ```
 
 <details>
@@ -227,7 +227,7 @@ composer -p generateSongSchema -f ./data/fileData/file-metadata.json -o ./config
 
 In this command:
 
-- `-p generateSongSchema`: Specifies the operation to generate a Song schema
+- `-p SongSchema`: Specifies the operation to generate a Song schema
 - `-f ./data/fileData/file-metadata.json`: Specifies the input metadata description file
 - `-o ./configs/songSchemas/`: Output directory for the generated schema
 - `-n sequencing_experiment`: Names the schema

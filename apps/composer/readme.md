@@ -43,7 +43,7 @@ npm start -- <profile> [options]
 For example:
 
 ```bash
-npm start -- generateElasticsearchMapping -f data.csv -i my-index
+npm start -- ElasticsearchMapping -f data.csv -i my-index
 ```
 
 ## Usage
@@ -55,7 +55,7 @@ All available commands can be viewed by running `composer --help`.
 Create a data dictionary from CSV files:
 
 ```bash
-composer -p generateLecternDictionary -f clinical.csv demographics.csv -o dictionary.json -n "Clinical Dictionary" -v "2.0.0"
+composer -p LecternDictionary -f clinical.csv demographics.csv -o dictionary.json -n "Clinical Dictionary" -v "2.0.0"
 ```
 
 Options:
@@ -72,7 +72,7 @@ Options:
 Create a SONG schema from a JSON template:
 
 ```bash
-composer -p generateSongSchema -f schema-template.json -o song-schema.json -n "Analysis Schema" --file-types bam vcf fastq
+composer -p SongSchema -f schema-template.json -o song-schema.json -n "Analysis Schema" --file-types bam vcf fastq
 ```
 
 Options:
@@ -87,7 +87,7 @@ Options:
 Create an Elasticsearch mapping from CSV or JSON files:
 
 ```bash
-composer -p generateElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json
+composer -p ElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json
 ```
 
 Options:
@@ -106,7 +106,7 @@ Options:
 Create Arranger UI configurations from an Elasticsearch mapping:
 
 ```bash
-composer -p generateArrangerConfigs -f mapping.json -o arranger-config/ --arranger-doc-type analysis -i clinical_data
+composer -p ArrangerConfigs -f mapping.json -o arranger-config/ --arranger-doc-type analysis -i clinical_data
 ```
 
 Options:
@@ -123,18 +123,18 @@ A typical workflow using Composer might look like:
 1. Generate a Lectern dictionary from CSV files:
 
    ```bash
-   composer -p generateLecternDictionary -f clinical.csv -o dictionary.json
+   composer -p LecternDictionary -f clinical.csv -o dictionary.json
    ```
 
 2. Generate an Elasticsearch mapping from CSV files:
 
    ```bash
-   composer -p generateElasticsearchMapping -f clinical.csv -i clinical_data
+   composer -p ElasticsearchMapping -f clinical.csv -i clinical_data
    ```
 
 3. Generate Arranger configurations from the Elasticsearch mapping:
    ```bash
-   composer -p generateArrangerConfigs -f generatedConfigs/elasticsearchConfigs/mapping.json
+   composer -p ArrangerConfigs -f generatedConfigs/elasticsearchConfigs/mapping.json
    ```
 
 ## Troubleshooting

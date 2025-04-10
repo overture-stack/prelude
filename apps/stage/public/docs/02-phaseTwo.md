@@ -31,7 +31,7 @@ Your Phase One data file may need to be divided into multiple segments represent
 
 The Phase Two architecture includes these components:
 
-![Phase 2 Architecture](/docs/images/phase2.png 'Phase 2 Architecture')
+![Phase 2 Architecture](/docs/images/phase2.png "Phase 2 Architecture")
 
 | Component                                                                    | Purpose                                                               |
 | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
@@ -65,7 +65,7 @@ Depending on your data complexity you will need to organize information into mul
 
 For demonstration purposes, we've separated our clinical cancer dataset from Phase One's `dataTable1.csv` into four logical files:
 
-![Enitity Relationship](/docs/images/entityRelationshipDiagram.png 'Entity Relationship Diagram')
+![Enitity Relationship](/docs/images/entityRelationshipDiagram.png "Entity Relationship Diagram")
 
 | File              | Owner                                       | Relationship                                                                             |
 | ----------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -97,13 +97,13 @@ Now that we have established our data structure and organized our files, we can 
 1. To generate a base Lectern dictionary schema from multiple segmented data files, run:
 
    ```bash
-   composer -p generateLecternDictionary -f ./data/segmentedData/ -n example-dictionary -v 1.0 -o ./configs/lecternDictionaries/
+   composer -p LecternDictionaryta/segmentedData/ -n example-dictionary -v 1.0 -o ./configs/lecternDictionaries/
    ```
 
 2. For a single data file, you can point to your flat file:
 
    ```bash
-   composer -p generateLecternDictionary -f ./data/dataTable1.csv -n dataTableOneDictionary -v 1.0 -o ./configs/lecternDictionaries/
+   composer -p LecternDictionary -f ./data/dataTable1.csv -n dataTableOneDictionary -v 1.0 -o ./configs/lecternDictionaries/
    ```
 
    <details>
@@ -111,7 +111,7 @@ Now that we have established our data structure and organized our files, we can 
 
    In this command:
 
-   - `-p generateLecternDictionary`: Specifies the operation to generate a Lectern dictionary
+   - `-p LecternDictionary`: Specifies the operation to generate a Lectern dictionary
    - `-f ./data/segmentedData/`: Specifies the directory containing our segmented data files
    - `-n example-dictionary`: Names the dictionary
    - `-v 1.0`: Sets the dictionary version
@@ -132,14 +132,14 @@ We will first update our top-level dictionary metadata:
 
 ```json
 {
-	"name": "example-dictionary",
-	"description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
-	"version": "1.0",
-	"meta": {
-		"createdAt": "2025-03-20T10:30:00.000Z",
-		"createdBy": "Mitchell Shiell",
-		"primaryContact": "mshiell@oicr.on.ca"
-	}
+  "name": "example-dictionary",
+  "description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
+  "version": "1.0",
+  "meta": {
+    "createdAt": "2025-03-20T10:30:00.000Z",
+    "createdBy": "Mitchell Shiell",
+    "primaryContact": "mshiell@oicr.on.ca"
+  }
 }
 ```
 
