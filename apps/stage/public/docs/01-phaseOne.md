@@ -642,4 +642,10 @@ With Arranger, Stage, and Elasticsearch configured we are ready to load our data
 
    </details>
 
+## Support & Contributions
+
+For support, feature requests, and bug reports, please see our [Support Guide](/documentation/support).
+
+For detailed information on how to contribute to this project, please see our [Contributing Guide](/documentation/contribution).
+
 > **Next Steps:** In phase 2 we will add our backend data submission and storage services.
