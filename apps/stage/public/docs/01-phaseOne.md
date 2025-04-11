@@ -31,7 +31,7 @@ Phase One focuses on configuring how your data will be displayed in the front-en
 
 The phase architecture is diagramed below and detailed in the following table:
 
-![Phase 1 Architecture Diagram](/docs/images/phase1.png 'Phase 1 Architecture Diagram')
+![Phase 1 Architecture Diagram](/docs/images/phase1.png "Phase 1 Architecture Diagram")
 
 | Component                                                                                                  | Description                                                                                                  |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -174,7 +174,7 @@ npm start --  -p ElasticsearchMapping -f data.csv -i my-index
 
     </details>
 
-   ![Output](/docs/images/ElasticsearchMapping.png 'Terminal output from ElasticsearchMapping')
+   ![Output](/docs/images/ElasticsearchMapping.png "Terminal output from ElasticsearchMapping")
 
    > **Note:** The `configs/elasticsearchConfigs/` directory is located at the root of the repository and is symbolically linked to the `./apps/conductor/configs/` directory. In the docker-compose configuration, this directory is mounted as a volume to the conductor service, which uses these files to automatically initialize your Elasticsearch indices. This automation process is explained in greater detail in the following sections.
 
@@ -245,7 +245,7 @@ Composer can also be used to generate the Arranger configuration files that defi
 
     </details>
 
-    ![Output](/docs/images/ArrangerConfigs.png 'Terminal output from ArrangerConfigs')
+    ![Output](/docs/images/ArrangerConfigs.png "Terminal output from ArrangerConfigs")
 
 2.  Validate and review the generated Arranger configuration files:
 
@@ -312,7 +312,7 @@ ES_INDEX_1_ALIAS_NAME: datatable2_centric
 
    ```yaml
    arranger-datatable1:
-   profiles: ['phase1', 'phase2', 'phase3', 'stageDev', 'default']
+   profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
    container_name: arranger-datatable1
    platform: linux/amd64
@@ -320,7 +320,7 @@ ES_INDEX_1_ALIAS_NAME: datatable2_centric
      conductor:
        condition: service_healthy
    ports:
-     - '5050:5050' # External port : Internal port
+     - "5050:5050" # External port : Internal port
    volumes:
      - ./apps/conductor/configs/arrangerConfigs/datatable1:/app/modules/server/configs
    environment:
@@ -371,24 +371,28 @@ NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable2_centric
 # NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: datatable2_centric
 ```
 
-### Validation
+### D) Applying Configuration Changes
 
-After updating your `docker-compose.yml` file, verify the configuration:
+When making changes to your configurations (such as updating Elasticsearch mappings, Arranger configs, or docker-compose environment variables), you'll need to restart the affected containers for the changes to take effect:
 
-1. **Validate Port Mappings**:
+1. **Restart specific profile:**
 
-   - Each Arranger instance should have a unique port
-   - Ports should not conflict with other services
+```
+make restart
+```
 
-2. **Start the Services**:
+When prompted, enter the profile you modified (e.g., phase1, phase2, phase3, or stageDev).
 
-   Run `make phase1` to start your services.
+2. **What happens during restart:**
 
-3. **Check Service Health**:
+- The specified containers will be gracefully shut down
+- All configurations will be reloaded
+- The appropriate deployment script will be executed
+- Your data will remain intact (unlike the 'reset' command which would remove all data)
 
-   The deployment script will confirm if all services are running correctly.
+This restart process ensures that all your configuration changes are properly applied without losing any data you've already loaded.
 
-   > **Next Steps:** Will cover how to theme our portal and add data tables (if needed) to Stage. If you want to skip ahead, the last section of this guide (Step 5) will cover how to use conductor to load your data into Elasticsearch.
+> **Next Steps:** Will cover how to theme our portal and add data tables (if needed) to Stage. If you want to skip ahead, the last section of this guide (Step 5) will cover how to use conductor to load your data into Elasticsearch.
 
 ## Step 4: Updating Stage (Optional)
 
@@ -450,15 +454,15 @@ Stage is built using React and provides extensive theming options to help you cu
 ```typescript
 // In /apps/stage/components/theme/theme.ts
 const theme = {
-	colors: {
-		primary: '#0B75A2', // Main brand color
-		primary_green: '#00A88F', // Secondary brand color
-		sidebar: '#f5f6f7', // Sidebar background
-		text: '#2d3748', // Main text color
-		textSecondary: '#4a5568', // Secondary text color
-		// Additional color settings...
-	},
-	// Other theme properties...
+  colors: {
+    primary: "#0B75A2", // Main brand color
+    primary_green: "#00A88F", // Secondary brand color
+    sidebar: "#f5f6f7", // Sidebar background
+    text: "#2d3748", // Main text color
+    textSecondary: "#4a5568", // Secondary text color
+    // Additional color settings...
+  },
+  // Other theme properties...
 };
 ```
 
@@ -491,7 +495,7 @@ breakpoints: {
 
    ```typescript
    const baseFont = css`
-   	font-family: 'Lato', sans-serif;
+     font-family: "Lato", sans-serif;
    `;
    ```
 

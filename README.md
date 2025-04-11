@@ -19,8 +19,7 @@ You will need:
 - **Node.js 20.18.1+ and npm 9+**
 - **Linux/macOS environment**
 
-> [!NOTE]
-> **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
+> [!NOTE] **Windows Users:** Please use WSL2 with a Bash terminal for all commands in this documentation. Prelude is not supported on native Windows environments.
 
 Run the pre-deployment check to verify your environment:
 
@@ -75,14 +74,15 @@ As summary of command line client interactions is provided in the table below:
 
 ### Deployment specific Make Commands
 
-| Phase         | Description                      | Command          |
-| ------------- | -------------------------------- | ---------------- |
-| **Phase 0**   | Pre-Deployment Check             | `make phase0`    |
-| **Phase 1**   | Data Exploration & Theming       | `make phase1`    |
-| **Phase 2**   | Tabular Data Management          | `make phase2`    |
-| **Phase 3**   | File Management                  | `make phase3`    |
-| **Stage Dev** | Run Stage in development mode    | `make stage-dev` |
-| **Reset**     | Reset all containers and volumes | `make reset`     |
+| Phase         | Description                                                     | Command          |
+| ------------- | --------------------------------------------------------------- | ---------------- |
+| **Phase 0**   | Pre-Deployment Check                                            | `make phase0`    |
+| **Phase 1**   | Data Exploration & Theming                                      | `make phase1`    |
+| **Phase 2**   | Tabular Data Management                                         | `make phase2`    |
+| **Phase 3**   | File Management                                                 | `make phase3`    |
+| **Stage Dev** | Run Stage in development mode                                   | `make stage-dev` |
+| **Restart**   | Restart containers for a specific profile while preserving data | `make restart`   |
+| **Reset**     | Reset all containers and volumes                                | `make reset`     |
 
 ## Accessing the Portal
 

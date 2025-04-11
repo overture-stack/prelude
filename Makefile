@@ -11,6 +11,7 @@ help:
 	@echo "Conductor System Management:"
 	@echo "  down           - Gracefully shutdown all containers"
 	@echo "  reset          - DANGER: Remove all containers and volumes (DATA LOSS)"
+	@echo "  restart        - Restart containers for a specific profile"
 	@echo ""
 	@echo "General Usage:"
 	@echo "  make help      - Show this help message"
@@ -48,6 +49,15 @@ stage-dev:
 down:
 	@echo "Shutting down all running containers..."
 	PROFILE=default docker compose -f ./docker-compose.yml --profile default down
+
+# Restart containers and run deployment scripts for a specific profile
+restart:
+	@echo "Restarting containers with fresh deployment..."
+	@read -p "Enter profile to restart (phase1, phase2, phase3, stageDev): " profile; \
+	echo "Shutting down containers..."; \
+	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile down; \
+	echo "Starting containers with profile $$profile..."; \
+	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile up --attach conductor
 
 # Shutdown all containers and remove all volumes (Deletes all data)
 reset:
