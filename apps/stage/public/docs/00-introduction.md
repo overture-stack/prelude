@@ -137,6 +137,8 @@ Run from the root directory:
 make phase1
 ```
 
+> **How this works:** the make command runs the `phase1` profile defined across the `docker-compose.yml`, given this profile the conductor service, found at the top of the `docker-compose.yml`, will run the appropriate `phase1.sh` deployment script found at `apps/conductor/scripts/deployments/phase1.sh`.
+
 ### 5. Access the Portal
 
 Once running, access the portal at: [http://localhost:3000](http://localhost:3000).

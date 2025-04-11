@@ -352,23 +352,22 @@ ES_INDEX_1_ALIAS_NAME: datatable2_centric
 
 Update the Stage service environment variables to connect to your Arranger instances:
 
-```yaml
-# Tabular Arranger Variables
+```
+Data Table 1
 NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_API: http://arranger-datatable1:5050
 NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_DOCUMENT_TYPE: file
 NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
-# Add more Arranger connections if needed
+
+Data Table 2
 NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
 NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
 NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
-# Add more Arranger connections if needed
+
+Add more Arranger connections if needed...
 NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable2:5051
 NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
 NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable2_centric
-# Add more Arranger connections if needed
-# NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger-datatable2:5051
-# NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: file
-# NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: datatable2_centric
+
 ```
 
 ### D) Applying Configuration Changes

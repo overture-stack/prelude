@@ -2,41 +2,38 @@
 
 ## Overview
 
-**In this guide you will** extend your data management capabilities by implementing robust data submission validation, storage, and publication processes.
+**This guide is for** those in phase two of Prelude's deployment process. Here we will add our backend data submission and storage services.
 
 **By the end of this guide you will be able to:**
 
 1. Validate data submissions using the Lectern dictionary schema manager
 2. Complete an end-to-end data submission workflow with Lyric
 3. Index validated data with Maestro
-4. Access and view indexed data through the front-end UI configured in Phase One
+4. Access and view indexed data through the front-end UI configured in phase one
 
 ## Prerequisites
 
 **You will need:**
 
-- Your data table file(s) from Phase One (which may need to be divided into multiple schemas)
 - A basic understanding of the following Overture services:
-  - [Lectern](https://docs.overture.bio/docs/core-software/Lectern/overview) - Dictionary schema management
-  - [Lyric](https://docs.overture.bio/docs/core-software/Lyric/overview/) - Submission workflow management
+  - [Lectern](https://docs.overture.bio/docs/under-development/Lectern/) - Dictionary schema management
+  - [Lyric](https://docs.overture.bio/docs/under-development/Lyric/) - Submission workflow management
   - [Maestro](https://docs.overture.bio/docs/core-software/Maestro/overview) - Data indexing service
 
 ## Background Information
 
-Phase Two establishes your data submission and management workflow. This phase introduces tools to validate, store, and publish data while maintaining data integrity and consistency across your platform.
-
-Your Phase One data file may need to be divided into multiple segments represented as schemas to support distributed data collection from different teams or departments.
+Phase Two establishes your back-end data submission and management workflow. This phase introduces tools to validate, store, and publish data helping maintain data integrity and consistency across your platform.
 
 ### Architecture Overview
 
-The Phase Two architecture includes these components:
+The phase two architecture adds and focuses on the components highlighted in purple/pink in the image below:
 
 ![Phase 2 Architecture](/docs/images/phase2.png "Phase 2 Architecture")
 
 | Component                                                                    | Purpose                                                               |
 | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| **[Lectern](https://docs.overture.bio/docs/core-software/Lectern/overview)** | Dictionary schema manager that defines and validates data structures  |
-| **[Lyric](https://docs.overture.bio/docs/core-software/Lyric/overview)**     | Submission management system for data validation and workflow control |
+| **[Lectern](https://docs.overture.bio/docs/under-development/Lectern/)**     | Dictionary schema manager that defines and validates data structures  |
+| **[Lyric](https://docs.overture.bio/docs/under-development/Lyric/)**         | Submission management system for data validation and workflow control |
 | **[Maestro](https://docs.overture.bio/docs/core-software/Maestro/overview)** | Data indexing and storage service for submitted data                  |
 
 ## Step 1: Deploy Phase 2 Services
@@ -47,9 +44,7 @@ The Phase Two architecture includes these components:
    make phase2
    ```
 
-2. Verify service health:
-   - The deployment script should automatically verify that all services are running correctly
-   - Check the container logs if any service fails to start properly
+The deployment script (`apps/conductor/scripts/deployment/phase2.sh`) will automatically verify that all services are running correctly. Check the container logs if any service fails to start properly
 
 ## Step 2: Set Up Data Dictionary
 
