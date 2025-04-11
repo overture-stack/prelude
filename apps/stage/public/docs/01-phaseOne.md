@@ -47,15 +47,16 @@ The `data` folder at the root of this project is for storing data files used in
 your project. Below are guidelines for data management:
 
 - **File Format**: We support multiple delimiters, but Comma-Separated Values (CSV) are the recommended format for tabular data input.
-- **Headers**: Include headers in your CSV files to ensure clear column identification. These headers will directly map to your Elasticsearch index field names.
-- **Data Privacy**: When working with sensitive data, add your data files to `.gitignore` before committing to GitHub to prevent accidental exposure.
+- **Headers**: Include appropriate headers in your CSV files (more details below). These headers will directly map to your Elasticsearch and GraphQL field names.
+- **Data Privacy**: If needed, to prevent accidental exposure of sensitive data, add your data files to `.gitignore` before committing to GitHub .
 - **Data Size**: There are no strict size limitations beyond the resource constraints of Docker and Elasticsearch. For development and testing, we recommend using a representative sample of approximately 500 records.
-
-  > **For phase 1 your CSV file(s) will represent the structure of the data table(s).**
 
 ### Implementation
 
-1. Collect your tabular datasets in CSV format
+1. Collect your data in CSV format. For phase 1, each CSV file will become a separate data table on your exploration page(s). The structure of each CSV directly determines the columns and fields available for search and display in the user interface.
+
+   > **Note:** Overture is made to handle both flat and hierarchical data structures. If you have hierarchical (or nested) data (e.g., a patient record with multiple associated tests, or a sample with multiple sequencing results), this will be defined in phase 2. For phase 1, focus on creating flat representations of how you want your data to appear in the search UI.
+
 2. Place CSV files in the `data` folder
 3. Ensure each CSV file:
    - Has clear, descriptive headers
@@ -90,17 +91,15 @@ your project. Below are guidelines for data management:
 
 ### Validation
 
-To verify successful data preparation:
+Your data folder should include one CSV file for each desired data table:
 
-- Your data folder should include one CSV file for each desired data table:
-
-  ```
-  project-root/
-  └── data/
-      ├── datatable1.csv
-      ├── datatable2.csv
-      └── datatable3.csv
-  ```
+```
+project-root/
+└── data/
+    ├── datatable1.csv
+    ├── datatable2.csv
+    └── datatable3.csv
+```
 
 - Open each CSV file and confirm:
   - Headers are present and valid
@@ -108,9 +107,11 @@ To verify successful data preparation:
   - No sensitive information is exposed
 - Confirm your `.gitignore` includes data files if necessary
 
-**Next Steps:** After completing data preparation, you'll be ready to generate your Elasticsearch and Arranger configuration files.
+> **Next Steps:** With data preparation completed we will next look at generating our Elasticsearch and Arranger configuration files.
 
 ## Step 2: Update portal configurations
+
+Composer is a command-line tool provided as part of Prelude that generates base Overture configuration files. We will be using Composer to minimize the time spent manually writing tedious configuration files.
 
 ### A) Install Composer
 
@@ -129,6 +130,25 @@ To verify successful data preparation:
    ```
 
 3. **Validate:** From the root directory test that Composer is working by running `composer -h`. You should be able to see help text outlining the available commands.
+
+<details>
+<summary>Alternative: using Composer without global installation</summary>
+
+If you prefer not to install globally, you can run Composer directly from the project directory:
+
+```bash
+cd apps/composer
+npm install
+npm start -- <profile> [options]
+```
+
+For example:
+
+```bash
+npm start --  -p ElasticsearchMapping -f data.csv -i my-index
+```
+
+</details>
 
 ### B) Generate Elasticsearch index mappings
 
@@ -156,13 +176,15 @@ To verify successful data preparation:
 
    ![Output](/docs/images/ElasticsearchMapping.png 'Terminal output from ElasticsearchMapping')
 
+   > **Note:** The `configs/elasticsearchConfigs/` directory is located at the root of the repository and is symbolically linked to the `./apps/conductor/configs/` directory. In the docker-compose configuration, this directory is mounted as a volume to the conductor service, which uses these files to automatically initialize your Elasticsearch indices. This automation process is explained in greater detail in the following sections.
+
 2. Validate and review the generated mapping template(s):
 
    After running the command, examine the generated index mapping in the `configs/elasticsearchConfigs` directory. The mapping contains several critical components:
 
    - **Index Pattern:** `"index_patterns": ["datatable1-*"]` - This template will apply to all indices that start with "datatable1-"
    - **Aliases:** `"datatable1_centric": {}` - An alias that can be used to reference all matching indices as one
-   - **Data Structure:** Note how all fields are nested under a `data` object, providing clean organization
+   - **Data Structure:** Note how all fields are nested under a `data` object, this will be important for phase 2
 
    <details>
    <summary>Key Elements to Review</summary>
@@ -196,9 +218,11 @@ To verify successful data preparation:
 
 3. Repeat the above steps for your remaining datasets. Make sure to name your indices and files appropriately.
 
-   **Next Step:** Once you're satisfied with the mapping configuration, you're ready to move on to the next step: generating and configuring the Arranger configuration files.
+   > **Next Step:** Once you're satisfied with the mapping configuration, you're ready to move on to the next step: generating and configuring the Arranger configuration files.
 
 ### C) Generating our Arranger configuration files
+
+Composer can also be used to generate the Arranger configuration files that define the data for our search API and UI components.
 
 1.  Run the following Composer command to generate Arranger configuration files using your index mapping templates:
 
@@ -223,7 +247,7 @@ To verify successful data preparation:
 
     ![Output](/docs/images/ArrangerConfigs.png 'Terminal output from ArrangerConfigs')
 
-2.  Validate and review the generated Arranger configuration file:
+2.  Validate and review the generated Arranger configuration files:
 
     - **Directory structure:** should now look like the following:
 
@@ -240,82 +264,82 @@ To verify successful data preparation:
 
       ```
 
-    - **Base.json:** Update the index field of your base.json file to match relevant index alias. In this case `datatable1-index`.
+    - **Base.json:** Update the index field of your base.json file to match index alias defined in the index mapping. In this case `datatable1_centric`.
 
       ```
       {
       "documentType": "file",
-      "index": "datatable1-centric"
+      "index": "datatable1_centric"
       }
       ```
 
-    - **Extended.json:** `fieldNames` should be accurate in the extended.json. Take time to review and update the `displayNames` as these will be how fields are read from the front-end UI.
+    - **Extended.json:** `fieldNames` should be accurate in the extended.json. Take time to review and update the `displayNames` as these will be how fields are displayed in the front-end UI.
     - **Table.json:** By default `canChangeShow`, `show`, and `sortable` are set to true. Update these fields accordingly. For information see our documentation covering [Arranger's table configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#table-configuration-tablejson).
     - **Facets.json:** By default `active` and `show` are set to true. Update these fields accordingly. The order of the elements will also match the order of the facets as they appear in the facet panel, update accordingly. For information see our documentation covering [Arranger's facet configuration fields](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components#facet-configuration-facetsjson).
 
 3.  Repeat the above steps for your remaining datasets.
 
-    **Next Step:** After generating your Elasticsearch mappings and Arranger configuration files, the next step is to update the docker-compose.yml file to properly connect these components.
+> **Next Step:** After generating your Elasticsearch mappings and Arranger configuration files, the next step is to update the docker-compose.yml file to properly connect these components to their respective configuration files.
 
 ## Step 3: Updating the docker-compose
 
-This step configures your docker-compose.yml file to properly connect your data sources, Elasticsearch, Arranger, and Stage. You'll update environment variables and service configurations to reflect your specific dataset configurations.
+With Conductor, the `docker-compose.yml` automates all our deployments including index management. Here you'll update environment variables and service configurations to reflect your dataset(s) and update your deployment with the configuration files generated in the previous steps.
 
-1. **Update the following Environment Variables within the conductor image**:
+### A) Update the conductor service
 
-   Modify the `conductor` service environment variables to reference your dataset(s):
+From the docker-composer update the following environment variables within the conductor image:
 
-   ```yaml
-   # Elasticsearch Index Configuration
-   ES_INDEX_COUNT: 1 # Update this if you have multiple datasets
+```
+Elasticsearch Index Configuration
+ES_INDEX_COUNT: 1 # Update this if you have multiple datasets (Each data table should have its own index)
 
-   # First index
-   ES_INDEX_0_NAME: datatable1-index
-   ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable1-mapping.json
-   ES_INDEX_0_TEMPLATE_NAME: datatable1_template
-   ES_INDEX_0_ALIAS_NAME: datatable1_centric
-   # Add more indices if needed
-   # ES_INDEX_1_NAME: datatable2-index
-   # ES_INDEX_1_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable2-mapping.json
-   # ES_INDEX_1_TEMPLATE_NAME: datatable2_template
-   # ES_INDEX_1_ALIAS_NAME: datatable2_centric
-   ```
+First Index
+ES_INDEX_0_NAME: datatable1-index
+ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable1-mapping.json
+ES_INDEX_0_TEMPLATE_NAME: datatable1_template
+ES_INDEX_0_ALIAS_NAME: datatable1_centric
 
-2. **Configure Arranger Services**:
+Add more indices if needed
+ES_INDEX_1_NAME: datatable2-index
+ES_INDEX_1_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable2-mapping.json
+ES_INDEX_1_TEMPLATE_NAME: datatable2_template
+ES_INDEX_1_ALIAS_NAME: datatable2_centric
+```
 
-   For each dataset, configure a separate Arranger service. Update the `arranger-clinical` service (or rename it appropriately) and add additional Arranger services if needed:
+### B) Configuring the Arranger Service(s)
+
+1. For each CSV dataset, you'll need to configure a separate Arranger service. The docker-compose file includes a template (`arranger-datatable1`) and additional examples that you can use as reference:
 
    ```yaml
    arranger-datatable1:
-     profiles: ['phase1', 'phase2', 'phase3', 'stageDev', 'default']
-     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-     container_name: arranger-datatable1 # Rename to match above
-     platform: linux/amd64
-     depends_on:
-       conductor:
-         condition: service_healthy
-     ports:
-       - '5050:5050' # Use unique ports for each Arranger instance
-     volumes:
-       - ./configs/arrangerConfigs/datatable1:/app/modules/server/configs # Point to the relevant generated config
-     environment:
-       # Elasticsearch Variables
-       ES_HOST: http://elasticsearch:9200
-       ES_USER: elastic
-       ES_PASS: myelasticpassword
-       ES_ARRANGER_SET_INDEX: datatable1_arranger_set
-       # Arranger Variables
-       PORT: 5050 # Required
-       DEBUG: false
-       ENABLE_LOGS: false
+   profiles: ['phase1', 'phase2', 'phase3', 'stageDev', 'default']
+   image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+   container_name: arranger-datatable1
+   platform: linux/amd64
+   depends_on:
+     conductor:
+       condition: service_healthy
+   ports:
+     - '5050:5050' # External port : Internal port
+   volumes:
+     - ./apps/conductor/configs/arrangerConfigs/datatable1:/app/modules/server/configs
+   environment:
+     # Elasticsearch Variables
+     ES_HOST: http://elasticsearch:9200
+     ES_USER: elastic
+     ES_PASS: myelasticpassword
+     ES_ARRANGER_SET_INDEX: datatable1_arranger_set # Unique set index name
+     # Arranger Variables
+     PORT: 5050 # Must match the internal port defined above
+     DEBUG: false
+     ENABLE_LOGS: false
+   networks:
+     - conductor-network
    ```
 
-   - Make sure to use unique ports for each Arranger instance. This includes updating the ports section as well as the `PORT` environment variable for each Arranger instance.
-   - Make sure you point the volume path provided to the relevant Arranger config.
+   > **Note:** For each additional dataset, you can copy or uncomment an existing Arranger service block in the docker-compose file. If creating a new Arranger service, ensure you are using a unique port in both the `ports` mapping (`"5051:5051"`) and the `PORT` environment variable. Also update the container name, volume path, and Arranger set index to match your new dataset.
 
-3. **Update the Arranger Count in Conductor**:
-
-   If you have multiple datasets/Arranger instances, update the `ARRANGER_COUNT` and add URLs for each:
+2. Update the Arranger Count in the Conductor service: If you have multiple datasets/Arranger instances, update the `ARRANGER_COUNT` and add envs with URLs for each. In the example below `ARRANGER_1_URL` is commented. Make sure to uncomment any additionally added Arranger URLs.
 
    ```yaml
    # Arranger Services Configuration
@@ -324,43 +348,32 @@ This step configures your docker-compose.yml file to properly connect your data 
    # ARRANGER_1_URL: http://arranger-datatable2:5051
    ```
 
-   - Here `ARRANGER_1_URL` is commented. Make sure to uncomment any additionally added Arranger URLs.
+### C) Update Stage
 
-4. **Ensure all services are on the same network**:
+Update the Stage service environment variables to connect to your Arranger instances:
 
-   The following should be included with each added service:
-
-   ```yaml
-   networks:
-     - conductor-network
-   ```
-
-5. **Pre-configure the Stage Environment variable**:
-
-   Update the Stage service environment variables to connect to your Arranger instances:
-
-   ```yaml
-   # Tabular Arranger Variables
-   NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_API: http://arranger-datatable1:5050
-   NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
-   # Add more Arranger connections if needed
-   NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
-   NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
-   # Add more Arranger connections if needed
-   NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable2:5051
-   NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
-   NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable2_centric
-   # Add more Arranger connections if needed
-   # NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger-datatable2:5051
-   # NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: file
-   # NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: datatable2_centric
-   ```
+```yaml
+# Tabular Arranger Variables
+NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_API: http://arranger-datatable1:5050
+NEXT_PUBLIC_ARRANGER_DATATABLE_1_DATA_DOCUMENT_TYPE: file
+NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
+# Add more Arranger connections if needed
+NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
+NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
+NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
+# Add more Arranger connections if needed
+NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable2:5051
+NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
+NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable2_centric
+# Add more Arranger connections if needed
+# NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger-datatable2:5051
+# NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: file
+# NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: datatable2_centric
+```
 
 ### Validation
 
-After updating your docker-compose.yml file, verify the configuration:
+After updating your `docker-compose.yml` file, verify the configuration:
 
 1. **Validate Port Mappings**:
 
@@ -373,85 +386,69 @@ After updating your docker-compose.yml file, verify the configuration:
 
 3. **Check Service Health**:
 
-   The deployment script should verify all services are running correctly.
+   The deployment script will confirm if all services are running correctly.
 
-**Next Steps:** We will run through the process of adding a third data table to Stage.
+   > **Next Steps:** Will cover how to theme our portal and add data tables (if needed) to Stage. If you want to skip ahead, the last section of this guide (Step 5) will cover how to use conductor to load your data into Elasticsearch.
 
 ## Step 4: Updating Stage (Optional)
 
-This step guides you through customizing Stage UI to incorporate multiple data exploration tables and update the theming to match your organization's branding.
+This step guides you through customizing the base portal UI (Stage).
 
-### Set up local Stage development environment
+### A) Setting up the local Stage development environment
 
 To run Stage locally for development and customization:
 
 ```bash
-# Navigate to the Stage directory
-cd apps/stage
+   # Navigate to the Stage directory
+   cd apps/stage
 
-# Copy and update the following environment file
-cp .env.stageDev .env
+   # Copy and update the following environment file
+   cp .env.stageDev .env
 
-# Install dependencies
-npm ci
+   # Install dependencies
+   npm ci
 
-# Start the development server
-npm run dev
+   # Start the development server
+   npm run dev
 ```
 
 Depending on port availability your development server will either be accessible at: http://localhost:3001 or http://localhost:3000
 
-### Creating New Data Exploration Pages
+### B) Creating New Data Exploration Pages
 
 To add a new data exploration table to your portal:
 
-1. **Activate a pre-configured data table**:
+1. **Activate a pre-configured data table**: Move the desired template from `components/inactiveDataTables/` to `components/pages/activeDataTables/`. These components are already configured with variable declarations and definitions found in the following key files:
 
-- Move the desired component from `components/inactiveDataTables/` to `components/pages/activeDataTables/`
-- These components are already configured with variable declarations and definitions in:
-  - `./next.config.js`
-  - `./global/config.ts`
-  - `./global/utils/constants.ts`
-  - `./pages/api/[...proxy].ts`
+   - `./next.config.js`
+   - `./global/config.ts`
+   - `./global/utils/constants.ts`
+   - `./pages/api/[...proxy].ts`
 
-2. **Enable the page route**:
+2. **Enable the page route**: Move the corresponding folder from `./inactivePages/` to `./pages/` directory. Open the `index.tsx` file within this folder and uncomment the code. Save the changes.
 
-- Move the corresponding folder from `./inactivePages/` to `./pages/` directory
-- Open the `index.tsx` file within this folder and uncomment the code
-- Save the changes
+3. **Update environment configurations**: Add the corresponding variables to your `.env` file. Update the `docker-compose.yml` with the appropriate service configurations.
 
-3. **Update environment configurations**:
+4. **Access your data table**: The new data table will automatically appear in the navigation menu. It will also be accessible from the homepage data tables section
 
-- Add the corresponding variables to your `.env` file
-- Update the `docker-compose.yml` with the appropriate service configurations
+### C) Theming
 
-4. **Access your data table**:
+Stage is built using React and provides extensive theming options to help you customize the look and feel of your data portal. This section outlines the key files and directories to modify for theming.
 
-- The new data table will automatically appear in the navigation menu
-- It will also be accessible from the homepage data tables section
-
-### Theming
-
-Stage provides extensive theming capabilities to help you customize the look and feel of your data portal. This section outlines the key files and directories to modify when implementing your organization's branding.
-
-#### Core Theme Assets
+**Core Theme Assets**
 
 - **Logo**: Replace `/public/images/logo.svg` with your organization's logo to update the navbar branding
 - **Favicon**: Update `/public/favicon.ico` to change the browser tab icon
 
-#### Theme Configuration Files
-
-The theming system is organized into several key files:
+**Theme Configuration Files:** the theming system is organized into several key files:
 
 - **Main Theme**: `/apps/stage/components/theme/` contains files that define the global color palette, typography, spacing, and other fundamental design elements
-- **Documentation Theme**: the `/components/pages/documentation/DocContainer/` directory contains a `theme.ts` & a `style.ts` which controls the documentation section styling including colors, fonts, and spacing
+- **Documentation Theme**: the `/components/pages/documentation/DocContainer/` directory contains a `theme.ts` and a `style.ts` which controls the documentation section styling including colors, fonts, and spacing
 
-#### Color Customization
-
-To update the color palette to match your organization's branding:
+**Color Customization:** to update the color palette to match your organization's branding:
 
 ```typescript
-// In theme.ts
+// In /apps/stage/components/theme/theme.ts
 const theme = {
 	colors: {
 		primary: '#0B75A2', // Main brand color
@@ -465,18 +462,16 @@ const theme = {
 };
 ```
 
-#### Component Customization
+> **Note:** We are working on improving the Stage developer experience, as such we will have planned updates for our theming system. Updates will be documented and linked here once available.
 
-Notable component directories for customization:
+**Component Customization:** notable component directories for customization:
 
-- **Home Page**: `/components/pages/home/` - Contains all components for the landing page
-- **Documentation Pages**: `/components/pages/documentation/` - Documentation-specific components
-- **Data Tables**: `/components/pages/activeDataTables/` - Data exploration page components
-- **Navigation**: `/components/Navbar/NavBar.tsx` - Customizes the top navigation bar
+- **Home Page**: `/components/pages/home/` contains all components for the landing page
+- **Documentation Pages**: `/components/pages/documentation/` documentation-specific components
+- **Data Tables**: `/components/pages/activeDataTables/` data exploration page components
+- **Navigation**: `/components/Navbar/NavBar.tsx` customizes the top navigation bar
 
-#### Responsive Design
-
-The theme includes breakpoint settings that can be customized in the theme files:
+**Responsive Design:** breakpoint settings can be customized in the theme files:
 
 ```typescript
 // In theme.ts
@@ -490,16 +485,7 @@ breakpoints: {
 },
 ```
 
-#### Automatic Navigation Updates
-
-The system automatically handles certain navigation elements:
-
-- **Documentation Pages**: Files in the `/public/docs/` directory are automatically listed in the documentation sidebar in order defined by their numeric prefix (e.g., `00-` appears first)
-- **Data Tables**: Components within `/components/pages/activeDataTables/` are automatically included in navigation menus
-
-#### Typography Customization
-
-The application's typography is controlled through two main systems:
+**Typography Customization:** the application's typography is controlled through two main systems:
 
 1. **Base Font Family** - Set in `/components/theme/typography.ts`:
 
@@ -528,11 +514,12 @@ The application's typography is controlled through two main systems:
    },
    ```
 
-Modify these files to implement consistent typography changes throughout the application.
+**Automatic Navigation Updates:** using next.js we automatically handle updates to certain components and navigation elements:
 
-#### Advanced Theming
+- **Documentation Pages**: Files in the `/public/docs/` directory are automatically listed in the documentation sidebar in order defined by their numeric prefix (e.g., `00-` appears first)
+- **Data Tables**: Components within `/components/pages/activeDataTables/` are automatically included in navigation menus
 
-For more extensive customization:
+**Other considerations:**
 
 - Use the `@emotion/react` CSS-in-JS library that's already integrated
 - Modify component-specific styles found within each component file
@@ -542,7 +529,7 @@ By focusing on these key areas, you can quickly theme the portal to match your o
 
 ## Step 5: Uploading your data
 
-With Arranger, Stage, and Elasticsearch now configured, it's time to upload our data. We will use Conductor to transform our CSV files into Elasticsearch documents and upload them into the portal.
+With Arranger, Stage, and Elasticsearch configured we are ready to load our data into the portal. We will use Conductors `upload` command to transform our CSV files into Elasticsearch documents and load them into the portal.
 
 ### Installing Conductor
 
@@ -560,9 +547,28 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
    npm install -g .
    ```
 
-3. **Validate:** From the root directory test that Conductor is working by running `conductor -h`. You should be able to see help text outlining the available commands.
+   <details>
+   <summary>Alternative: using Conductor without global installation</summary>
 
-4. Run the Conductor `upload` command to upload your data:
+   If you prefer not to install globally, you can run Conductor directly from the project directory:
+
+   ```bash
+   cd apps/conductor
+   npm install
+   npm start -- <profile> [options]
+   ```
+
+   For example:
+
+   ```bash
+   npm start -- upload -f data.csv -i my-index
+   ```
+
+   </details>
+
+3. **Validate:** run `conductor -h`, you should be able to see help text outlining the available commands.
+
+4. **Load your data:** Run the Conductor `upload` command to upload your data:
 
    ```
    conductor upload -f ./data/datatable1.csv -i datatable1-index
@@ -587,18 +593,7 @@ With Arranger, Stage, and Elasticsearch now configured, it's time to upload our 
    Full command reference can be seen by running `conductor upload -h`.
    </details>
 
-5. Monitor the upload process:
-
-   The command will display progress information including:
-
-   - Number of records processed
-   - Processing speed (records per second)
-   - Current upload status
-   - Error counts (if any)
-
-6. Repeat for additional datasets:
-
-   If you have multiple datasets, repeat the upload command for each one, ensuring you specify the correct index name:
+5. **Repeat for additional datasets:** If you have multiple datasets, repeat the upload command for each one, ensuring you specify the correct index name for each upload
 
    ```
    conductor upload -f ./data/datatable2.csv -i datatable2-index
@@ -619,18 +614,11 @@ To verify that your data was successfully uploaded:
    - Open Elasticvue (http://localhost:9200) if you have it installed
    - Navigate to Indices and select your index (e.g., `datatable1-index`)
    - Browse documents to ensure they contain the expected data
-   - Run a sample query to test data retrieval
 
-3. **Check Data in Stage UI**:
+3. **Check the Stage UI**:
    - Navigate to http://localhost:3000 in your browser
    - Go to your data exploration page
    - Verify that your data appears in the table
    - Test the search and filter functionality to ensure it works correctly
 
-If you encounter any issues:
-
-- Check Elasticsearch logs for indexing errors
-- Verify your CSV file follows the guidelines outlined in Step 1
-- Ensure the index name in your upload command matches the index pattern in your mapping template
-
-**Next Steps:** With your data successfully uploaded and available in the Elasticsearch index, you can now fully explore and interact with your data through the Stage UI.
+> **Next Steps:** In phase 2 we will add our backend data submission and storage services.

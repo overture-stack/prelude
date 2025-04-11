@@ -475,7 +475,6 @@ const styles = {
 			padding: 1.25rem 1.75rem;
 			border-left: 4px solid ${theme.colors.primary};
 			background: ${theme.colors.hover};
-			border-radius: 0.5rem;
 
 			@media (max-width: ${theme.breakpoints.sm}) {
 				padding: 1rem 1.25rem;
@@ -484,7 +483,6 @@ const styles = {
 
 			p {
 				margin: 0;
-				font-style: italic;
 			}
 		}
 
