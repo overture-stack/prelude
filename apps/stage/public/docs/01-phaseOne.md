@@ -396,9 +396,10 @@ This restart process ensures that all your configuration changes are properly ap
 
 ## Step 4: Updating Stage (Optional)
 
-This step guides you through customizing the base portal UI (Stage).
+This follow information is provided to guide and support you through customizing the base portal UI (Stage).
 
-### A) Setting up the local Stage development environment
+<details>
+<summary>Setting up the local Stage development environment</summary>
 
 To run Stage locally for development and customization:
 
@@ -418,9 +419,10 @@ To run Stage locally for development and customization:
 
 Depending on port availability your development server will either be accessible at: http://localhost:3001 or http://localhost:3000
 
-### B) Creating New Data Exploration Pages
+</details>
 
-To add a new data exploration table to your portal:
+<details>
+<summary>Creating New Data Exploration Pages</summary>
 
 1. **Activate a pre-configured data table**: Move the desired template from `components/inactiveDataTables/` to `components/pages/activeDataTables/`. These components are already configured with variable declarations and definitions found in the following key files:
 
@@ -434,8 +436,10 @@ To add a new data exploration table to your portal:
 3. **Update environment configurations**: Add the corresponding variables to your `.env` file. Update the `docker-compose.yml` with the appropriate service configurations.
 
 4. **Access your data table**: The new data table will automatically appear in the navigation menu. It will also be accessible from the homepage data tables section
+</details>
 
-### C) Theming
+<details>
+<summary>Theming</summary>
 
 Stage is built using React and provides extensive theming options to help you customize the look and feel of your data portal. This section outlines the key files and directories to modify for theming.
 
@@ -517,13 +521,19 @@ breakpoints: {
      heading: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif',
    },
    ```
+   </details>
 
-**Automatic Navigation Updates:** using next.js we automatically handle updates to certain components and navigation elements:
+<details>
+<summary>Automatic Navigation Updates</summary>
+ Using next.js we automatically handle updates to certain components and navigation elements:
 
 - **Documentation Pages**: Files in the `/public/docs/` directory are automatically listed in the documentation sidebar in order defined by their numeric prefix (e.g., `00-` appears first)
 - **Data Tables**: Components within `/components/pages/activeDataTables/` are automatically included in navigation menus
 
-**Other considerations:**
+</details>
+
+<details>
+<summary>Other considerations</summary>
 
 - Use the `@emotion/react` CSS-in-JS library that's already integrated
 - Modify component-specific styles found within each component file
@@ -531,11 +541,13 @@ breakpoints: {
 
 By focusing on these key areas, you can quickly theme the portal to match your organization's visual identity while maintaining the portal's functionality.
 
+</details>
+
 ## Step 5: Uploading your data
 
 With Arranger, Stage, and Elasticsearch configured we are ready to load our data into the portal. We will use Conductors `upload` command to transform our CSV files into Elasticsearch documents and load them into the portal.
 
-### Installing Conductor
+### A) Installing Conductor
 
 1. Move to the Conductor App directory:
 
@@ -572,6 +584,8 @@ With Arranger, Stage, and Elasticsearch configured we are ready to load our data
 
 3. **Validate:** run `conductor -h`, you should be able to see help text outlining the available commands.
 
+### B) Loading your data into the portal
+
 4. **Load your data:** Run the Conductor `upload` command to upload your data:
 
    ```
@@ -603,26 +617,30 @@ With Arranger, Stage, and Elasticsearch configured we are ready to load our data
    conductor upload -f ./data/datatable2.csv -i datatable2-index
    ```
 
-### Validation
+   <details>
+   <summary>Validation</summary>
 
-To verify that your data was successfully uploaded:
+   To verify that your data was successfully uploaded:
 
-1. **Check the Conductor Output**:
+   1. **Check the Conductor Output**:
 
-   - Confirm the final message shows successful completion
-   - Verify the record count matches your expectations
-   - Check for any error messages
+      - Confirm the final message shows successful completion
+      - Verify the record count matches your expectations
+      - Check for any error messages
 
-2. **Verify Data in Elasticsearch**:
+   2. **Verify Data in Elasticsearch**:
 
-   - Open Elasticvue (http://localhost:9200) if you have it installed
-   - Navigate to Indices and select your index (e.g., `datatable1-index`)
-   - Browse documents to ensure they contain the expected data
+      - Open Elasticvue (http://localhost:9200) if you have it installed
+      - Navigate to Indices and select your index (e.g., `datatable1-index`)
+      - Browse documents to ensure they contain the expected data
 
-3. **Check the Stage UI**:
-   - Navigate to http://localhost:3000 in your browser
-   - Go to your data exploration page
-   - Verify that your data appears in the table
-   - Test the search and filter functionality to ensure it works correctly
+   3. **Check the Stage UI**:
+
+      - Navigate to http://localhost:3000 in your browser
+      - Go to your data exploration page
+      - Verify that your data appears in the table
+      - Test the search and filter functionality to ensure it works correctly
+
+   </details>
 
 > **Next Steps:** In phase 2 we will add our backend data submission and storage services.
