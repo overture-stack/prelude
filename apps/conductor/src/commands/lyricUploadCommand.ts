@@ -727,13 +727,13 @@ export class LyricUploadCommand extends Command {
         );
 
         if (error.details?.status) {
-          Logger.info(`Status: ${error.details.status}`);
+          Logger.error(`Status: ${error.details.status}\n`);
         }
 
         if (error.details?.submissionId) {
           Logger.info(`Submission ID: ${error.details.submissionId}`);
-          Logger.info(
-            `You can check the submission details at: ${lyricUrl}/submission/${error.details.submissionId}`
+          Logger.generic(
+            `     - Details found at: ${lyricUrl}/submission/${error.details.submissionId}`
           );
         }
       }

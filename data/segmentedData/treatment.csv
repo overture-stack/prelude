@@ -25,7 +25,7 @@ DO0627,TR059923,Chemotherapy,10,60,Disease progression
 DO0626,TR059924,Surgery,5,1,Complete response
 DO0625,TR059925,Radiation therapy,20,45,Complete response
 DO0624,TR059926,Surgery,0,1,Complete response
-DO0623,TR059927,Chemotherapy,30,90,Complete responsea
+DO0623,TR059927,Chemotherapy,30,90,Complete response
 DO0622,TR059928,Hormonal therapy,15,180,Partial response
 DO0621,TR059929,Chemotherapy,25,120,Disease progression
 DO0620,TR059930,Surgery,10,1,Complete response

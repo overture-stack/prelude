@@ -367,7 +367,7 @@ export class LyricDataService {
 
       if (!submissionId) {
         throw new ConductorError(
-          "Could not extract submission ID from response",
+          "Could not extract submission ID from response, make sure you have registered the dictionary with Lryic",
           ErrorCodes.CONNECTION_ERROR,
           {
             response: responseData,

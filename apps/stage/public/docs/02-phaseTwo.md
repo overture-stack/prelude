@@ -794,6 +794,29 @@ In these commands:
 
 </details>
 
+> **Note on category IDs:** When making submissions to Lyric, category IDs must be provided as integers. If you're unsure of your category ID, you can retrieve by using the `GET /category` endpoint in the Lyric API.
+> - Access this endpoint through the Swagger UI:
+>    - From the documentation portal, select "API" from the dropdown menu
+>    - Or navigate directly to http://localhost:3030/api-docs/#/Category/get_category
+> 
+> In a future update, Lyric will support accepting category names.
+
+## Step 6: Indexing Data into Elasticsearch
+
+Now that your data is validated and stored in Lyric, we'll use Maestro to index it into Elasticsearch, making it searchable through the portal:
+
+```
+conductor maestroIndex --repository-code lyric.overture
+```
+
+This command triggers Maestro to process all valid data from the Lyric repository and index it into the Elasticsearch instance, following the mappings defined in Phase One.
+
+> **Note:** The `repository-code` parameter must match the value configured in your `docker-compose.yml` file under the Maestro service's environment variables (`MAESTRO_REPOSITORIES_0_CODE`). This code uniquely identifies the data source to Maestro.
+
+After indexing completes, your data will be available for searching and visualization through the data exploration interface you configured in Phase One.
+
+## Step 7 (If required): Updating Elasticsearch Mapping and Arranger Configurations
+
 ## Additional Resources
 
 - [Lectern Documentation](https://docs.overture.bio/docs/core-software/Lectern/overview)
@@ -808,3 +831,5 @@ For support, feature requests, and bug reports, please see our [Support Guide](/
 For detailed information on how to contribute to this project, please see our [Contributing Guide](/documentation/contribution).
 
 > **Next Steps:** In phase 3 we will add our backend file transfer (object storage) and file metadata management services.
+
+
