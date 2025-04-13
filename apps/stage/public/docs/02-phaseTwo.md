@@ -17,7 +17,7 @@
 
 - A basic understanding of the following:
   - [Lectern](https://docs.overture.bio/docs/under-development/Lectern/) - Dictionary schema management
-  - [Lectern Dictionary Reference Documentation](https://github.com/overture-stack/lectern/blob/develop/docs/dictionary-reference)
+  - [Lectern Dictionary Reference Documentation](https://github.com/overture-stack/lectern/blob/develop/docs/dictionary-reference.md)
   - [Lyric](https://docs.overture.bio/docs/under-development/Lyric/) - Submission workflow management
   - [Maestro](https://docs.overture.bio/docs/core-software/Maestro/overview) - Data indexing service
 
@@ -186,7 +186,7 @@ The generated dictionary provides a basic structure derived from your CSV files.
     ]
     ```
 
-        </details>
+      </details>
 
 3.  **Field Definitions:** review and update the field definitions for each schema ensuring we are using the proper data types, validation rules, and are providing meaningful descriptions.
 
@@ -199,9 +199,9 @@ The generated dictionary provides a basic structure derived from your CSV files.
         "name": "donor_id",
         "description": "Unique identifier for a donor across the system",
         "valueType": "string",
+        "unique": true,
         "restrictions": {
           "required": true,
-          "unique": true,
           "regex": "^DO\\d{4}$"
         },
         "meta": {
@@ -246,6 +246,27 @@ The generated dictionary provides a basic structure derived from your CSV files.
 
 4.  **Entity Relationships:** the `foreignKey` restriction object defines relationships between different schemas in your Lectern dictionary:
 
+  - In our example data `donor` schemas `donor_id` is the `primaryKey`
+
+    ```json
+        {
+          "name": "donor",
+          "description": "Core demographic information about donors. One donor can have multiple diagnoses, treatments, and followups.",
+          "fields": [
+          ...
+          ],
+          "restrictions": {
+          "primaryKey": ["donor_id"]
+          },
+          "meta": {
+            "createdAt": "2025-03-20T16:11:06.493Z",
+            "sourceFile": "donor.csv"
+          }
+        },
+    ```
+
+- All other schemas will relate to the `donor` schema using the `donor_id` as the `local` and `foreignKey`:
+
     ```json
     "restrictions": {
       "foreignKey": [
@@ -285,8 +306,8 @@ The generated dictionary provides a basic structure derived from your CSV files.
           "primaryKey": ["donor_id"]
         },
         "meta": {
-          "sourceFile": "donor.csv",
-          "primaryEntity": true
+          "createdAt": "2025-03-20T16:11:06.493Z",
+          "sourceFile": "donor.csv"
         }
       },
       {
@@ -375,9 +396,9 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "name": "donor_id",
               "description": "Unique identifier for a donor across the system",
               "valueType": "string",
+              "unique": true,
               "restrictions": {
                 "required": true,
-                "unique": true,
                 "regex": "^DO\\d{4}$"
               },
               "meta": {
@@ -391,10 +412,7 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "valueType": "string",
               "restrictions": {
                 "required": true,
-                "codeList": [
-                  {"code": "Male", "description": "Male donor"},
-                  {"code": "Female", "description": "Female donor"}
-                ]
+                "codeList": ["Male", "Female"]
               },
               "meta": {
                 "displayName": "Gender"
@@ -406,10 +424,7 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "valueType": "string",
               "restrictions": {
                 "required": true,
-                "codeList": [
-                  {"code": "Alive", "description": "Donor is alive at last follow-up"},
-                  {"code": "Deceased", "description": "Donor is deceased"}
-                ]
+                "codeList": ["Alive", "Deceased"]
               },
               "meta": {
                 "displayName": "Vital Status"
@@ -417,12 +432,11 @@ The generated dictionary provides a basic structure derived from your CSV files.
             }
           ],
           "restrictions": {
-            "primaryKey": ["donor_id"]
+          "primaryKey": ["donor_id"]
           },
           "meta": {
             "createdAt": "2025-03-20T16:11:06.493Z",
-            "sourceFile": "donor.csv",
-            "primaryEntity": true
+            "sourceFile": "donor.csv"
           }
         },
         {
@@ -433,9 +447,9 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "name": "diagnosis_id",
               "description": "Unique identifier for a diagnosis record",
               "valueType": "string",
+              "unique": true,
               "restrictions": {
                 "required": true,
-                "unique": true,
                 "regex": "^PD\\d{6}$"
               },
               "meta": {
@@ -554,9 +568,9 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "name": "treatment_id",
               "description": "Unique identifier for a treatment record",
               "valueType": "string",
+              "unique": true,
               "restrictions": {
                 "required": true,
-                "unique": true,
                 "regex": "^TR\\d{6}$"
               },
               "meta": {
@@ -570,12 +584,7 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "valueType": "string",
               "restrictions": {
                 "required": true,
-                "codeList": [
-                  {"code": "Surgery", "description": "Surgical procedure"},
-                  {"code": "Radiation therapy", "description": "Radiation therapy"},
-                  {"code": "Chemotherapy", "description": "Chemical treatment"},
-                  {"code": "Hormonal therapy", "description": "Hormone-based therapy"}
-                ]
+                "codeList": ["Surgery", "Radiation therapy", "Chemotherapy", "Hormonal therapy"]
               },
               "meta": {
                 "displayName": "Treatment Type"
@@ -613,11 +622,7 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "valueType": "string",
               "restrictions": {
                 "required": true,
-                "codeList": [
-                  {"code": "Complete response", "description": "Complete disappearance of disease"},
-                  {"code": "Partial response", "description": "Reduction in disease burden"},
-                  {"code": "Disease progression", "description": "Increase in disease burden"}
-                ]
+                "codeList": ["Complete response", "Partial response", "Disease progression"]
               },
               "meta": {
                 "displayName": "Treatment Response"
@@ -659,9 +664,9 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "name": "followup_id",
               "description": "Unique identifier for a followup record",
               "valueType": "string",
+              "unique": true,
               "restrictions": {
                 "required": true,
-                "unique": true,
                 "regex": "^FO\\d{6}$"
               },
               "meta": {
@@ -688,12 +693,7 @@ The generated dictionary provides a basic structure derived from your CSV files.
               "valueType": "string",
               "restrictions": {
                 "required": true,
-                "codeList": [
-                  {"code": "No evidence of disease", "description": "No clinical evidence of disease"},
-                  {"code": "Complete remission", "description": "Complete disappearance of all signs of cancer"},
-                  {"code": "Stable", "description": "Cancer is neither decreasing nor increasing"},
-                  {"code": "Progression NOS", "description": "Disease has worsened"}
-                ]
+                "codeList": ["No evidence of disease", "Complete remission", "Stable", "Progression NOS"]
               },
               "meta": {
                 "displayName": "Disease Status"
