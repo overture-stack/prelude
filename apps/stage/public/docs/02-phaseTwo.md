@@ -815,7 +815,93 @@ This command triggers Maestro to process all valid data from the Lyric repositor
 
 After indexing completes, your data will be available for searching and visualization through the data exploration interface you configured in Phase One.
 
-## Step 7 (If required): Updating Elasticsearch Mapping and Arranger Configurations
+## Step 7 (May be required): Update Elasticsearch and Arranger configurations for hierarchical data
+
+After data validation and indexing, you must ensure your Elasticsearch mapping accurately reflects your data structure, especially if you've transitioned from a flat representation of your data to a hierarchical one.
+
+> **Note:** One of the goals of Prelude is to minimize tedious manual configurations as such this step will be targeted for automation and elimination in a future release.
+
+### A) Generate Updated Elasticsearch Index Mappings
+
+We will use [Elasticvue](https://elasticvue.com/) here to examine our indexed documents
+  
+1. Navigate to the "Indices" section and select your index of interest. 
+
+![Elasticvue](/docs/images/elasticvue.png "Elasticsearch document viewer")
+
+2. The search interface for that index will open. You should see elasticsearch documents populating the UI. If not make sure you have run the indexing command referenced above (`conductor maestroIndex --repository-code lyric.overture`).
+
+3. Copy the JSON document data and save it to a file in your data directory (e.g., `./data/esDoc.json`).
+
+![Elasticvue](/docs/images/esDoc.png "Elasticsearch document example")
+
+4. Generate an updated Elasticsearch mapping using Composer:
+   ```bash
+   composer -p ElasticsearchMapping -f ./data/esDoc.json -i datatable1 -o ./configs/elasticsearchConfigs/datatable1-mapping.json --skip-metadata
+   ```
+
+   <details>
+   <summary>Command Breakdown</summary>
+
+   - `-p ElasticsearchMapping`: Specifies the operation to generate an Elasticsearch mapping
+   - `-f ./data/esDoc.json`: Path to the saved document JSON
+   - `-i datatable1`: Sets the index name prefix
+   - `-o ./configs/elasticsearchConfigs/datatable1-mapping.json`: Output path for the mapping file
+   - `--skip-metadata`: Excludes submission metadata fields from the mapping
+
+   This command analyzes the document structure to create an appropriate Elasticsearch mapping.
+   </details>
+
+5. Review and modify the generated mapping file:
+   - Verify the index pattern: `"index_patterns": ["datatable1-*"]`
+   - Check the alias: `"datatable1_centric": {}`
+   - Ensure field types are correctly set (e.g., numeric fields as `integer`, text fields as `keyword`)
+
+### B) Generate Updated Arranger Configurations
+
+Now that you have an updated Elasticsearch mapping, generate corresponding Arranger configuration files:
+
+1. Run Composer to create Arranger configuration files:
+   ```bash
+   composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/datatable1-mapping.json -o ./configs/arrangerConfigs/datatable1/
+   ```
+
+2. Review the generated Arranger configuration files:
+   - `base.json`: Update the `index` field to match your index alias (e.g., `"index": "datatable1_centric"`)
+   - `extended.json`: Verify field names and update display names for better UI presentation
+   - `table.json`: Adjust column visibility and sort settings as needed
+   - `facets.json`: Configure which fields should appear as filters and in what order
+
+   <details>
+   <summary>Configuration File Descriptions</summary>
+
+   - **base.json**: Core configuration connecting to your Elasticsearch index
+   - **extended.json**: Controls how fields are displayed and labeled in the UI
+   - **table.json**: Defines table column behavior and appearance
+   - **facets.json**: Configures the filter panel and available search facets
+
+   For detailed information on configuration options, refer to the [Arranger Components Documentation](https://docs.overture.bio/docs/core-software/Arranger/usage/arranger-components).
+   </details>
+
+### C) Apply Your Updated Configurations
+
+After updating your configurations, you need to restart services and reindex your data:
+
+1. Restart all services to apply the new configurations:
+   ```bash
+   make restart
+   ```
+
+2. Trigger Maestro to reindex the data with your updated mappings:
+   ```bash
+   conductor maestroIndex --repository-code lyric.overture
+   ```
+
+3. Verify that your data appears correctly in the Portal UI with proper relationships and field mappings.
+
+This completes the configuration update process. Your data model should now properly represent the hierarchical structure established in previous steps.
+
+> **Next Steps:** In Phase Three, you will add our file data submission and tracking system.
 
 ## Additional Resources
 

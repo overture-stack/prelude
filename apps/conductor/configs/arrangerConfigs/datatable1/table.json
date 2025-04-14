@@ -3,14 +3,6 @@
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "data.donor_id",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.donor_id",
-        "query": "data { donor_id }"
-      },
-      {
-        "canChangeShow": true,
         "fieldName": "data.gender",
         "show": true,
         "sortable": true,
@@ -19,11 +11,11 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.primary_site",
+        "fieldName": "data.donor_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.primary_site",
-        "query": "data { primary_site }"
+        "jsonPath": "$.data.donor_id",
+        "query": "data { donor_id }"
       },
       {
         "canChangeShow": true,
@@ -35,211 +27,139 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.diagnosis_id",
+        "fieldName": "data.diagnosis.stage",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.diagnosis_id",
-        "query": "data { diagnosis_id }"
+        "jsonPath": "$.data.diagnosis.hits.edges[*].node.stage",
+        "query": "data { diagnosis { hits { edges { node { stage } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.age_at_diagnosis",
+        "fieldName": "data.diagnosis.donor_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.age_at_diagnosis",
-        "query": "data { age_at_diagnosis }"
+        "jsonPath": "$.data.diagnosis.hits.edges[*].node.donor_id",
+        "query": "data { diagnosis { hits { edges { node { donor_id } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.cancer_type",
+        "fieldName": "data.diagnosis.cancer_type",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.cancer_type",
-        "query": "data { cancer_type }"
+        "jsonPath": "$.data.diagnosis.hits.edges[*].node.cancer_type",
+        "query": "data { diagnosis { hits { edges { node { cancer_type } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.staging_system",
+        "fieldName": "data.diagnosis.diagnosis_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.staging_system",
-        "query": "data { staging_system }"
+        "jsonPath": "$.data.diagnosis.hits.edges[*].node.diagnosis_id",
+        "query": "data { diagnosis { hits { edges { node { diagnosis_id } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.stage",
+        "fieldName": "data.diagnosis.primary_site",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.stage",
-        "query": "data { stage }"
+        "jsonPath": "$.data.diagnosis.hits.edges[*].node.primary_site",
+        "query": "data { diagnosis { hits { edges { node { primary_site } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.specimen_id",
+        "fieldName": "data.diagnosis.staging_system",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.specimen_id",
-        "query": "data { specimen_id }"
+        "jsonPath": "$.data.diagnosis.hits.edges[*].node.staging_system",
+        "query": "data { diagnosis { hits { edges { node { staging_system } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.specimen_type",
+        "fieldName": "data.diagnosis.age_at_diagnosis",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.specimen_type",
-        "query": "data { specimen_type }"
+        "jsonPath": "$.data.diagnosis.hits.edges[*].node.age_at_diagnosis",
+        "query": "data { diagnosis { hits { edges { node { age_at_diagnosis } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.tissue_source",
+        "fieldName": "data.treatment.donor_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.tissue_source",
-        "query": "data { tissue_source }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.donor_id",
+        "query": "data { treatment { hits { edges { node { donor_id } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.sample_id",
+        "fieldName": "data.treatment.treatment_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.sample_id",
-        "query": "data { sample_id }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.treatment_id",
+        "query": "data { treatment { hits { edges { node { treatment_id } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.sample_type",
+        "fieldName": "data.treatment.treatment_type",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.sample_type",
-        "query": "data { sample_type }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.treatment_type",
+        "query": "data { treatment { hits { edges { node { treatment_type } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.treatment_id",
+        "fieldName": "data.treatment.treatment_start",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.treatment_id",
-        "query": "data { treatment_id }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.treatment_start",
+        "query": "data { treatment { hits { edges { node { treatment_start } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.treatment_type",
+        "fieldName": "data.treatment.treatment_duration",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.treatment_type",
-        "query": "data { treatment_type }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.treatment_duration",
+        "query": "data { treatment { hits { edges { node { treatment_duration } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.treatment_start",
+        "fieldName": "data.treatment.treatment_response",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.treatment_start",
-        "query": "data { treatment_start }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.treatment_response",
+        "query": "data { treatment { hits { edges { node { treatment_response } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.treatment_duration",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.treatment_duration",
-        "query": "data { treatment_duration }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.treatment_response",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.treatment_response",
-        "query": "data { treatment_response }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.drug_name",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.drug_name",
-        "query": "data { drug_name }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.followup_id",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.followup_id",
-        "query": "data { followup_id }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.followup_interval",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.followup_interval",
-        "query": "data { followup_interval }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.disease_status",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.disease_status",
-        "query": "data { disease_status }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.submission_metadata.submitter_id",
+        "fieldName": "data.treatment.followup.followup_id",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.submitter_id",
-        "query": "data { submission_metadata { submitter_id } }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.followup.hits.edges[*].node.followup_id",
+        "query": "data { treatment { hits { edges { node { followup { hits { edges { node { followup_id } } } } } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.processing_started",
+        "fieldName": "data.treatment.followup.treatment_id",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.processing_started",
-        "query": "data { submission_metadata { processing_started } }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.followup.hits.edges[*].node.treatment_id",
+        "query": "data { treatment { hits { edges { node { followup { hits { edges { node { treatment_id } } } } } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.processed_at",
+        "fieldName": "data.treatment.followup.disease_status",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.processed_at",
-        "query": "data { submission_metadata { processed_at } }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.followup.hits.edges[*].node.disease_status",
+        "query": "data { treatment { hits { edges { node { followup { hits { edges { node { disease_status } } } } } } } } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.source_file",
+        "fieldName": "data.treatment.followup.followup_interval",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.source_file",
-        "query": "data { submission_metadata { source_file } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.submission_metadata.record_number",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.submission_metadata.record_number",
-        "query": "data { submission_metadata { record_number } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.submission_metadata.hostname",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.submission_metadata.hostname",
-        "query": "data { submission_metadata { hostname } }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "data.submission_metadata.username",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.data.submission_metadata.username",
-        "query": "data { submission_metadata { username } }"
+        "jsonPath": "$.data.treatment.hits.edges[*].node.followup.hits.edges[*].node.followup_interval",
+        "query": "data { treatment { hits { edges { node { followup { hits { edges { node { followup_interval } } } } } } } } }"
       }
     ]
   }
