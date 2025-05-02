@@ -1,0 +1,126 @@
+{
+  "index_patterns": [
+    "sample-*"
+  ],
+  "aliases": {
+    "sample_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "submission_metadata": {
+        "type": "object",
+        "properties": {
+          "submitter_id": {
+            "type": "keyword"
+          },
+          "processing_started": {
+            "type": "date"
+          },
+          "processed_at": {
+            "type": "date"
+          },
+          "source_file": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "record_number": {
+            "type": "integer"
+          },
+          "hostname": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "username": {
+            "type": "keyword",
+            "null_value": "No Data"
+          }
+        }
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "donor_name": {
+            "type": "keyword"
+          },
+          "sample_name": {
+            "type": "keyword"
+          },
+          "seq_type": {
+            "type": "keyword"
+          },
+          "case_id": {
+            "type": "keyword"
+          },
+          "test_id": {
+            "type": "keyword"
+          },
+          "req_id": {
+            "type": "keyword"
+          },
+          "project": {
+            "type": "keyword"
+          },
+          "external_id": {
+            "type": "keyword"
+          },
+          "tissue_origin": {
+            "type": "keyword"
+          },
+          "tissue_type": {
+            "type": "keyword"
+          },
+          "group_id": {
+            "type": "integer"
+          },
+          "library_design": {
+            "type": "keyword"
+          },
+          "library_name": {
+            "type": "keyword"
+          },
+          "sequencer_run": {
+            "type": "keyword"
+          },
+          "sequencing_id": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "instrument_model": {
+            "type": "keyword"
+          },
+          "gsi_workflow_run_id": {
+            "type": "keyword"
+          },
+          "gsi_workflow": {
+            "type": "keyword"
+          },
+          "gsi_workflow_version": {
+            "type": "keyword"
+          },
+          "gsi_md5sum": {
+            "type": "keyword"
+          },
+          "gsi_time": {
+            "type": "date"
+          },
+          "fastq_path": {
+            "type": "keyword"
+          },
+          "modification_date": {
+            "type": "date"
+          },
+          "linked_file": {
+            "type": "keyword"
+          },
+          "linked_file_time": {
+            "type": "date"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

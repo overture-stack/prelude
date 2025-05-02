@@ -32,10 +32,9 @@ export const LOGIN_PATH = '/login';
 export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
-	MOLECULAR = '/molecular',
-	DATATABLE_1 = '/dataTableOne',
-	DATATABLE_2 = '/dataTableTwo',
-	DATATABLE_3 = '/dataTableThree',
+	DATATABLE_1 = '/idMappings',
+	DATATABLE_2 = '/summaryTable',
+	DATATABLE_3 = '/sampleTable',
 	DATATABLE_4 = '/dataTableFour',
 	DATATABLE_5 = '/dataTableFive',
 	HOME = '/home',

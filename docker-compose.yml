@@ -21,23 +21,28 @@ services:
       DEBUG: false
       # Elasticsearch Index Configuration
       # Dynamic indices are configured with a count and indexed variables
-      ES_INDEX_COUNT: 1
+      ES_INDEX_COUNT: 3
       # First index
-      ES_INDEX_0_NAME: datatable1-index
-      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/datatable1-mapping.json
-      ES_INDEX_0_TEMPLATE_NAME: datatable1-index
-      ES_INDEX_0_ALIAS_NAME: datatable1_centric
+      ES_INDEX_0_NAME: idmapping-index
+      ES_INDEX_0_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/idmapping-mapping.json
+      ES_INDEX_0_TEMPLATE_NAME: idmapping-index
+      ES_INDEX_0_ALIAS_NAME: idmapping_centric
       # Second index
-      # ES_INDEX_1_NAME: file-index
-      # ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/datatable2-mapping.json
-      # ES_INDEX_1_TEMPLATE_NAME: datatable2-index
-      # ES_INDEX_1_ALIAS_NAME: datatable2_centric
+      ES_INDEX_1_NAME: sample-index
+      ES_INDEX_1_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/sample-mapping.json
+      ES_INDEX_1_TEMPLATE_NAME: sample-index
+      ES_INDEX_1_ALIAS_NAME: sample_centric
+      # Third index
+      ES_INDEX_2_NAME: summary-index
+      ES_INDEX_2_TEMPLATE_FILE: conductor/configs/elasticsearchConfigs/summary-mapping.json
+      ES_INDEX_2_TEMPLATE_NAME: summary-index
+      ES_INDEX_2_ALIAS_NAME: summary_centric
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
       ARRANGER_COUNT: 1
-      ARRANGER_0_URL: http://arranger-datatable1:5050
-      ARRANGER_1_URL: http://arranger-datatable2:5051
-      # ARRANGER_2_URL: http://arranger-datatable3:5052
+      ARRANGER_0_URL: http://arranger-idmapping:5050
+      ARRANGER_1_URL: http://arranger-sampletable:5051
+      ARRANGER_2_URL: http://arranger-summarytable:5052
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
       # Service Connections
@@ -147,10 +152,10 @@ services:
   # Search API generation with compatible search UI components                          #
   # https://docs.overture.bio/docs/core-software/Arranger/overview                      #
   # ------------------------------------------------------------------------------------#
-  arranger-datatable1:
+  arranger-idmapping:
     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-datatable1
+    container_name: arranger-idmapping
     platform: linux/amd64
     depends_on:
       conductor:
@@ -158,7 +163,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/datatable1:/app/modules/server/configs
+      - ./apps/conductor/configs/arrangerConfigs/idmapping:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -172,10 +177,10 @@ services:
     networks:
       - conductor-network
 
-  arranger-datatable2:
+  arranger-sampletable:
     profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-datatable2
+    container_name: arranger-sampletable
     platform: linux/amd64
     depends_on:
       conductor:
@@ -183,13 +188,13 @@ services:
     ports:
       - "5051:5051" # Use unique ports for each Arranger instance
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/datatable2:/app/modules/server/configs # Point to the relevant generated config
+      - ./apps/conductor/configs/arrangerConfigs/sample:/app/modules/server/configs # Point to the relevant generated config
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: datatable2_arranger_set
+      ES_ARRANGER_SET_INDEX: sampletable_arranger_set
       # Arranger Variables
       PORT: 5051 # Required
       DEBUG: false
@@ -197,30 +202,30 @@ services:
     networks:
       - conductor-network
 
-  # arranger-datatable3:
-  #   profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
-  #   image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-  #   container_name: arranger-datatable3
-  #   platform: linux/amd64
-  #   depends_on:
-  #     conductor:
-  #       condition: service_healthy
-  #   ports:
-  #     - "5052:5052" # Use unique ports for each Arranger instance
-  #   volumes:
-  #     - ./apps/conductor/configs/arrangerConfigs/datatable3:/app/modules/server/configs # Point to the relevant generated config
-  #   environment:
-  #     # Elasticsearch Variables
-  #     ES_HOST: http://elasticsearch:9200
-  #     ES_USER: elastic
-  #     ES_PASS: myelasticpassword
-  #     ES_ARRANGER_SET_INDEX: datatable3_arranger_set
-  #     # Arranger Variables
-  #     PORT: 5052 # Required
-  #     DEBUG: false
-  #     ENABLE_LOGS: false
-  #   networks:
-  #     - conductor-network
+  arranger-summarytable:
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    container_name: arranger-summarytable
+    platform: linux/amd64
+    depends_on:
+      conductor:
+        condition: service_healthy
+    ports:
+      - "5052:5052" # Use unique ports for each Arranger instance
+    volumes:
+      - ./apps/conductor/configs/arrangerConfigs/summary:/app/modules/server/configs # Point to the relevant generated config
+    environment:
+      # Elasticsearch Variables
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: summarytable_arranger_set
+      # Arranger Variables
+      PORT: 5052 # Required
+      DEBUG: false
+      ENABLE_LOGS: false
+    networks:
+      - conductor-network
 
   # ------------------------------------------------------------------------------------#
   # Stage                                                                               #
@@ -242,23 +247,23 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Prelude
+      NEXT_PUBLIC_LAB_NAME: LBR Portal
       NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
-      # Datatable1 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
+      # idmapping Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-idmapping:5050
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
-      # Datatable2 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: idmapping_centric
+      # sampletable Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-sampletable:5051
       NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
-      # Datatable3 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable3:5052
+      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: sample_centric
+      # summarytable Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-summarytable:5052
       NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: datatable3_centric
+      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: summary_centric
       # Using localhost for client-side requests
       NEXT_PUBLIC_SONG_API: http://song:8080
       NEXT_PUBLIC_SCORE_API: http://score:8087
@@ -443,10 +448,10 @@ services:
       # Repository Configuration - Lyric
       MAESTRO_REPOSITORIES_0_BASE_URL: http://lyric:3030
       # in the old world we added these to each document in elasticsearch,
-      MAESTRO_REPOSITORIES_0_CODE: lyric.overture
-      MAESTRO_REPOSITORIES_0_NAME: Overture Lyric
+      MAESTRO_REPOSITORIES_0_CODE: sample
+      MAESTRO_REPOSITORIES_0_NAME: Overture sample Lyric
       MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_0_INDEX_NAME: datatable1-index
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: sample-index
       MAESTRO_REPOSITORIES_0_TYPE: LYRIC
       MAESTRO_REPOSITORIES_0_LYRIC_VALID_DATA_ONLY: true
       MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 1
@@ -461,16 +466,16 @@ services:
       MAESTRO_ELASTICSEARCH_CLIENT_DOCS_PER_BULK_REQ_MAX: 5000
       MAESTRO_ELASTICSEARCH_CLIENT_CONNECTION_TIMEOUT: 5000
       # Repository Configuration - Song
-      MAESTRO_REPOSITORIES_1_BASE_URL: http://song:8080
-      MAESTRO_REPOSITORIES_1_CODE: song.overture
-      MAESTRO_REPOSITORIES_1_NAME: Overture Song
-      MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_1_INDEX_NAME: file-index
-      MAESTRO_REPOSITORIES_1_TYPE: SONG
-      MAESTRO_REPOSITORIES_1_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
-      MAESTRO_REPOSITORIES_1_SONG_ANALYSIS_CENTRIC_ENABLED: true
-      MAESTRO_REPOSITORIES_1_SONG_ORGANIZATION: OICR
-      MAESTRO_REPOSITORIES_1_SONG_COUNTRY: CA
+      MAESTRO_REPOSITORIES_4_BASE_URL: http://song:8080
+      MAESTRO_REPOSITORIES_4_CODE: song.overture
+      MAESTRO_REPOSITORIES_4_NAME: Overture Song
+      MAESTRO_REPOSITORIES_4_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_4_INDEX_NAME: file-index
+      MAESTRO_REPOSITORIES_4_TYPE: SONG
+      MAESTRO_REPOSITORIES_4_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
+      MAESTRO_REPOSITORIES_4_SONG_ANALYSIS_CENTRIC_ENABLED: true
+      MAESTRO_REPOSITORIES_4_SONG_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_4_SONG_COUNTRY: CA
     volumes:
       - maestro-data:/app/app-data
     networks:

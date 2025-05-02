@@ -1,0 +1,2087 @@
+{
+  "table": {
+    "rowIdFieldName": "submission_metadata.submitter_id" ,
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "data.donor",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.donor",
+        "query": "data { donor }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tumour",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tumour",
+        "query": "data { tumour }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.normal",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.normal",
+        "query": "data { normal }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.external_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.external_id",
+        "query": "data { external_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.seq_type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.seq_type",
+        "query": "data { seq_type }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tumour_coverage",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tumour_coverage",
+        "query": "data { tumour_coverage }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.normal_coverage",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.normal_coverage",
+        "query": "data { normal_coverage }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mouse_content",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mouse_content",
+        "query": "data { mouse_content }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tumour_reads_per_sp",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tumour_reads_per_sp",
+        "query": "data { tumour_reads_per_sp }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.normal_reads_per_sp",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.normal_reads_per_sp",
+        "query": "data { normal_reads_per_sp }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tumour_error_rate",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tumour_error_rate",
+        "query": "data { tumour_error_rate }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.normal_error_rate",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.normal_error_rate",
+        "query": "data { normal_error_rate }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tumour_soft_clip",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tumour_soft_clip",
+        "query": "data { tumour_soft_clip }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.normal_soft_clip",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.normal_soft_clip",
+        "query": "data { normal_soft_clip }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.inferred_sex",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.inferred_sex",
+        "query": "data { inferred_sex }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.genotype_concordance",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.genotype_concordance",
+        "query": "data { genotype_concordance }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_count",
+        "query": "data { snv_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.del_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.del_count",
+        "query": "data { del_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.ins_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.ins_count",
+        "query": "data { ins_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.indel_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.indel_count",
+        "query": "data { indel_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.deleterious_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.deleterious_count",
+        "query": "data { deleterious_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.nonsyn_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.nonsyn_count",
+        "query": "data { nonsyn_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.stopgain_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.stopgain_count",
+        "query": "data { stopgain_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.stoploss_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.stoploss_count",
+        "query": "data { stoploss_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.splice_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.splice_count",
+        "query": "data { splice_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.noncoding_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.noncoding_count",
+        "query": "data { noncoding_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.frameshift_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.frameshift_count",
+        "query": "data { frameshift_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.nonframeshift_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.nonframeshift_count",
+        "query": "data { nonframeshift_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.del_frameshift_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.del_frameshift_count",
+        "query": "data { del_frameshift_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.del_nonframeshift_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.del_nonframeshift_count",
+        "query": "data { del_nonframeshift_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.ins_frameshift_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.ins_frameshift_count",
+        "query": "data { ins_frameshift_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.ins_nonframeshift_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.ins_nonframeshift_count",
+        "query": "data { ins_nonframeshift_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_count",
+        "query": "data { sv_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_del_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_del_count",
+        "query": "data { sv_del_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_dup_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_dup_count",
+        "query": "data { sv_dup_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_inv_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_inv_count",
+        "query": "data { sv_inv_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_tra_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_tra_count",
+        "query": "data { sv_tra_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_del_bp_gene_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_del_bp_gene_count",
+        "query": "data { sv_del_bp_gene_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_dup_bp_gene_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_dup_bp_gene_count",
+        "query": "data { sv_dup_bp_gene_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_inv_bp_gene_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_inv_bp_gene_count",
+        "query": "data { sv_inv_bp_gene_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_tra_bp_gene_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_tra_bp_gene_count",
+        "query": "data { sv_tra_bp_gene_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.waddell",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.waddell",
+        "query": "data { waddell }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.neo_antigens",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.neo_antigens",
+        "query": "data { neo_antigens }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.neo_antigens_weak",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.neo_antigens_weak",
+        "query": "data { neo_antigens_weak }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.neo_antigens_strong",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.neo_antigens_strong",
+        "query": "data { neo_antigens_strong }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hla_types",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hla_types",
+        "query": "data { hla_types }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.cellularity",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.cellularity",
+        "query": "data { cellularity }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.ploidy",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.ploidy",
+        "query": "data { ploidy }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.alexandrov_class",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.alexandrov_class",
+        "query": "data { alexandrov_class }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.alexandrov_etiology",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.alexandrov_etiology",
+        "query": "data { alexandrov_etiology }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.moffitt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.moffitt",
+        "query": "data { moffitt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.collisson",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.collisson",
+        "query": "data { collisson }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.bailey",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.bailey",
+        "query": "data { bailey }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_deficient",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_deficient",
+        "query": "data { dsbr_deficient }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_first_hit",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_first_hit",
+        "query": "data { dsbr_first_hit }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_second_hit",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_second_hit",
+        "query": "data { dsbr_second_hit }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_deficient",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_deficient",
+        "query": "data { mmr_deficient }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_first_hit",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_first_hit",
+        "query": "data { mmr_first_hit }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_second_hit",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_second_hit",
+        "query": "data { mmr_second_hit }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig1",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig1",
+        "query": "data { csnnls_sig1 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig2",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig2",
+        "query": "data { csnnls_sig2 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig3",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig3",
+        "query": "data { csnnls_sig3 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig5",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig5",
+        "query": "data { csnnls_sig5 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig6",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig6",
+        "query": "data { csnnls_sig6 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig8",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig8",
+        "query": "data { csnnls_sig8 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig13",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig13",
+        "query": "data { csnnls_sig13 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig17",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig17",
+        "query": "data { csnnls_sig17 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig18",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig18",
+        "query": "data { csnnls_sig18 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig20",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig20",
+        "query": "data { csnnls_sig20 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_sig26",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_sig26",
+        "query": "data { csnnls_sig26 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_residuals",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_residuals",
+        "query": "data { csnnls_residuals }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.csnnls_n_mutations",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.csnnls_n_mutations",
+        "query": "data { csnnls_n_mutations }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.germline_snv_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.germline_snv_count",
+        "query": "data { germline_snv_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.germline_indel_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.germline_indel_count",
+        "query": "data { germline_indel_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.germline_titv_ratio",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.germline_titv_ratio",
+        "query": "data { germline_titv_ratio }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.germline_missense_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.germline_missense_count",
+        "query": "data { germline_missense_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.germline_nonsense_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.germline_nonsense_count",
+        "query": "data { germline_nonsense_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca",
+        "query": "data { snv_ca }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg",
+        "query": "data { snv_cg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct",
+        "query": "data { snv_ct }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta",
+        "query": "data { snv_ta }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc",
+        "query": "data { snv_tc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg",
+        "query": "data { snv_tg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.del_1_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.del_1_count",
+        "query": "data { del_1_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.del_4_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.del_4_count",
+        "query": "data { del_4_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.ins_1_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.ins_1_count",
+        "query": "data { ins_1_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.ins_4_count",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.ins_4_count",
+        "query": "data { ins_4_count }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DEL_100",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DEL_100",
+        "query": "data { DEL_100 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DEL_1k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DEL_1k",
+        "query": "data { DEL_1k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DEL_10k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DEL_10k",
+        "query": "data { DEL_10k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DEL_100k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DEL_100k",
+        "query": "data { DEL_100k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DEL_1m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DEL_1m",
+        "query": "data { DEL_1m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DEL_10m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DEL_10m",
+        "query": "data { DEL_10m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DEL_GREATER_THAN_10m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DEL_GREATER_THAN_10m",
+        "query": "data { DEL_GREATER_THAN_10m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DUP_100",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DUP_100",
+        "query": "data { DUP_100 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DUP_1k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DUP_1k",
+        "query": "data { DUP_1k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DUP_10k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DUP_10k",
+        "query": "data { DUP_10k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DUP_100k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DUP_100k",
+        "query": "data { DUP_100k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DUP_1m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DUP_1m",
+        "query": "data { DUP_1m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DUP_10m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DUP_10m",
+        "query": "data { DUP_10m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.DUP_GREATER_THAN_10m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.DUP_GREATER_THAN_10m",
+        "query": "data { DUP_GREATER_THAN_10m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.INV_100",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.INV_100",
+        "query": "data { INV_100 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.INV_1k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.INV_1k",
+        "query": "data { INV_1k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.INV_10k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.INV_10k",
+        "query": "data { INV_10k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.INV_100k",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.INV_100k",
+        "query": "data { INV_100k }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.INV_1m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.INV_1m",
+        "query": "data { INV_1m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.INV_10m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.INV_10m",
+        "query": "data { INV_10m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.INV_GREATER_THAN_10m",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.INV_GREATER_THAN_10m",
+        "query": "data { INV_GREATER_THAN_10m }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_aa",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_aa",
+        "query": "data { snv_ca_aa }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_ac",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_ac",
+        "query": "data { snv_ca_ac }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_ag",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_ag",
+        "query": "data { snv_ca_ag }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_at",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_at",
+        "query": "data { snv_ca_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_ca",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_ca",
+        "query": "data { snv_ca_ca }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_cc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_cc",
+        "query": "data { snv_ca_cc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_cg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_cg",
+        "query": "data { snv_ca_cg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_ct",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_ct",
+        "query": "data { snv_ca_ct }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_ga",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_ga",
+        "query": "data { snv_ca_ga }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_gc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_gc",
+        "query": "data { snv_ca_gc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_gg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_gg",
+        "query": "data { snv_ca_gg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_gt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_gt",
+        "query": "data { snv_ca_gt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_ta",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_ta",
+        "query": "data { snv_ca_ta }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_tc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_tc",
+        "query": "data { snv_ca_tc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_tg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_tg",
+        "query": "data { snv_ca_tg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ca_tt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ca_tt",
+        "query": "data { snv_ca_tt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_aa",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_aa",
+        "query": "data { snv_cg_aa }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_ac",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_ac",
+        "query": "data { snv_cg_ac }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_ag",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_ag",
+        "query": "data { snv_cg_ag }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_at",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_at",
+        "query": "data { snv_cg_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_ca",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_ca",
+        "query": "data { snv_cg_ca }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_cc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_cc",
+        "query": "data { snv_cg_cc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_cg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_cg",
+        "query": "data { snv_cg_cg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_ct",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_ct",
+        "query": "data { snv_cg_ct }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_ga",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_ga",
+        "query": "data { snv_cg_ga }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_gc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_gc",
+        "query": "data { snv_cg_gc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_gg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_gg",
+        "query": "data { snv_cg_gg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_gt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_gt",
+        "query": "data { snv_cg_gt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_ta",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_ta",
+        "query": "data { snv_cg_ta }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_tc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_tc",
+        "query": "data { snv_cg_tc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_tg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_tg",
+        "query": "data { snv_cg_tg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_cg_tt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_cg_tt",
+        "query": "data { snv_cg_tt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_aa",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_aa",
+        "query": "data { snv_ct_aa }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_ac",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_ac",
+        "query": "data { snv_ct_ac }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_ag",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_ag",
+        "query": "data { snv_ct_ag }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_at",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_at",
+        "query": "data { snv_ct_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_ca",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_ca",
+        "query": "data { snv_ct_ca }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_cc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_cc",
+        "query": "data { snv_ct_cc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_cg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_cg",
+        "query": "data { snv_ct_cg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_ct",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_ct",
+        "query": "data { snv_ct_ct }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_ga",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_ga",
+        "query": "data { snv_ct_ga }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_gc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_gc",
+        "query": "data { snv_ct_gc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_gg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_gg",
+        "query": "data { snv_ct_gg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_gt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_gt",
+        "query": "data { snv_ct_gt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_ta",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_ta",
+        "query": "data { snv_ct_ta }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_tc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_tc",
+        "query": "data { snv_ct_tc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_tg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_tg",
+        "query": "data { snv_ct_tg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ct_tt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ct_tt",
+        "query": "data { snv_ct_tt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_aa",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_aa",
+        "query": "data { snv_ta_aa }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_ac",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_ac",
+        "query": "data { snv_ta_ac }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_ag",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_ag",
+        "query": "data { snv_ta_ag }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_at",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_at",
+        "query": "data { snv_ta_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_ca",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_ca",
+        "query": "data { snv_ta_ca }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_cc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_cc",
+        "query": "data { snv_ta_cc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_cg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_cg",
+        "query": "data { snv_ta_cg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_ct",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_ct",
+        "query": "data { snv_ta_ct }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_ga",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_ga",
+        "query": "data { snv_ta_ga }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_gc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_gc",
+        "query": "data { snv_ta_gc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_gg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_gg",
+        "query": "data { snv_ta_gg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_gt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_gt",
+        "query": "data { snv_ta_gt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_ta",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_ta",
+        "query": "data { snv_ta_ta }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_tc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_tc",
+        "query": "data { snv_ta_tc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_tg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_tg",
+        "query": "data { snv_ta_tg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_ta_tt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_ta_tt",
+        "query": "data { snv_ta_tt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_aa",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_aa",
+        "query": "data { snv_tc_aa }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_ac",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_ac",
+        "query": "data { snv_tc_ac }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_ag",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_ag",
+        "query": "data { snv_tc_ag }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_at",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_at",
+        "query": "data { snv_tc_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_ca",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_ca",
+        "query": "data { snv_tc_ca }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_cc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_cc",
+        "query": "data { snv_tc_cc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_cg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_cg",
+        "query": "data { snv_tc_cg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_ct",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_ct",
+        "query": "data { snv_tc_ct }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_ga",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_ga",
+        "query": "data { snv_tc_ga }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_gc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_gc",
+        "query": "data { snv_tc_gc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_gg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_gg",
+        "query": "data { snv_tc_gg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_gt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_gt",
+        "query": "data { snv_tc_gt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_ta",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_ta",
+        "query": "data { snv_tc_ta }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_tc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_tc",
+        "query": "data { snv_tc_tc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_tg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_tg",
+        "query": "data { snv_tc_tg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tc_tt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tc_tt",
+        "query": "data { snv_tc_tt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_aa",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_aa",
+        "query": "data { snv_tg_aa }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_ac",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_ac",
+        "query": "data { snv_tg_ac }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_ag",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_ag",
+        "query": "data { snv_tg_ag }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_at",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_at",
+        "query": "data { snv_tg_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_ca",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_ca",
+        "query": "data { snv_tg_ca }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_cc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_cc",
+        "query": "data { snv_tg_cc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_cg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_cg",
+        "query": "data { snv_tg_cg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_ct",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_ct",
+        "query": "data { snv_tg_ct }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_ga",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_ga",
+        "query": "data { snv_tg_ga }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_gc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_gc",
+        "query": "data { snv_tg_gc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_gg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_gg",
+        "query": "data { snv_tg_gg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_gt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_gt",
+        "query": "data { snv_tg_gt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_ta",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_ta",
+        "query": "data { snv_tg_ta }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_tc",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_tc",
+        "query": "data { snv_tg_tc }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_tg",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_tg",
+        "query": "data { snv_tg_tg }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_tg_tt",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_tg_tt",
+        "query": "data { snv_tg_tt }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_snv_load",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_snv_load",
+        "query": "data { dsbr_snv_load }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_ct_ratio",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_ct_ratio",
+        "query": "data { dsbr_ct_ratio }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_del4_load",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_del4_load",
+        "query": "data { dsbr_del4_load }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_del4_ratio",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_del4_ratio",
+        "query": "data { dsbr_del4_ratio }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_delsv_load",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_delsv_load",
+        "query": "data { dsbr_delsv_load }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_delsv_ratio",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_delsv_ratio",
+        "query": "data { dsbr_delsv_ratio }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_dup_load",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_dup_load",
+        "query": "data { dsbr_dup_load }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_sv_load",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_sv_load",
+        "query": "data { dsbr_sv_load }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_first_genes",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_first_genes",
+        "query": "data { dsbr_first_genes }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_second_genes",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_second_genes",
+        "query": "data { dsbr_second_genes }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_score",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_score",
+        "query": "data { dsbr_score }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_snv_load_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_snv_load_cut",
+        "query": "data { dsbr_snv_load_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_ct_ratio_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_ct_ratio_cut",
+        "query": "data { dsbr_ct_ratio_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_del4_load_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_del4_load_cut",
+        "query": "data { dsbr_del4_load_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_del4_ratio_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_del4_ratio_cut",
+        "query": "data { dsbr_del4_ratio_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_delsv_load_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_delsv_load_cut",
+        "query": "data { dsbr_delsv_load_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_delsv_ratio_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_delsv_ratio_cut",
+        "query": "data { dsbr_delsv_ratio_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_dup_load_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_dup_load_cut",
+        "query": "data { dsbr_dup_load_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dsbr_sv_load_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dsbr_sv_load_cut",
+        "query": "data { dsbr_sv_load_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_snv_load",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_snv_load",
+        "query": "data { mmr_snv_load }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_indel_load",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_indel_load",
+        "query": "data { mmr_indel_load }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_first_genes",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_first_genes",
+        "query": "data { mmr_first_genes }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_second_genes",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_second_genes",
+        "query": "data { mmr_second_genes }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_score",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_score",
+        "query": "data { mmr_score }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_snv_load_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_snv_load_cut",
+        "query": "data { mmr_snv_load_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.mmr_indel_load_cut",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.mmr_indel_load_cut",
+        "query": "data { mmr_indel_load_cut }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tdp_score",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tdp_score",
+        "query": "data { tdp_score }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_score",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_score",
+        "query": "data { hrdetect_score }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_myriad_score",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_myriad_score",
+        "query": "data { hrdetect_myriad_score }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_deletion_microhomology_proportion",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_deletion_microhomology_proportion",
+        "query": "data { hrdetect_deletion_microhomology_proportion }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_snv_signature_3",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_snv_signature_3",
+        "query": "data { hrdetect_snv_signature_3 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_snv_signature_8",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_snv_signature_8",
+        "query": "data { hrdetect_snv_signature_8 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_rearrangement_signature_3",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_rearrangement_signature_3",
+        "query": "data { hrdetect_rearrangement_signature_3 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_rearrangement_signature_5",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_rearrangement_signature_5",
+        "query": "data { hrdetect_rearrangement_signature_5 }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_loh",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_loh",
+        "query": "data { hrdetect_loh }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_tai",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_tai",
+        "query": "data { hrdetect_tai }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hrdetect_lst",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hrdetect_lst",
+        "query": "data { hrdetect_lst }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.snv_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.snv_file",
+        "query": "data { snv_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.indel_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.indel_file",
+        "query": "data { indel_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sgv_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sgv_file",
+        "query": "data { sgv_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sv_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sv_file",
+        "query": "data { sv_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.param_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.param_file",
+        "query": "data { param_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.seg_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.seg_file",
+        "query": "data { seg_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.neo_files",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.neo_files",
+        "query": "data { neo_files }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.xenome_logs",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.xenome_logs",
+        "query": "data { xenome_logs }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.rna_sig_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.rna_sig_file",
+        "query": "data { rna_sig_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.alexandrov_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.alexandrov_file",
+        "query": "data { alexandrov_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.json_files",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.json_files",
+        "query": "data { json_files }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.genotype_files",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.genotype_files",
+        "query": "data { genotype_files }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.submitter_id",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.submitter_id",
+        "query": "submission_metadata { submitter_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.processing_started",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.processing_started",
+        "query": "submission_metadata { processing_started }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.processed_at",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.processed_at",
+        "query": "submission_metadata { processed_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.source_file",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.source_file",
+        "query": "submission_metadata { source_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.record_number",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.record_number",
+        "query": "submission_metadata { record_number }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.hostname",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.hostname",
+        "query": "submission_metadata { hostname }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.username",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.username",
+        "query": "submission_metadata { username }"
+      }
+    ]
+  }
+}

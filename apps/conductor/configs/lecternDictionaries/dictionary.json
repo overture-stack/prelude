@@ -1,337 +1,2677 @@
 {
-  "name": "example-dictionary",
-  "description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
+  "name": "lbr-dictionary",
+  "description": "Generated dictionary from CSV files",
   "version": "1.0",
-  "meta": {
-    "createdAt": "2025-03-20T10:30:00.000Z",
-    "createdBy": "Mitchell Shiell",
-    "primaryContact": "mshiell@oicr.on.ca"
-  },
+  "meta": {},
   "schemas": [
     {
-      "name": "donor",
-      "description": "Core demographic information about donors. One donor can have multiple diagnoses, treatments, and followups.",
+      "name": "idmapping",
+      "description": "Schema generated from idmapping.csv",
       "fields": [
         {
-          "name": "donor_id",
-          "description": "Unique identifier for a donor across the system",
+          "name": "external_id",
+          "description": "Field containing external_id data",
           "valueType": "string",
-          "unique": true,
-          "restrictions": {
-            "required": true,
-            "regex": "^DO\\d{4}$"
-          },
           "meta": {
-            "displayName": "Donor ID",
-            "examples": ["DO0599", "DO0600"]
+            "displayName": "external_id"
           }
         },
         {
-          "name": "gender",
-          "description": "Gender of the donor",
+          "name": "donor",
+          "description": "Field containing donor data",
           "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "codeList": ["Male", "Female"]
-          },
           "meta": {
-            "displayName": "Gender"
+            "displayName": "donor"
           }
         },
         {
-          "name": "vital_status",
-          "description": "Current vital status of the donor",
+          "name": "Age_at_diagnosis",
+          "description": "Field containing Age_at_diagnosis data",
           "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "codeList": ["Alive", "Deceased"]
-          },
           "meta": {
-            "displayName": "Vital Status"
+            "displayName": "Age_at_diagnosis"
+          }
+        },
+        {
+          "name": "Sex",
+          "description": "Field containing Sex data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "Sex"
+          }
+        },
+        {
+          "name": "Date_of_Tissue",
+          "description": "Field containing Date_of_Tissue data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Date_of_Tissue"
+          }
+        },
+        {
+          "name": "Sample",
+          "description": "Field containing Sample data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Sample"
+          }
+        },
+        {
+          "name": "PPID",
+          "description": "Field containing PPID data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "PPID"
+          }
+        },
+        {
+          "name": "PDO_available",
+          "description": "Field containing PDO_available data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "PDO_available"
+          }
+        },
+        {
+          "name": "PDO_ID_Notta",
+          "description": "Field containing PDO_ID_Notta data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "PDO_ID_Notta"
+          }
+        },
+        {
+          "name": "PDO_ID_PMLB",
+          "description": "Field containing PDO_ID_PMLB data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "PDO_ID_PMLB"
+          }
+        },
+        {
+          "name": "PDO_WT_RNAseq",
+          "description": "Field containing PDO_WT_RNAseq data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "PDO_WT_RNAseq"
+          }
+        },
+        {
+          "name": "PDO_WGS",
+          "description": "Field containing PDO_WGS data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "PDO_WGS"
+          }
+        },
+        {
+          "name": "PDO_Exome",
+          "description": "Field containing PDO_Exome data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "PDO_Exome"
+          }
+        },
+        {
+          "name": "PDO_drugscreen",
+          "description": "Field containing PDO_drugscreen data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "PDO_drugscreen"
+          }
+        },
+        {
+          "name": "Tumour_scRNAseq",
+          "description": "Field containing Tumour_scRNAseq data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Tumour_scRNAseq"
+          }
+        },
+        {
+          "name": "Tumour_scCNV",
+          "description": "Field containing Tumour_scCNV data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Tumour_scCNV"
+          }
+        },
+        {
+          "name": "Tumour_multiome",
+          "description": "Field containing Tumour_multiome data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Tumour_multiome"
+          }
+        },
+        {
+          "name": "Tumour_spatial",
+          "description": "Field containing Tumour_spatial data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Tumour_spatial"
+          }
+        },
+        {
+          "name": "Plasma_WGS",
+          "description": "Field containing Plasma_WGS data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Plasma_WGS"
+          }
+        },
+        {
+          "name": "Plasma_cfRNA",
+          "description": "Field containing Plasma_cfRNA data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Plasma_cfRNA"
+          }
+        },
+        {
+          "name": "Histology",
+          "description": "Field containing Histology data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Histology"
+          }
+        },
+        {
+          "name": "Staging_at_Diagnosis_T",
+          "description": "Field containing Staging_at_Diagnosis_T data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Staging_at_Diagnosis_T"
+          }
+        },
+        {
+          "name": "Staging_at_Diagnosis_N",
+          "description": "Field containing Staging_at_Diagnosis_N data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Staging_at_Diagnosis_N"
+          }
+        },
+        {
+          "name": "Staging_at_Diagnosis_M",
+          "description": "Field containing Staging_at_Diagnosis_M data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Staging_at_Diagnosis_M"
+          }
+        },
+        {
+          "name": "Biopsy_at_Diagnosis",
+          "description": "Field containing Biopsy_at_Diagnosis data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Biopsy_at_Diagnosis"
+          }
+        },
+        {
+          "name": "Date_of_Rx",
+          "description": "Field containing Date_of_Rx data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Date_of_Rx"
+          }
+        },
+        {
+          "name": "Systemic_Tx",
+          "description": "Field containing Systemic_Tx data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Systemic_Tx"
+          }
+        },
+        {
+          "name": "Tx_Type",
+          "description": "Field containing Tx_Type data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Tx_Type"
+          }
+        },
+        {
+          "name": "Biopsy_at_Progression",
+          "description": "Field containing Biopsy_at_Progression data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Biopsy_at_Progression"
+          }
+        },
+        {
+          "name": "CRUK",
+          "description": "Field containing CRUK data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "CRUK"
+          }
+        },
+        {
+          "name": "PIMO",
+          "description": "Field containing PIMO data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "PIMO"
+          }
+        },
+        {
+          "name": "COMPASS",
+          "description": "Field containing COMPASS data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "COMPASS"
+          }
+        },
+        {
+          "name": "NeoPancONE",
+          "description": "Field containing NeoPancONE data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "NeoPancONE"
+          }
+        },
+        {
+          "name": "PASS",
+          "description": "Field containing PASS data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "PASS"
+          }
+        },
+        {
+          "name": "ARCAP",
+          "description": "Field containing ARCAP data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "ARCAP"
+          }
+        },
+        {
+          "name": "PA7",
+          "description": "Field containing PA7 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "PA7"
+          }
+        },
+        {
+          "name": "PA6",
+          "description": "Field containing PA6 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "PA6"
+          }
+        },
+        {
+          "name": "Prosper_Panc",
+          "description": "Field containing Prosper_Panc data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "Prosper_Panc"
+          }
+        },
+        {
+          "name": "HPB_Banking",
+          "description": "Field containing HPB_Banking data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "HPB_Banking"
+          }
+        },
+        {
+          "name": "OPCS",
+          "description": "Field containing OPCS data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "OPCS"
+          }
+        },
+        {
+          "name": "Surgical_DB",
+          "description": "Field containing Surgical_DB data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Surgical_DB"
+          }
+        },
+        {
+          "name": "TMA_1",
+          "description": "Field containing TMA_1 data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "TMA_1"
+          }
+        },
+        {
+          "name": "TMA_2",
+          "description": "Field containing TMA_2 data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "TMA_2"
+          }
+        },
+        {
+          "name": "Rapid_Autopsy",
+          "description": "Field containing Rapid_Autopsy data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Rapid_Autopsy"
+          }
+        },
+        {
+          "name": "Jackson_Lab_ID",
+          "description": "Field containing Jackson_Lab_ID data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Jackson_Lab_ID"
+          }
+        },
+        {
+          "name": "McGaha_Lab_ID",
+          "description": "Field containing McGaha_Lab_ID data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "McGaha_Lab_ID"
+          }
+        },
+        {
+          "name": "Sheba_SPC",
+          "description": "Field containing Sheba_SPC data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Sheba_SPC"
+          }
+        },
+        {
+          "name": "QPCS_ID",
+          "description": "Field containing QPCS_ID data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "QPCS_ID"
+          }
+        },
+        {
+          "name": "OCIP_ID",
+          "description": "Field containing OCIP_ID data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "OCIP_ID"
+          }
+        },
+        {
+          "name": "PCD_ID",
+          "description": "Field containing PCD_ID data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "PCD_ID"
+          }
+        },
+        {
+          "name": "RB_xxxx",
+          "description": "Field containing RB_xxxx data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "RB_xxxx"
+          }
+        },
+        {
+          "name": "GPxx",
+          "description": "Field containing GPxx data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "GPxx"
           }
         }
       ],
-      "restrictions": {
-      "primaryKey": ["donor_id"]
-      },
       "meta": {
-        "createdAt": "2025-03-20T16:11:06.493Z",
-        "sourceFile": "donor.csv"
+        "createdAt": "2025-05-02T15:50:37.909Z",
+        "sourceFile": "idmapping.csv"
       }
     },
     {
-      "name": "diagnosis",
-      "description": "Clinical diagnosis details linked to a donor via donor_id. Each diagnosis belongs to exactly one donor.",
+      "name": "sample",
+      "description": "Schema generated from sample.csv",
       "fields": [
         {
-          "name": "diagnosis_id",
-          "description": "Unique identifier for a diagnosis record",
+          "name": "donor_name",
+          "description": "Field containing donor_name data",
           "valueType": "string",
-          "unique": true,
-          "restrictions": {
-            "required": true,
-            "regex": "^PD\\d{6}$"
-          },
           "meta": {
-            "displayName": "Diagnosis ID",
-            "examples": ["PD059901", "PD059902"]
+            "displayName": "donor_name"
           }
         },
         {
-          "name": "donor_id",
-          "description": "Reference to the donor this diagnosis belongs to",
+          "name": "sample_name",
+          "description": "Field containing sample_name data",
           "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "regex": "^DO\\d{4}$"
-          },
           "meta": {
-            "displayName": "Donor ID",
-            "examples": ["DO0599", "DO0600"]
+            "displayName": "sample_name"
           }
         },
         {
-          "name": "primary_site",
-          "description": "Primary anatomical site of the diagnosed condition",
+          "name": "seq_type",
+          "description": "Field containing seq_type data",
           "valueType": "string",
-          "restrictions": {
-            "required": true
-          },
           "meta": {
-            "displayName": "Primary Site",
-            "examples": ["Breast", "Lung", "Prostate gland"]
+            "displayName": "seq_type"
           }
         },
         {
-          "name": "age_at_diagnosis",
-          "description": "Age of the donor at the time of diagnosis in years",
+          "name": "case_id",
+          "description": "Field containing case_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "case_id"
+          }
+        },
+        {
+          "name": "test_id",
+          "description": "Field containing test_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "test_id"
+          }
+        },
+        {
+          "name": "req_id",
+          "description": "Field containing req_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "req_id"
+          }
+        },
+        {
+          "name": "project",
+          "description": "Field containing project data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "project"
+          }
+        },
+        {
+          "name": "external_id",
+          "description": "Field containing external_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "external_id"
+          }
+        },
+        {
+          "name": "tissue_origin",
+          "description": "Field containing tissue_origin data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "tissue_origin"
+          }
+        },
+        {
+          "name": "tissue_type",
+          "description": "Field containing tissue_type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "tissue_type"
+          }
+        },
+        {
+          "name": "group_id",
+          "description": "Field containing group_id data",
           "valueType": "integer",
-          "restrictions": {
-            "required": true,
-            "range": {"min": 0, "max": 120}
-          },
           "meta": {
-            "displayName": "Age at Diagnosis",
-            "units": "years"
+            "displayName": "group_id"
           }
         },
         {
-          "name": "cancer_type",
-          "description": "Type of cancer diagnosed using ICD-O-3 topography codes",
+          "name": "library_design",
+          "description": "Field containing library_design data",
           "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "regex": "^C[0-9]{2}(\\.[0-9])?$"
-          },
           "meta": {
-            "displayName": "Cancer Type",
-            "examples": ["C50.1", "C34.1", "C61"]
+            "displayName": "library_design"
           }
         },
         {
-          "name": "staging_system",
-          "description": "Staging system used for cancer classification",
+          "name": "library_name",
+          "description": "Field containing library_name data",
           "valueType": "string",
-          "restrictions": {
-            "required": true
-          },
           "meta": {
-            "displayName": "Staging System",
-            "examples": ["AJCC 8th edition", "FIGO staging system", "Gleason grade group system"]
+            "displayName": "library_name"
           }
         },
         {
-          "name": "stage",
-          "description": "Stage of cancer according to the specified staging system",
+          "name": "sequencer_run",
+          "description": "Field containing sequencer_run data",
           "valueType": "string",
-          "restrictions": {
-            "required": true
-          },
           "meta": {
-            "displayName": "Stage",
-            "examples": ["Stage I", "Stage IV", "Grade Group 2"]
+            "displayName": "sequencer_run"
+          }
+        },
+        {
+          "name": "sequencing_id",
+          "description": "Field containing sequencing_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "sequencing_id"
+          }
+        },
+        {
+          "name": "instrument_model",
+          "description": "Field containing instrument_model data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "instrument_model"
+          }
+        },
+        {
+          "name": "gsi_workflow_run_id",
+          "description": "Field containing gsi_workflow_run_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gsi_workflow_run_id"
+          }
+        },
+        {
+          "name": "gsi_workflow",
+          "description": "Field containing gsi_workflow data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gsi_workflow"
+          }
+        },
+        {
+          "name": "gsi_workflow_version",
+          "description": "Field containing gsi_workflow_version data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gsi_workflow_version"
+          }
+        },
+        {
+          "name": "gsi_md5sum",
+          "description": "Field containing gsi_md5sum data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gsi_md5sum"
+          }
+        },
+        {
+          "name": "gsi_time",
+          "description": "Field containing gsi_time data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "gsi_time"
+          }
+        },
+        {
+          "name": "fastq_path",
+          "description": "Field containing fastq_path data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "fastq_path"
+          }
+        },
+        {
+          "name": "modification_date",
+          "description": "Field containing modification_date data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "modification_date"
+          }
+        },
+        {
+          "name": "linked_file",
+          "description": "Field containing linked_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "linked_file"
+          }
+        },
+        {
+          "name": "linked_file_time",
+          "description": "Field containing linked_file_time data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "linked_file_time"
           }
         }
       ],
-      "restrictions": {
-        "primaryKey": ["diagnosis_id"],
-        "foreignKey": [
-          {
-            "schema": "donor",
-            "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
-          }
-        ]
-      },
       "meta": {
-        "createdAt": "2025-03-20T16:11:06.491Z",
-        "sourceFile": "diagnosis.csv"
+        "createdAt": "2025-05-02T15:50:37.916Z",
+        "sourceFile": "sample.csv"
       }
     },
     {
-      "name": "treatment",
-      "description": "Treatment information linked to a donor and diagnosis. Each treatment belongs to exactly one donor.",
+      "name": "summary",
+      "description": "Schema generated from summary.csv",
       "fields": [
         {
-          "name": "donor_id",
-          "description": "Reference to the donor receiving this treatment",
+          "name": "donor",
+          "description": "Field containing donor data",
           "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "regex": "^DO\\d{4}$"
-          },
           "meta": {
-            "displayName": "Donor ID",
-            "examples": ["DO0599", "DO0600"]
+            "displayName": "donor"
           }
         },
         {
-          "name": "treatment_id",
-          "description": "Unique identifier for a treatment record",
+          "name": "tumour",
+          "description": "Field containing tumour data",
           "valueType": "string",
-          "unique": true,
-          "restrictions": {
-            "required": true,
-            "regex": "^TR\\d{6}$"
-          },
           "meta": {
-            "displayName": "Treatment ID",
-            "examples": ["TR059901", "TR059902"]
+            "displayName": "tumour"
           }
         },
         {
-          "name": "treatment_type",
-          "description": "Type of treatment administered",
+          "name": "normal",
+          "description": "Field containing normal data",
           "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "codeList": ["Surgery", "Radiation therapy", "Chemotherapy", "Hormonal therapy"]
-          },
           "meta": {
-            "displayName": "Treatment Type"
+            "displayName": "normal"
           }
         },
         {
-          "name": "treatment_start",
-          "description": "Days since diagnosis when treatment started",
+          "name": "external_id",
+          "description": "Field containing external_id data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "external_id"
+          }
+        },
+        {
+          "name": "seq_type",
+          "description": "Field containing seq_type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "seq_type"
+          }
+        },
+        {
+          "name": "tumour_coverage",
+          "description": "Field containing tumour_coverage data",
           "valueType": "integer",
-          "restrictions": {
-            "required": true,
-            "range": {"min": 0}
-          },
           "meta": {
-            "displayName": "Treatment Start",
-            "units": "days"
+            "displayName": "tumour_coverage"
           }
         },
         {
-          "name": "treatment_duration",
-          "description": "Duration of the treatment in days",
+          "name": "normal_coverage",
+          "description": "Field containing normal_coverage data",
           "valueType": "integer",
-          "restrictions": {
-            "required": true,
-            "range": {"min": 1}
-          },
           "meta": {
-            "displayName": "Treatment Duration",
-            "units": "days"
+            "displayName": "normal_coverage"
           }
         },
         {
-          "name": "treatment_response",
-          "description": "Response to the treatment",
+          "name": "mouse_content",
+          "description": "Field containing mouse_content data",
           "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "codeList": ["Complete response", "Partial response", "Disease progression"]
-          },
           "meta": {
-            "displayName": "Treatment Response"
+            "displayName": "mouse_content"
+          }
+        },
+        {
+          "name": "tumour_reads_per_sp",
+          "description": "Field containing tumour_reads_per_sp data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "tumour_reads_per_sp"
+          }
+        },
+        {
+          "name": "normal_reads_per_sp",
+          "description": "Field containing normal_reads_per_sp data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "normal_reads_per_sp"
+          }
+        },
+        {
+          "name": "tumour_error_rate",
+          "description": "Field containing tumour_error_rate data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "tumour_error_rate"
+          }
+        },
+        {
+          "name": "normal_error_rate",
+          "description": "Field containing normal_error_rate data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "normal_error_rate"
+          }
+        },
+        {
+          "name": "tumour_soft_clip",
+          "description": "Field containing tumour_soft_clip data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "tumour_soft_clip"
+          }
+        },
+        {
+          "name": "normal_soft_clip",
+          "description": "Field containing normal_soft_clip data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "normal_soft_clip"
+          }
+        },
+        {
+          "name": "inferred_sex",
+          "description": "Field containing inferred_sex data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "inferred_sex"
+          }
+        },
+        {
+          "name": "genotype_concordance",
+          "description": "Field containing genotype_concordance data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "genotype_concordance"
+          }
+        },
+        {
+          "name": "snv_count",
+          "description": "Field containing snv_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_count"
+          }
+        },
+        {
+          "name": "del_count",
+          "description": "Field containing del_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "del_count"
+          }
+        },
+        {
+          "name": "ins_count",
+          "description": "Field containing ins_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "ins_count"
+          }
+        },
+        {
+          "name": "indel_count",
+          "description": "Field containing indel_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "indel_count"
+          }
+        },
+        {
+          "name": "deleterious_count",
+          "description": "Field containing deleterious_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "deleterious_count"
+          }
+        },
+        {
+          "name": "nonsyn_count",
+          "description": "Field containing nonsyn_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "nonsyn_count"
+          }
+        },
+        {
+          "name": "stopgain_count",
+          "description": "Field containing stopgain_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "stopgain_count"
+          }
+        },
+        {
+          "name": "stoploss_count",
+          "description": "Field containing stoploss_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "stoploss_count"
+          }
+        },
+        {
+          "name": "splice_count",
+          "description": "Field containing splice_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "splice_count"
+          }
+        },
+        {
+          "name": "noncoding_count",
+          "description": "Field containing noncoding_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "noncoding_count"
+          }
+        },
+        {
+          "name": "frameshift_count",
+          "description": "Field containing frameshift_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "frameshift_count"
+          }
+        },
+        {
+          "name": "nonframeshift_count",
+          "description": "Field containing nonframeshift_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "nonframeshift_count"
+          }
+        },
+        {
+          "name": "del_frameshift_count",
+          "description": "Field containing del_frameshift_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "del_frameshift_count"
+          }
+        },
+        {
+          "name": "del_nonframeshift_count",
+          "description": "Field containing del_nonframeshift_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "del_nonframeshift_count"
+          }
+        },
+        {
+          "name": "ins_frameshift_count",
+          "description": "Field containing ins_frameshift_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "ins_frameshift_count"
+          }
+        },
+        {
+          "name": "ins_nonframeshift_count",
+          "description": "Field containing ins_nonframeshift_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "ins_nonframeshift_count"
+          }
+        },
+        {
+          "name": "sv_count",
+          "description": "Field containing sv_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_count"
+          }
+        },
+        {
+          "name": "sv_del_count",
+          "description": "Field containing sv_del_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_del_count"
+          }
+        },
+        {
+          "name": "sv_dup_count",
+          "description": "Field containing sv_dup_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_dup_count"
+          }
+        },
+        {
+          "name": "sv_inv_count",
+          "description": "Field containing sv_inv_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_inv_count"
+          }
+        },
+        {
+          "name": "sv_tra_count",
+          "description": "Field containing sv_tra_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_tra_count"
+          }
+        },
+        {
+          "name": "sv_del_bp_gene_count",
+          "description": "Field containing sv_del_bp_gene_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_del_bp_gene_count"
+          }
+        },
+        {
+          "name": "sv_dup_bp_gene_count",
+          "description": "Field containing sv_dup_bp_gene_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_dup_bp_gene_count"
+          }
+        },
+        {
+          "name": "sv_inv_bp_gene_count",
+          "description": "Field containing sv_inv_bp_gene_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_inv_bp_gene_count"
+          }
+        },
+        {
+          "name": "sv_tra_bp_gene_count",
+          "description": "Field containing sv_tra_bp_gene_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "sv_tra_bp_gene_count"
+          }
+        },
+        {
+          "name": "waddell",
+          "description": "Field containing waddell data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "waddell"
+          }
+        },
+        {
+          "name": "neo_antigens",
+          "description": "Field containing neo_antigens data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "neo_antigens"
+          }
+        },
+        {
+          "name": "neo_antigens_weak",
+          "description": "Field containing neo_antigens_weak data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "neo_antigens_weak"
+          }
+        },
+        {
+          "name": "neo_antigens_strong",
+          "description": "Field containing neo_antigens_strong data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "neo_antigens_strong"
+          }
+        },
+        {
+          "name": "hla_types",
+          "description": "Field containing hla_types data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hla_types"
+          }
+        },
+        {
+          "name": "cellularity",
+          "description": "Field containing cellularity data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "cellularity"
+          }
+        },
+        {
+          "name": "ploidy",
+          "description": "Field containing ploidy data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "ploidy"
+          }
+        },
+        {
+          "name": "alexandrov_class",
+          "description": "Field containing alexandrov_class data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "alexandrov_class"
+          }
+        },
+        {
+          "name": "alexandrov_etiology",
+          "description": "Field containing alexandrov_etiology data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "alexandrov_etiology"
+          }
+        },
+        {
+          "name": "moffitt",
+          "description": "Field containing moffitt data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "moffitt"
+          }
+        },
+        {
+          "name": "collisson",
+          "description": "Field containing collisson data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "collisson"
+          }
+        },
+        {
+          "name": "bailey",
+          "description": "Field containing bailey data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "bailey"
+          }
+        },
+        {
+          "name": "dsbr_deficient",
+          "description": "Field containing dsbr_deficient data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dsbr_deficient"
+          }
+        },
+        {
+          "name": "dsbr_first_hit",
+          "description": "Field containing dsbr_first_hit data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dsbr_first_hit"
+          }
+        },
+        {
+          "name": "dsbr_second_hit",
+          "description": "Field containing dsbr_second_hit data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dsbr_second_hit"
+          }
+        },
+        {
+          "name": "mmr_deficient",
+          "description": "Field containing mmr_deficient data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "mmr_deficient"
+          }
+        },
+        {
+          "name": "mmr_first_hit",
+          "description": "Field containing mmr_first_hit data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "mmr_first_hit"
+          }
+        },
+        {
+          "name": "mmr_second_hit",
+          "description": "Field containing mmr_second_hit data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "mmr_second_hit"
+          }
+        },
+        {
+          "name": "csnnls_sig1",
+          "description": "Field containing csnnls_sig1 data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "csnnls_sig1"
+          }
+        },
+        {
+          "name": "csnnls_sig2",
+          "description": "Field containing csnnls_sig2 data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "csnnls_sig2"
+          }
+        },
+        {
+          "name": "csnnls_sig3",
+          "description": "Field containing csnnls_sig3 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "csnnls_sig3"
+          }
+        },
+        {
+          "name": "csnnls_sig5",
+          "description": "Field containing csnnls_sig5 data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "csnnls_sig5"
+          }
+        },
+        {
+          "name": "csnnls_sig6",
+          "description": "Field containing csnnls_sig6 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "csnnls_sig6"
+          }
+        },
+        {
+          "name": "csnnls_sig8",
+          "description": "Field containing csnnls_sig8 data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "csnnls_sig8"
+          }
+        },
+        {
+          "name": "csnnls_sig13",
+          "description": "Field containing csnnls_sig13 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "csnnls_sig13"
+          }
+        },
+        {
+          "name": "csnnls_sig17",
+          "description": "Field containing csnnls_sig17 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "csnnls_sig17"
+          }
+        },
+        {
+          "name": "csnnls_sig18",
+          "description": "Field containing csnnls_sig18 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "csnnls_sig18"
+          }
+        },
+        {
+          "name": "csnnls_sig20",
+          "description": "Field containing csnnls_sig20 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "csnnls_sig20"
+          }
+        },
+        {
+          "name": "csnnls_sig26",
+          "description": "Field containing csnnls_sig26 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "csnnls_sig26"
+          }
+        },
+        {
+          "name": "csnnls_residuals",
+          "description": "Field containing csnnls_residuals data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "csnnls_residuals"
+          }
+        },
+        {
+          "name": "csnnls_n_mutations",
+          "description": "Field containing csnnls_n_mutations data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "csnnls_n_mutations"
+          }
+        },
+        {
+          "name": "germline_snv_count",
+          "description": "Field containing germline_snv_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "germline_snv_count"
+          }
+        },
+        {
+          "name": "germline_indel_count",
+          "description": "Field containing germline_indel_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "germline_indel_count"
+          }
+        },
+        {
+          "name": "germline_titv_ratio",
+          "description": "Field containing germline_titv_ratio data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "germline_titv_ratio"
+          }
+        },
+        {
+          "name": "germline_missense_count",
+          "description": "Field containing germline_missense_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "germline_missense_count"
+          }
+        },
+        {
+          "name": "germline_nonsense_count",
+          "description": "Field containing germline_nonsense_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "germline_nonsense_count"
+          }
+        },
+        {
+          "name": "snv_ca",
+          "description": "Field containing snv_ca data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca"
+          }
+        },
+        {
+          "name": "snv_cg",
+          "description": "Field containing snv_cg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg"
+          }
+        },
+        {
+          "name": "snv_ct",
+          "description": "Field containing snv_ct data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct"
+          }
+        },
+        {
+          "name": "snv_ta",
+          "description": "Field containing snv_ta data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta"
+          }
+        },
+        {
+          "name": "snv_tc",
+          "description": "Field containing snv_tc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc"
+          }
+        },
+        {
+          "name": "snv_tg",
+          "description": "Field containing snv_tg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg"
+          }
+        },
+        {
+          "name": "del_1_count",
+          "description": "Field containing del_1_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "del_1_count"
+          }
+        },
+        {
+          "name": "del_4_count",
+          "description": "Field containing del_4_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "del_4_count"
+          }
+        },
+        {
+          "name": "ins_1_count",
+          "description": "Field containing ins_1_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "ins_1_count"
+          }
+        },
+        {
+          "name": "ins_4_count",
+          "description": "Field containing ins_4_count data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "ins_4_count"
+          }
+        },
+        {
+          "name": "DEL_100",
+          "description": "Field containing DEL_100 data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "DEL_100"
+          }
+        },
+        {
+          "name": "DEL_1k",
+          "description": "Field containing DEL_1k data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "DEL_1k"
+          }
+        },
+        {
+          "name": "DEL_10k",
+          "description": "Field containing DEL_10k data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "DEL_10k"
+          }
+        },
+        {
+          "name": "DEL_100k",
+          "description": "Field containing DEL_100k data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DEL_100k"
+          }
+        },
+        {
+          "name": "DEL_1m",
+          "description": "Field containing DEL_1m data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DEL_1m"
+          }
+        },
+        {
+          "name": "DEL_10m",
+          "description": "Field containing DEL_10m data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "DEL_10m"
+          }
+        },
+        {
+          "name": "DEL_GREATER_THAN_10m",
+          "description": "Field containing DEL_GREATER_THAN_10m data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DEL_GREATER_THAN_10m"
+          }
+        },
+        {
+          "name": "DUP_100",
+          "description": "Field containing DUP_100 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DUP_100"
+          }
+        },
+        {
+          "name": "DUP_1k",
+          "description": "Field containing DUP_1k data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DUP_1k"
+          }
+        },
+        {
+          "name": "DUP_10k",
+          "description": "Field containing DUP_10k data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DUP_10k"
+          }
+        },
+        {
+          "name": "DUP_100k",
+          "description": "Field containing DUP_100k data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DUP_100k"
+          }
+        },
+        {
+          "name": "DUP_1m",
+          "description": "Field containing DUP_1m data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "DUP_1m"
+          }
+        },
+        {
+          "name": "DUP_10m",
+          "description": "Field containing DUP_10m data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "DUP_10m"
+          }
+        },
+        {
+          "name": "DUP_GREATER_THAN_10m",
+          "description": "Field containing DUP_GREATER_THAN_10m data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "DUP_GREATER_THAN_10m"
+          }
+        },
+        {
+          "name": "INV_100",
+          "description": "Field containing INV_100 data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "INV_100"
+          }
+        },
+        {
+          "name": "INV_1k",
+          "description": "Field containing INV_1k data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "INV_1k"
+          }
+        },
+        {
+          "name": "INV_10k",
+          "description": "Field containing INV_10k data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "INV_10k"
+          }
+        },
+        {
+          "name": "INV_100k",
+          "description": "Field containing INV_100k data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "INV_100k"
+          }
+        },
+        {
+          "name": "INV_1m",
+          "description": "Field containing INV_1m data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "INV_1m"
+          }
+        },
+        {
+          "name": "INV_10m",
+          "description": "Field containing INV_10m data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "INV_10m"
+          }
+        },
+        {
+          "name": "INV_GREATER_THAN_10m",
+          "description": "Field containing INV_GREATER_THAN_10m data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "INV_GREATER_THAN_10m"
+          }
+        },
+        {
+          "name": "snv_ca_aa",
+          "description": "Field containing snv_ca_aa data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_aa"
+          }
+        },
+        {
+          "name": "snv_ca_ac",
+          "description": "Field containing snv_ca_ac data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_ac"
+          }
+        },
+        {
+          "name": "snv_ca_ag",
+          "description": "Field containing snv_ca_ag data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_ag"
+          }
+        },
+        {
+          "name": "snv_ca_at",
+          "description": "Field containing snv_ca_at data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_at"
+          }
+        },
+        {
+          "name": "snv_ca_ca",
+          "description": "Field containing snv_ca_ca data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_ca"
+          }
+        },
+        {
+          "name": "snv_ca_cc",
+          "description": "Field containing snv_ca_cc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_cc"
+          }
+        },
+        {
+          "name": "snv_ca_cg",
+          "description": "Field containing snv_ca_cg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_cg"
+          }
+        },
+        {
+          "name": "snv_ca_ct",
+          "description": "Field containing snv_ca_ct data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_ct"
+          }
+        },
+        {
+          "name": "snv_ca_ga",
+          "description": "Field containing snv_ca_ga data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_ga"
+          }
+        },
+        {
+          "name": "snv_ca_gc",
+          "description": "Field containing snv_ca_gc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_gc"
+          }
+        },
+        {
+          "name": "snv_ca_gg",
+          "description": "Field containing snv_ca_gg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_gg"
+          }
+        },
+        {
+          "name": "snv_ca_gt",
+          "description": "Field containing snv_ca_gt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_gt"
+          }
+        },
+        {
+          "name": "snv_ca_ta",
+          "description": "Field containing snv_ca_ta data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_ta"
+          }
+        },
+        {
+          "name": "snv_ca_tc",
+          "description": "Field containing snv_ca_tc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_tc"
+          }
+        },
+        {
+          "name": "snv_ca_tg",
+          "description": "Field containing snv_ca_tg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_tg"
+          }
+        },
+        {
+          "name": "snv_ca_tt",
+          "description": "Field containing snv_ca_tt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ca_tt"
+          }
+        },
+        {
+          "name": "snv_cg_aa",
+          "description": "Field containing snv_cg_aa data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_aa"
+          }
+        },
+        {
+          "name": "snv_cg_ac",
+          "description": "Field containing snv_cg_ac data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_ac"
+          }
+        },
+        {
+          "name": "snv_cg_ag",
+          "description": "Field containing snv_cg_ag data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_ag"
+          }
+        },
+        {
+          "name": "snv_cg_at",
+          "description": "Field containing snv_cg_at data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_at"
+          }
+        },
+        {
+          "name": "snv_cg_ca",
+          "description": "Field containing snv_cg_ca data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_ca"
+          }
+        },
+        {
+          "name": "snv_cg_cc",
+          "description": "Field containing snv_cg_cc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_cc"
+          }
+        },
+        {
+          "name": "snv_cg_cg",
+          "description": "Field containing snv_cg_cg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_cg"
+          }
+        },
+        {
+          "name": "snv_cg_ct",
+          "description": "Field containing snv_cg_ct data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_ct"
+          }
+        },
+        {
+          "name": "snv_cg_ga",
+          "description": "Field containing snv_cg_ga data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_ga"
+          }
+        },
+        {
+          "name": "snv_cg_gc",
+          "description": "Field containing snv_cg_gc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_gc"
+          }
+        },
+        {
+          "name": "snv_cg_gg",
+          "description": "Field containing snv_cg_gg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_gg"
+          }
+        },
+        {
+          "name": "snv_cg_gt",
+          "description": "Field containing snv_cg_gt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_gt"
+          }
+        },
+        {
+          "name": "snv_cg_ta",
+          "description": "Field containing snv_cg_ta data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_ta"
+          }
+        },
+        {
+          "name": "snv_cg_tc",
+          "description": "Field containing snv_cg_tc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_tc"
+          }
+        },
+        {
+          "name": "snv_cg_tg",
+          "description": "Field containing snv_cg_tg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_tg"
+          }
+        },
+        {
+          "name": "snv_cg_tt",
+          "description": "Field containing snv_cg_tt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_cg_tt"
+          }
+        },
+        {
+          "name": "snv_ct_aa",
+          "description": "Field containing snv_ct_aa data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_aa"
+          }
+        },
+        {
+          "name": "snv_ct_ac",
+          "description": "Field containing snv_ct_ac data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_ac"
+          }
+        },
+        {
+          "name": "snv_ct_ag",
+          "description": "Field containing snv_ct_ag data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_ag"
+          }
+        },
+        {
+          "name": "snv_ct_at",
+          "description": "Field containing snv_ct_at data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_at"
+          }
+        },
+        {
+          "name": "snv_ct_ca",
+          "description": "Field containing snv_ct_ca data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_ca"
+          }
+        },
+        {
+          "name": "snv_ct_cc",
+          "description": "Field containing snv_ct_cc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_cc"
+          }
+        },
+        {
+          "name": "snv_ct_cg",
+          "description": "Field containing snv_ct_cg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_cg"
+          }
+        },
+        {
+          "name": "snv_ct_ct",
+          "description": "Field containing snv_ct_ct data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_ct"
+          }
+        },
+        {
+          "name": "snv_ct_ga",
+          "description": "Field containing snv_ct_ga data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_ga"
+          }
+        },
+        {
+          "name": "snv_ct_gc",
+          "description": "Field containing snv_ct_gc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_gc"
+          }
+        },
+        {
+          "name": "snv_ct_gg",
+          "description": "Field containing snv_ct_gg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_gg"
+          }
+        },
+        {
+          "name": "snv_ct_gt",
+          "description": "Field containing snv_ct_gt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_gt"
+          }
+        },
+        {
+          "name": "snv_ct_ta",
+          "description": "Field containing snv_ct_ta data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_ta"
+          }
+        },
+        {
+          "name": "snv_ct_tc",
+          "description": "Field containing snv_ct_tc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_tc"
+          }
+        },
+        {
+          "name": "snv_ct_tg",
+          "description": "Field containing snv_ct_tg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_tg"
+          }
+        },
+        {
+          "name": "snv_ct_tt",
+          "description": "Field containing snv_ct_tt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ct_tt"
+          }
+        },
+        {
+          "name": "snv_ta_aa",
+          "description": "Field containing snv_ta_aa data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_aa"
+          }
+        },
+        {
+          "name": "snv_ta_ac",
+          "description": "Field containing snv_ta_ac data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_ac"
+          }
+        },
+        {
+          "name": "snv_ta_ag",
+          "description": "Field containing snv_ta_ag data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_ag"
+          }
+        },
+        {
+          "name": "snv_ta_at",
+          "description": "Field containing snv_ta_at data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_at"
+          }
+        },
+        {
+          "name": "snv_ta_ca",
+          "description": "Field containing snv_ta_ca data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_ca"
+          }
+        },
+        {
+          "name": "snv_ta_cc",
+          "description": "Field containing snv_ta_cc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_cc"
+          }
+        },
+        {
+          "name": "snv_ta_cg",
+          "description": "Field containing snv_ta_cg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_cg"
+          }
+        },
+        {
+          "name": "snv_ta_ct",
+          "description": "Field containing snv_ta_ct data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_ct"
+          }
+        },
+        {
+          "name": "snv_ta_ga",
+          "description": "Field containing snv_ta_ga data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_ga"
+          }
+        },
+        {
+          "name": "snv_ta_gc",
+          "description": "Field containing snv_ta_gc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_gc"
+          }
+        },
+        {
+          "name": "snv_ta_gg",
+          "description": "Field containing snv_ta_gg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_gg"
+          }
+        },
+        {
+          "name": "snv_ta_gt",
+          "description": "Field containing snv_ta_gt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_gt"
+          }
+        },
+        {
+          "name": "snv_ta_ta",
+          "description": "Field containing snv_ta_ta data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_ta"
+          }
+        },
+        {
+          "name": "snv_ta_tc",
+          "description": "Field containing snv_ta_tc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_tc"
+          }
+        },
+        {
+          "name": "snv_ta_tg",
+          "description": "Field containing snv_ta_tg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_tg"
+          }
+        },
+        {
+          "name": "snv_ta_tt",
+          "description": "Field containing snv_ta_tt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_ta_tt"
+          }
+        },
+        {
+          "name": "snv_tc_aa",
+          "description": "Field containing snv_tc_aa data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_aa"
+          }
+        },
+        {
+          "name": "snv_tc_ac",
+          "description": "Field containing snv_tc_ac data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_ac"
+          }
+        },
+        {
+          "name": "snv_tc_ag",
+          "description": "Field containing snv_tc_ag data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_ag"
+          }
+        },
+        {
+          "name": "snv_tc_at",
+          "description": "Field containing snv_tc_at data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_at"
+          }
+        },
+        {
+          "name": "snv_tc_ca",
+          "description": "Field containing snv_tc_ca data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_ca"
+          }
+        },
+        {
+          "name": "snv_tc_cc",
+          "description": "Field containing snv_tc_cc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_cc"
+          }
+        },
+        {
+          "name": "snv_tc_cg",
+          "description": "Field containing snv_tc_cg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_cg"
+          }
+        },
+        {
+          "name": "snv_tc_ct",
+          "description": "Field containing snv_tc_ct data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_ct"
+          }
+        },
+        {
+          "name": "snv_tc_ga",
+          "description": "Field containing snv_tc_ga data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_ga"
+          }
+        },
+        {
+          "name": "snv_tc_gc",
+          "description": "Field containing snv_tc_gc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_gc"
+          }
+        },
+        {
+          "name": "snv_tc_gg",
+          "description": "Field containing snv_tc_gg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_gg"
+          }
+        },
+        {
+          "name": "snv_tc_gt",
+          "description": "Field containing snv_tc_gt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_gt"
+          }
+        },
+        {
+          "name": "snv_tc_ta",
+          "description": "Field containing snv_tc_ta data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_ta"
+          }
+        },
+        {
+          "name": "snv_tc_tc",
+          "description": "Field containing snv_tc_tc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_tc"
+          }
+        },
+        {
+          "name": "snv_tc_tg",
+          "description": "Field containing snv_tc_tg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_tg"
+          }
+        },
+        {
+          "name": "snv_tc_tt",
+          "description": "Field containing snv_tc_tt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tc_tt"
+          }
+        },
+        {
+          "name": "snv_tg_aa",
+          "description": "Field containing snv_tg_aa data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_aa"
+          }
+        },
+        {
+          "name": "snv_tg_ac",
+          "description": "Field containing snv_tg_ac data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_ac"
+          }
+        },
+        {
+          "name": "snv_tg_ag",
+          "description": "Field containing snv_tg_ag data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_ag"
+          }
+        },
+        {
+          "name": "snv_tg_at",
+          "description": "Field containing snv_tg_at data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_at"
+          }
+        },
+        {
+          "name": "snv_tg_ca",
+          "description": "Field containing snv_tg_ca data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_ca"
+          }
+        },
+        {
+          "name": "snv_tg_cc",
+          "description": "Field containing snv_tg_cc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_cc"
+          }
+        },
+        {
+          "name": "snv_tg_cg",
+          "description": "Field containing snv_tg_cg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_cg"
+          }
+        },
+        {
+          "name": "snv_tg_ct",
+          "description": "Field containing snv_tg_ct data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_ct"
+          }
+        },
+        {
+          "name": "snv_tg_ga",
+          "description": "Field containing snv_tg_ga data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_ga"
+          }
+        },
+        {
+          "name": "snv_tg_gc",
+          "description": "Field containing snv_tg_gc data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "snv_tg_gc"
+          }
+        },
+        {
+          "name": "snv_tg_gg",
+          "description": "Field containing snv_tg_gg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_gg"
+          }
+        },
+        {
+          "name": "snv_tg_gt",
+          "description": "Field containing snv_tg_gt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_gt"
+          }
+        },
+        {
+          "name": "snv_tg_ta",
+          "description": "Field containing snv_tg_ta data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_ta"
+          }
+        },
+        {
+          "name": "snv_tg_tc",
+          "description": "Field containing snv_tg_tc data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_tc"
+          }
+        },
+        {
+          "name": "snv_tg_tg",
+          "description": "Field containing snv_tg_tg data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_tg"
+          }
+        },
+        {
+          "name": "snv_tg_tt",
+          "description": "Field containing snv_tg_tt data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "snv_tg_tt"
+          }
+        },
+        {
+          "name": "dsbr_snv_load",
+          "description": "Field containing dsbr_snv_load data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_snv_load"
+          }
+        },
+        {
+          "name": "dsbr_ct_ratio",
+          "description": "Field containing dsbr_ct_ratio data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "dsbr_ct_ratio"
+          }
+        },
+        {
+          "name": "dsbr_del4_load",
+          "description": "Field containing dsbr_del4_load data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_del4_load"
+          }
+        },
+        {
+          "name": "dsbr_del4_ratio",
+          "description": "Field containing dsbr_del4_ratio data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "dsbr_del4_ratio"
+          }
+        },
+        {
+          "name": "dsbr_delsv_load",
+          "description": "Field containing dsbr_delsv_load data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_delsv_load"
+          }
+        },
+        {
+          "name": "dsbr_delsv_ratio",
+          "description": "Field containing dsbr_delsv_ratio data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "dsbr_delsv_ratio"
+          }
+        },
+        {
+          "name": "dsbr_dup_load",
+          "description": "Field containing dsbr_dup_load data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "dsbr_dup_load"
+          }
+        },
+        {
+          "name": "dsbr_sv_load",
+          "description": "Field containing dsbr_sv_load data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_sv_load"
+          }
+        },
+        {
+          "name": "dsbr_first_genes",
+          "description": "Field containing dsbr_first_genes data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dsbr_first_genes"
+          }
+        },
+        {
+          "name": "dsbr_second_genes",
+          "description": "Field containing dsbr_second_genes data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dsbr_second_genes"
+          }
+        },
+        {
+          "name": "dsbr_score",
+          "description": "Field containing dsbr_score data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "dsbr_score"
+          }
+        },
+        {
+          "name": "dsbr_snv_load_cut",
+          "description": "Field containing dsbr_snv_load_cut data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_snv_load_cut"
+          }
+        },
+        {
+          "name": "dsbr_ct_ratio_cut",
+          "description": "Field containing dsbr_ct_ratio_cut data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "dsbr_ct_ratio_cut"
+          }
+        },
+        {
+          "name": "dsbr_del4_load_cut",
+          "description": "Field containing dsbr_del4_load_cut data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_del4_load_cut"
+          }
+        },
+        {
+          "name": "dsbr_del4_ratio_cut",
+          "description": "Field containing dsbr_del4_ratio_cut data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "dsbr_del4_ratio_cut"
+          }
+        },
+        {
+          "name": "dsbr_delsv_load_cut",
+          "description": "Field containing dsbr_delsv_load_cut data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_delsv_load_cut"
+          }
+        },
+        {
+          "name": "dsbr_delsv_ratio_cut",
+          "description": "Field containing dsbr_delsv_ratio_cut data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "dsbr_delsv_ratio_cut"
+          }
+        },
+        {
+          "name": "dsbr_dup_load_cut",
+          "description": "Field containing dsbr_dup_load_cut data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_dup_load_cut"
+          }
+        },
+        {
+          "name": "dsbr_sv_load_cut",
+          "description": "Field containing dsbr_sv_load_cut data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "dsbr_sv_load_cut"
+          }
+        },
+        {
+          "name": "mmr_snv_load",
+          "description": "Field containing mmr_snv_load data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "mmr_snv_load"
+          }
+        },
+        {
+          "name": "mmr_indel_load",
+          "description": "Field containing mmr_indel_load data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "mmr_indel_load"
+          }
+        },
+        {
+          "name": "mmr_first_genes",
+          "description": "Field containing mmr_first_genes data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "mmr_first_genes"
+          }
+        },
+        {
+          "name": "mmr_second_genes",
+          "description": "Field containing mmr_second_genes data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "mmr_second_genes"
+          }
+        },
+        {
+          "name": "mmr_score",
+          "description": "Field containing mmr_score data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "mmr_score"
+          }
+        },
+        {
+          "name": "mmr_snv_load_cut",
+          "description": "Field containing mmr_snv_load_cut data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "mmr_snv_load_cut"
+          }
+        },
+        {
+          "name": "mmr_indel_load_cut",
+          "description": "Field containing mmr_indel_load_cut data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "mmr_indel_load_cut"
+          }
+        },
+        {
+          "name": "tdp_score",
+          "description": "Field containing tdp_score data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "tdp_score"
+          }
+        },
+        {
+          "name": "hrdetect_score",
+          "description": "Field containing hrdetect_score data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_score"
+          }
+        },
+        {
+          "name": "hrdetect_myriad_score",
+          "description": "Field containing hrdetect_myriad_score data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_myriad_score"
+          }
+        },
+        {
+          "name": "hrdetect_deletion_microhomology_proportion",
+          "description": "Field containing hrdetect_deletion_microhomology_proportion data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_deletion_microhomology_proportion"
+          }
+        },
+        {
+          "name": "hrdetect_snv_signature_3",
+          "description": "Field containing hrdetect_snv_signature_3 data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_snv_signature_3"
+          }
+        },
+        {
+          "name": "hrdetect_snv_signature_8",
+          "description": "Field containing hrdetect_snv_signature_8 data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_snv_signature_8"
+          }
+        },
+        {
+          "name": "hrdetect_rearrangement_signature_3",
+          "description": "Field containing hrdetect_rearrangement_signature_3 data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_rearrangement_signature_3"
+          }
+        },
+        {
+          "name": "hrdetect_rearrangement_signature_5",
+          "description": "Field containing hrdetect_rearrangement_signature_5 data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_rearrangement_signature_5"
+          }
+        },
+        {
+          "name": "hrdetect_loh",
+          "description": "Field containing hrdetect_loh data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_loh"
+          }
+        },
+        {
+          "name": "hrdetect_tai",
+          "description": "Field containing hrdetect_tai data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_tai"
+          }
+        },
+        {
+          "name": "hrdetect_lst",
+          "description": "Field containing hrdetect_lst data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hrdetect_lst"
+          }
+        },
+        {
+          "name": "snv_file",
+          "description": "Field containing snv_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "snv_file"
+          }
+        },
+        {
+          "name": "indel_file",
+          "description": "Field containing indel_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "indel_file"
+          }
+        },
+        {
+          "name": "sgv_file",
+          "description": "Field containing sgv_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "sgv_file"
+          }
+        },
+        {
+          "name": "sv_file",
+          "description": "Field containing sv_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "sv_file"
+          }
+        },
+        {
+          "name": "param_file",
+          "description": "Field containing param_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "param_file"
+          }
+        },
+        {
+          "name": "seg_file",
+          "description": "Field containing seg_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "seg_file"
+          }
+        },
+        {
+          "name": "neo_files",
+          "description": "Field containing neo_files data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "neo_files"
+          }
+        },
+        {
+          "name": "xenome_logs",
+          "description": "Field containing xenome_logs data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "xenome_logs"
+          }
+        },
+        {
+          "name": "rna_sig_file",
+          "description": "Field containing rna_sig_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "rna_sig_file"
+          }
+        },
+        {
+          "name": "alexandrov_file",
+          "description": "Field containing alexandrov_file data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "alexandrov_file"
+          }
+        },
+        {
+          "name": "json_files",
+          "description": "Field containing json_files data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "json_files"
+          }
+        },
+        {
+          "name": "genotype_files",
+          "description": "Field containing genotype_files data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "genotype_files"
           }
         }
       ],
-      "restrictions": {
-        "primaryKey": ["treatment_id"],
-        "foreignKey": [
-          {
-            "schema": "donor",
-            "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
-          }
-        ]
-      },
       "meta": {
-        "createdAt": "2025-03-20T16:11:06.495Z",
-        "sourceFile": "treatment.csv"
-      }
-    },
-    {
-      "name": "followup",
-      "description": "Follow-up assessment information linked to treatments and donors. Each followup is associated with exactly one treatment.",
-      "fields": [
-        {
-          "name": "treatment_id",
-          "description": "Reference to the treatment this followup is associated with",
-          "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "regex": "^TR\\d{6}$"
-          },
-          "meta": {
-            "displayName": "Treatment ID",
-            "examples": ["TR059901", "TR059902"]
-          }
-        },
-        {
-          "name": "followup_id",
-          "description": "Unique identifier for a followup record",
-          "valueType": "string",
-          "unique": true,
-          "restrictions": {
-            "required": true,
-            "regex": "^FO\\d{6}$"
-          },
-          "meta": {
-            "displayName": "Followup ID",
-            "examples": ["FO059901", "FO059902"]
-          }
-        },
-        {
-          "name": "followup_interval",
-          "description": "Time since treatment completion in days",
-          "valueType": "integer",
-          "restrictions": {
-            "required": true,
-            "range": {"min": 0}
-          },
-          "meta": {
-            "displayName": "Followup Interval",
-            "units": "days"
-          }
-        },
-        {
-          "name": "disease_status",
-          "description": "Status of the disease at followup",
-          "valueType": "string",
-          "restrictions": {
-            "required": true,
-            "codeList": ["No evidence of disease", "Complete remission", "Stable", "Progression NOS"]
-          },
-          "meta": {
-            "displayName": "Disease Status"
-          }
-        }
-      ],
-      "restrictions": {
-        "primaryKey": ["followup_id"],
-        "foreignKey": [
-          {
-            "schema": "treatment",
-            "mappings": [{ "local": "treatment_id", "foreign": "treatment_id" }]
-          }
-        ]
-      },
-      "meta": {
-        "createdAt": "2025-03-20T16:11:06.494Z",
-        "sourceFile": "followup.csv"
+        "createdAt": "2025-05-02T15:50:37.921Z",
+        "sourceFile": "summary.csv"
       }
     }
   ]

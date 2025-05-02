@@ -1,0 +1,209 @@
+{
+  "index_patterns": [
+    "idmapping-*"
+  ],
+  "aliases": {
+    "idmapping_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "submission_metadata": {
+        "type": "object",
+        "properties": {
+          "submitter_id": {
+            "type": "keyword"
+          },
+          "processing_started": {
+            "type": "date"
+          },
+          "processed_at": {
+            "type": "date"
+          },
+          "source_file": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "record_number": {
+            "type": "integer"
+          },
+          "hostname": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "username": {
+            "type": "keyword",
+            "null_value": "No Data"
+          }
+        }
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "external_id": {
+            "type": "keyword"
+          },
+          "donor": {
+            "type": "keyword"
+          },
+          "Age_at_diagnosis": {
+            "type": "integer"
+          },
+          "Sex": {
+            "type": "keyword"
+          },
+          "Date_of_Tissue": {
+            "type": "date"
+          },
+          "Sample": {
+            "type": "keyword"
+          },
+          "PPID": {
+            "type": "keyword"
+          },
+          "PDO_available": {
+            "type": "keyword"
+          },
+          "PDO_ID_Notta": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "PDO_ID_PMLB": {
+            "type": "integer"
+          },
+          "PDO_WT_RNAseq": {
+            "type": "boolean"
+          },
+          "PDO_WGS": {
+            "type": "boolean"
+          },
+          "PDO_Exome": {
+            "type": "boolean"
+          },
+          "PDO_drugscreen": {
+            "type": "boolean"
+          },
+          "Tumour_scRNAseq": {
+            "type": "boolean"
+          },
+          "Tumour_scCNV": {
+            "type": "boolean"
+          },
+          "Tumour_multiome": {
+            "type": "boolean"
+          },
+          "Tumour_spatial": {
+            "type": "boolean"
+          },
+          "Plasma_WGS": {
+            "type": "keyword"
+          },
+          "Plasma_cfRNA": {
+            "type": "boolean"
+          },
+          "Histology": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Staging_at_Diagnosis_T": {
+            "type": "integer"
+          },
+          "Staging_at_Diagnosis_N": {
+            "type": "integer"
+          },
+          "Staging_at_Diagnosis_M": {
+            "type": "integer"
+          },
+          "Biopsy_at_Diagnosis": {
+            "type": "boolean"
+          },
+          "Date_of_Rx": {
+            "type": "date"
+          },
+          "Systemic_Tx": {
+            "type": "boolean"
+          },
+          "Tx_Type": {
+            "type": "keyword"
+          },
+          "Biopsy_at_Progression": {
+            "type": "boolean"
+          },
+          "CRUK": {
+            "type": "keyword"
+          },
+          "PIMO": {
+            "type": "keyword"
+          },
+          "COMPASS": {
+            "type": "keyword"
+          },
+          "NeoPancONE": {
+            "type": "keyword"
+          },
+          "PASS": {
+            "type": "keyword"
+          },
+          "ARCAP": {
+            "type": "integer"
+          },
+          "PA7": {
+            "type": "integer"
+          },
+          "PA6": {
+            "type": "integer"
+          },
+          "Prosper_Panc": {
+            "type": "keyword"
+          },
+          "HPB_Banking": {
+            "type": "keyword"
+          },
+          "OPCS": {
+            "type": "keyword"
+          },
+          "Surgical_DB": {
+            "type": "keyword"
+          },
+          "TMA_1": {
+            "type": "keyword"
+          },
+          "TMA_2": {
+            "type": "keyword"
+          },
+          "Rapid_Autopsy": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "Jackson_Lab_ID": {
+            "type": "keyword"
+          },
+          "McGaha_Lab_ID": {
+            "type": "keyword"
+          },
+          "Sheba_SPC": {
+            "type": "keyword"
+          },
+          "QPCS_ID": {
+            "type": "keyword"
+          },
+          "OCIP_ID": {
+            "type": "keyword"
+          },
+          "PCD_ID": {
+            "type": "keyword"
+          },
+          "RB_xxxx": {
+            "type": "keyword"
+          },
+          "GPxx": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

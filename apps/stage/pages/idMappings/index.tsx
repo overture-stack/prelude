@@ -1,4 +1,4 @@
-import DataTableOne from '../../components/pages/activeDataTables/dataTableOne';
+import DataTableOne from '../../components/pages/activeDataTables/idMappings';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetOneExplorationPage = createPage({

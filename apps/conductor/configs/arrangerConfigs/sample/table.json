@@ -1,0 +1,262 @@
+{
+  "table": {
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "data.donor_name",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.donor_name",
+        "query": "data { donor_name }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sample_name",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sample_name",
+        "query": "data { sample_name }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.seq_type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.seq_type",
+        "query": "data { seq_type }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.case_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.case_id",
+        "query": "data { case_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.test_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.test_id",
+        "query": "data { test_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.req_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.req_id",
+        "query": "data { req_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.project",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.project",
+        "query": "data { project }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.external_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.external_id",
+        "query": "data { external_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tissue_origin",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tissue_origin",
+        "query": "data { tissue_origin }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.tissue_type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.tissue_type",
+        "query": "data { tissue_type }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.group_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.group_id",
+        "query": "data { group_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.library_design",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.library_design",
+        "query": "data { library_design }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.library_name",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.library_name",
+        "query": "data { library_name }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sequencer_run",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sequencer_run",
+        "query": "data { sequencer_run }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.sequencing_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.sequencing_id",
+        "query": "data { sequencing_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.instrument_model",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.instrument_model",
+        "query": "data { instrument_model }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.gsi_workflow_run_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.gsi_workflow_run_id",
+        "query": "data { gsi_workflow_run_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.gsi_workflow",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.gsi_workflow",
+        "query": "data { gsi_workflow }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.gsi_workflow_version",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.gsi_workflow_version",
+        "query": "data { gsi_workflow_version }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.gsi_md5sum",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.gsi_md5sum",
+        "query": "data { gsi_md5sum }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.gsi_time",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.gsi_time",
+        "query": "data { gsi_time }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.fastq_path",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.fastq_path",
+        "query": "data { fastq_path }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.modification_date",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.modification_date",
+        "query": "data { modification_date }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.linked_file",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.linked_file",
+        "query": "data { linked_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.linked_file_time",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.linked_file_time",
+        "query": "data { linked_file_time }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.submitter_id",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.submitter_id",
+        "query": "submission_metadata { submitter_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.processing_started",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.processing_started",
+        "query": "submission_metadata { processing_started }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.processed_at",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.processed_at",
+        "query": "submission_metadata { processed_at }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.source_file",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.source_file",
+        "query": "submission_metadata { source_file }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.record_number",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.record_number",
+        "query": "submission_metadata { record_number }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.hostname",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.hostname",
+        "query": "submission_metadata { hostname }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission.metadata.username",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission.metadata.username",
+        "query": "submission_metadata { username }"
+      }
+    ]
+  }
+}
