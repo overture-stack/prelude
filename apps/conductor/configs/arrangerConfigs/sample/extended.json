@@ -1,0 +1,136 @@
+{
+  "extended": [
+    {
+      "displayName": "Donor Name",
+      "fieldName": "data.donor_name"
+    },
+    {
+      "displayName": "Sample Name",
+      "fieldName": "data.sample_name"
+    },
+    {
+      "displayName": "Seq Type",
+      "fieldName": "data.seq_type"
+    },
+    {
+      "displayName": "Case Id",
+      "fieldName": "data.case_id"
+    },
+    {
+      "displayName": "Test Id",
+      "fieldName": "data.test_id"
+    },
+    {
+      "displayName": "Req Id",
+      "fieldName": "data.req_id"
+    },
+    {
+      "displayName": "Project",
+      "fieldName": "data.project"
+    },
+    {
+      "displayName": "External Id",
+      "fieldName": "data.external_id"
+    },
+    {
+      "displayName": "Tissue Origin",
+      "fieldName": "data.tissue_origin"
+    },
+    {
+      "displayName": "Tissue Type",
+      "fieldName": "data.tissue_type"
+    },
+    {
+      "displayName": "Group Id",
+      "fieldName": "data.group_id"
+    },
+    {
+      "displayName": "Library Design",
+      "fieldName": "data.library_design"
+    },
+    {
+      "displayName": "Library Name",
+      "fieldName": "data.library_name"
+    },
+    {
+      "displayName": "Sequencer Run",
+      "fieldName": "data.sequencer_run"
+    },
+    {
+      "displayName": "Sequencing Id",
+      "fieldName": "data.sequencing_id"
+    },
+    {
+      "displayName": "Instrument Model",
+      "fieldName": "data.instrument_model"
+    },
+    {
+      "displayName": "Gsi Workflow Run Id",
+      "fieldName": "data.gsi_workflow_run_id"
+    },
+    {
+      "displayName": "Gsi Workflow",
+      "fieldName": "data.gsi_workflow"
+    },
+    {
+      "displayName": "Gsi Workflow Version",
+      "fieldName": "data.gsi_workflow_version"
+    },
+    {
+      "displayName": "Gsi Md5sum",
+      "fieldName": "data.gsi_md5sum"
+    },
+    {
+      "displayName": "Gsi Time",
+      "fieldName": "data.gsi_time"
+    },
+    {
+      "displayName": "Fastq Path",
+      "fieldName": "data.fastq_path"
+    },
+    {
+      "displayName": "Modification Date",
+      "fieldName": "data.modification_date"
+    },
+    {
+      "displayName": "Linked File",
+      "fieldName": "data.linked_file"
+    },
+    {
+      "displayName": "Linked File Time",
+      "fieldName": "data.linked_file_time"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "submission.metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submitter Id",
+      "fieldName": "submission.metadata.submitter_id"
+    },
+    {
+      "displayName": "Submission Metadata Processing Started",
+      "fieldName": "submission.metadata.processing_started"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "submission.metadata.processed_at"
+    },
+    {
+      "displayName": "Submission Metadata Source File",
+      "fieldName": "submission.metadata.source_file"
+    },
+    {
+      "displayName": "Submission Metadata Record Number",
+      "fieldName": "submission.metadata.record_number"
+    },
+    {
+      "displayName": "Submission Metadata Hostname",
+      "fieldName": "submission.metadata.hostname"
+    },
+    {
+      "displayName": "Submission Metadata Username",
+      "fieldName": "submission.metadata.username"
+    }
+  ]
+}

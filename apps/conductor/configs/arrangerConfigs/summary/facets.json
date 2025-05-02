@@ -1,0 +1,1306 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "data__donor",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tumour",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__normal",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__external_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__seq_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tumour_coverage",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__normal_coverage",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mouse_content",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tumour_reads_per_sp",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__normal_reads_per_sp",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tumour_error_rate",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__normal_error_rate",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tumour_soft_clip",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__normal_soft_clip",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__inferred_sex",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__genotype_concordance",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__del_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ins_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__indel_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__deleterious_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__nonsyn_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__stopgain_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__stoploss_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__splice_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__noncoding_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__frameshift_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__nonframeshift_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__del_frameshift_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__del_nonframeshift_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ins_frameshift_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ins_nonframeshift_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_del_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_dup_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_inv_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_tra_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_del_bp_gene_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_dup_bp_gene_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_inv_bp_gene_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_tra_bp_gene_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__waddell",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__neo_antigens",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__neo_antigens_weak",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__neo_antigens_strong",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hla_types",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__cellularity",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ploidy",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__alexandrov_class",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__alexandrov_etiology",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__moffitt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__collisson",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__bailey",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_deficient",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_first_hit",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_second_hit",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_deficient",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_first_hit",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_second_hit",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig1",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig2",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig3",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig5",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig6",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig8",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig13",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig17",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig18",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig20",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_sig26",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_residuals",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__csnnls_n_mutations",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__germline_snv_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__germline_indel_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__germline_titv_ratio",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__germline_missense_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__germline_nonsense_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__del_1_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__del_4_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ins_1_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ins_4_count",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DEL_100",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DEL_1k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DEL_10k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DEL_100k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DEL_1m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DEL_10m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DEL_GREATER_THAN_10m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DUP_100",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DUP_1k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DUP_10k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DUP_100k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DUP_1m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DUP_10m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__DUP_GREATER_THAN_10m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__INV_100",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__INV_1k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__INV_10k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__INV_100k",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__INV_1m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__INV_10m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__INV_GREATER_THAN_10m",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_aa",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_ac",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_ag",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_at",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_ca",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_cc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_cg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_ct",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_ga",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_gc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_gg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_gt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_ta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_tc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_tg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ca_tt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_aa",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_ac",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_ag",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_at",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_ca",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_cc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_cg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_ct",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_ga",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_gc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_gg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_gt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_ta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_tc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_tg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_cg_tt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_aa",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_ac",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_ag",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_at",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_ca",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_cc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_cg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_ct",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_ga",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_gc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_gg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_gt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_ta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_tc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_tg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ct_tt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_aa",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_ac",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_ag",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_at",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_ca",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_cc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_cg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_ct",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_ga",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_gc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_gg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_gt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_ta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_tc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_tg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_ta_tt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_aa",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_ac",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_ag",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_at",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_ca",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_cc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_cg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_ct",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_ga",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_gc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_gg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_gt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_ta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_tc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_tg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tc_tt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_aa",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_ac",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_ag",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_at",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_ca",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_cc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_cg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_ct",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_ga",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_gc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_gg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_gt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_ta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_tc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_tg",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_tg_tt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_snv_load",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_ct_ratio",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_del4_load",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_del4_ratio",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_delsv_load",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_delsv_ratio",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_dup_load",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_sv_load",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_first_genes",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_second_genes",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_score",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_snv_load_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_ct_ratio_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_del4_load_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_del4_ratio_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_delsv_load_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_delsv_ratio_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_dup_load_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dsbr_sv_load_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_snv_load",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_indel_load",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_first_genes",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_second_genes",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_score",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_snv_load_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__mmr_indel_load_cut",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tdp_score",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_score",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_myriad_score",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_deletion_microhomology_proportion",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_snv_signature_3",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_snv_signature_8",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_rearrangement_signature_3",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_rearrangement_signature_5",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_loh",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_tai",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__hrdetect_lst",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__snv_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__indel_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sgv_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sv_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__param_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__seg_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__neo_files",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__xenome_logs",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__rna_sig_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__alexandrov_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__json_files",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__genotype_files",
+        "show": true
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__submitter_id",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processing_started",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processed_at",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__source_file",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__record_number",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__hostname",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__username",
+        "show": false
+      }
+    ]
+  }
+}

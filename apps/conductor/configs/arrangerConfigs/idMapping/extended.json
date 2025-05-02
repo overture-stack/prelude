@@ -1,0 +1,244 @@
+{
+  "extended": [
+    {
+      "displayName": "External Id",
+      "fieldName": "data.external_id"
+    },
+    {
+      "displayName": "Donor",
+      "fieldName": "data.donor"
+    },
+    {
+      "displayName": "Age At Diagnosis",
+      "fieldName": "data.Age_at_diagnosis"
+    },
+    {
+      "displayName": "Sex",
+      "fieldName": "data.Sex"
+    },
+    {
+      "displayName": "Date Of Tissue",
+      "fieldName": "data.Date_of_Tissue"
+    },
+    {
+      "displayName": "Sample",
+      "fieldName": "data.Sample"
+    },
+    {
+      "displayName": "PPID",
+      "fieldName": "data.PPID"
+    },
+    {
+      "displayName": "PDO Available",
+      "fieldName": "data.PDO_available"
+    },
+    {
+      "displayName": "PDO ID Notta",
+      "fieldName": "data.PDO_ID_Notta"
+    },
+    {
+      "displayName": "PDO ID PMLB",
+      "fieldName": "data.PDO_ID_PMLB"
+    },
+    {
+      "displayName": "PDO WT RNAseq",
+      "fieldName": "data.PDO_WT_RNAseq"
+    },
+    {
+      "displayName": "PDO WGS",
+      "fieldName": "data.PDO_WGS"
+    },
+    {
+      "displayName": "PDO Exome",
+      "fieldName": "data.PDO_Exome"
+    },
+    {
+      "displayName": "PDO Drugscreen",
+      "fieldName": "data.PDO_drugscreen"
+    },
+    {
+      "displayName": "Tumour ScRNAseq",
+      "fieldName": "data.Tumour_scRNAseq"
+    },
+    {
+      "displayName": "Tumour ScCNV",
+      "fieldName": "data.Tumour_scCNV"
+    },
+    {
+      "displayName": "Tumour Multiome",
+      "fieldName": "data.Tumour_multiome"
+    },
+    {
+      "displayName": "Tumour Spatial",
+      "fieldName": "data.Tumour_spatial"
+    },
+    {
+      "displayName": "Plasma WGS",
+      "fieldName": "data.Plasma_WGS"
+    },
+    {
+      "displayName": "Plasma CfRNA",
+      "fieldName": "data.Plasma_cfRNA"
+    },
+    {
+      "displayName": "Histology",
+      "fieldName": "data.Histology"
+    },
+    {
+      "displayName": "Staging At Diagnosis T",
+      "fieldName": "data.Staging_at_Diagnosis_T"
+    },
+    {
+      "displayName": "Staging At Diagnosis N",
+      "fieldName": "data.Staging_at_Diagnosis_N"
+    },
+    {
+      "displayName": "Staging At Diagnosis M",
+      "fieldName": "data.Staging_at_Diagnosis_M"
+    },
+    {
+      "displayName": "Biopsy At Diagnosis",
+      "fieldName": "data.Biopsy_at_Diagnosis"
+    },
+    {
+      "displayName": "Date Of Rx",
+      "fieldName": "data.Date_of_Rx"
+    },
+    {
+      "displayName": "Systemic Tx",
+      "fieldName": "data.Systemic_Tx"
+    },
+    {
+      "displayName": "Tx Type",
+      "fieldName": "data.Tx_Type"
+    },
+    {
+      "displayName": "Biopsy At Progression",
+      "fieldName": "data.Biopsy_at_Progression"
+    },
+    {
+      "displayName": "CRUK",
+      "fieldName": "data.CRUK"
+    },
+    {
+      "displayName": "PIMO",
+      "fieldName": "data.PIMO"
+    },
+    {
+      "displayName": "COMPASS",
+      "fieldName": "data.COMPASS"
+    },
+    {
+      "displayName": "NeoPancONE",
+      "fieldName": "data.NeoPancONE"
+    },
+    {
+      "displayName": "PASS",
+      "fieldName": "data.PASS"
+    },
+    {
+      "displayName": "ARCAP",
+      "fieldName": "data.ARCAP"
+    },
+    {
+      "displayName": "PA7",
+      "fieldName": "data.PA7"
+    },
+    {
+      "displayName": "PA6",
+      "fieldName": "data.PA6"
+    },
+    {
+      "displayName": "Prosper Panc",
+      "fieldName": "data.Prosper_Panc"
+    },
+    {
+      "displayName": "HPB Banking",
+      "fieldName": "data.HPB_Banking"
+    },
+    {
+      "displayName": "OPCS",
+      "fieldName": "data.OPCS"
+    },
+    {
+      "displayName": "Surgical DB",
+      "fieldName": "data.Surgical_DB"
+    },
+    {
+      "displayName": "TMA 1",
+      "fieldName": "data.TMA_1"
+    },
+    {
+      "displayName": "TMA 2",
+      "fieldName": "data.TMA_2"
+    },
+    {
+      "displayName": "Rapid Autopsy",
+      "fieldName": "data.Rapid_Autopsy"
+    },
+    {
+      "displayName": "Jackson Lab ID",
+      "fieldName": "data.Jackson_Lab_ID"
+    },
+    {
+      "displayName": "McGaha Lab ID",
+      "fieldName": "data.McGaha_Lab_ID"
+    },
+    {
+      "displayName": "Sheba SPC",
+      "fieldName": "data.Sheba_SPC"
+    },
+    {
+      "displayName": "QPCS ID",
+      "fieldName": "data.QPCS_ID"
+    },
+    {
+      "displayName": "OCIP ID",
+      "fieldName": "data.OCIP_ID"
+    },
+    {
+      "displayName": "PCD ID",
+      "fieldName": "data.PCD_ID"
+    },
+    {
+      "displayName": "RB Xxxx",
+      "fieldName": "data.RB_xxxx"
+    },
+    {
+      "displayName": "GPxx",
+      "fieldName": "data.GPxx"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submitter Id",
+      "fieldName": "submission_metadata.submitter_id"
+    },
+    {
+      "displayName": "Submission Metadata Processing Started",
+      "fieldName": "submission_metadata.processing_started"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "submission_metadata.processed_at"
+    },
+    {
+      "displayName": "Submission Metadata Source File",
+      "fieldName": "submission_metadata.source_file"
+    },
+    {
+      "displayName": "Submission Metadata Record Number",
+      "fieldName": "submission_metadata.record_number"
+    },
+    {
+      "displayName": "Submission Metadata Hostname",
+      "fieldName": "submission_metadata.hostname"
+    },
+    {
+      "displayName": "Submission Metadata Username",
+      "fieldName": "submission_metadata.username"
+    }
+  ]
+}

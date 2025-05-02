@@ -1,0 +1,166 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "data__donor_name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sample_name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__seq_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__case_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__test_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__req_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__project",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__external_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tissue_origin",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__tissue_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__group_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__library_design",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__library_name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sequencer_run",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__sequencing_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__instrument_model",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__gsi_workflow_run_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__gsi_workflow",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__gsi_workflow_version",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__gsi_md5sum",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__gsi_time",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__fastq_path",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__modification_date",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__linked_file",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__linked_file_time",
+        "show": true
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__submitter_id",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processing_started",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processed_at",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__source_file",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__record_number",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__hostname",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__username",
+        "show": false
+      }
+    ]
+  }
+}

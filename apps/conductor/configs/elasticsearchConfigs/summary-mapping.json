@@ -1,0 +1,848 @@
+{
+  "index_patterns": [
+    "summary-*"
+  ],
+  "aliases": {
+    "summary_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "submission_metadata": {
+        "type": "object",
+        "properties": {
+          "submitter_id": {
+            "type": "keyword"
+          },
+          "processing_started": {
+            "type": "date"
+          },
+          "processed_at": {
+            "type": "date"
+          },
+          "source_file": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "record_number": {
+            "type": "integer"
+          },
+          "hostname": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "username": {
+            "type": "keyword",
+            "null_value": "No Data"
+          }
+        }
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "donor": {
+            "type": "keyword"
+          },
+          "tumour": {
+            "type": "keyword"
+          },
+          "normal": {
+            "type": "keyword"
+          },
+          "external_id": {
+            "type": "keyword"
+          },
+          "seq_type": {
+            "type": "keyword"
+          },
+          "tumour_coverage": {
+            "type": "integer"
+          },
+          "normal_coverage": {
+            "type": "integer"
+          },
+          "mouse_content": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "tumour_reads_per_sp": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "normal_reads_per_sp": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "tumour_error_rate": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "normal_error_rate": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "tumour_soft_clip": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "normal_soft_clip": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "inferred_sex": {
+            "type": "keyword"
+          },
+          "genotype_concordance": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "snv_count": {
+            "type": "integer"
+          },
+          "del_count": {
+            "type": "integer"
+          },
+          "ins_count": {
+            "type": "integer"
+          },
+          "indel_count": {
+            "type": "integer"
+          },
+          "deleterious_count": {
+            "type": "integer"
+          },
+          "nonsyn_count": {
+            "type": "integer"
+          },
+          "stopgain_count": {
+            "type": "integer"
+          },
+          "stoploss_count": {
+            "type": "integer"
+          },
+          "splice_count": {
+            "type": "integer"
+          },
+          "noncoding_count": {
+            "type": "integer"
+          },
+          "frameshift_count": {
+            "type": "integer"
+          },
+          "nonframeshift_count": {
+            "type": "integer"
+          },
+          "del_frameshift_count": {
+            "type": "integer"
+          },
+          "del_nonframeshift_count": {
+            "type": "integer"
+          },
+          "ins_frameshift_count": {
+            "type": "integer"
+          },
+          "ins_nonframeshift_count": {
+            "type": "integer"
+          },
+          "sv_count": {
+            "type": "integer"
+          },
+          "sv_del_count": {
+            "type": "integer"
+          },
+          "sv_dup_count": {
+            "type": "integer"
+          },
+          "sv_inv_count": {
+            "type": "integer"
+          },
+          "sv_tra_count": {
+            "type": "integer"
+          },
+          "sv_del_bp_gene_count": {
+            "type": "integer"
+          },
+          "sv_dup_bp_gene_count": {
+            "type": "integer"
+          },
+          "sv_inv_bp_gene_count": {
+            "type": "integer"
+          },
+          "sv_tra_bp_gene_count": {
+            "type": "integer"
+          },
+          "waddell": {
+            "type": "keyword"
+          },
+          "neo_antigens": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "neo_antigens_weak": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "neo_antigens_strong": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hla_types": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "cellularity": {
+            "type": "float"
+          },
+          "ploidy": {
+            "type": "float"
+          },
+          "alexandrov_class": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "alexandrov_etiology": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "moffitt": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "collisson": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "bailey": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "dsbr_deficient": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "dsbr_first_hit": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "dsbr_second_hit": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "mmr_deficient": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "mmr_first_hit": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "mmr_second_hit": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "csnnls_sig1": {
+            "type": "float"
+          },
+          "csnnls_sig2": {
+            "type": "float"
+          },
+          "csnnls_sig3": {
+            "type": "integer"
+          },
+          "csnnls_sig5": {
+            "type": "float"
+          },
+          "csnnls_sig6": {
+            "type": "integer"
+          },
+          "csnnls_sig8": {
+            "type": "float"
+          },
+          "csnnls_sig13": {
+            "type": "integer"
+          },
+          "csnnls_sig17": {
+            "type": "integer"
+          },
+          "csnnls_sig18": {
+            "type": "integer"
+          },
+          "csnnls_sig20": {
+            "type": "integer"
+          },
+          "csnnls_sig26": {
+            "type": "integer"
+          },
+          "csnnls_residuals": {
+            "type": "float"
+          },
+          "csnnls_n_mutations": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "germline_snv_count": {
+            "type": "integer"
+          },
+          "germline_indel_count": {
+            "type": "integer"
+          },
+          "germline_titv_ratio": {
+            "type": "float"
+          },
+          "germline_missense_count": {
+            "type": "integer"
+          },
+          "germline_nonsense_count": {
+            "type": "integer"
+          },
+          "snv_ca": {
+            "type": "integer"
+          },
+          "snv_cg": {
+            "type": "integer"
+          },
+          "snv_ct": {
+            "type": "integer"
+          },
+          "snv_ta": {
+            "type": "integer"
+          },
+          "snv_tc": {
+            "type": "integer"
+          },
+          "snv_tg": {
+            "type": "integer"
+          },
+          "del_1_count": {
+            "type": "integer"
+          },
+          "del_4_count": {
+            "type": "integer"
+          },
+          "ins_1_count": {
+            "type": "integer"
+          },
+          "ins_4_count": {
+            "type": "integer"
+          },
+          "DEL_100": {
+            "type": "integer"
+          },
+          "DEL_1k": {
+            "type": "integer"
+          },
+          "DEL_10k": {
+            "type": "integer"
+          },
+          "DEL_100k": {
+            "type": "integer"
+          },
+          "DEL_1m": {
+            "type": "integer"
+          },
+          "DEL_10m": {
+            "type": "integer"
+          },
+          "DEL_GREATER_THAN_10m": {
+            "type": "integer"
+          },
+          "DUP_100": {
+            "type": "integer"
+          },
+          "DUP_1k": {
+            "type": "integer"
+          },
+          "DUP_10k": {
+            "type": "integer"
+          },
+          "DUP_100k": {
+            "type": "integer"
+          },
+          "DUP_1m": {
+            "type": "integer"
+          },
+          "DUP_10m": {
+            "type": "integer"
+          },
+          "DUP_GREATER_THAN_10m": {
+            "type": "integer"
+          },
+          "INV_100": {
+            "type": "integer"
+          },
+          "INV_1k": {
+            "type": "integer"
+          },
+          "INV_10k": {
+            "type": "integer"
+          },
+          "INV_100k": {
+            "type": "integer"
+          },
+          "INV_1m": {
+            "type": "integer"
+          },
+          "INV_10m": {
+            "type": "integer"
+          },
+          "INV_GREATER_THAN_10m": {
+            "type": "integer"
+          },
+          "snv_ca_aa": {
+            "type": "integer"
+          },
+          "snv_ca_ac": {
+            "type": "integer"
+          },
+          "snv_ca_ag": {
+            "type": "integer"
+          },
+          "snv_ca_at": {
+            "type": "integer"
+          },
+          "snv_ca_ca": {
+            "type": "integer"
+          },
+          "snv_ca_cc": {
+            "type": "integer"
+          },
+          "snv_ca_cg": {
+            "type": "integer"
+          },
+          "snv_ca_ct": {
+            "type": "integer"
+          },
+          "snv_ca_ga": {
+            "type": "integer"
+          },
+          "snv_ca_gc": {
+            "type": "integer"
+          },
+          "snv_ca_gg": {
+            "type": "integer"
+          },
+          "snv_ca_gt": {
+            "type": "integer"
+          },
+          "snv_ca_ta": {
+            "type": "integer"
+          },
+          "snv_ca_tc": {
+            "type": "integer"
+          },
+          "snv_ca_tg": {
+            "type": "integer"
+          },
+          "snv_ca_tt": {
+            "type": "integer"
+          },
+          "snv_cg_aa": {
+            "type": "integer"
+          },
+          "snv_cg_ac": {
+            "type": "integer"
+          },
+          "snv_cg_ag": {
+            "type": "integer"
+          },
+          "snv_cg_at": {
+            "type": "integer"
+          },
+          "snv_cg_ca": {
+            "type": "integer"
+          },
+          "snv_cg_cc": {
+            "type": "integer"
+          },
+          "snv_cg_cg": {
+            "type": "integer"
+          },
+          "snv_cg_ct": {
+            "type": "integer"
+          },
+          "snv_cg_ga": {
+            "type": "integer"
+          },
+          "snv_cg_gc": {
+            "type": "integer"
+          },
+          "snv_cg_gg": {
+            "type": "integer"
+          },
+          "snv_cg_gt": {
+            "type": "integer"
+          },
+          "snv_cg_ta": {
+            "type": "integer"
+          },
+          "snv_cg_tc": {
+            "type": "integer"
+          },
+          "snv_cg_tg": {
+            "type": "integer"
+          },
+          "snv_cg_tt": {
+            "type": "integer"
+          },
+          "snv_ct_aa": {
+            "type": "integer"
+          },
+          "snv_ct_ac": {
+            "type": "integer"
+          },
+          "snv_ct_ag": {
+            "type": "integer"
+          },
+          "snv_ct_at": {
+            "type": "integer"
+          },
+          "snv_ct_ca": {
+            "type": "integer"
+          },
+          "snv_ct_cc": {
+            "type": "integer"
+          },
+          "snv_ct_cg": {
+            "type": "integer"
+          },
+          "snv_ct_ct": {
+            "type": "integer"
+          },
+          "snv_ct_ga": {
+            "type": "integer"
+          },
+          "snv_ct_gc": {
+            "type": "integer"
+          },
+          "snv_ct_gg": {
+            "type": "integer"
+          },
+          "snv_ct_gt": {
+            "type": "integer"
+          },
+          "snv_ct_ta": {
+            "type": "integer"
+          },
+          "snv_ct_tc": {
+            "type": "integer"
+          },
+          "snv_ct_tg": {
+            "type": "integer"
+          },
+          "snv_ct_tt": {
+            "type": "integer"
+          },
+          "snv_ta_aa": {
+            "type": "integer"
+          },
+          "snv_ta_ac": {
+            "type": "integer"
+          },
+          "snv_ta_ag": {
+            "type": "integer"
+          },
+          "snv_ta_at": {
+            "type": "integer"
+          },
+          "snv_ta_ca": {
+            "type": "integer"
+          },
+          "snv_ta_cc": {
+            "type": "integer"
+          },
+          "snv_ta_cg": {
+            "type": "integer"
+          },
+          "snv_ta_ct": {
+            "type": "integer"
+          },
+          "snv_ta_ga": {
+            "type": "integer"
+          },
+          "snv_ta_gc": {
+            "type": "integer"
+          },
+          "snv_ta_gg": {
+            "type": "integer"
+          },
+          "snv_ta_gt": {
+            "type": "integer"
+          },
+          "snv_ta_ta": {
+            "type": "integer"
+          },
+          "snv_ta_tc": {
+            "type": "integer"
+          },
+          "snv_ta_tg": {
+            "type": "integer"
+          },
+          "snv_ta_tt": {
+            "type": "integer"
+          },
+          "snv_tc_aa": {
+            "type": "integer"
+          },
+          "snv_tc_ac": {
+            "type": "integer"
+          },
+          "snv_tc_ag": {
+            "type": "integer"
+          },
+          "snv_tc_at": {
+            "type": "integer"
+          },
+          "snv_tc_ca": {
+            "type": "integer"
+          },
+          "snv_tc_cc": {
+            "type": "integer"
+          },
+          "snv_tc_cg": {
+            "type": "integer"
+          },
+          "snv_tc_ct": {
+            "type": "integer"
+          },
+          "snv_tc_ga": {
+            "type": "integer"
+          },
+          "snv_tc_gc": {
+            "type": "integer"
+          },
+          "snv_tc_gg": {
+            "type": "integer"
+          },
+          "snv_tc_gt": {
+            "type": "integer"
+          },
+          "snv_tc_ta": {
+            "type": "integer"
+          },
+          "snv_tc_tc": {
+            "type": "integer"
+          },
+          "snv_tc_tg": {
+            "type": "integer"
+          },
+          "snv_tc_tt": {
+            "type": "integer"
+          },
+          "snv_tg_aa": {
+            "type": "integer"
+          },
+          "snv_tg_ac": {
+            "type": "integer"
+          },
+          "snv_tg_ag": {
+            "type": "integer"
+          },
+          "snv_tg_at": {
+            "type": "integer"
+          },
+          "snv_tg_ca": {
+            "type": "integer"
+          },
+          "snv_tg_cc": {
+            "type": "integer"
+          },
+          "snv_tg_cg": {
+            "type": "integer"
+          },
+          "snv_tg_ct": {
+            "type": "integer"
+          },
+          "snv_tg_ga": {
+            "type": "integer"
+          },
+          "snv_tg_gc": {
+            "type": "integer"
+          },
+          "snv_tg_gg": {
+            "type": "integer"
+          },
+          "snv_tg_gt": {
+            "type": "integer"
+          },
+          "snv_tg_ta": {
+            "type": "integer"
+          },
+          "snv_tg_tc": {
+            "type": "integer"
+          },
+          "snv_tg_tg": {
+            "type": "integer"
+          },
+          "snv_tg_tt": {
+            "type": "integer"
+          },
+          "dsbr_snv_load": {
+            "type": "integer"
+          },
+          "dsbr_ct_ratio": {
+            "type": "float"
+          },
+          "dsbr_del4_load": {
+            "type": "integer"
+          },
+          "dsbr_del4_ratio": {
+            "type": "float"
+          },
+          "dsbr_delsv_load": {
+            "type": "integer"
+          },
+          "dsbr_delsv_ratio": {
+            "type": "float"
+          },
+          "dsbr_dup_load": {
+            "type": "integer"
+          },
+          "dsbr_sv_load": {
+            "type": "integer"
+          },
+          "dsbr_first_genes": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "dsbr_second_genes": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "dsbr_score": {
+            "type": "integer"
+          },
+          "dsbr_snv_load_cut": {
+            "type": "integer"
+          },
+          "dsbr_ct_ratio_cut": {
+            "type": "float"
+          },
+          "dsbr_del4_load_cut": {
+            "type": "integer"
+          },
+          "dsbr_del4_ratio_cut": {
+            "type": "float"
+          },
+          "dsbr_delsv_load_cut": {
+            "type": "integer"
+          },
+          "dsbr_delsv_ratio_cut": {
+            "type": "float"
+          },
+          "dsbr_dup_load_cut": {
+            "type": "integer"
+          },
+          "dsbr_sv_load_cut": {
+            "type": "integer"
+          },
+          "mmr_snv_load": {
+            "type": "integer"
+          },
+          "mmr_indel_load": {
+            "type": "integer"
+          },
+          "mmr_first_genes": {
+            "type": "keyword"
+          },
+          "mmr_second_genes": {
+            "type": "keyword"
+          },
+          "mmr_score": {
+            "type": "integer"
+          },
+          "mmr_snv_load_cut": {
+            "type": "integer"
+          },
+          "mmr_indel_load_cut": {
+            "type": "integer"
+          },
+          "tdp_score": {
+            "type": "float"
+          },
+          "hrdetect_score": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_myriad_score": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_deletion_microhomology_proportion": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_snv_signature_3": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_snv_signature_8": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_rearrangement_signature_3": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_rearrangement_signature_5": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_loh": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_tai": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "hrdetect_lst": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "snv_file": {
+            "type": "keyword"
+          },
+          "indel_file": {
+            "type": "keyword"
+          },
+          "sgv_file": {
+            "type": "keyword"
+          },
+          "sv_file": {
+            "type": "keyword"
+          },
+          "param_file": {
+            "type": "keyword"
+          },
+          "seg_file": {
+            "type": "keyword"
+          },
+          "neo_files": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "xenome_logs": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "rna_sig_file": {
+            "type": "keyword"
+          },
+          "alexandrov_file": {
+            "type": "keyword"
+          },
+          "json_files": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "genotype_files": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

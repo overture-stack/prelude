@@ -1,0 +1,301 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "data__external_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__donor",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Age_at_diagnosis",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Sex",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Date_of_Tissue",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Sample",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PPID",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PDO_available",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PDO_ID_Notta",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PDO_ID_PMLB",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PDO_WT_RNAseq",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PDO_WGS",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PDO_Exome",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PDO_drugscreen",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Tumour_scRNAseq",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Tumour_scCNV",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Tumour_multiome",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Tumour_spatial",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Plasma_WGS",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Plasma_cfRNA",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Histology",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Staging_at_Diagnosis_T",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Staging_at_Diagnosis_N",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Staging_at_Diagnosis_M",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Biopsy_at_Diagnosis",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Date_of_Rx",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Systemic_Tx",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Tx_Type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Biopsy_at_Progression",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__CRUK",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PIMO",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__COMPASS",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__NeoPancONE",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PASS",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ARCAP",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PA7",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PA6",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Prosper_Panc",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__HPB_Banking",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__OPCS",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Surgical_DB",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__TMA_1",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__TMA_2",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Rapid_Autopsy",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Jackson_Lab_ID",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__McGaha_Lab_ID",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Sheba_SPC",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__QPCS_ID",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__OCIP_ID",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__PCD_ID",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__RB_xxxx",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__GPxx",
+        "show": true
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__submitter_id",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processing_started",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processed_at",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__source_file",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__record_number",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__hostname",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__username",
+        "show": false
+      }
+    ]
+  }
+}

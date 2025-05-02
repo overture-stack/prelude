@@ -1,0 +1,1048 @@
+{
+  "extended": [
+    {
+      "displayName": "Donor",
+      "fieldName": "data.donor"
+    },
+    {
+      "displayName": "Tumour",
+      "fieldName": "data.tumour"
+    },
+    {
+      "displayName": "Normal",
+      "fieldName": "data.normal"
+    },
+    {
+      "displayName": "External Id",
+      "fieldName": "data.external_id"
+    },
+    {
+      "displayName": "Seq Type",
+      "fieldName": "data.seq_type"
+    },
+    {
+      "displayName": "Tumour Coverage",
+      "fieldName": "data.tumour_coverage"
+    },
+    {
+      "displayName": "Normal Coverage",
+      "fieldName": "data.normal_coverage"
+    },
+    {
+      "displayName": "Mouse Content",
+      "fieldName": "data.mouse_content"
+    },
+    {
+      "displayName": "Tumour Reads Per Sp",
+      "fieldName": "data.tumour_reads_per_sp"
+    },
+    {
+      "displayName": "Normal Reads Per Sp",
+      "fieldName": "data.normal_reads_per_sp"
+    },
+    {
+      "displayName": "Tumour Error Rate",
+      "fieldName": "data.tumour_error_rate"
+    },
+    {
+      "displayName": "Normal Error Rate",
+      "fieldName": "data.normal_error_rate"
+    },
+    {
+      "displayName": "Tumour Soft Clip",
+      "fieldName": "data.tumour_soft_clip"
+    },
+    {
+      "displayName": "Normal Soft Clip",
+      "fieldName": "data.normal_soft_clip"
+    },
+    {
+      "displayName": "Inferred Sex",
+      "fieldName": "data.inferred_sex"
+    },
+    {
+      "displayName": "Genotype Concordance",
+      "fieldName": "data.genotype_concordance"
+    },
+    {
+      "displayName": "Snv Count",
+      "fieldName": "data.snv_count"
+    },
+    {
+      "displayName": "Del Count",
+      "fieldName": "data.del_count"
+    },
+    {
+      "displayName": "Ins Count",
+      "fieldName": "data.ins_count"
+    },
+    {
+      "displayName": "Indel Count",
+      "fieldName": "data.indel_count"
+    },
+    {
+      "displayName": "Deleterious Count",
+      "fieldName": "data.deleterious_count"
+    },
+    {
+      "displayName": "Nonsyn Count",
+      "fieldName": "data.nonsyn_count"
+    },
+    {
+      "displayName": "Stopgain Count",
+      "fieldName": "data.stopgain_count"
+    },
+    {
+      "displayName": "Stoploss Count",
+      "fieldName": "data.stoploss_count"
+    },
+    {
+      "displayName": "Splice Count",
+      "fieldName": "data.splice_count"
+    },
+    {
+      "displayName": "Noncoding Count",
+      "fieldName": "data.noncoding_count"
+    },
+    {
+      "displayName": "Frameshift Count",
+      "fieldName": "data.frameshift_count"
+    },
+    {
+      "displayName": "Nonframeshift Count",
+      "fieldName": "data.nonframeshift_count"
+    },
+    {
+      "displayName": "Del Frameshift Count",
+      "fieldName": "data.del_frameshift_count"
+    },
+    {
+      "displayName": "Del Nonframeshift Count",
+      "fieldName": "data.del_nonframeshift_count"
+    },
+    {
+      "displayName": "Ins Frameshift Count",
+      "fieldName": "data.ins_frameshift_count"
+    },
+    {
+      "displayName": "Ins Nonframeshift Count",
+      "fieldName": "data.ins_nonframeshift_count"
+    },
+    {
+      "displayName": "Sv Count",
+      "fieldName": "data.sv_count"
+    },
+    {
+      "displayName": "Sv Del Count",
+      "fieldName": "data.sv_del_count"
+    },
+    {
+      "displayName": "Sv Dup Count",
+      "fieldName": "data.sv_dup_count"
+    },
+    {
+      "displayName": "Sv Inv Count",
+      "fieldName": "data.sv_inv_count"
+    },
+    {
+      "displayName": "Sv Tra Count",
+      "fieldName": "data.sv_tra_count"
+    },
+    {
+      "displayName": "Sv Del Bp Gene Count",
+      "fieldName": "data.sv_del_bp_gene_count"
+    },
+    {
+      "displayName": "Sv Dup Bp Gene Count",
+      "fieldName": "data.sv_dup_bp_gene_count"
+    },
+    {
+      "displayName": "Sv Inv Bp Gene Count",
+      "fieldName": "data.sv_inv_bp_gene_count"
+    },
+    {
+      "displayName": "Sv Tra Bp Gene Count",
+      "fieldName": "data.sv_tra_bp_gene_count"
+    },
+    {
+      "displayName": "Waddell",
+      "fieldName": "data.waddell"
+    },
+    {
+      "displayName": "Neo Antigens",
+      "fieldName": "data.neo_antigens"
+    },
+    {
+      "displayName": "Neo Antigens Weak",
+      "fieldName": "data.neo_antigens_weak"
+    },
+    {
+      "displayName": "Neo Antigens Strong",
+      "fieldName": "data.neo_antigens_strong"
+    },
+    {
+      "displayName": "Hla Types",
+      "fieldName": "data.hla_types"
+    },
+    {
+      "displayName": "Cellularity",
+      "fieldName": "data.cellularity"
+    },
+    {
+      "displayName": "Ploidy",
+      "fieldName": "data.ploidy"
+    },
+    {
+      "displayName": "Alexandrov Class",
+      "fieldName": "data.alexandrov_class"
+    },
+    {
+      "displayName": "Alexandrov Etiology",
+      "fieldName": "data.alexandrov_etiology"
+    },
+    {
+      "displayName": "Moffitt",
+      "fieldName": "data.moffitt"
+    },
+    {
+      "displayName": "Collisson",
+      "fieldName": "data.collisson"
+    },
+    {
+      "displayName": "Bailey",
+      "fieldName": "data.bailey"
+    },
+    {
+      "displayName": "Dsbr Deficient",
+      "fieldName": "data.dsbr_deficient"
+    },
+    {
+      "displayName": "Dsbr First Hit",
+      "fieldName": "data.dsbr_first_hit"
+    },
+    {
+      "displayName": "Dsbr Second Hit",
+      "fieldName": "data.dsbr_second_hit"
+    },
+    {
+      "displayName": "Mmr Deficient",
+      "fieldName": "data.mmr_deficient"
+    },
+    {
+      "displayName": "Mmr First Hit",
+      "fieldName": "data.mmr_first_hit"
+    },
+    {
+      "displayName": "Mmr Second Hit",
+      "fieldName": "data.mmr_second_hit"
+    },
+    {
+      "displayName": "Csnnls Sig1",
+      "fieldName": "data.csnnls_sig1"
+    },
+    {
+      "displayName": "Csnnls Sig2",
+      "fieldName": "data.csnnls_sig2"
+    },
+    {
+      "displayName": "Csnnls Sig3",
+      "fieldName": "data.csnnls_sig3"
+    },
+    {
+      "displayName": "Csnnls Sig5",
+      "fieldName": "data.csnnls_sig5"
+    },
+    {
+      "displayName": "Csnnls Sig6",
+      "fieldName": "data.csnnls_sig6"
+    },
+    {
+      "displayName": "Csnnls Sig8",
+      "fieldName": "data.csnnls_sig8"
+    },
+    {
+      "displayName": "Csnnls Sig13",
+      "fieldName": "data.csnnls_sig13"
+    },
+    {
+      "displayName": "Csnnls Sig17",
+      "fieldName": "data.csnnls_sig17"
+    },
+    {
+      "displayName": "Csnnls Sig18",
+      "fieldName": "data.csnnls_sig18"
+    },
+    {
+      "displayName": "Csnnls Sig20",
+      "fieldName": "data.csnnls_sig20"
+    },
+    {
+      "displayName": "Csnnls Sig26",
+      "fieldName": "data.csnnls_sig26"
+    },
+    {
+      "displayName": "Csnnls Residuals",
+      "fieldName": "data.csnnls_residuals"
+    },
+    {
+      "displayName": "Csnnls N Mutations",
+      "fieldName": "data.csnnls_n_mutations"
+    },
+    {
+      "displayName": "Germline Snv Count",
+      "fieldName": "data.germline_snv_count"
+    },
+    {
+      "displayName": "Germline Indel Count",
+      "fieldName": "data.germline_indel_count"
+    },
+    {
+      "displayName": "Germline Titv Ratio",
+      "fieldName": "data.germline_titv_ratio"
+    },
+    {
+      "displayName": "Germline Missense Count",
+      "fieldName": "data.germline_missense_count"
+    },
+    {
+      "displayName": "Germline Nonsense Count",
+      "fieldName": "data.germline_nonsense_count"
+    },
+    {
+      "displayName": "Snv Ca",
+      "fieldName": "data.snv_ca"
+    },
+    {
+      "displayName": "Snv Cg",
+      "fieldName": "data.snv_cg"
+    },
+    {
+      "displayName": "Snv Ct",
+      "fieldName": "data.snv_ct"
+    },
+    {
+      "displayName": "Snv Ta",
+      "fieldName": "data.snv_ta"
+    },
+    {
+      "displayName": "Snv Tc",
+      "fieldName": "data.snv_tc"
+    },
+    {
+      "displayName": "Snv Tg",
+      "fieldName": "data.snv_tg"
+    },
+    {
+      "displayName": "Del 1 Count",
+      "fieldName": "data.del_1_count"
+    },
+    {
+      "displayName": "Del 4 Count",
+      "fieldName": "data.del_4_count"
+    },
+    {
+      "displayName": "Ins 1 Count",
+      "fieldName": "data.ins_1_count"
+    },
+    {
+      "displayName": "Ins 4 Count",
+      "fieldName": "data.ins_4_count"
+    },
+    {
+      "displayName": "DEL 100",
+      "fieldName": "data.DEL_100"
+    },
+    {
+      "displayName": "DEL 1k",
+      "fieldName": "data.DEL_1k"
+    },
+    {
+      "displayName": "DEL 10k",
+      "fieldName": "data.DEL_10k"
+    },
+    {
+      "displayName": "DEL 100k",
+      "fieldName": "data.DEL_100k"
+    },
+    {
+      "displayName": "DEL 1m",
+      "fieldName": "data.DEL_1m"
+    },
+    {
+      "displayName": "DEL 10m",
+      "fieldName": "data.DEL_10m"
+    },
+    {
+      "displayName": "DEL GREATER THAN 10m",
+      "fieldName": "data.DEL_GREATER_THAN_10m"
+    },
+    {
+      "displayName": "DUP 100",
+      "fieldName": "data.DUP_100"
+    },
+    {
+      "displayName": "DUP 1k",
+      "fieldName": "data.DUP_1k"
+    },
+    {
+      "displayName": "DUP 10k",
+      "fieldName": "data.DUP_10k"
+    },
+    {
+      "displayName": "DUP 100k",
+      "fieldName": "data.DUP_100k"
+    },
+    {
+      "displayName": "DUP 1m",
+      "fieldName": "data.DUP_1m"
+    },
+    {
+      "displayName": "DUP 10m",
+      "fieldName": "data.DUP_10m"
+    },
+    {
+      "displayName": "DUP GREATER THAN 10m",
+      "fieldName": "data.DUP_GREATER_THAN_10m"
+    },
+    {
+      "displayName": "INV 100",
+      "fieldName": "data.INV_100"
+    },
+    {
+      "displayName": "INV 1k",
+      "fieldName": "data.INV_1k"
+    },
+    {
+      "displayName": "INV 10k",
+      "fieldName": "data.INV_10k"
+    },
+    {
+      "displayName": "INV 100k",
+      "fieldName": "data.INV_100k"
+    },
+    {
+      "displayName": "INV 1m",
+      "fieldName": "data.INV_1m"
+    },
+    {
+      "displayName": "INV 10m",
+      "fieldName": "data.INV_10m"
+    },
+    {
+      "displayName": "INV GREATER THAN 10m",
+      "fieldName": "data.INV_GREATER_THAN_10m"
+    },
+    {
+      "displayName": "Snv Ca Aa",
+      "fieldName": "data.snv_ca_aa"
+    },
+    {
+      "displayName": "Snv Ca Ac",
+      "fieldName": "data.snv_ca_ac"
+    },
+    {
+      "displayName": "Snv Ca Ag",
+      "fieldName": "data.snv_ca_ag"
+    },
+    {
+      "displayName": "Snv Ca At",
+      "fieldName": "data.snv_ca_at"
+    },
+    {
+      "displayName": "Snv Ca Ca",
+      "fieldName": "data.snv_ca_ca"
+    },
+    {
+      "displayName": "Snv Ca Cc",
+      "fieldName": "data.snv_ca_cc"
+    },
+    {
+      "displayName": "Snv Ca Cg",
+      "fieldName": "data.snv_ca_cg"
+    },
+    {
+      "displayName": "Snv Ca Ct",
+      "fieldName": "data.snv_ca_ct"
+    },
+    {
+      "displayName": "Snv Ca Ga",
+      "fieldName": "data.snv_ca_ga"
+    },
+    {
+      "displayName": "Snv Ca Gc",
+      "fieldName": "data.snv_ca_gc"
+    },
+    {
+      "displayName": "Snv Ca Gg",
+      "fieldName": "data.snv_ca_gg"
+    },
+    {
+      "displayName": "Snv Ca Gt",
+      "fieldName": "data.snv_ca_gt"
+    },
+    {
+      "displayName": "Snv Ca Ta",
+      "fieldName": "data.snv_ca_ta"
+    },
+    {
+      "displayName": "Snv Ca Tc",
+      "fieldName": "data.snv_ca_tc"
+    },
+    {
+      "displayName": "Snv Ca Tg",
+      "fieldName": "data.snv_ca_tg"
+    },
+    {
+      "displayName": "Snv Ca Tt",
+      "fieldName": "data.snv_ca_tt"
+    },
+    {
+      "displayName": "Snv Cg Aa",
+      "fieldName": "data.snv_cg_aa"
+    },
+    {
+      "displayName": "Snv Cg Ac",
+      "fieldName": "data.snv_cg_ac"
+    },
+    {
+      "displayName": "Snv Cg Ag",
+      "fieldName": "data.snv_cg_ag"
+    },
+    {
+      "displayName": "Snv Cg At",
+      "fieldName": "data.snv_cg_at"
+    },
+    {
+      "displayName": "Snv Cg Ca",
+      "fieldName": "data.snv_cg_ca"
+    },
+    {
+      "displayName": "Snv Cg Cc",
+      "fieldName": "data.snv_cg_cc"
+    },
+    {
+      "displayName": "Snv Cg Cg",
+      "fieldName": "data.snv_cg_cg"
+    },
+    {
+      "displayName": "Snv Cg Ct",
+      "fieldName": "data.snv_cg_ct"
+    },
+    {
+      "displayName": "Snv Cg Ga",
+      "fieldName": "data.snv_cg_ga"
+    },
+    {
+      "displayName": "Snv Cg Gc",
+      "fieldName": "data.snv_cg_gc"
+    },
+    {
+      "displayName": "Snv Cg Gg",
+      "fieldName": "data.snv_cg_gg"
+    },
+    {
+      "displayName": "Snv Cg Gt",
+      "fieldName": "data.snv_cg_gt"
+    },
+    {
+      "displayName": "Snv Cg Ta",
+      "fieldName": "data.snv_cg_ta"
+    },
+    {
+      "displayName": "Snv Cg Tc",
+      "fieldName": "data.snv_cg_tc"
+    },
+    {
+      "displayName": "Snv Cg Tg",
+      "fieldName": "data.snv_cg_tg"
+    },
+    {
+      "displayName": "Snv Cg Tt",
+      "fieldName": "data.snv_cg_tt"
+    },
+    {
+      "displayName": "Snv Ct Aa",
+      "fieldName": "data.snv_ct_aa"
+    },
+    {
+      "displayName": "Snv Ct Ac",
+      "fieldName": "data.snv_ct_ac"
+    },
+    {
+      "displayName": "Snv Ct Ag",
+      "fieldName": "data.snv_ct_ag"
+    },
+    {
+      "displayName": "Snv Ct At",
+      "fieldName": "data.snv_ct_at"
+    },
+    {
+      "displayName": "Snv Ct Ca",
+      "fieldName": "data.snv_ct_ca"
+    },
+    {
+      "displayName": "Snv Ct Cc",
+      "fieldName": "data.snv_ct_cc"
+    },
+    {
+      "displayName": "Snv Ct Cg",
+      "fieldName": "data.snv_ct_cg"
+    },
+    {
+      "displayName": "Snv Ct Ct",
+      "fieldName": "data.snv_ct_ct"
+    },
+    {
+      "displayName": "Snv Ct Ga",
+      "fieldName": "data.snv_ct_ga"
+    },
+    {
+      "displayName": "Snv Ct Gc",
+      "fieldName": "data.snv_ct_gc"
+    },
+    {
+      "displayName": "Snv Ct Gg",
+      "fieldName": "data.snv_ct_gg"
+    },
+    {
+      "displayName": "Snv Ct Gt",
+      "fieldName": "data.snv_ct_gt"
+    },
+    {
+      "displayName": "Snv Ct Ta",
+      "fieldName": "data.snv_ct_ta"
+    },
+    {
+      "displayName": "Snv Ct Tc",
+      "fieldName": "data.snv_ct_tc"
+    },
+    {
+      "displayName": "Snv Ct Tg",
+      "fieldName": "data.snv_ct_tg"
+    },
+    {
+      "displayName": "Snv Ct Tt",
+      "fieldName": "data.snv_ct_tt"
+    },
+    {
+      "displayName": "Snv Ta Aa",
+      "fieldName": "data.snv_ta_aa"
+    },
+    {
+      "displayName": "Snv Ta Ac",
+      "fieldName": "data.snv_ta_ac"
+    },
+    {
+      "displayName": "Snv Ta Ag",
+      "fieldName": "data.snv_ta_ag"
+    },
+    {
+      "displayName": "Snv Ta At",
+      "fieldName": "data.snv_ta_at"
+    },
+    {
+      "displayName": "Snv Ta Ca",
+      "fieldName": "data.snv_ta_ca"
+    },
+    {
+      "displayName": "Snv Ta Cc",
+      "fieldName": "data.snv_ta_cc"
+    },
+    {
+      "displayName": "Snv Ta Cg",
+      "fieldName": "data.snv_ta_cg"
+    },
+    {
+      "displayName": "Snv Ta Ct",
+      "fieldName": "data.snv_ta_ct"
+    },
+    {
+      "displayName": "Snv Ta Ga",
+      "fieldName": "data.snv_ta_ga"
+    },
+    {
+      "displayName": "Snv Ta Gc",
+      "fieldName": "data.snv_ta_gc"
+    },
+    {
+      "displayName": "Snv Ta Gg",
+      "fieldName": "data.snv_ta_gg"
+    },
+    {
+      "displayName": "Snv Ta Gt",
+      "fieldName": "data.snv_ta_gt"
+    },
+    {
+      "displayName": "Snv Ta Ta",
+      "fieldName": "data.snv_ta_ta"
+    },
+    {
+      "displayName": "Snv Ta Tc",
+      "fieldName": "data.snv_ta_tc"
+    },
+    {
+      "displayName": "Snv Ta Tg",
+      "fieldName": "data.snv_ta_tg"
+    },
+    {
+      "displayName": "Snv Ta Tt",
+      "fieldName": "data.snv_ta_tt"
+    },
+    {
+      "displayName": "Snv Tc Aa",
+      "fieldName": "data.snv_tc_aa"
+    },
+    {
+      "displayName": "Snv Tc Ac",
+      "fieldName": "data.snv_tc_ac"
+    },
+    {
+      "displayName": "Snv Tc Ag",
+      "fieldName": "data.snv_tc_ag"
+    },
+    {
+      "displayName": "Snv Tc At",
+      "fieldName": "data.snv_tc_at"
+    },
+    {
+      "displayName": "Snv Tc Ca",
+      "fieldName": "data.snv_tc_ca"
+    },
+    {
+      "displayName": "Snv Tc Cc",
+      "fieldName": "data.snv_tc_cc"
+    },
+    {
+      "displayName": "Snv Tc Cg",
+      "fieldName": "data.snv_tc_cg"
+    },
+    {
+      "displayName": "Snv Tc Ct",
+      "fieldName": "data.snv_tc_ct"
+    },
+    {
+      "displayName": "Snv Tc Ga",
+      "fieldName": "data.snv_tc_ga"
+    },
+    {
+      "displayName": "Snv Tc Gc",
+      "fieldName": "data.snv_tc_gc"
+    },
+    {
+      "displayName": "Snv Tc Gg",
+      "fieldName": "data.snv_tc_gg"
+    },
+    {
+      "displayName": "Snv Tc Gt",
+      "fieldName": "data.snv_tc_gt"
+    },
+    {
+      "displayName": "Snv Tc Ta",
+      "fieldName": "data.snv_tc_ta"
+    },
+    {
+      "displayName": "Snv Tc Tc",
+      "fieldName": "data.snv_tc_tc"
+    },
+    {
+      "displayName": "Snv Tc Tg",
+      "fieldName": "data.snv_tc_tg"
+    },
+    {
+      "displayName": "Snv Tc Tt",
+      "fieldName": "data.snv_tc_tt"
+    },
+    {
+      "displayName": "Snv Tg Aa",
+      "fieldName": "data.snv_tg_aa"
+    },
+    {
+      "displayName": "Snv Tg Ac",
+      "fieldName": "data.snv_tg_ac"
+    },
+    {
+      "displayName": "Snv Tg Ag",
+      "fieldName": "data.snv_tg_ag"
+    },
+    {
+      "displayName": "Snv Tg At",
+      "fieldName": "data.snv_tg_at"
+    },
+    {
+      "displayName": "Snv Tg Ca",
+      "fieldName": "data.snv_tg_ca"
+    },
+    {
+      "displayName": "Snv Tg Cc",
+      "fieldName": "data.snv_tg_cc"
+    },
+    {
+      "displayName": "Snv Tg Cg",
+      "fieldName": "data.snv_tg_cg"
+    },
+    {
+      "displayName": "Snv Tg Ct",
+      "fieldName": "data.snv_tg_ct"
+    },
+    {
+      "displayName": "Snv Tg Ga",
+      "fieldName": "data.snv_tg_ga"
+    },
+    {
+      "displayName": "Snv Tg Gc",
+      "fieldName": "data.snv_tg_gc"
+    },
+    {
+      "displayName": "Snv Tg Gg",
+      "fieldName": "data.snv_tg_gg"
+    },
+    {
+      "displayName": "Snv Tg Gt",
+      "fieldName": "data.snv_tg_gt"
+    },
+    {
+      "displayName": "Snv Tg Ta",
+      "fieldName": "data.snv_tg_ta"
+    },
+    {
+      "displayName": "Snv Tg Tc",
+      "fieldName": "data.snv_tg_tc"
+    },
+    {
+      "displayName": "Snv Tg Tg",
+      "fieldName": "data.snv_tg_tg"
+    },
+    {
+      "displayName": "Snv Tg Tt",
+      "fieldName": "data.snv_tg_tt"
+    },
+    {
+      "displayName": "Dsbr Snv Load",
+      "fieldName": "data.dsbr_snv_load"
+    },
+    {
+      "displayName": "Dsbr Ct Ratio",
+      "fieldName": "data.dsbr_ct_ratio"
+    },
+    {
+      "displayName": "Dsbr Del4 Load",
+      "fieldName": "data.dsbr_del4_load"
+    },
+    {
+      "displayName": "Dsbr Del4 Ratio",
+      "fieldName": "data.dsbr_del4_ratio"
+    },
+    {
+      "displayName": "Dsbr Delsv Load",
+      "fieldName": "data.dsbr_delsv_load"
+    },
+    {
+      "displayName": "Dsbr Delsv Ratio",
+      "fieldName": "data.dsbr_delsv_ratio"
+    },
+    {
+      "displayName": "Dsbr Dup Load",
+      "fieldName": "data.dsbr_dup_load"
+    },
+    {
+      "displayName": "Dsbr Sv Load",
+      "fieldName": "data.dsbr_sv_load"
+    },
+    {
+      "displayName": "Dsbr First Genes",
+      "fieldName": "data.dsbr_first_genes"
+    },
+    {
+      "displayName": "Dsbr Second Genes",
+      "fieldName": "data.dsbr_second_genes"
+    },
+    {
+      "displayName": "Dsbr Score",
+      "fieldName": "data.dsbr_score"
+    },
+    {
+      "displayName": "Dsbr Snv Load Cut",
+      "fieldName": "data.dsbr_snv_load_cut"
+    },
+    {
+      "displayName": "Dsbr Ct Ratio Cut",
+      "fieldName": "data.dsbr_ct_ratio_cut"
+    },
+    {
+      "displayName": "Dsbr Del4 Load Cut",
+      "fieldName": "data.dsbr_del4_load_cut"
+    },
+    {
+      "displayName": "Dsbr Del4 Ratio Cut",
+      "fieldName": "data.dsbr_del4_ratio_cut"
+    },
+    {
+      "displayName": "Dsbr Delsv Load Cut",
+      "fieldName": "data.dsbr_delsv_load_cut"
+    },
+    {
+      "displayName": "Dsbr Delsv Ratio Cut",
+      "fieldName": "data.dsbr_delsv_ratio_cut"
+    },
+    {
+      "displayName": "Dsbr Dup Load Cut",
+      "fieldName": "data.dsbr_dup_load_cut"
+    },
+    {
+      "displayName": "Dsbr Sv Load Cut",
+      "fieldName": "data.dsbr_sv_load_cut"
+    },
+    {
+      "displayName": "Mmr Snv Load",
+      "fieldName": "data.mmr_snv_load"
+    },
+    {
+      "displayName": "Mmr Indel Load",
+      "fieldName": "data.mmr_indel_load"
+    },
+    {
+      "displayName": "Mmr First Genes",
+      "fieldName": "data.mmr_first_genes"
+    },
+    {
+      "displayName": "Mmr Second Genes",
+      "fieldName": "data.mmr_second_genes"
+    },
+    {
+      "displayName": "Mmr Score",
+      "fieldName": "data.mmr_score"
+    },
+    {
+      "displayName": "Mmr Snv Load Cut",
+      "fieldName": "data.mmr_snv_load_cut"
+    },
+    {
+      "displayName": "Mmr Indel Load Cut",
+      "fieldName": "data.mmr_indel_load_cut"
+    },
+    {
+      "displayName": "Tdp Score",
+      "fieldName": "data.tdp_score"
+    },
+    {
+      "displayName": "Hrdetect Score",
+      "fieldName": "data.hrdetect_score"
+    },
+    {
+      "displayName": "Hrdetect Myriad Score",
+      "fieldName": "data.hrdetect_myriad_score"
+    },
+    {
+      "displayName": "Hrdetect Deletion Microhomology Proportion",
+      "fieldName": "data.hrdetect_deletion_microhomology_proportion"
+    },
+    {
+      "displayName": "Hrdetect Snv Signature 3",
+      "fieldName": "data.hrdetect_snv_signature_3"
+    },
+    {
+      "displayName": "Hrdetect Snv Signature 8",
+      "fieldName": "data.hrdetect_snv_signature_8"
+    },
+    {
+      "displayName": "Hrdetect Rearrangement Signature 3",
+      "fieldName": "data.hrdetect_rearrangement_signature_3"
+    },
+    {
+      "displayName": "Hrdetect Rearrangement Signature 5",
+      "fieldName": "data.hrdetect_rearrangement_signature_5"
+    },
+    {
+      "displayName": "Hrdetect Loh",
+      "fieldName": "data.hrdetect_loh"
+    },
+    {
+      "displayName": "Hrdetect Tai",
+      "fieldName": "data.hrdetect_tai"
+    },
+    {
+      "displayName": "Hrdetect Lst",
+      "fieldName": "data.hrdetect_lst"
+    },
+    {
+      "displayName": "Snv File",
+      "fieldName": "data.snv_file"
+    },
+    {
+      "displayName": "Indel File",
+      "fieldName": "data.indel_file"
+    },
+    {
+      "displayName": "Sgv File",
+      "fieldName": "data.sgv_file"
+    },
+    {
+      "displayName": "Sv File",
+      "fieldName": "data.sv_file"
+    },
+    {
+      "displayName": "Param File",
+      "fieldName": "data.param_file"
+    },
+    {
+      "displayName": "Seg File",
+      "fieldName": "data.seg_file"
+    },
+    {
+      "displayName": "Neo Files",
+      "fieldName": "data.neo_files"
+    },
+    {
+      "displayName": "Xenome Logs",
+      "fieldName": "data.xenome_logs"
+    },
+    {
+      "displayName": "Rna Sig File",
+      "fieldName": "data.rna_sig_file"
+    },
+    {
+      "displayName": "Alexandrov File",
+      "fieldName": "data.alexandrov_file"
+    },
+    {
+      "displayName": "Json Files",
+      "fieldName": "data.json_files"
+    },
+    {
+      "displayName": "Genotype Files",
+      "fieldName": "data.genotype_files"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "submission.metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submitter Id",
+      "fieldName": "submission.metadata.submitter_id"
+    },
+    {
+      "displayName": "Submission Metadata Processing Started",
+      "fieldName": "submission.metadata.processing_started"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "submission.metadata.processed_at"
+    },
+    {
+      "displayName": "Submission Metadata Source File",
+      "fieldName": "submission.metadata.source_file"
+    },
+    {
+      "displayName": "Submission Metadata Record Number",
+      "fieldName": "submission.metadata.record_number"
+    },
+    {
+      "displayName": "Submission Metadata Hostname",
+      "fieldName": "submission.metadata.hostname"
+    },
+    {
+      "displayName": "Submission Metadata Username",
+      "fieldName": "submission.metadata.username"
+    }
+  ]
+}

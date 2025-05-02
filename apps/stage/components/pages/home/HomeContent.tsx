@@ -13,8 +13,8 @@ const HomeContent = (): ReactElement => {
 			`}
 		>
 			<HeroBanner
-				title="Prelude"
-				description="Version 1.0.0-beta"
+				title="LBR Demo Portal"
+				description="Version 1.0.0"
 				breadcrumbs={[{ label: 'Home', href: '/' }]}
 				fixed={false}
 			/>
