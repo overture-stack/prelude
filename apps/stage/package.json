@@ -39,7 +39,7 @@
 		"react-syntax-highlighter": "^15.6.1",
 		"react-tippy": "^1.4.0",
 		"swagger-ui-dist": "^4.11.1",
-		"swagger-ui-react": "^4.11.1",
+		"swagger-ui-react": "^5.20.7",
 		"url-join": "^5.0.0"
 	},
 	"devDependencies": {
