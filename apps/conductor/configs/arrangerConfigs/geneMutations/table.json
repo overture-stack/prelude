@@ -1,0 +1,150 @@
+{
+  "table": {
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Hugo_Symbol",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Hugo_Symbol",
+        "query": "data { Hugo_Symbol }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Entrez_Gene_Id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Entrez_Gene_Id",
+        "query": "data { Entrez_Gene_Id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Hotspot",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Hotspot",
+        "query": "data { Hotspot }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.number_of_mutated_samples",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.number_of_mutated_samples",
+        "query": "data { number_of_mutated_samples }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.total_number_of_samples",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.total_number_of_samples",
+        "query": "data { total_number_of_samples }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.overall_mutation_frequency",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.overall_mutation_frequency",
+        "query": "data { overall_mutation_frequency }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Cancer_Type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Cancer_Type",
+        "query": "data { Cancer_Type }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Dataset_Name",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Dataset_Name",
+        "query": "data { Dataset_Name }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Is_Oncogene",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Is_Oncogene",
+        "query": "data { Is_Oncogene }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Is_Tumor_Suppressor_Gene",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Is_Tumor_Suppressor_Gene",
+        "query": "data { Is_Tumor_Suppressor_Gene }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.Is_WDR",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.Is_WDR",
+        "query": "data { Is_WDR }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.submitter_id",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.submitter_id",
+        "query": "data { submission_metadata { submitter_id } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.processing_started",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.processing_started",
+        "query": "data { submission_metadata { processing_started } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.processed_at",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.processed_at",
+        "query": "data { submission_metadata { processed_at } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.source_file",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.source_file",
+        "query": "data { submission_metadata { source_file } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.record_number",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.record_number",
+        "query": "data { submission_metadata { record_number } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.hostname",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.hostname",
+        "query": "data { submission_metadata { hostname } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.submission_metadata.username",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.data.submission_metadata.username",
+        "query": "data { submission_metadata { username } }"
+      }
+    ]
+  }
+}

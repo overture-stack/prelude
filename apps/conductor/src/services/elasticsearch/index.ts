@@ -5,7 +5,6 @@
  * Re-exports functions from specialized modules.
  */
 
-// Re-export client functionality
 export {
   createClient,
   createClientFromConfig,
@@ -35,6 +34,3 @@ export {
   updateTemplate,
   deleteTemplate,
 } from "./templates";
-
-// Re-export aliases functionality if implemented
-// export { ... } from './aliases';

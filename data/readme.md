@@ -24,8 +24,20 @@ for optimal data management:
 - No strict minimum or maximum size limits exist beyond Docker and Elasticsearch
   resource constraints
 
-# Setup Commands
+# Setup Commands Phase 1
 
+composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/geneCorrelation.json -o ./configs/arrangerConfigs/geneCorrelations/ -i correlation_centric
+composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/proteinInteractions.json -o ./configs/arrangerConfigs/proteinInteractions/  -i protein_centric
+composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/geneMutations.json -o ./configs/arrangerConfigs/geneMutations/  -i mutation_centric
+composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/geneExpression.json -o ./configs/arrangerConfigs/geneExpression/  -i mrna_centric
+
+conductor upload -f ./data/protein.csv -i protein-index
+conductor upload -f ./data/mrna.csv -i mrna-index
+conductor upload -f ./data/correlation.csv -i correlation-index
+conductor upload -f ./data/mutation.csv -i mutation-index
+
+# Setup Commands Phase 2
+ 
 conductor lecternUpload -s ./configs/lecternDictionaries/drugDiscoveryDictionary.json
 
 conductor lyricRegister -c correlations --dict-name drugDiscoveryDictionary -v 1.0 -e genecorrelations

@@ -15,19 +15,19 @@
             "type": "keyword"
           },
           "neighborhood": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "neighborhood_transferred": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "fusion": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "cooccurence": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "homology": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "coexpression": {
             "type": "integer"

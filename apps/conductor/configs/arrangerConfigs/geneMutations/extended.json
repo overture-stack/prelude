@@ -1,0 +1,80 @@
+{
+  "extended": [
+    {
+      "displayName": "Hugo Symbol",
+      "fieldName": "data.Hugo_Symbol"
+    },
+    {
+      "displayName": "Entrez Gene Id",
+      "fieldName": "data.Entrez_Gene_Id"
+    },
+    {
+      "displayName": "Hotspot",
+      "fieldName": "data.Hotspot"
+    },
+    {
+      "displayName": "Number Of Mutated Samples",
+      "fieldName": "data.number_of_mutated_samples"
+    },
+    {
+      "displayName": "Total Number Of Samples",
+      "fieldName": "data.total_number_of_samples"
+    },
+    {
+      "displayName": "Overall Mutation Frequency",
+      "fieldName": "data.overall_mutation_frequency"
+    },
+    {
+      "displayName": "Cancer Type",
+      "fieldName": "data.Cancer_Type"
+    },
+    {
+      "displayName": "Dataset Name",
+      "fieldName": "data.Dataset_Name"
+    },
+    {
+      "displayName": "Is Oncogene",
+      "fieldName": "data.Is_Oncogene"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene",
+      "fieldName": "data.Is_Tumor_Suppressor_Gene"
+    },
+    {
+      "displayName": "Is WDR",
+      "fieldName": "data.Is_WDR"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "data.submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submitter Id",
+      "fieldName": "data.submission_metadata.submitter_id"
+    },
+    {
+      "displayName": "Submission Metadata Processing Started",
+      "fieldName": "data.submission_metadata.processing_started"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "data.submission_metadata.processed_at"
+    },
+    {
+      "displayName": "Submission Metadata Source File",
+      "fieldName": "data.submission_metadata.source_file"
+    },
+    {
+      "displayName": "Submission Metadata Record Number",
+      "fieldName": "data.submission_metadata.record_number"
+    },
+    {
+      "displayName": "Submission Metadata Hostname",
+      "fieldName": "data.submission_metadata.hostname"
+    },
+    {
+      "displayName": "Submission Metadata Username",
+      "fieldName": "data.submission_metadata.username"
+    }
+  ]
+}

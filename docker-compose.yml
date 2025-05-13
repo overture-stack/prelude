@@ -171,7 +171,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/datatable1:/app/modules/server/configs
+      - ./apps/conductor/configs/arrangerConfigs/geneCorrelations:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -196,7 +196,7 @@ services:
     ports:
       - "5051:5051" # Use unique ports for each Arranger instance
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/datatable2:/app/modules/server/configs # Point to the relevant generated config
+      - ./apps/conductor/configs/arrangerConfigs/geneMutations:/app/modules/server/configs # Point to the relevant generated config
     environment:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
@@ -220,7 +220,7 @@ services:
     ports:
       - "5052:5052" # Use unique ports for each Arranger instance
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/datatable3:/app/modules/server/configs # Point to the relevant generated config
+      - ./apps/conductor/configs/arrangerConfigs/geneExpression:/app/modules/server/configs # Point to the relevant generated config
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -245,7 +245,7 @@ services:
     ports:
       - "5053:5053" # Use unique ports for each Arranger instance
     volumes:
-      - ./apps/conductor/configs/arrangerConfigs/datatable4:/app/modules/server/configs # Point to the relevant generated config
+      - ./apps/conductor/configs/arrangerConfigs/proteinInteractions:/app/modules/server/configs # Point to the relevant generated config
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -291,11 +291,11 @@ services:
       # Datatable2 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
       NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: mrna_centric
+      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: mutation_centric
       # Datatable2 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable3:5052
       NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: mutation_centric
+      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: mrna_centric
       # Datatable4 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger-datatable4:5053
       NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: file

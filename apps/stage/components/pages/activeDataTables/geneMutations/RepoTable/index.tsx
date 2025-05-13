@@ -53,7 +53,7 @@ const getTableConfigs = ({
 
 			// appearance
 			background: theme.colors.white,
-			borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+			borderColor: theme.colors.grey_3, 
 			css: css`
 				${theme.shadow.default}
 			`,
@@ -127,7 +127,7 @@ const getTableConfigs = ({
 				},
 			},
 			HeaderRow: {
-				borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+				borderColor: theme.colors.grey_3, 
 				css: css`
 					${theme.typography.data}
 				`,
@@ -148,7 +148,7 @@ const getTableConfigs = ({
 				hoverBackground: theme.colors.grey_highlight,
 				lineHeight: '1.5rem',
 				selectedBackground: theme.colors.accent_highlight,
-				verticalBorderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+				verticalBorderColor: theme.colors.grey_3,
 			},
 			TableWrapper: {
 				margin: '0.5rem 0',

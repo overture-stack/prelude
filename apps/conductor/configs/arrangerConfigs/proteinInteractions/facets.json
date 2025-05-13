@@ -14,67 +14,67 @@
       {
         "active": true,
         "fieldName": "data__neighborhood",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__neighborhood_transferred",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__fusion",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__cooccurence",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__homology",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__coexpression",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__coexpression_transferred",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__experiments",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__experiments_transferred",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__database",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__database_transferred",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__textmining",
-        "show": true
+        "show": false
       },
       {
         "active": true,
         "fieldName": "data__textmining_transferred",
-        "show": true
+        "show": false
       },
       {
         "active": true,

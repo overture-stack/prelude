@@ -1,7 +1,7 @@
 import GeneMutations from '../../components/pages/activeDataTables/geneMutations';
 import { createPage } from '../../global/utils/pages';
 
-const DataSetThreeExplorationPage = createPage({
+const DataSetTwoExplorationPage = createPage({
 	getInitialProps: async ({ query, egoJwt }) => {
 		return { query, egoJwt };
 	},
@@ -10,4 +10,4 @@ const DataSetThreeExplorationPage = createPage({
 	return <GeneMutations />;
 });
 
-export default DataSetThreeExplorationPage;
+export default DataSetTwoExplorationPage;

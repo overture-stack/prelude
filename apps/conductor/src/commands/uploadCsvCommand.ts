@@ -42,7 +42,10 @@ export class UploadCommand extends Command {
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config, filePaths } = cliOutput;
 
-    Logger.info(`Input files specified: ${filePaths.length}`, filePaths);
+    Logger.info(`Input files specified: ${filePaths.length}`);
+
+    // Validate common settings before processing files
+    this.validateCommonSettings(config);
 
     // Process each file
     let successCount = 0;
@@ -50,34 +53,33 @@ export class UploadCommand extends Command {
     const failureDetails: Record<string, any> = {};
 
     for (const filePath of filePaths) {
-      Logger.debug(`Processing File: ${filePath}`);
+      const fileName = path.basename(filePath);
+      Logger.info(`Processing file: ${fileName}`);
 
       try {
         await this.processFile(filePath, config);
-        Logger.debug(`Successfully processed ${filePath}`);
+        Logger.success(`Successfully processed ${fileName}`);
         successCount++;
       } catch (error) {
         failureCount++;
-        // Log the error but continue to the next file
+        
+        // Simplified error format:
+        // protein.csv: Failed to process 'protein.csv' - Data format doesn't match index mapping
         if (error instanceof ConductorError) {
-          Logger.debug(
-            `Skipping file '${filePath}': [${error.code}] ${error.message}`
-          );
-          if (error.details) {
-            Logger.debug(`Error details: ${JSON.stringify(error.details)}`);
-          }
+          Logger.info(`${fileName}: Failed to process '${fileName}' - ${error.message}`);
+          
           failureDetails[filePath] = {
             code: error.code,
             message: error.message,
             details: error.details,
           };
         } else if (error instanceof Error) {
-          Logger.debug(`Skipping file '${filePath}': ${error.message}`);
+          console.log(`${fileName}: Failed to process '${fileName}' - ${error.message}`);
           failureDetails[filePath] = {
             message: error.message,
           };
         } else {
-          Logger.debug(`Skipping file '${filePath}' due to an error`);
+          console.log(`${fileName}: Failed to process '${fileName}' - Unknown error`);
           failureDetails[filePath] = {
             message: "Unknown error",
           };
@@ -85,20 +87,23 @@ export class UploadCommand extends Command {
       }
     }
 
-    // Return the CommandResult
+    // Return the CommandResult with appropriate status and details
     if (failureCount === 0) {
       return {
         success: true,
         details: {
-          filesProcessed: successCount,
+          filesProcessed: successCount
         },
       };
     } else if (successCount === 0) {
+   
       return {
         success: false,
         errorMessage: `Failed to process all ${failureCount} files`,
         errorCode: ErrorCodes.VALIDATION_FAILED,
-        details: failureDetails,
+        details: {
+          failureDetails
+        },
       };
     } else {
       // Partial success
@@ -107,70 +112,100 @@ export class UploadCommand extends Command {
         details: {
           filesProcessed: successCount,
           filesFailed: failureCount,
-          failureDetails,
+          failureDetails
         },
       };
     }
   }
 
   /**
-   * Validates command line arguments and configuration
-   * @param cliOutput The CLI configuration and inputs
-   * @throws ConductorError if validation fails
+   * Validates common settings that apply to all files
    */
-  protected async validate(cliOutput: CLIOutput): Promise<void> {
-    const { config, filePaths } = cliOutput;
+  private validateCommonSettings(config: any): void {
+    validateDelimiter(config.delimiter);
+    validateBatchSize(config.batchSize);
+  }
 
-    // Validate files first
-    const fileValidationResult = await validateFiles(filePaths);
-    if (!fileValidationResult.valid) {
-      throw new ConductorError("Invalid input files", ErrorCodes.INVALID_FILE, {
-        errors: fileValidationResult.errors,
-      });
-    }
+  /**
+   * Processes a single file
+   */
+  private async processFile(filePath: string, config: any): Promise<void> {
+    const fileName = path.basename(filePath);
+    
+    // Validate file and CSV structure
+    await validateFiles([filePath]);
+    await this.validateCSVHeaders(filePath, config.delimiter);
 
-    // Validate delimiter
+    // Set up Elasticsearch client
+    const client = createClientFromConfig(config);
+
     try {
-      validateDelimiter(config.delimiter);
+      // Validate Elasticsearch connection
+      await validateConnection(client);
     } catch (error) {
       throw new ConductorError(
-        "Invalid delimiter",
-        ErrorCodes.VALIDATION_FAILED,
-        error
+        `Elasticsearch connection failed: ${error instanceof Error ? error.message : String(error)}`,
+        ErrorCodes.CONNECTION_ERROR,
+        { originalError: error }
       );
     }
 
-    // Validate batch size
     try {
-      validateBatchSize(config.batchSize);
+      // Validate index exists
+      await validateIndex(client, config.elasticsearch.index);
     } catch (error) {
-      throw new ConductorError(
-        "Invalid batch size",
-        ErrorCodes.VALIDATION_FAILED,
-        error
-      );
+      if (error instanceof ConductorError && error.code === ErrorCodes.INDEX_NOT_FOUND) {
+        throw new ConductorError(
+          `Index "${config.elasticsearch.index}" not found`,
+          ErrorCodes.INDEX_NOT_FOUND,
+          {
+            suggestion: `Create the index first using the indexManagement command`
+          }
+        );
+      }
+      throw error;
     }
 
-    // Validate each file's CSV headers
-    for (const filePath of filePaths) {
-      await this.validateFileHeaders(filePath, config.delimiter);
+    // Process the file
+    try {
+      await processCSVFile(filePath, config, client);
+    } catch (error) {
+      // For Elasticsearch mapping errors, provide a cleaner error message
+      if (error instanceof ConductorError && error.code === ErrorCodes.ES_ERROR) {
+        // The message already contains the file name from the processCSVFile function
+        throw error;
+      }
+      
+      // For other errors, add file name to error message
+      if (error instanceof Error) {
+        throw new ConductorError(
+          `${error.message}`,
+          ErrorCodes.CSV_ERROR,
+          { originalError: error }
+        );
+      }
+      
+      // Rethrow unknown errors
+      throw error;
     }
   }
 
   /**
-   * Validates headers for a single file
+   * Validates CSV headers by reading the first line
    */
-  private async validateFileHeaders(
+  private async validateCSVHeaders(
     filePath: string,
     delimiter: string
-  ): Promise<void> {
+  ): Promise<boolean> {
+    const fileName = path.basename(filePath);
+    
     try {
       const fileContent = fs.readFileSync(filePath, "utf-8");
       const [headerLine] = fileContent.split("\n");
 
       if (!headerLine) {
         throw new ConductorError(
-          `CSV file is empty or has no headers: ${filePath}`,
+          `CSV file is empty or has no headers`,
           ErrorCodes.INVALID_FILE
         );
       }
@@ -178,40 +213,31 @@ export class UploadCommand extends Command {
       const parseResult = parseCSVLine(headerLine, delimiter, true);
       if (!parseResult || !parseResult[0]) {
         throw new ConductorError(
-          `Failed to parse CSV headers: ${filePath}`,
+          `Failed to parse CSV headers`,
           ErrorCodes.PARSING_ERROR
         );
       }
 
       const headers = parseResult[0];
 
-      // Validate CSV structure using our validation function
+      // Validate CSV structure
       await validateCSVStructure(headers);
+      return true;
     } catch (error) {
       if (error instanceof ConductorError) {
-        // Rethrow ConductorErrors
-        throw error;
+        // Add file name to error message
+        throw new ConductorError(
+          `${error.message}`,
+          error.code,
+          error.details
+        );
       }
+      
       throw new ConductorError(
-        `Error validating CSV headers: ${filePath}`,
+        `Error validating CSV headers`,
         ErrorCodes.VALIDATION_FAILED,
-        error
+        { originalError: error }
       );
     }
-  }
-
-  /**
-   * Processes a single file
-   */
-  private async processFile(filePath: string, config: any): Promise<void> {
-    // Set up Elasticsearch client
-    const client = createClientFromConfig(config);
-
-    // Validate Elasticsearch connection and index
-    await validateConnection(client);
-    await validateIndex(client, config.elasticsearch.index);
-
-    // Process the file
-    await processCSVFile(filePath, config, client);
   }
 }

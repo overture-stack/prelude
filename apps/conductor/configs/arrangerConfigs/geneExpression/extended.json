@@ -1,0 +1,68 @@
+{
+  "extended": [
+    {
+      "displayName": "Gene Id Entrez",
+      "fieldName": "data.Gene_Id_Entrez"
+    },
+    {
+      "displayName": "Average Expression",
+      "fieldName": "data.Average_Expression"
+    },
+    {
+      "displayName": "Number Of Tumour Samples",
+      "fieldName": "data.Number_of_Tumour_Samples"
+    },
+    {
+      "displayName": "Cancer Type",
+      "fieldName": "data.Cancer_Type"
+    },
+    {
+      "displayName": "Dataset Name",
+      "fieldName": "data.Dataset_Name"
+    },
+    {
+      "displayName": "Is Oncogene",
+      "fieldName": "data.Is_Oncogene"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene",
+      "fieldName": "data.Is_Tumor_Suppressor_Gene"
+    },
+    {
+      "displayName": "Is WDR",
+      "fieldName": "data.Is_WDR"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "data.submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submitter Id",
+      "fieldName": "data.submission_metadata.submitter_id"
+    },
+    {
+      "displayName": "Submission Metadata Processing Started",
+      "fieldName": "data.submission_metadata.processing_started"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "data.submission_metadata.processed_at"
+    },
+    {
+      "displayName": "Submission Metadata Source File",
+      "fieldName": "data.submission_metadata.source_file"
+    },
+    {
+      "displayName": "Submission Metadata Record Number",
+      "fieldName": "data.submission_metadata.record_number"
+    },
+    {
+      "displayName": "Submission Metadata Hostname",
+      "fieldName": "data.submission_metadata.hostname"
+    },
+    {
+      "displayName": "Submission Metadata Username",
+      "fieldName": "data.submission_metadata.username"
+    }
+  ]
+}

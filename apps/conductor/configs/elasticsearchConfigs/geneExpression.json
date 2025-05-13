@@ -1,5 +1,7 @@
 {
-  "index_patterns": ["mrna-*"],
+  "index_patterns": [
+    "mrna-*"
+  ],
   "aliases": {
     "mrna_centric": {}
   },
@@ -8,40 +10,29 @@
       "data": {
         "type": "object",
         "properties": {
-          "Cancer_Type": {
-            "type": "keyword"
-          },
-          "Hugo_Symbol": {
-            "type": "keyword"
-          },
           "Gene_Id_Entrez": {
             "type": "integer"
           },
-          "Hotspot": {
-            "type": "boolean"
-          },
-          "Number_of_Mutated_Samples": {
-            "type": "integer"
-          },
-          "Total_Number_of_Samples": {
-            "type": "integer"
-          },
-          "Overall_Mutation_Frequency": {
+          "Average_Expression": {
             "type": "float"
+          },
+          "Number_of_Tumour_Samples": {
+            "type": "integer"
+          },
+          "Cancer_Type": {
+            "type": "keyword"
           },
           "Dataset_Name": {
             "type": "keyword"
           },
           "Is_Oncogene": {
-            "type": "keyword",
-            "null_value": "No Data"
+            "type": "keyword"
           },
-          "Is_Tumour_Suppressor_Gene": {
-            "type": "keyword",
-            "null_value": "No Data"
+          "Is_Tumor_Suppressor_Gene": {
+            "type": "keyword"
           },
           "Is_WDR": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "submission_metadata": {
             "type": "object",

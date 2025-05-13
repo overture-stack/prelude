@@ -1,16 +1,13 @@
 import * as fs from "fs";
 import * as readline from "readline";
+import * as path from "path";
 import { Client } from "@elastic/elasticsearch";
 import { Config } from "../../types";
 import { countFileLines, parseCSVLine } from "./csvParser";
 import { Logger } from "../../utils/logger";
-import {
-  validateCSVStructure,
-  validateHeadersMatchMappings,
-} from "../../validations";
+import { validateCSVStructure, validateHeadersMatchMappings } from "../../validations";
 import { ConductorError, ErrorCodes } from "../../utils/errors";
-import { CSVProcessingErrorHandler } from "./logHandler";
-import { sendBulkWriteRequest } from "../elasticsearch";
+import { sendBulkWriteRequest } from "../elasticsearch/bulk";
 import { formatDuration, calculateETA, createProgressBar } from "./progressBar";
 import { createRecordMetadata } from "./metadata";
 
@@ -21,7 +18,7 @@ import { createRecordMetadata } from "./metadata";
  * @param total - Total number of records
  * @param startTime - When processing started
  */
-export function updateProgressDisplay(
+function updateProgressDisplay(
   processed: number,
   total: number,
   startTime: number
@@ -32,14 +29,14 @@ export function updateProgressDisplay(
   const eta = calculateETA(processed, total, elapsedMs / 1000);
   const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
 
-  // Use \r to overwrite previous line
+  // Use \r to overwrite previous line without adding a newline
   process.stdout.write("\r");
   process.stdout.write(
-    ` ${progressBar} | ` + // Added space before progress bar
-      `${processed}/${total} | ` +
-      `⏱ ${formatDuration(elapsedMs)} | ` +
-      `🏁 ${eta} | ` +
-      `⚡${recordsPerSecond} rows/sec` // Added space after rows/sec
+    ` ${progressBar} | ` +
+    `${processed}/${total} | ` +
+    `⏱ ${formatDuration(elapsedMs)} | ` +
+    `🏁 ${eta} | ` +
+    `⚡${recordsPerSecond} rows/sec`
   );
 }
 
@@ -62,11 +59,12 @@ export async function processCSVFile(
   const startTime = Date.now();
   const batchedRecords: object[] = [];
   const processingStartTime = new Date().toISOString();
+  const fileName = path.basename(filePath);
 
   // Get total lines upfront to avoid repeated calls
   const totalLines = await countFileLines(filePath);
 
-  Logger.info`Processing file: ${filePath}`;
+  Logger.info(`Processing file: ${fileName}`);
 
   const fileStream = fs.createReadStream(filePath);
   const rl = readline.createInterface({
@@ -79,9 +77,7 @@ export async function processCSVFile(
       try {
         if (isFirstLine) {
           headers = parseCSVLine(line, config.delimiter, true)[0] || [];
-          Logger.info`Validating headers against the ${config.elasticsearch.index} mapping`;
           await validateCSVStructure(headers);
-          Logger.info("Headers validated against index mapping");
           await validateHeadersMatchMappings(
             client,
             headers,
@@ -89,19 +85,34 @@ export async function processCSVFile(
           );
           isFirstLine = false;
 
-          Logger.generic(`\n Processing data into elasticsearch...\n`);
+          Logger.generic(`\nProcessing data into elasticsearch...\n`);
           continue;
         }
 
-        const rowValues = parseCSVLine(line, config.delimiter)[0] || [];
+        const rowValues = parseCSVLine(line, config.delimiter, false)[0] || [];
         const metadata = createRecordMetadata(
           filePath,
           processingStartTime,
           processedRecords + 1
         );
+        
+        // Create a record with proper structure
         const record = {
           submission_metadata: metadata,
-          data: Object.fromEntries(headers.map((h, i) => [h, rowValues[i]])),
+          data: Object.fromEntries(
+            headers.map((h, i) => {
+              let value = rowValues[i];
+              
+              // Basic data type conversion
+              if (value === undefined || value === null || value === "") {
+                return [h, null];
+              } else if (!isNaN(Number(value)) && value.toString().trim() !== "") {
+                return [h, Number(value)];
+              } else {
+                return [h, value.toString().trim()];
+              }
+            })
+          ),
         };
 
         batchedRecords.push(record);
@@ -117,78 +128,103 @@ export async function processCSVFile(
         }
 
         if (batchedRecords.length >= config.batchSize) {
-          await sendBatchToElasticsearch(
-            client,
-            batchedRecords,
-            config.elasticsearch.index,
-            (count) => {
-              failedRecords += count;
-            }
-          );
+          try {
+            await sendBulkWriteRequest(
+              client,
+              batchedRecords,
+              config.elasticsearch.index,
+              (count) => {
+                failedRecords += count;
+              },
+              { maxRetries: 1 }
+            );
+          } catch (error) {
+            throw error;
+          }
           batchedRecords.length = 0;
         }
       } catch (lineError) {
         // Handle individual line processing errors
-        Logger.warn`Error processing line: ${line.substring(0, 50)}`;
+        Logger.debug(`Error processing line: ${line.substring(0, 50)}...`);
         failedRecords++;
       }
     }
 
     // Final batch and progress update
     if (batchedRecords.length > 0) {
-      await sendBatchToElasticsearch(
-        client,
-        batchedRecords,
-        config.elasticsearch.index,
-        (count) => {
-          failedRecords += count;
-        }
-      );
+      try {
+        await sendBulkWriteRequest(
+          client,
+          batchedRecords,
+          config.elasticsearch.index,
+          (count) => {
+            failedRecords += count;
+          },
+          { maxRetries: 1 }
+        );
+      } catch (error) {
+        throw error;
+      }
     }
 
     // Ensure final progress is displayed
-    updateProgressDisplay(processedRecords, totalLines, startTime);
-
-    // Display final summary
-    CSVProcessingErrorHandler.displaySummary(
-      processedRecords,
-      failedRecords,
-      startTime
-    );
+    updateProgressDisplay(processedRecords, totalLines - 1, startTime);
+    
+    // NOW add the newlines after we're done with all progress updates
+    console.log(`\n`);
+    
+    // Display summary statistics
+    displayProcessingSummary(processedRecords, failedRecords, startTime);
+    
   } catch (error) {
     rl.close();
-
-    // Use the error handler to process and throw the error
-    CSVProcessingErrorHandler.handleProcessingError(
-      error,
-      processedRecords,
-      isFirstLine,
-      config.delimiter
-    );
+    
+    // Ensure we're on a new line after progress bar before any error messages
+    process.stdout.write("\n\n");
+    
+    // Let the error propagate up
+    throw error;
   }
 }
 
 /**
- * Sends a batch of records to Elasticsearch
+ * Displays a summary of the CSV processing operation
  *
- * @param client - Elasticsearch client
- * @param records - Records to send
- * @param indexName - Target index
- * @param onFailure - Callback to track failed records
+ * @param processed - Total number of processed records
+ * @param failed - Number of failed records
+ * @param startTime - When the processing started
  */
-async function sendBatchToElasticsearch(
-  client: Client,
-  records: object[],
-  indexName: string,
-  onFailure: (count: number) => void
-): Promise<void> {
-  try {
-    await sendBulkWriteRequest(client, records, indexName, onFailure);
-  } catch (error) {
-    throw new ConductorError(
-      "Failed to send batch to Elasticsearch",
-      ErrorCodes.CONNECTION_ERROR,
-      error
-    );
+function displayProcessingSummary(
+  processed: number,
+  failed: number,
+  startTime: number
+): void {
+  const elapsedMs = Date.now() - startTime;
+  const recordsPerSecond = Math.max(
+    0.1,
+    processed / Math.max(1, elapsedMs / 1000)
+  );
+  const successfulRecords = Math.max(0, processed - failed);
+
+  if (failed > 0) {
+    Logger.warn(`Transfer to elasticsearch completed with partial errors`);
+  } else if (processed === 0) {
+    Logger.warn(`No records were processed`);
+  } else {
+    Logger.success(`Transfer to elasticsearch completed successfully`);
   }
+
+  // Print summary
+  Logger.generic(` ▸ Total Records processed: ${processed}`);
+  Logger.generic(` ▸ Records Successfully transferred: ${successfulRecords}`);
+
+  if (failed > 0) {
+    Logger.warn(`  ▸ Records Unsuccessfully transferred: ${failed}`);
+    Logger.generic(` ▸ Error logs outputted to: /logs/`);
+  }
+
+  Logger.generic(
+    ` ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec`
+  );
+  Logger.generic(` ⏱ Total processing time: ${formatDuration(elapsedMs)}`);
 }

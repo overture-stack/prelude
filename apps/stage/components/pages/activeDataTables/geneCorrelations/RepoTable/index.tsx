@@ -32,13 +32,9 @@ import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/T
 import { useMemo } from 'react';
 import urlJoin from 'url-join';
 
-import { InternalLink, StyledLinkAsButton } from '@/components/Link';
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
-import { INTERNAL_API_PROXY, INTERNAL_PATHS } from '@/global/utils/constants';
-import { withData } from '@overture-stack/arranger-components/dist/DataContext';
-import { SQON } from '@overture-stack/sqon-builder';
-import stringify from 'fast-json-stable-stringify';
+import { INTERNAL_API_PROXY } from '@/global/utils/constants';
 
 const getTableConfigs = ({
 	apiHost,
@@ -57,7 +53,7 @@ const getTableConfigs = ({
 
 			// appearance
 			background: theme.colors.white,
-			borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+			borderColor: theme.colors.grey_3, 
 			css: css`
 				${theme.shadow.default}
 			`,
@@ -131,7 +127,7 @@ const getTableConfigs = ({
 				},
 			},
 			HeaderRow: {
-				borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+				borderColor: theme.colors.grey_3, 
 				css: css`
 					${theme.typography.data}
 				`,
@@ -152,36 +148,13 @@ const getTableConfigs = ({
 				hoverBackground: theme.colors.grey_highlight,
 				lineHeight: '1.5rem',
 				selectedBackground: theme.colors.accent_highlight,
-				verticalBorderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+				verticalBorderColor: theme.colors.grey_3, 
 			},
 			TableWrapper: {
 				margin: '0.5rem 0',
 			},
 		},
 	},
-});
-
-const CrossTableFilterButton = withData(({ sqon }: { sqon?: SQON }) => {
-	const urlParams = new window.URLSearchParams({ filters: stringify(sqon) }).toString();
-
-	return (
-		<InternalLink path={`${INTERNAL_PATHS.DATATABLE_2}?${urlParams}`}>
-			<StyledLinkAsButton
-				css={css`
-					width: 20%;
-					padding: 8px 12px;
-					font-size: 14px;
-					border-radius: 4px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					gap: 6px;
-				`}
-			>
-				Apply filter to Gene Expression Table
-			</StyledLinkAsButton>
-		</InternalLink>
-	);
 });
 
 const RepoTable = () => {
@@ -206,7 +179,11 @@ const RepoTable = () => {
 					`}
 				>
 					<TableContextProvider>
-						<CrossTableFilterButton />
+						{/* <CrossTableFilterButton 
+						targetPath={INTERNAL_PATHS.DATATABLE_2}
+						enabledText="Apply filters to Gene Expression Table"
+						disabledText="Start by selecting filters"
+						/>						 */}
 						<Toolbar />
 						<Table />
 						<Pagination />

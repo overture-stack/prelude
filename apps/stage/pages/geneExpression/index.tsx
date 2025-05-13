@@ -1,7 +1,7 @@
 import GeneExpression from '../../components/pages/activeDataTables/geneExpression';
 import { createPage } from '../../global/utils/pages';
 
-const DataSetTwoExplorationPage = createPage({
+const DataSetThreeExplorationPage = createPage({
 	getInitialProps: async ({ query, egoJwt }) => {
 		return { query, egoJwt };
 	},
@@ -10,4 +10,4 @@ const DataSetTwoExplorationPage = createPage({
 	return <GeneExpression />;
 });
 
-export default DataSetTwoExplorationPage;
+export default DataSetThreeExplorationPage;

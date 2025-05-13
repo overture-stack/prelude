@@ -1,0 +1,81 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "data__Cancer_Type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_Oncogene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_Tumor_Suppressor_Gene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Is_WDR",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Gene_Id_Entrez",
+        "show": false
+      },
+      {
+        "active": true,
+        "fieldName": "data__Average_Expression",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Number_of_Tumour_Samples",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__Dataset_Name",
+        "show": true
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__submitter_id",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__processing_started",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__processed_at",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__source_file",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__record_number",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__hostname",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "data__submission_metadata__username",
+        "show": false
+      }
+    ]
+  }
+}

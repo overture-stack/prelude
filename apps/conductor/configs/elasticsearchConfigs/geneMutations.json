@@ -1,5 +1,7 @@
 {
-  "index_patterns": ["mutation-*"],
+  "index_patterns": [
+    "mutation-*"
+  ],
   "aliases": {
     "mutation_centric": {}
   },
@@ -8,40 +10,69 @@
       "data": {
         "type": "object",
         "properties": {
-          "Cancer_Type": {
-            "type": "keyword"
-          },
           "Hugo_Symbol": {
             "type": "keyword"
           },
-          "Gene_Id_Entrez": {
+          "Entrez_Gene_Id": {
             "type": "integer"
           },
           "Hotspot": {
-            "type": "boolean"
-          },
-          "Number_of_Mutated_Samples": {
             "type": "integer"
           },
-          "Total_Number_of_Samples": {
+          "number_of_mutated_samples": {
             "type": "integer"
           },
-          "Overall_Mutation_Frequency": {
+          "total_number_of_samples": {
+            "type": "integer"
+          },
+          "overall_mutation_frequency": {
             "type": "float"
+          },
+          "Cancer_Type": {
+            "type": "keyword"
           },
           "Dataset_Name": {
             "type": "keyword"
           },
           "Is_Oncogene": {
-            "type": "keyword",
-            "null_value": "No Data"
+            "type": "keyword"
           },
-          "Is_Tumour_Suppressor_Gene": {
-            "type": "keyword",
-            "null_value": "No Data"
+          "Is_Tumor_Suppressor_Gene": {
+            "type": "keyword"
           },
           "Is_WDR": {
-            "type": "boolean"
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "submission_metadata": {
+            "type": "object",
+            "properties": {
+              "submitter_id": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "processing_started": {
+                "type": "date"
+              },
+              "processed_at": {
+                "type": "date"
+              },
+              "source_file": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "record_number": {
+                "type": "integer"
+              },
+              "hostname": {
+                "type": "keyword",
+                "null_value": "No Data"
+              },
+              "username": {
+                "type": "keyword",
+                "null_value": "No Data"
+              }
+            }
           }
         }
       }

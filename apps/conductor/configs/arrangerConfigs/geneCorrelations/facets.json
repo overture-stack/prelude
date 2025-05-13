@@ -4,7 +4,7 @@
       {
         "active": true,
         "fieldName": "data__N",
-        "show": true
+        "show": false
       },
       {
         "active": true,
@@ -14,7 +14,7 @@
       {
         "active": true,
         "fieldName": "data__Entrez_Gene_Id_A",
-        "show": true
+        "show": false
       },
       {
         "active": true,
@@ -24,7 +24,7 @@
       {
         "active": true,
         "fieldName": "data__Entrez_Gene_Id_B",
-        "show": true
+        "show": false
       },
       {
         "active": true,
@@ -44,7 +44,7 @@
       {
         "active": true,
         "fieldName": "data__PearsonP",
-        "show": true
+        "show": false
       },
       {
         "active": true,
