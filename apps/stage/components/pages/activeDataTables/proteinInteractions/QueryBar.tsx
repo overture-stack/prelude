@@ -23,7 +23,7 @@ import { css, useTheme } from '@emotion/react';
 import { SQONViewer, useArrangerTheme } from '@overture-stack/arranger-components';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
 import { Row } from 'react-grid-system';
-import CrossTableFilterButton from '../geneCorrelations/CrossTableFilterButton';
+import CrossTableFilterButton from '../CrossTableFilterButton';
 import { INTERNAL_PATHS } from '@/global/utils/constants';
 const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProps => ({
 	callerName: 'DataSetOne-QueryBar',
