@@ -89,7 +89,7 @@ function getErrorMessage(err: unknown): string {
 export class LyricDataService {
   private lyricUrl: string;
   private lecternUrl: string;
-  private readonly MAX_RETRIES: number = 10;
+  private readonly MAX_RETRIES: number = 0;
   private readonly RETRY_DELAY: number = 20000; // 20 seconds
   private readonly TIMEOUT: number = 10000; // 10 seconds
 

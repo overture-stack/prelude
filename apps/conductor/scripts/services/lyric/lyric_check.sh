@@ -2,7 +2,7 @@
 
 # Define some basic configurations
 RETRY_COUNT=0
-MAX_RETRIES=10          
+MAX_RETRIES=0          
 RETRY_DELAY=20          
 TIMEOUT=10              
 

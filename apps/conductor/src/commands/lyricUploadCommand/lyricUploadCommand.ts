@@ -23,7 +23,7 @@ import { LyricCategory } from "./interfaces/lyric-category.interface";
  * Command for loading data into Lyric
  */
 export class LyricUploadCommand extends Command {
-  private readonly MAX_RETRIES = 10;
+  private readonly MAX_RETRIES = 0;
   private readonly RETRY_DELAY = 20000; // 20 seconds
 
   constructor() {
@@ -63,7 +63,7 @@ export class LyricUploadCommand extends Command {
       "OICR";
     const maxRetries = parseInt(
       String(
-        cliOutput.config.lyric?.maxRetries || process.env.MAX_RETRIES || "10"
+        cliOutput.config.lyric?.maxRetries || process.env.MAX_RETRIES || "0"
       )
     );
     const retryDelay = parseInt(

@@ -1,12 +1,12 @@
 {
   "name": "drugDiscoveryDictionary",
-  "description": "Generated dictionary for the Drug Discovery Portal",
+  "description": "Generated dictionary from CSV files",
   "version": "1.0",
   "meta": {},
   "schemas": [
     {
       "name": "genecorrelations",
-      "description": "Schema generated from geneCorrelations.csv",
+      "description": "Schema generated from genecorrelations.csv",
       "fields": [
         {
           "name": "N",
@@ -138,13 +138,13 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-26T21:39:21.245Z",
-        "sourceFile": "geneCorrelations.csv"
+        "createdAt": "2025-05-14T00:47:22.212Z",
+        "sourceFile": "genecorrelations.csv"
       }
     },
     {
       "name": "geneexpression",
-      "description": "Schema generated from geneExpression.csv",
+      "description": "Schema generated from geneexpression.csv",
       "fields": [
         {
           "name": "Gene_Id_Entrez",
@@ -212,22 +212,14 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-26T21:40:02.017Z",
-        "sourceFile": "geneExpression.csv"
+        "createdAt": "2025-05-14T00:47:22.216Z",
+        "sourceFile": "geneexpression.csv"
       }
     },
     {
       "name": "genemutations",
-      "description": "Schema generated from geneMutations.csv",
+      "description": "Schema generated from genemutations.csv",
       "fields": [
-        {
-          "name": "Cancer_Type",
-          "description": "Field containing Cancer_Type data",
-          "valueType": "string",
-          "meta": {
-            "displayName": "Cancer_Type"
-          }
-        },
         {
           "name": "Hugo_Symbol",
           "description": "Field containing Hugo_Symbol data",
@@ -237,11 +229,11 @@
           }
         },
         {
-          "name": "Gene_Id_Entrez",
-          "description": "Field containing Gene_Id_Entrez data",
-          "valueType": "integer",
+          "name": "Entrez_Gene_Id",
+          "description": "Field containing Entrez_Gene_Id data",
+          "valueType": "string",
           "meta": {
-            "displayName": "Gene_Id_Entrez"
+            "displayName": "Entrez_Gene_Id"
           }
         },
         {
@@ -253,27 +245,35 @@
           }
         },
         {
-          "name": "Number_of_Mutated_Samples",
-          "description": "Field containing Number_of_Mutated_Samples data",
+          "name": "number_of_mutated_samples",
+          "description": "Field containing number_of_mutated_samples data",
           "valueType": "integer",
           "meta": {
-            "displayName": "Number_of_Mutated_Samples"
+            "displayName": "number_of_mutated_samples"
           }
         },
         {
-          "name": "Total_Number_of_Samples",
-          "description": "Field containing Total_Number_of_Samples data",
+          "name": "total_number_of_samples",
+          "description": "Field containing total_number_of_samples data",
           "valueType": "integer",
           "meta": {
-            "displayName": "Total_Number_of_Samples"
+            "displayName": "total_number_of_samples"
           }
         },
         {
-          "name": "Overall_Mutation_Frequency",
-          "description": "Field containing Overall_Mutation_Frequency data",
-          "valueType": "integer",
+          "name": "overall_mutation_frequency",
+          "description": "Field containing overall_mutation_frequency data",
+          "valueType": "number",
           "meta": {
-            "displayName": "Overall_Mutation_Frequency"
+            "displayName": "overall_mutation_frequency"
+          }
+        },
+        {
+          "name": "Cancer_Type",
+          "description": "Field containing Cancer_Type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "Cancer_Type"
           }
         },
         {
@@ -293,11 +293,11 @@
           }
         },
         {
-          "name": "Is_Tumour_Suppressor_Gene",
-          "description": "Field containing Is_Tumour_Suppressor_Gene data",
+          "name": "Is_Tumor_Suppressor_Gene",
+          "description": "Field containing Is_Tumor_Suppressor_Gene data",
           "valueType": "string",
           "meta": {
-            "displayName": "Is_Tumour_Suppressor_Gene"
+            "displayName": "Is_Tumor_Suppressor_Gene"
           }
         },
         {
@@ -310,13 +310,13 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-26T21:40:45.122Z",
-        "sourceFile": "geneMutations.csv"
+        "createdAt": "2025-05-14T00:47:22.216Z",
+        "sourceFile": "genemutations.csv"
       }
     },
     {
       "name": "proteininteractions",
-      "description": "Schema generated from proteinInteractions.csv",
+      "description": "Schema generated from proteininteractions.csv",
       "fields": [
         {
           "name": "Hugo_Symbol_A",
@@ -385,7 +385,7 @@
         {
           "name": "coexpression_transferred",
           "description": "Field containing coexpression_transferred data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "coexpression_transferred"
           }
@@ -393,7 +393,7 @@
         {
           "name": "experiments",
           "description": "Field containing experiments data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "experiments"
           }
@@ -401,7 +401,7 @@
         {
           "name": "experiments_transferred",
           "description": "Field containing experiments_transferred data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "experiments_transferred"
           }
@@ -409,7 +409,7 @@
         {
           "name": "database",
           "description": "Field containing database data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "database"
           }
@@ -417,7 +417,7 @@
         {
           "name": "database_transferred",
           "description": "Field containing database_transferred data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "database_transferred"
           }
@@ -480,8 +480,8 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-03-26T21:41:15.691Z",
-        "sourceFile": "proteinInteractions.csv"
+        "createdAt": "2025-05-14T00:47:22.217Z",
+        "sourceFile": "proteininteractions.csv"
       }
     }
   ]

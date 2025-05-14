@@ -79,7 +79,7 @@ export const Defaults = {
   DELIMITER: ",",
 
   /** Default max retries for Lyric operations */
-  MAX_RETRIES: 10,
+  MAX_RETRIES: 0,
 
   /** Default retry delay in milliseconds */
   RETRY_DELAY: 20000,

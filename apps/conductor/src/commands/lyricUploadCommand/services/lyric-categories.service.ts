@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Logger } from "../../../utils/logger";
-import { ConductorError, ErrorCodes } from "../../../utils/errors";
 import { LyricCategory } from "../interfaces/lyric-category.interface";
 
 /**
