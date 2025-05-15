@@ -93,7 +93,7 @@ cd conductor
 Run a pre-deployment check:
 
 ```sh
-make Phase0
+make phase0
 ```
 
 **Requirements:**

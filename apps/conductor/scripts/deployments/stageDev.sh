@@ -68,7 +68,7 @@ echo -e "\033[1m1️⃣  To run Stage locally, navigate to the directory:\033[0m
 echo -e "   \033[1;32mcd apps/stage\033[0m\n"
 
 echo -e "\033[1m2️⃣  Copy the example environment file:\033[0m"
-echo -e "   \033[1;32mcp .env.stageDev .env\033[0m\n"
+echo -e "   \033[1;32mcp .env.stage .env\033[0m\n"
 
 echo -e "\033[1m3️⃣  Install the dependencies:\033[0m"
 echo -e "   \033[1;32mnpm ci\033[0m"
