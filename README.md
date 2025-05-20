@@ -33,6 +33,57 @@ make phase0
 
 This command will verify your system meets all requirements and provide guidance on any necessary adjustments.
 
+### Install Conductor
+
+```bash
+cd apps/conductor
+npm install
+npm run build
+npm install -g .
+```
+
+### Phase 1
+
+1. Run the deployment script `make phase1`
+
+2. Run the following with your data files in the data folder
+
+```bash
+conductor upload -f ./data/protein.csv -i protein-index
+conductor upload -f ./data/mrna.csv -i mrna-index
+conductor upload -f ./data/correlation.csv -i correlation-index
+conductor upload -f ./data/mutation.csv -i mutation-index
+```
+
+#### Phase 2
+
+1. Run the deployment script `make phase2`
+
+2. Run the following with your data files in the data folder
+
+```bash
+# Upload consolidated dictionary
+conductor lecternUpload -s ./configs/lecternDictionaries/drugDiscoveryDictionaryV2.json
+
+# Register entities with schema
+conductor lyricRegister -c correlations --dict-name drugDiscoveryDictionary -v 1.0 -e genecorrelations
+conductor lyricRegister -c mutations --dict-name drugDiscoveryDictionary -v 1.0 -e genemutations
+conductor lyricRegister -c expression --dict-name drugDiscoveryDictionary -v 1.0 -e geneexpression
+conductor lyricRegister -c protein --dict-name drugDiscoveryDictionary -v 1.0 -e proteininteractions
+
+# Upload tabular data
+conductor lyricUpload -d ./data/genecorrelations.csv -c 1
+conductor lyricUpload -d ./data/genemutations.csv -c 2
+conductor lyricUpload -d ./data/geneexpression.csv -c 3
+conductor lyricUpload -d ./data/proteininteractions.csv -c 4
+
+# Index data
+conductor maestroIndex --repository-code correlation
+conductor maestroIndex --repository-code mutation
+conductor maestroIndex --repository-code mrna
+conductor maestroIndex --repository-code protein
+```
+
 ### Deployment Options
 
 The portal can be deployed in phases, with each phase adding additional functionality:
