@@ -1,29 +1,4 @@
-# Overture Documentation Portal
-
-A comprehensive documentation portal for the Overture data platform implementation, built with Next.js and featuring a responsive, mobile-friendly design with intuitive navigation.
-
-## Overview
-
-This documentation portal provides a structured, user-friendly interface for accessing Overture's Prelude documentation. It features:
-
-- Responsive sidebar navigation with mobile support
-- Markdown content rendering with automatic table of contents
-- Section-based navigation with previous/next links
-- Copy-to-clipboard functionality for headings
-- Dynamic content loading
-
 ## Getting Started
-
-### Prerequisites
-
-- **Docker Desktop 4.39.0+** with:
-  - 8-core CPU minimum
-  - 8 GB memory
-  - 2 GB swap
-  - 64 GB virtual disk
-- **Node.js 18+ and npm 9+**
-
-### First Steps
 
 Start by running the pre-deployment check to ensure your environment is properly configured:
 
@@ -104,10 +79,6 @@ make stage-dev
 # Reset all containers and volumes
 make reset
 ```
-
-### Accessing the Portal
-
-Once running, access the documentation portal at: [http://localhost:3000](http://localhost:3000)
 
 ## Documentation Structure
 
