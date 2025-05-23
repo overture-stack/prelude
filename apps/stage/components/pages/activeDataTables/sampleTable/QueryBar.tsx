@@ -23,6 +23,8 @@ import { css, useTheme } from '@emotion/react';
 import { SQONViewer, useArrangerTheme } from '@overture-stack/arranger-components';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
 import { Row } from 'react-grid-system';
+import CrossTableFilterButton from '../CrossTableFilterButton';
+import { INTERNAL_PATHS } from '@/global/utils/constants';
 const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProps => ({
 	callerName: 'DataSetOne-QueryBar',
 	components: {
@@ -100,6 +102,7 @@ const QueryBar = () => {
 	const theme = useTheme();
 	useArrangerTheme(getThemeCustomisations(theme));
 	return (
+		<>
 		<Row
 			gutterWidth={2}
 			css={(theme) => css`
@@ -112,6 +115,30 @@ const QueryBar = () => {
 		>
 			<SQONViewer />
 		</Row>
+		{/* Flex container for buttons */}
+		<div
+			css={css`
+				display: flex;
+				gap: 8px;
+				margin-bottom: 8px;
+			`}
+		>
+			<div css={css`flex: 1;`}>
+				<CrossTableFilterButton
+					targetPath={INTERNAL_PATHS.DATATABLE_1}
+					enabledText="Apply filters to id mapping table"
+					disabledText="Start by selecting filters"
+				/>
+			</div>
+			<div css={css`flex: 1;`}>
+				<CrossTableFilterButton
+					targetPath={INTERNAL_PATHS.DATATABLE_3}
+					enabledText="Apply filters to summary table"
+					disabledText="Start by selecting filters"
+				/>
+			</div>
+		</div>
+		</>
 	);
 };
 export default QueryBar;
