@@ -1,15 +1,6 @@
 {
   "table": {
-    "rowIdFieldName": "submission_metadata.submitter_id" ,
     "columns": [
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.submitter_id",
-        "show": true,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.submitter_id",
-        "query": "submission_metadata { submitter_id }"
-      },
       {
         "canChangeShow": true,
         "fieldName": "data.external_id",
@@ -93,7 +84,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.PDO_WT_RNAseq",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.PDO_WT_RNAseq",
         "query": "data { PDO_WT_RNAseq }"
@@ -101,7 +92,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.PDO_WGS",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.PDO_WGS",
         "query": "data { PDO_WGS }"
@@ -109,7 +100,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.PDO_Exome",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.PDO_Exome",
         "query": "data { PDO_Exome }"
@@ -117,7 +108,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.PDO_drugscreen",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.PDO_drugscreen",
         "query": "data { PDO_drugscreen }"
@@ -125,7 +116,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Tumour_scRNAseq",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Tumour_scRNAseq",
         "query": "data { Tumour_scRNAseq }"
@@ -133,7 +124,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Tumour_scCNV",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Tumour_scCNV",
         "query": "data { Tumour_scCNV }"
@@ -141,7 +132,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Tumour_multiome",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Tumour_multiome",
         "query": "data { Tumour_multiome }"
@@ -149,7 +140,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Tumour_spatial",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Tumour_spatial",
         "query": "data { Tumour_spatial }"
@@ -165,7 +156,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Plasma_cfRNA",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Plasma_cfRNA",
         "query": "data { Plasma_cfRNA }"
@@ -205,7 +196,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Biopsy_at_Diagnosis",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Biopsy_at_Diagnosis",
         "query": "data { Biopsy_at_Diagnosis }"
@@ -221,7 +212,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Systemic_Tx",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Systemic_Tx",
         "query": "data { Systemic_Tx }"
@@ -237,7 +228,7 @@
       {
         "canChangeShow": true,
         "fieldName": "data.Biopsy_at_Progression",
-        "show": false,
+        "show": true,
         "sortable": true,
         "jsonPath": "$.data.Biopsy_at_Progression",
         "query": "data { Biopsy_at_Progression }"
@@ -425,54 +416,6 @@
         "sortable": true,
         "jsonPath": "$.data.GPxx",
         "query": "data { GPxx }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.processing_started",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.processing_started",
-        "query": "submission_metadata { processing_started }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.processed_at",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.processed_at",
-        "query": "submission_metadata { processed_at }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.source_file",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.source_file",
-        "query": "submission_metadata { source_file }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.record_number",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.record_number",
-        "query": "submission_metadata { record_number }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.hostname",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.hostname",
-        "query": "submission_metadata { hostname } "
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.username",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.username",
-        "query": "submission_metadata { username } "
       }
     ]
   }
