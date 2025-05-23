@@ -7,35 +7,6 @@
   },
   "mappings": {
     "properties": {
-      "submission_metadata": {
-        "type": "object",
-        "properties": {
-          "submitter_id": {
-            "type": "keyword"
-          },
-          "processing_started": {
-            "type": "date"
-          },
-          "processed_at": {
-            "type": "date"
-          },
-          "source_file": {
-            "type": "keyword",
-            "null_value": "No Data"
-          },
-          "record_number": {
-            "type": "integer"
-          },
-          "hostname": {
-            "type": "keyword",
-            "null_value": "No Data"
-          },
-          "username": {
-            "type": "keyword",
-            "null_value": "No Data"
-          }
-        }
-      },
       "data": {
         "type": "object",
         "properties": {
@@ -52,7 +23,7 @@
             "type": "keyword"
           },
           "Date_of_Tissue": {
-            "type": "date"
+            "type": "keyword"
           },
           "Sample": {
             "type": "keyword"
@@ -71,34 +42,34 @@
             "type": "integer"
           },
           "PDO_WT_RNAseq": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "PDO_WGS": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "PDO_Exome": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "PDO_drugscreen": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Tumour_scRNAseq": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Tumour_scCNV": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Tumour_multiome": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Tumour_spatial": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Plasma_WGS": {
             "type": "keyword"
           },
           "Plasma_cfRNA": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Histology": {
             "type": "keyword",
@@ -114,19 +85,19 @@
             "type": "integer"
           },
           "Biopsy_at_Diagnosis": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Date_of_Rx": {
-            "type": "date"
+            "type": "keyword"
           },
           "Systemic_Tx": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "Tx_Type": {
             "type": "keyword"
           },
           "Biopsy_at_Progression": {
-            "type": "boolean"
+            "type": "keyword"
           },
           "CRUK": {
             "type": "keyword"

@@ -39,7 +39,7 @@ services:
       ES_INDEX_2_ALIAS_NAME: summary_centric
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
-      ARRANGER_COUNT: 1
+      ARRANGER_COUNT: 3
       ARRANGER_0_URL: http://arranger-idmapping:5050
       ARRANGER_1_URL: http://arranger-sampletable:5051
       ARRANGER_2_URL: http://arranger-summarytable:5052
@@ -429,7 +429,7 @@ services:
   # -----------------------------------------------------------------------------------#
   maestro:
     profiles: ["phase2", phase3, "default"]
-    image: ghcr.io/overture-stack/maestro:e868d03
+    image: ghcr.io/overture-stack/maestro:7f05c8d
     container_name: maestro
     platform: linux/amd64
     depends_on:
@@ -443,31 +443,30 @@ services:
       # Maestro Base Variables
       MAESTRO_FAILURELOG_ENABLED: true
       MAESTRO_FAILURELOG_DIR: app/logs/maestro
-      MAESTRO_LOGGING_LEVEL_ROOT: INFO
+      MAESTRO_LOGGING_LEVEL_ROOT: DEBUG
       MAESTRO_DISABLEEVENTINDEXING: true
-      # Repository Configuration - Lyric
-      # idMapping
+      # idmapping
       MAESTRO_REPOSITORIES_0_BASE_URL: http://lyric:3030
-      MAESTRO_REPOSITORIES_0_CODE: idmapping
-      MAESTRO_REPOSITORIES_0_NAME: Overture idmapping Lyric
+      MAESTRO_REPOSITORIES_0_CODE: sample
+      MAESTRO_REPOSITORIES_0_NAME: sample lyric
       MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_0_INDEX_NAME: idmapping-index
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: sample-index
       MAESTRO_REPOSITORIES_0_TYPE: LYRIC
       MAESTRO_REPOSITORIES_0_LYRIC_VALID_DATA_ONLY: true
-      MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 1
+      MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 2
       # sample
       MAESTRO_REPOSITORIES_1_BASE_URL: http://lyric:3030
-      MAESTRO_REPOSITORIES_1_CODE: sample
-      MAESTRO_REPOSITORIES_1_NAME: Overture sample Lyric
+      MAESTRO_REPOSITORIES_1_CODE: idmapping
+      MAESTRO_REPOSITORIES_1_NAME: idmapping Lyric
       MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_1_INDEX_NAME: sample-index
+      MAESTRO_REPOSITORIES_1_INDEX_NAME: idmapping-index
       MAESTRO_REPOSITORIES_1_TYPE: LYRIC
       MAESTRO_REPOSITORIES_1_LYRIC_VALID_DATA_ONLY: true
-      MAESTRO_REPOSITORIES_1_LYRIC_CATEGORY_ID: 2
+      MAESTRO_REPOSITORIES_1_LYRIC_CATEGORY_ID: 1
       # summary
       MAESTRO_REPOSITORIES_2_BASE_URL: http://lyric:3030
       MAESTRO_REPOSITORIES_2_CODE: summary
-      MAESTRO_REPOSITORIES_2_NAME: Overture summary Lyric
+      MAESTRO_REPOSITORIES_2_NAME: Summary Lyric
       MAESTRO_REPOSITORIES_2_PAGINATION_SIZE: 50
       MAESTRO_REPOSITORIES_2_INDEX_NAME: summary-index
       MAESTRO_REPOSITORIES_2_TYPE: LYRIC
