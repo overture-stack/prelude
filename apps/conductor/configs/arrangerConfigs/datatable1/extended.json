@@ -1,99 +1,128 @@
 {
   "extended": [
     {
+      "displayName": "Donor Id",
+      "fieldName": "data.donor_id"
+    },
+    {
       "displayName": "Gender",
       "fieldName": "data.gender"
     },
     {
-      "displayName": "Donor Id",
-      "fieldName": "data.donor_id"
+      "displayName": "Primary Site",
+      "fieldName": "data.primary_site"
     },
     {
       "displayName": "Vital Status",
       "fieldName": "data.vital_status"
     },
     {
-      "displayName": "Diagnosis",
-      "fieldName": "data.diagnosis",
-      "isArray": true
+      "displayName": "Diagnosis Id",
+      "fieldName": "data.diagnosis_id"
     },
     {
-      "displayName": "Diagnosis Stage",
-      "fieldName": "data.diagnosis.stage"
+      "displayName": "Age At Diagnosis",
+      "fieldName": "data.age_at_diagnosis"
     },
     {
-      "displayName": "Diagnosis Donor Id",
-      "fieldName": "data.diagnosis.donor_id"
+      "displayName": "Cancer Type",
+      "fieldName": "data.cancer_type"
     },
     {
-      "displayName": "Diagnosis Cancer Type",
-      "fieldName": "data.diagnosis.cancer_type"
+      "displayName": "Staging System",
+      "fieldName": "data.staging_system"
     },
     {
-      "displayName": "Diagnosis Diagnosis Id",
-      "fieldName": "data.diagnosis.diagnosis_id"
+      "displayName": "Stage",
+      "fieldName": "data.stage"
     },
     {
-      "displayName": "Diagnosis Primary Site",
-      "fieldName": "data.diagnosis.primary_site"
+      "displayName": "Specimen Id",
+      "fieldName": "data.specimen_id"
     },
     {
-      "displayName": "Diagnosis Staging System",
-      "fieldName": "data.diagnosis.staging_system"
+      "displayName": "Specimen Type",
+      "fieldName": "data.specimen_type"
     },
     {
-      "displayName": "Diagnosis Age At Diagnosis",
-      "fieldName": "data.diagnosis.age_at_diagnosis"
+      "displayName": "Tissue Source",
+      "fieldName": "data.tissue_source"
     },
     {
-      "displayName": "Treatment",
-      "fieldName": "data.treatment",
-      "isArray": true
+      "displayName": "Sample Id",
+      "fieldName": "data.sample_id"
     },
     {
-      "displayName": "Treatment Donor Id",
-      "fieldName": "data.treatment.donor_id"
+      "displayName": "Sample Type",
+      "fieldName": "data.sample_type"
     },
     {
-      "displayName": "Treatment Treatment Id",
-      "fieldName": "data.treatment.treatment_id"
+      "displayName": "Treatment Id",
+      "fieldName": "data.treatment_id"
     },
     {
-      "displayName": "Treatment Treatment Type",
-      "fieldName": "data.treatment.treatment_type"
+      "displayName": "Treatment Type",
+      "fieldName": "data.treatment_type"
     },
     {
-      "displayName": "Treatment Treatment Start",
-      "fieldName": "data.treatment.treatment_start"
+      "displayName": "Treatment Start",
+      "fieldName": "data.treatment_start"
     },
     {
-      "displayName": "Treatment Treatment Duration",
-      "fieldName": "data.treatment.treatment_duration"
+      "displayName": "Treatment Duration",
+      "fieldName": "data.treatment_duration"
     },
     {
-      "displayName": "Treatment Treatment Response",
-      "fieldName": "data.treatment.treatment_response"
+      "displayName": "Treatment Response",
+      "fieldName": "data.treatment_response"
     },
     {
-      "displayName": "Treatment Followup",
-      "fieldName": "data.treatment.followup",
-      "isArray": true
+      "displayName": "Drug Name",
+      "fieldName": "data.drug_name"
     },
     {
-      "displayName": "Treatment Followup Followup Id",
-      "fieldName": "data.treatment.followup.followup_id"
+      "displayName": "Followup Id",
+      "fieldName": "data.followup_id"
     },
     {
-      "displayName": "Treatment Followup Treatment Id",
-      "fieldName": "data.treatment.followup.treatment_id"
+      "displayName": "Followup Interval",
+      "fieldName": "data.followup_interval"
     },
     {
-      "displayName": "Treatment Followup Disease Status",
-      "fieldName": "data.treatment.followup.disease_status"
+      "displayName": "Disease Status",
+      "fieldName": "data.disease_status"
     },
     {
-      "displayName": "Treatment Followup Followup Interval",
-      "fieldName": "data.treatment.followup.followup_interval"
+      "displayName": "Submission Metadata",
+      "fieldName": "data.submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submitter Id",
+      "fieldName": "data.submission_metadata.submitter_id"
+    },
+    {
+      "displayName": "Submission Metadata Processing Started",
+      "fieldName": "data.submission_metadata.processing_started"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "data.submission_metadata.processed_at"
+    },
+    {
+      "displayName": "Submission Metadata Source File",
+      "fieldName": "data.submission_metadata.source_file"
+    },
+    {
+      "displayName": "Submission Metadata Record Number",
+      "fieldName": "data.submission_metadata.record_number"
+    },
+    {
+      "displayName": "Submission Metadata Hostname",
+      "fieldName": "data.submission_metadata.hostname"
+    },
+    {
+      "displayName": "Submission Metadata Username",
+      "fieldName": "data.submission_metadata.username"
     }
   ]
 }
