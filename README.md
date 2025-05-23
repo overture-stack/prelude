@@ -29,6 +29,54 @@ make phase0
 
 The CLI will provide you with instructions on next steps.
 
+### Phase 2 Command Setup
+
+Install the CLI utilities:
+
+For Conductor:
+
+```bash
+cd apps/conductor
+npm ci
+npm install -g . 
+```
+
+If using configuration automation services install Composer
+
+```bash
+cd apps/composer
+npm ci
+npm install -g . 
+```
+
+Run:
+
+```bash
+make phase2
+```
+
+Then run the following commands to populate the portal with data:
+
+```bash
+# Upload consolidated dictionary
+conductor lecternUpload -s ./configs/lecternDictionaries/lbr-dictionary.json
+
+# Register entities with schema
+conductor lyricRegister -c idmapping --dict-name lbr-dictionary -v 1.0 -e idmapping
+conductor lyricRegister -c sample --dict-name lbr-dictionary -v 1.0 -e sample
+conductor lyricRegister -c summary --dict-name lbr-dictionary -v 1.0 -e summary
+
+# Upload tabular data
+conductor lyricUpload -d ./data/idmapping.csv -c 1
+conductor lyricUpload -d ./data/sample.csv -c 2
+conductor lyricUpload -d ./data/summary.csv -c 3
+
+# Index data
+conductor maestroIndex --repository-code idmapping
+conductor maestroIndex --repository-code sample
+conductor maestroIndex --repository-code summary
+```
+
 ## Development Phases
 
 Prelude is structured into four incremental phases:

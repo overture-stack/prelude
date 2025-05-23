@@ -27,7 +27,7 @@
         {
           "name": "Age_at_diagnosis",
           "description": "Field containing Age_at_diagnosis data",
-          "valueType": "string",
+          "valueType": "integer",
           "meta": {
             "displayName": "Age_at_diagnosis"
           }
@@ -35,7 +35,7 @@
         {
           "name": "Sex",
           "description": "Field containing Sex data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "Sex"
           }
@@ -75,7 +75,7 @@
         {
           "name": "PDO_ID_Notta",
           "description": "Field containing PDO_ID_Notta data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "PDO_ID_Notta"
           }
@@ -83,7 +83,7 @@
         {
           "name": "PDO_ID_PMLB",
           "description": "Field containing PDO_ID_PMLB data",
-          "valueType": "string",
+          "valueType": "integer",
           "meta": {
             "displayName": "PDO_ID_PMLB"
           }
@@ -91,7 +91,7 @@
         {
           "name": "PDO_WT_RNAseq",
           "description": "Field containing PDO_WT_RNAseq data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "PDO_WT_RNAseq"
           }
@@ -99,7 +99,7 @@
         {
           "name": "PDO_WGS",
           "description": "Field containing PDO_WGS data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "PDO_WGS"
           }
@@ -107,7 +107,7 @@
         {
           "name": "PDO_Exome",
           "description": "Field containing PDO_Exome data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "PDO_Exome"
           }
@@ -115,7 +115,7 @@
         {
           "name": "PDO_drugscreen",
           "description": "Field containing PDO_drugscreen data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "PDO_drugscreen"
           }
@@ -123,7 +123,7 @@
         {
           "name": "Tumour_scRNAseq",
           "description": "Field containing Tumour_scRNAseq data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Tumour_scRNAseq"
           }
@@ -131,7 +131,7 @@
         {
           "name": "Tumour_scCNV",
           "description": "Field containing Tumour_scCNV data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Tumour_scCNV"
           }
@@ -139,7 +139,7 @@
         {
           "name": "Tumour_multiome",
           "description": "Field containing Tumour_multiome data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Tumour_multiome"
           }
@@ -147,7 +147,7 @@
         {
           "name": "Tumour_spatial",
           "description": "Field containing Tumour_spatial data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Tumour_spatial"
           }
@@ -155,7 +155,7 @@
         {
           "name": "Plasma_WGS",
           "description": "Field containing Plasma_WGS data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Plasma_WGS"
           }
@@ -171,7 +171,7 @@
         {
           "name": "Histology",
           "description": "Field containing Histology data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Histology"
           }
@@ -187,7 +187,7 @@
         {
           "name": "Staging_at_Diagnosis_N",
           "description": "Field containing Staging_at_Diagnosis_N data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Staging_at_Diagnosis_N"
           }
@@ -195,7 +195,7 @@
         {
           "name": "Staging_at_Diagnosis_M",
           "description": "Field containing Staging_at_Diagnosis_M data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Staging_at_Diagnosis_M"
           }
@@ -203,7 +203,7 @@
         {
           "name": "Biopsy_at_Diagnosis",
           "description": "Field containing Biopsy_at_Diagnosis data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Biopsy_at_Diagnosis"
           }
@@ -211,7 +211,7 @@
         {
           "name": "Date_of_Rx",
           "description": "Field containing Date_of_Rx data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Date_of_Rx"
           }
@@ -227,7 +227,7 @@
         {
           "name": "Tx_Type",
           "description": "Field containing Tx_Type data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Tx_Type"
           }
@@ -243,7 +243,7 @@
         {
           "name": "CRUK",
           "description": "Field containing CRUK data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "CRUK"
           }
@@ -291,7 +291,7 @@
         {
           "name": "PA7",
           "description": "Field containing PA7 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "PA7"
           }
@@ -299,7 +299,7 @@
         {
           "name": "PA6",
           "description": "Field containing PA6 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "PA6"
           }
@@ -307,7 +307,7 @@
         {
           "name": "Prosper_Panc",
           "description": "Field containing Prosper_Panc data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "Prosper_Panc"
           }
@@ -426,7 +426,7 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-05-02T15:50:37.909Z",
+        "createdAt": "2025-05-23T19:08:46.352Z",
         "sourceFile": "idmapping.csv"
       }
     },
@@ -517,7 +517,7 @@
         {
           "name": "group_id",
           "description": "Field containing group_id data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "group_id"
           }
@@ -636,7 +636,7 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-05-02T15:50:37.916Z",
+        "createdAt": "2025-05-23T19:08:46.381Z",
         "sourceFile": "sample.csv"
       }
     },
@@ -687,7 +687,7 @@
         {
           "name": "tumour_coverage",
           "description": "Field containing tumour_coverage data",
-          "valueType": "integer",
+          "valueType": "number",
           "meta": {
             "displayName": "tumour_coverage"
           }
@@ -831,7 +831,7 @@
         {
           "name": "stoploss_count",
           "description": "Field containing stoploss_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "stoploss_count"
           }
@@ -847,7 +847,7 @@
         {
           "name": "noncoding_count",
           "description": "Field containing noncoding_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "noncoding_count"
           }
@@ -863,7 +863,7 @@
         {
           "name": "nonframeshift_count",
           "description": "Field containing nonframeshift_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "nonframeshift_count"
           }
@@ -879,7 +879,7 @@
         {
           "name": "del_nonframeshift_count",
           "description": "Field containing del_nonframeshift_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "del_nonframeshift_count"
           }
@@ -887,7 +887,7 @@
         {
           "name": "ins_frameshift_count",
           "description": "Field containing ins_frameshift_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "ins_frameshift_count"
           }
@@ -895,7 +895,7 @@
         {
           "name": "ins_nonframeshift_count",
           "description": "Field containing ins_nonframeshift_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "ins_nonframeshift_count"
           }
@@ -935,7 +935,7 @@
         {
           "name": "sv_tra_count",
           "description": "Field containing sv_tra_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "sv_tra_count"
           }
@@ -967,7 +967,7 @@
         {
           "name": "sv_tra_bp_gene_count",
           "description": "Field containing sv_tra_bp_gene_count data",
-          "valueType": "integer",
+          "valueType": "string",
           "meta": {
             "displayName": "sv_tra_bp_gene_count"
           }
@@ -1135,7 +1135,7 @@
         {
           "name": "csnnls_sig3",
           "description": "Field containing csnnls_sig3 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "csnnls_sig3"
           }
@@ -1151,7 +1151,7 @@
         {
           "name": "csnnls_sig6",
           "description": "Field containing csnnls_sig6 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "csnnls_sig6"
           }
@@ -1167,7 +1167,7 @@
         {
           "name": "csnnls_sig13",
           "description": "Field containing csnnls_sig13 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "csnnls_sig13"
           }
@@ -1175,7 +1175,7 @@
         {
           "name": "csnnls_sig17",
           "description": "Field containing csnnls_sig17 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "csnnls_sig17"
           }
@@ -1183,7 +1183,7 @@
         {
           "name": "csnnls_sig18",
           "description": "Field containing csnnls_sig18 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "csnnls_sig18"
           }
@@ -1191,7 +1191,7 @@
         {
           "name": "csnnls_sig20",
           "description": "Field containing csnnls_sig20 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "csnnls_sig20"
           }
@@ -1199,7 +1199,7 @@
         {
           "name": "csnnls_sig26",
           "description": "Field containing csnnls_sig26 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "csnnls_sig26"
           }
@@ -1367,7 +1367,7 @@
         {
           "name": "DEL_100k",
           "description": "Field containing DEL_100k data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DEL_100k"
           }
@@ -1375,7 +1375,7 @@
         {
           "name": "DEL_1m",
           "description": "Field containing DEL_1m data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DEL_1m"
           }
@@ -1391,7 +1391,7 @@
         {
           "name": "DEL_GREATER_THAN_10m",
           "description": "Field containing DEL_GREATER_THAN_10m data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DEL_GREATER_THAN_10m"
           }
@@ -1399,7 +1399,7 @@
         {
           "name": "DUP_100",
           "description": "Field containing DUP_100 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DUP_100"
           }
@@ -1407,7 +1407,7 @@
         {
           "name": "DUP_1k",
           "description": "Field containing DUP_1k data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DUP_1k"
           }
@@ -1415,7 +1415,7 @@
         {
           "name": "DUP_10k",
           "description": "Field containing DUP_10k data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DUP_10k"
           }
@@ -1423,7 +1423,7 @@
         {
           "name": "DUP_100k",
           "description": "Field containing DUP_100k data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DUP_100k"
           }
@@ -1431,7 +1431,7 @@
         {
           "name": "DUP_1m",
           "description": "Field containing DUP_1m data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "DUP_1m"
           }
@@ -1455,7 +1455,7 @@
         {
           "name": "INV_100",
           "description": "Field containing INV_100 data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "INV_100"
           }
@@ -1463,7 +1463,7 @@
         {
           "name": "INV_1k",
           "description": "Field containing INV_1k data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "INV_1k"
           }
@@ -1479,7 +1479,7 @@
         {
           "name": "INV_100k",
           "description": "Field containing INV_100k data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "INV_100k"
           }
@@ -1487,7 +1487,7 @@
         {
           "name": "INV_1m",
           "description": "Field containing INV_1m data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "INV_1m"
           }
@@ -1495,7 +1495,7 @@
         {
           "name": "INV_10m",
           "description": "Field containing INV_10m data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "INV_10m"
           }
@@ -2223,7 +2223,7 @@
         {
           "name": "snv_tg_gc",
           "description": "Field containing snv_tg_gc data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "snv_tg_gc"
           }
@@ -2327,7 +2327,7 @@
         {
           "name": "dsbr_dup_load",
           "description": "Field containing dsbr_dup_load data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "dsbr_dup_load"
           }
@@ -2359,7 +2359,7 @@
         {
           "name": "dsbr_score",
           "description": "Field containing dsbr_score data",
-          "valueType": "boolean",
+          "valueType": "string",
           "meta": {
             "displayName": "dsbr_score"
           }
@@ -2670,7 +2670,7 @@
         }
       ],
       "meta": {
-        "createdAt": "2025-05-02T15:50:37.921Z",
+        "createdAt": "2025-05-23T19:08:46.384Z",
         "sourceFile": "summary.csv"
       }
     }

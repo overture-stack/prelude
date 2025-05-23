@@ -169,7 +169,7 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: data_arranger_set
+      ES_ARRANGER_SET_INDEX: idmapping_arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
@@ -446,15 +446,33 @@ services:
       MAESTRO_LOGGING_LEVEL_ROOT: INFO
       MAESTRO_DISABLEEVENTINDEXING: true
       # Repository Configuration - Lyric
+      # idMapping
       MAESTRO_REPOSITORIES_0_BASE_URL: http://lyric:3030
-      # in the old world we added these to each document in elasticsearch,
-      MAESTRO_REPOSITORIES_0_CODE: sample
-      MAESTRO_REPOSITORIES_0_NAME: Overture sample Lyric
+      MAESTRO_REPOSITORIES_0_CODE: idmapping
+      MAESTRO_REPOSITORIES_0_NAME: Overture idmapping Lyric
       MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
-      MAESTRO_REPOSITORIES_0_INDEX_NAME: sample-index
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: idmapping-index
       MAESTRO_REPOSITORIES_0_TYPE: LYRIC
       MAESTRO_REPOSITORIES_0_LYRIC_VALID_DATA_ONLY: true
       MAESTRO_REPOSITORIES_0_LYRIC_CATEGORY_ID: 1
+      # sample
+      MAESTRO_REPOSITORIES_1_BASE_URL: http://lyric:3030
+      MAESTRO_REPOSITORIES_1_CODE: sample
+      MAESTRO_REPOSITORIES_1_NAME: Overture sample Lyric
+      MAESTRO_REPOSITORIES_1_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_1_INDEX_NAME: sample-index
+      MAESTRO_REPOSITORIES_1_TYPE: LYRIC
+      MAESTRO_REPOSITORIES_1_LYRIC_VALID_DATA_ONLY: true
+      MAESTRO_REPOSITORIES_1_LYRIC_CATEGORY_ID: 2
+      # summary
+      MAESTRO_REPOSITORIES_2_BASE_URL: http://lyric:3030
+      MAESTRO_REPOSITORIES_2_CODE: summary
+      MAESTRO_REPOSITORIES_2_NAME: Overture summary Lyric
+      MAESTRO_REPOSITORIES_2_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_2_INDEX_NAME: summary-index
+      MAESTRO_REPOSITORIES_2_TYPE: LYRIC
+      MAESTRO_REPOSITORIES_2_LYRIC_VALID_DATA_ONLY: true
+      MAESTRO_REPOSITORIES_2_LYRIC_CATEGORY_ID: 3
       # Elasticsearch Settings (Required)
       MAESTRO_ELASTICSEARCH_NODES: http://elasticsearch:9200
       MAESTRO_ELASTICSEARCH_VERSION: 7
