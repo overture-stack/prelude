@@ -1,6 +1,10 @@
 {
   "extended": [
     {
+      "displayName": "Index Id",
+      "fieldName": "id"
+    },
+    {
       "displayName": "Donor Name",
       "fieldName": "data.donor_name"
     },

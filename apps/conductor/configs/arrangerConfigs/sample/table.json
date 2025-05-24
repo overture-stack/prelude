@@ -1,6 +1,13 @@
 {
   "table": {
+    "rowIdFieldName": "id" ,
     "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "id",
+        "show": true,
+        "sortable": true
+      },
       {
         "canChangeShow": true,
         "fieldName": "data.donor_name",

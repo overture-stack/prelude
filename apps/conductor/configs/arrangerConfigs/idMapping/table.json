@@ -3,6 +3,12 @@
     "columns": [
       {
         "canChangeShow": true,
+        "fieldName": "id",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
         "fieldName": "data.external_id",
         "show": true,
         "sortable": true,

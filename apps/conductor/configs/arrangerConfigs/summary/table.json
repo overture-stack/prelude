@@ -1,7 +1,13 @@
 {
   "table": {
-    "rowIdFieldName": "submission_metadata.submitter_id" ,
+    "rowIdFieldName": "id" ,
     "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "id",
+        "show": true,
+        "sortable": true
+      },
       {
         "canChangeShow": true,
         "fieldName": "data.donor",

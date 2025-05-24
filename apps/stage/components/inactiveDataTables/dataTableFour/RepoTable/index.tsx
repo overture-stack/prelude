@@ -82,8 +82,7 @@ const getTableConfigs = ({
 			},
 			DownloadButton: {
 				customExporters,
-				exportSelectedRowsField: 'submission_metadata.submitter_id',
-				downloadUrl: urlJoin(apiHost, 'download'),
+				exportSelectedRowsField: 'id',		downloadUrl: urlJoin(apiHost, 'download'),
 				label: () => (
 					<>
 						<Download
