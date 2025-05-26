@@ -33,8 +33,8 @@ export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
 	DATATABLE_1 = '/idMappings',
-	DATATABLE_2 = '/summaryTable',
-	DATATABLE_3 = '/sampleTable',
+	DATATABLE_2 = '/sampleTable',
+	DATATABLE_3 = '/summaryTable',
 	DATATABLE_4 = '/dataTableFour',
 	DATATABLE_5 = '/dataTableFive',
 	HOME = '/home',

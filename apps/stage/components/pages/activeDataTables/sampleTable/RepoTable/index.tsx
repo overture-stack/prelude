@@ -164,7 +164,7 @@ const RepoTable = () => {
 		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
 
-	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATATABLE_3_ARRANGER, customExporters, theme }));
+	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATATABLE_2_ARRANGER, customExporters, theme }));
 
 	return useMemo(
 		() => (

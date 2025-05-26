@@ -26,7 +26,7 @@ import { Row } from 'react-grid-system';
 import CrossTableFilterButton from '../CrossTableFilterButton';
 import { INTERNAL_PATHS } from '@/global/utils/constants';
 const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProps => ({
-	callerName: 'DataSetOne-QueryBar',
+	callerName: 'DataSetThree-QueryBar',
 	components: {
 		SQONViewer: {
 			EmptyMessage: {
@@ -132,8 +132,8 @@ const QueryBar = () => {
 			</div>
 			<div css={css`flex: 1;`}>
 				<CrossTableFilterButton
-					targetPath={INTERNAL_PATHS.DATATABLE_2}
-					enabledText="Apply filters to sample table"
+					targetPath={INTERNAL_PATHS.DATATABLE_3}
+					enabledText="Apply filters to summary table"
 					disabledText="Start by selecting filters"
 				/>
 			</div>

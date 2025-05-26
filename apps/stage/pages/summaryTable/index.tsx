@@ -1,4 +1,4 @@
-import DataTableThree from '../../components/pages/activeDataTables/summaryTable';
+import DataTableThree from '@/components/pages/activeDataTables/summaryTable';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetThreeExplorationPage = createPage({

@@ -107,16 +107,9 @@ const getConfigError = ({
 	index && documentType ? (
 		!hasConfig && (
 			<span>
-				No active configurations for the portal were found. Please make sure the index and GraphQL document type
-				specified in the{' '}
-				<span
-					css={css`
-						font-weight: bold;
-					`}
-				>
-					docker-compose.yml
-				</span>{' '}
-				file during installation have been created in the <ArrangerAdminUILink />. <GenericHelpMessage />
+				<strong>If you just ran phase1, this is expected.</strong> Otherwise, if you're setting up Table Two, ensure
+				your index and Arranger configurations are correct, referenced properly in the Docker Compose, and that
+				environment variables for Conductor, Arranger, and Stage are all set correctly.
 			</span>
 		)
 	) : (

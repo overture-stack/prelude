@@ -1,4 +1,4 @@
-import DataTableTwo from '../../components/pages/activeDataTables/summaryTable';
+import DataTableTwo from '../../components/pages/activeDataTables/sampleTable';
 import { createPage } from '../../global/utils/pages';
 
 const DataSetTwoExplorationPage = createPage({

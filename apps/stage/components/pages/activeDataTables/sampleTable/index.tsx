@@ -55,9 +55,9 @@ export interface PageContentProps {
 }
 
 const {
-	NEXT_PUBLIC_ARRANGER_DATATABLE_3_API,
-	NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE,
-	NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_2_API,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
 } = getConfig();
 
 const configsQuery = `
@@ -76,8 +76,8 @@ const DataSetTwoRepositoryPage = (): ReactElement => {
 			endpoint: 'graphql/hasValidConfig',
 			body: JSON.stringify({
 				variables: {
-					documentType: NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE,
-					index: NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX,
+					documentType: NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
+					index: NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
 				},
 				query: configsQuery,
 			}),
@@ -103,8 +103,8 @@ const DataSetTwoRepositoryPage = (): ReactElement => {
 
 	const ConfigError = getConfigError({
 		hasConfig: arrangerHasConfig,
-		index: NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX,
-		documentType: NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE,
+		index: NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
+		documentType: NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
 	});
 
 	return (
@@ -140,16 +140,16 @@ const DataSetTwoRepositoryPage = (): ReactElement => {
 							width: 100%;
 						`}
 					>
-						<ErrorNotification title={'Stage Configuration Error'} size="lg">
+						<ErrorNotification title={'Stage Configuration Not Found'} size="lg">
 							{ConfigError}
 						</ErrorNotification>
 					</div>
 				</div>
 			) : (
 				<ArrangerDataProvider
-					apiUrl={NEXT_PUBLIC_ARRANGER_DATATABLE_3_API}
+					apiUrl={NEXT_PUBLIC_ARRANGER_DATATABLE_2_API}
 					customFetcher={arrangerFetcher}
-					documentType={NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE}
+					documentType={NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE}
 					theme={{
 						colors: {
 							common: {
