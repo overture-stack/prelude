@@ -3,6 +3,6 @@
 node_modules
 __MACOSX
 dist
-idMapping.csv 
+idmapping.csv 
 sample.csv    
 summary.csv
