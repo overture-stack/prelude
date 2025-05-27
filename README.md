@@ -67,9 +67,9 @@ conductor lyricRegister -c sample --dict-name lbr-dictionary -v 1.0 -e sample
 conductor lyricRegister -c summary --dict-name lbr-dictionary -v 1.0 -e summary
 
 # Upload tabular data
-conductor lyricUpload -d ./data/idmapping.csv -c 1
-conductor lyricUpload -d ./data/sample.csv -c 2
-conductor lyricUpload -d ./data/summary.csv -c 3
+conductor lyricUpload -d ./data/idmapping -c 1 --max-retries 100 --lyric-url http://pantrack.genomeinformatics.org/lyric
+conductor lyricUpload -d ./data/sample -c 2 --max-retries 100
+conductor lyricUpload -d ./data/summary -c 3 --max-retries 100
 
 # Index data
 conductor maestroIndex --repository-code idmapping

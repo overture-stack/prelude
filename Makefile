@@ -8,6 +8,9 @@ help:
 	@echo "  phase3         - Start Phase 3 deployment"
 	@echo "  stage-dev      - Start Stage development environment"
 	@echo ""
+	@echo "Data Management:"
+	@echo "  data-setup     - Upload dictionaries, register entities, and load data"
+	@echo ""
 	@echo "Conductor System Management:"
 	@echo "  down           - Gracefully shutdown all containers"
 	@echo "  reset          - DANGER: Remove all containers and volumes (DATA LOSS)"
@@ -45,6 +48,12 @@ stage-dev:
 	@echo "Starting Stage development environment..."
 	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach conductor
 
+# Run data setup: upload dictionaries, register entities, and load data
+data-setup:
+	@echo "Starting data setup deployment..."
+	@echo "This will upload dictionaries to Lectern, register entities with Lyric, and load tabular data."
+	PROFILE=dataSetup docker compose -f ./docker-compose.yml --profile dataSetup up --attach data-setup
+
 # Gracefully shutdown all containers while preserving volumes
 down:
 	@echo "Shutting down all running containers..."
@@ -53,7 +62,7 @@ down:
 # Restart containers and run deployment scripts for a specific profile
 restart:
 	@echo "Restarting containers with fresh deployment..."
-	@read -p "Enter profile to restart (phase1, phase2, phase3, stageDev): " profile; \
+	@read -p "Enter profile to restart (phase1, phase2, phase3, stageDev, dataSetup): " profile; \
 	echo "Shutting down containers..."; \
 	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile down; \
 	echo "Starting containers with profile $$profile..."; \
@@ -68,4 +77,3 @@ reset:
 	else \
 		echo "Operation cancelled"; \
 	fi
-

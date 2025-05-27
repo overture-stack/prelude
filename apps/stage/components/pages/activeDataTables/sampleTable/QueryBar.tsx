@@ -26,7 +26,7 @@ import { Row } from 'react-grid-system';
 import CrossTableFilterButton from '../CrossTableFilterButton';
 import { INTERNAL_PATHS } from '@/global/utils/constants';
 const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProps => ({
-	callerName: 'DataSetOne-QueryBar',
+	callerName: 'DataSetTwo-QueryBar',
 	components: {
 		SQONViewer: {
 			EmptyMessage: {

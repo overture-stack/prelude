@@ -161,7 +161,7 @@ const RepoTable = () => {
 	const theme = useTheme();
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 	const customExporters = [
-		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
+		{ label: 'Download', fileName: `dataset-1-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
 
 	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATATABLE_1_ARRANGER, customExporters, theme }));

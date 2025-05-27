@@ -98,6 +98,52 @@ services:
       - conductor-network
 
   # ================================================================================== #
+  # Data Setup Container - Handles initial data loading and configuration             #
+  # ================================================================================== #
+  data-setup:
+    # ================================================================================== #
+    #  Runs scripts that automate data loading and configuration.                       #
+    #  Handles dictionary upload, entity registration, data upload, and indexing        #
+    #  More information can be found within the docs folder                             #
+    # ================================================================================== #
+    profiles: ["dataSetup"]
+    image: node:18-alpine
+    container_name: data-setup
+    volumes:
+      - ./data:/data
+      - ./apps/conductor/:/conductor
+    environment:
+      # Global Configuration
+      PROFILE: ${PROFILE:-default}
+      # Service Connections
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_URL: http://elasticsearch:9200
+      STAGE_URL: http://stage:3000
+      LECTERN_URL: http://lectern:3031
+      LYRIC_URL: http://lyric:3030
+      MAESTRO_URL: http://maestro:11235
+    command: >
+      sh -c '
+        set -e
+        echo "Profile is set to: $PROFILE"
+        case "$PROFILE" in
+          "dataSetup")
+            echo "Running data setup deployment..."
+            chmod +x /conductor/scripts/services/upload-data.sh
+            /conductor/scripts/services/upload-data.sh
+            ;;
+          *)
+            echo "Invalid profile specified for data-setup container."
+            exit 1
+            ;;
+        esac
+        exit 0
+      '
+    networks:
+      - conductor-network
+
+  # ================================================================================== #
   # ================================================================================== #
   #                                    phase1:                                         #
   #                               Search & Discovery                                   #
