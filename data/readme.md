@@ -23,3 +23,13 @@ for optimal data management:
   development and testing
 - No strict minimum or maximum size limits exist beyond Docker and Elasticsearch
   resource constraints
+
+## Setup commands
+
+```
+conductor lecternUpload -s ./configs/lecternDictionaries/dictionary.json
+
+conductor lyricRegister -c donor --dict-name example-dictionary -v 1.0 -e donor
+
+
+```
