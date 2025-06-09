@@ -1,230 +1,223 @@
-import axios from "axios";
-import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+// src/services/lectern/LecternService.ts
+import { BaseService } from "../base/baseService";
+import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
+import { ConductorError, ErrorCodes } from "../../utils/errors";
+import {
+  LecternSchemaUploadParams,
+  LecternUploadResponse,
+  LecternDictionary,
+  DictionaryValidationResult,
+} from "./types";
 
-// Type definition for Axios error (since direct import isn't working)
-interface AxiosErrorResponse {
-  response?: {
-    status?: number;
-    data?: unknown;
-  };
-  message: string;
-}
-
-/**
- * Response from Lectern schema upload
- */
-export interface LecternUploadResponse {
-  /** The unique identifier for the uploaded schema */
-  id?: string;
-
-  /** The name of the schema */
-  name?: string;
-
-  /** The version of the schema */
-  version?: string;
-
-  /** Any error message returned by Lectern */
-  error?: string;
-
-  /** Additional response details */
-  [key: string]: any;
-}
-
-/**
- * Formats and logs detailed error information
- * @param errorData Error details from Lectern API
- */
-function formatLecternError(errorData: any): void {
-  // Handle different error scenarios with more descriptive messages
-  switch (errorData.error) {
-    case "BadRequest":
-      Logger.generic(chalk.gray("   "));
-      Logger.generic(chalk.gray("    Possible reasons:"));
-      Logger.generic(chalk.gray("   "));
-      Logger.generic(chalk.gray("        - Schema might already exist"));
-      Logger.generic(chalk.gray("        - Invalid schema format"));
-      Logger.generic(chalk.gray("        - Duplicate upload attempt"));
-      break;
-    case "SchemaParsingError":
-      Logger.generic(chalk.gray("Schema validation failed:"));
-      if (Array.isArray(errorData.message)) {
-        errorData.message.forEach((validationError: any, index: number) => {
-          Logger.generic(
-            chalk.gray(
-              `  ${index + 1}. Field: ${validationError.path?.join(".")} `
-            )
-          );
-          Logger.generic(
-            chalk.gray(`     - Validation: ${validationError.validation}`)
-          );
-          Logger.generic(chalk.gray(`     - Code: ${validationError.code}`));
-          Logger.generic(
-            chalk.gray(`     - Message: ${validationError.message}`)
-          );
-        });
-      }
-      break;
-    default:
-      Logger.generic(
-        chalk.gray(`Error Details: ${JSON.stringify(errorData, null, 2)}`)
-      );
+export class LecternService extends BaseService {
+  constructor(config: ServiceConfig) {
+    super(config);
   }
-}
 
-/**
- * Service class for Lectern operations
- */
-export class LecternService {
-  private url: string;
-  private authToken: string;
+  get serviceName(): string {
+    return "Lectern";
+  }
 
-  /**
-   * Creates a new LecternService instance
-   *
-   * @param baseUrl - Base URL for the Lectern service
-   * @param authToken - Authentication token for API access
-   */
-  constructor(baseUrl: string, authToken: string) {
-    this.url = this.normalizeUrl(baseUrl);
-    this.authToken = authToken;
+  protected get healthEndpoint(): string {
+    return "/health";
   }
 
   /**
-   * Gets the normalized Lectern URL
-   *
-   * @returns The normalized URL for the Lectern dictionaries endpoint
+   * Upload a schema to Lectern
    */
-  getUrl(): string {
-    return this.url;
-  }
-
-  /**
-   * Uploads a schema to the Lectern server
-   *
-   * @param schemaContent - The schema content as a JSON string
-   * @returns Promise resolving to the upload response
-   */
-  async uploadSchema(schemaContent: string): Promise<LecternUploadResponse> {
+  async uploadSchema(
+    params: LecternSchemaUploadParams
+  ): Promise<LecternUploadResponse> {
     try {
-      // Parse schema to validate JSON before sending
-      const schemaData = JSON.parse(schemaContent);
+      this.validateRequired(params, ["schemaContent"]);
 
-      // Make request to Lectern API
-      const response = await axios.post<LecternUploadResponse>(
-        this.url,
-        schemaData,
-        {
-          headers: {
-            Accept: "*/*",
-            Authorization: this.authToken,
-            "Content-Type": "application/json",
-          },
-        }
+      // Parse and validate JSON
+      let schemaData: any;
+      try {
+        schemaData = JSON.parse(params.schemaContent);
+      } catch (error) {
+        throw new ConductorError(
+          `Invalid schema format: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          ErrorCodes.INVALID_FILE,
+          error
+        );
+      }
+
+      // Basic schema validation
+      if (!schemaData.name) {
+        throw new ConductorError(
+          'Schema must have a "name" field',
+          ErrorCodes.VALIDATION_FAILED
+        );
+      }
+
+      if (!schemaData.schemas || typeof schemaData.schemas !== "object") {
+        throw new ConductorError(
+          'Schema must have a "schema" field containing the JSON schema definition',
+          ErrorCodes.VALIDATION_FAILED
+        );
+      }
+
+      Logger.info(`Uploading schema: ${schemaData.name}`);
+
+      // Upload to Lectern
+      const response = await this.http.post<LecternUploadResponse>(
+        "/dictionaries",
+        schemaData
       );
 
-      // Check if response contains error
-      if (response.data && "error" in response.data && response.data.error) {
+      // Check for errors in response
+      if (response.data?.error) {
         throw new ConductorError(
           `Lectern API error: ${response.data.error}`,
           ErrorCodes.CONNECTION_ERROR
         );
       }
 
+      Logger.success(`Schema "${schemaData.name}" uploaded successfully`);
+
       return response.data;
-    } catch (error: unknown) {
-      // Type guard to check if error is an Axios error
-      const isAxiosError = (err: unknown): err is AxiosErrorResponse =>
-        err !== null &&
-        typeof err === "object" &&
-        "response" in err &&
-        "message" in err;
-
-      // Handle axios errors
-      if (isAxiosError(error)) {
-        const statusCode = error.response?.status;
-        const responseData = error.response?.data;
-
-        let errorMessage = `Failed to upload schema: ${error.message}`;
-
-        // Detailed error parsing
-        if (responseData && typeof responseData === "object") {
-          // Try to extract more detailed error information
-          const detailedError = responseData as {
-            error?: string;
-            message?: string | any[];
-            details?: string;
-          };
-
-          // Format and log detailed Lectern error
-          if (detailedError.error || detailedError.message) {
-            // Log error type
-            Logger.error(`Type: ${detailedError.error || "Unknown"}`);
-
-            // Provide more context based on error type
-            formatLecternError(detailedError);
-          }
-
-          errorMessage = `Lectern API error: ${
-            detailedError.error ||
-            (Array.isArray(detailedError.message)
-              ? detailedError.message[0]?.message
-              : detailedError.message) ||
-            detailedError.details ||
-            "Unknown error"
-          }`;
-        }
-
-        throw new ConductorError(
-          errorMessage,
-          statusCode === 401 || statusCode === 403
-            ? ErrorCodes.AUTH_ERROR
-            : ErrorCodes.CONNECTION_ERROR,
-          error
-        );
-      }
-
-      // Re-throw ConductorError as is
-      if (error instanceof ConductorError) {
-        throw error;
-      }
-
-      // Wrap JSON parsing errors
-      if (error instanceof SyntaxError) {
-        throw new ConductorError(
-          `Invalid schema format: ${error.message}`,
-          ErrorCodes.INVALID_FILE,
-          error
-        );
-      }
-
-      // Wrap other errors
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      throw new ConductorError(
-        `Failed to upload schema: ${errorMessage}`,
-        ErrorCodes.CONNECTION_ERROR,
-        error
-      );
+    } catch (error) {
+      this.handleServiceError(error, "schema upload");
     }
   }
 
   /**
-   * Normalizes the Lectern URL to ensure it points to the dictionaries endpoint
-   *
-   * @param url - Input URL
-   * @returns Normalized URL
+   * Get all dictionaries from Lectern
    */
-  private normalizeUrl(url: string): string {
-    // Remove trailing slash if present
-    let normalizedUrl = url.endsWith("/") ? url.slice(0, -1) : url;
-
-    // Ensure URL ends with /dictionaries
-    if (!normalizedUrl.endsWith("/dictionaries")) {
-      normalizedUrl = `${normalizedUrl}/dictionaries`;
+  async getDictionaries(): Promise<LecternDictionary[]> {
+    try {
+      const response = await this.http.get<LecternDictionary[]>(
+        "/dictionaries"
+      );
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+      this.handleServiceError(error, "get dictionaries");
     }
+  }
 
-    return normalizedUrl;
+  /**
+   * Get a specific dictionary by ID
+   */
+  async getDictionary(dictionaryId: string): Promise<LecternDictionary> {
+    try {
+      const response = await this.http.get<LecternDictionary>(
+        `/dictionaries/${dictionaryId}`
+      );
+      return response.data;
+    } catch (error) {
+      this.handleServiceError(error, "get dictionary");
+    }
+  }
+
+  /**
+   * Find a dictionary by name and version
+   */
+  async findDictionary(
+    name: string,
+    version: string
+  ): Promise<LecternDictionary | null> {
+    try {
+      const dictionaries = await this.getDictionaries();
+
+      const dictionary = dictionaries.find(
+        (dict) => dict.name === name && dict.version === version
+      );
+
+      return dictionary || null;
+    } catch (error) {
+      Logger.warn(`Could not find dictionary ${name} v${version}: ${error}`);
+      return null;
+    }
+  }
+
+  /**
+   * Validate that a centric entity exists in a dictionary
+   */
+  async validateCentricEntity(
+    dictionaryName: string,
+    dictionaryVersion: string,
+    centricEntity: string
+  ): Promise<DictionaryValidationResult> {
+    try {
+      Logger.info(
+        `Validating entity '${centricEntity}' in dictionary '${dictionaryName}' v${dictionaryVersion}`
+      );
+
+      // Find the dictionary
+      const dictionary = await this.findDictionary(
+        dictionaryName,
+        dictionaryVersion
+      );
+
+      if (!dictionary) {
+        return {
+          exists: false,
+          entities: [],
+          dictionary: undefined,
+        };
+      }
+
+      // Get detailed dictionary info with schemas
+      const detailedDict = await this.getDictionary(dictionary._id);
+
+      // Extract entity names from schemas
+      const entities = detailedDict.schemas?.map((schema) => schema.name) || [];
+
+      const entityExists = entities.includes(centricEntity);
+
+      if (entityExists) {
+        Logger.info(`✓ Entity '${centricEntity}' found in dictionary`);
+      } else {
+        Logger.warn(`⚠ Entity '${centricEntity}' not found in dictionary`);
+      }
+
+      return {
+        exists: entityExists,
+        entities,
+        dictionary: detailedDict,
+      };
+    } catch (error) {
+      this.handleServiceError(error, "centric entity validation");
+    }
+  }
+
+  /**
+   * Get all available entities across all dictionaries
+   */
+  async getAllEntities(): Promise<string[]> {
+    try {
+      const dictionaries = await this.getDictionaries();
+      const allEntities = new Set<string>();
+
+      for (const dict of dictionaries) {
+        const detailedDict = await this.getDictionary(dict._id);
+        detailedDict.schemas?.forEach((schema) => {
+          if (schema.name) {
+            allEntities.add(schema.name);
+          }
+        });
+      }
+
+      return Array.from(allEntities);
+    } catch (error) {
+      this.handleServiceError(error, "get all entities");
+    }
+  }
+
+  /**
+   * Check if Lectern has any dictionaries
+   */
+  async hasDictionaries(): Promise<boolean> {
+    try {
+      const dictionaries = await this.getDictionaries();
+      return dictionaries.length > 0;
+    } catch (error) {
+      Logger.warn(`Could not check for dictionaries: ${error}`);
+      return false;
+    }
   }
 }

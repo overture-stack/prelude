@@ -29,7 +29,7 @@ for optimal data management:
 ```
 conductor lecternUpload -s ./configs/lecternDictionaries/dictionary.json
 
-conductor lyricRegister -c donor --dict-name example-dictionary -v 1.0 -e donor
+conductor lyricRegister -c exampleCategory --dict-name example-dictionary -v 1.0 -e donor
 
-
+conductor lyricUpload -d ./data/segmentedData
 ```
