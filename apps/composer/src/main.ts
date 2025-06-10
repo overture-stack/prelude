@@ -2,7 +2,7 @@
 
 import { setupCLI } from "./cli";
 import { CommandRegistry } from "./commands/commandRegistry";
-import { ErrorService } from "./services/errorService";
+import { handleError } from "./utils/errors"; // UPDATED: Import from utils/errors
 import { Logger } from "./utils/logger";
 import chalk from "chalk";
 
@@ -20,11 +20,12 @@ async function main() {
     Logger.debug`Executing command via registry`;
     await CommandRegistry.execute(cliOutput.profile, cliOutput);
   } catch (error) {
-    ErrorService.handle(error, () => {
+    // UPDATED: Use consolidated handleError function
+    handleError(error, () => {
       Logger.section("Available Commands");
       CommandRegistry.showHelp();
     });
   }
 }
 
-main().catch(ErrorService.handle);
+main().catch(handleError); // UPDATED: Use consolidated handleError

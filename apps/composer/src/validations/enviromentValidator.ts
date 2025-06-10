@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 import { PathValidationConfig } from "../types/validations";
 import { Logger } from "../utils/logger";
 
@@ -32,7 +32,7 @@ export async function validateEnvironment(
 ): Promise<boolean> {
   // Skip if already validated
   if (environmentValidated) {
-    Logger.debug("Environment already validated, skipping check");
+    Logger.debug`Environment already validated, skipping check`;
     return true;
   }
 
@@ -46,10 +46,16 @@ export async function validateEnvironment(
         fs.mkdirSync(dir, { recursive: true });
         Logger.info`Created directory: ${dir}`;
       } catch (error) {
-        throw new ComposerError(
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.environment(
           `Failed to create directory ${dir}`,
-          ErrorCodes.ENV_ERROR,
-          error
+          error,
+          [
+            "Check that you have write permissions to the parent directory",
+            "Ensure the path is not too long for your filesystem",
+            "Verify there are no special characters in the path",
+            "Make sure the disk has sufficient space",
+          ]
         );
       }
     }

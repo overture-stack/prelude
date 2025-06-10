@@ -1,6 +1,6 @@
-// src/cli/environment.ts - Simplified
+// src/cli/environment.ts - Updated with consolidated error handling
 import { EnvConfig } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 import { Logger } from "../utils/logger";
 import { BASE_CONFIG_DIR } from "../utils/paths";
 
@@ -44,7 +44,7 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
  */
 export function loadEnvironmentConfig(): EnvConfig {
   try {
-    Logger.debug("Loading environment configuration");
+    Logger.debug`Loading environment configuration`;
 
     const config: EnvConfig = {
       // Input and output
@@ -79,18 +79,22 @@ export function loadEnvironmentConfig(): EnvConfig {
     Object.entries(config).forEach(([key, value]) => {
       const envVar = ENV_VAR_MAP[key as keyof EnvConfig];
       if (process.env[envVar]) {
-        Logger.debug(`Using custom ${key}: ${value}`);
+        Logger.debug`Using custom ${key}: ${value}`;
       }
     });
 
     Logger.debugObject("Environment configuration", config);
     return config;
   } catch (error) {
-    if (error instanceof ComposerError) throw error;
-    throw new ComposerError(
+    // UPDATED: Use ErrorFactory
+    throw ErrorFactory.environment(
       "Failed to load environment configuration",
-      ErrorCodes.ENV_ERROR,
-      error
+      error,
+      [
+        "Check that environment variables are properly formatted",
+        "Ensure numeric values (like ES_SHARDS) are valid integers",
+        "Verify file paths are accessible",
+      ]
     );
   }
 }

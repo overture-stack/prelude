@@ -1,9 +1,11 @@
-// Updated lecternCommand.ts - Fixed to use new CLIOutput structure
+// src/commands/lecternCommand.ts - MIGRATED VERSION
+// Shows how to apply the error handling and logger standardization
+
 import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ComposerError, ErrorCodes, ErrorFactory } from "../utils/errors"; // UPDATED IMPORT
 import {
   generateDictionary,
   generateSchema,
@@ -40,18 +42,20 @@ export class DictionaryCommand extends Command {
     await super.validate(cliOutput);
 
     if (!cliOutput.outputPath) {
-      throw new ComposerError(
-        "Output path is required",
-        ErrorCodes.INVALID_ARGS
-      );
+      // UPDATED: Use ErrorFactory instead of new ComposerError
+      throw ErrorFactory.args("Output path is required", [
+        "Use -o or --output to specify an output path",
+        "Example: -o /path/to/dictionary.json",
+      ]);
     }
 
     // Validate dictionary config
     if (!cliOutput.dictionaryConfig) {
-      throw new ComposerError(
-        "Dictionary configuration is required",
-        ErrorCodes.INVALID_ARGS
-      );
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args("Dictionary configuration is required", [
+        "Use --name, --description, or --version to configure the dictionary",
+        "Example: --name 'My Dictionary' --version '2.0.0'",
+      ]);
     }
 
     const config = cliOutput.dictionaryConfig;
@@ -88,9 +92,15 @@ export class DictionaryCommand extends Command {
 
     // Check if we've got valid CSV files
     if (csvFiles.length === 0) {
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(
         "Lectern dictionary generation requires CSV input files",
-        ErrorCodes.INVALID_FILE
+        undefined,
+        [
+          "Ensure your input files have .csv extension",
+          "Check that the files exist and are accessible",
+          "Example: -f data.csv metadata.csv",
+        ]
       );
     }
 
@@ -100,7 +110,8 @@ export class DictionaryCommand extends Command {
         (filePath) => path.extname(filePath).toLowerCase() !== ".csv"
       );
 
-      Logger.warn(`Skipping ${skippedFiles.length} non-CSV files`);
+      // UPDATED: Use template literal
+      Logger.warn`Skipping ${skippedFiles.length} non-CSV files`;
       skippedFiles.forEach((file) => {
         Logger.generic(`  - ${file}`);
       });
@@ -108,7 +119,8 @@ export class DictionaryCommand extends Command {
 
     // Update filePaths to only include CSV files
     cliOutput.filePaths = csvFiles;
-    Logger.info(`Processing ${csvFiles.length} CSV files`);
+    // UPDATED: Use template literal
+    Logger.info`Processing ${csvFiles.length} CSV files`;
 
     // Validate CSV headers for each file - use csvDelimiter directly
     const validFiles: string[] = [];
@@ -126,14 +138,16 @@ export class DictionaryCommand extends Command {
           invalidFiles.push(filePath);
         }
       } catch (error) {
-        Logger.warn(`Error validating CSV headers in ${filePath}: ${error}`);
+        // UPDATED: Use template literal
+        Logger.warn`Error validating CSV headers in ${filePath}: ${error}`;
         invalidFiles.push(filePath);
       }
     }
 
     // If some files are invalid, warn and continue with valid ones
     if (invalidFiles.length > 0) {
-      Logger.warn(`Skipping ${invalidFiles.length} files with invalid headers`);
+      // UPDATED: Use template literal
+      Logger.warn`Skipping ${invalidFiles.length} files with invalid headers`;
       invalidFiles.forEach((file) => {
         Logger.generic(`  - ${path.basename(file)}`);
       });
@@ -144,15 +158,20 @@ export class DictionaryCommand extends Command {
 
     // Ensure we still have files to process
     if (cliOutput.filePaths.length === 0) {
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.validation(
         "No valid CSV files found with proper headers",
-        ErrorCodes.VALIDATION_FAILED
+        { invalidFiles },
+        [
+          "Check that CSV files have valid column headers",
+          "Headers should not contain special characters or be empty",
+          "Ensure files are properly formatted CSV files",
+        ]
       );
     }
 
-    Logger.info(
-      `Found ${cliOutput.filePaths.length} valid CSV files to process`
-    );
+    // UPDATED: Use template literal
+    Logger.info`Found ${cliOutput.filePaths.length} valid CSV files to process`;
   }
 
   protected async execute(cliOutput: CLIOutput): Promise<any> {
@@ -165,9 +184,8 @@ export class DictionaryCommand extends Command {
     // Normalize output path for dictionary files specifically
     if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
       outputPath = path.join(outputPath, this.defaultOutputFileName);
-      Logger.debug(
-        `Output is a directory, will create ${this.defaultOutputFileName} inside it`
-      );
+      // UPDATED: Use template literal
+      Logger.debug`Output is a directory, will create ${this.defaultOutputFileName} inside it`;
     } else if (!outputPath.endsWith(".json")) {
       outputPath += ".json";
       Logger.info`Adding .json extension to output path`;
@@ -195,22 +213,20 @@ export class DictionaryCommand extends Command {
           const [headerLine, sampleLine] = fileContent.split("\n");
 
           if (!headerLine) {
-            Logger.warn(
-              `CSV file ${path.basename(
-                filePath
-              )} is empty or has no headers. Skipping.`
-            );
+            // UPDATED: Use template literal
+            Logger.warn`CSV file ${path.basename(
+              filePath
+            )} is empty or has no headers. Skipping.`;
             skippedFiles++;
             continue;
           }
 
           const headers = parseCSVLine(headerLine, delimiter, true)[0];
           if (!headers) {
-            Logger.warn(
-              `Failed to parse CSV headers in ${path.basename(
-                filePath
-              )}. Skipping.`
-            );
+            // UPDATED: Use template literal
+            Logger.warn`Failed to parse CSV headers in ${path.basename(
+              filePath
+            )}. Skipping.`;
             skippedFiles++;
             continue;
           }
@@ -229,9 +245,11 @@ export class DictionaryCommand extends Command {
           // Pass the full file path to generateSchema to extract the schema name
           const schema = generateSchema(filePath, headers, sampleData);
           dictionary.schemas.push(schema);
+          // UPDATED: Use template literal
           Logger.debug`Generated schema for ${schema.name}`;
           processedFiles++;
         } catch (error) {
+          // UPDATED: Use template literal
           Logger.warn`Skipping ${path.basename(
             filePath
           )} due to error: ${error}`;
@@ -240,21 +258,23 @@ export class DictionaryCommand extends Command {
         }
       }
 
-      // Log summary of processing
-      Logger.info(`Successfully processed ${processedFiles} CSV files`);
+      // Log summary of processing - UPDATED: Use template literals
+      Logger.info`Successfully processed ${processedFiles} CSV files`;
       if (skippedFiles > 0) {
-        Logger.warn(`Skipped ${skippedFiles} files due to errors`);
+        Logger.warn`Skipped ${skippedFiles} files due to errors`;
       }
 
       // Ensure output directory exists
       const outputDir = path.dirname(outputPath);
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
+        // UPDATED: Use template literal
         Logger.debug`Created output directory: ${outputDir}`;
       }
 
       // Write dictionary to file
       fs.writeFileSync(outputPath, JSON.stringify(dictionary, null, 2));
+      // UPDATED: Use template literal
       Logger.success`Dictionary saved to ${outputPath}`;
 
       return dictionary;
@@ -262,10 +282,15 @@ export class DictionaryCommand extends Command {
       if (error instanceof ComposerError) {
         throw error;
       }
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory
+      throw ErrorFactory.generation(
         "Error generating Lectern dictionary",
-        ErrorCodes.GENERATION_FAILED,
-        error
+        error,
+        [
+          "Check that all CSV files are properly formatted",
+          "Ensure output directory is writable",
+          "Verify file permissions and disk space",
+        ]
       );
     }
   }

@@ -1,4 +1,4 @@
-// src/services/generateLecternDictionary.ts - Cleaned up exports
+// src/services/generateLecternDictionary.ts - Updated with consolidated error handling
 import { Logger } from "../utils/logger";
 import * as path from "path";
 import type {
@@ -27,11 +27,13 @@ import type {
  */
 // Made private - no longer exported
 function inferValueType(headerName: string, sampleValue: string): ValueType {
-  Logger.debug(`Inferring type for field: ${headerName}`);
+  Logger.debug`Inferring type for field: ${headerName}`;
 
   // Handle empty values
   if (!sampleValue || sampleValue.trim() === "") {
-    Logger.debug("Empty sample value detected, defaulting to string type");
+    Logger.debugString(
+      "Empty sample value detected, defaulting to string type"
+    );
     return "string";
   }
 
@@ -39,22 +41,22 @@ function inferValueType(headerName: string, sampleValue: string): ValueType {
   const lowerValue = sampleValue.toLowerCase();
   const booleanValues = ["true", "false", "yes", "no", "0", "1"];
   if (booleanValues.includes(lowerValue)) {
-    Logger.debug("Detected boolean type");
+    Logger.debugString("Detected boolean type");
     return "boolean";
   }
 
   // Check for numeric values
   if (!isNaN(Number(sampleValue))) {
     if (Number.isInteger(Number(sampleValue))) {
-      Logger.debug("Detected integer type");
+      Logger.debugString("Detected integer type");
       return "integer";
     }
-    Logger.debug("Detected number type");
+    Logger.debugString("Detected number type");
     return "number";
   }
 
   // Default to string type
-  Logger.debug("Detected string type");
+  Logger.debugString("Detected string type");
   return "string";
 }
 
@@ -82,10 +84,10 @@ export function generateDictionary(
   description: string,
   version: string
 ): LecternDictionary {
-  Logger.info("Generating Lectern dictionary");
-  Logger.info(`Dictionary Name: ${dictionaryName}`);
-  Logger.info(`Description: ${description}`);
-  Logger.info(`Version: ${version}`);
+  Logger.infoString("Generating Lectern dictionary");
+  Logger.info`Dictionary Name: ${dictionaryName}`;
+  Logger.info`Description: ${description}`;
+  Logger.info`Version: ${version}`;
 
   const dictionary = {
     name: dictionaryName,
@@ -95,7 +97,7 @@ export function generateDictionary(
     schemas: [],
   };
 
-  Logger.debug(`${dictionaryName} dictionary generated`);
+  Logger.debug`${dictionaryName} dictionary generated`;
   Logger.debugObject("Dictionary Details", dictionary);
   return dictionary;
 }
@@ -140,7 +142,7 @@ export function generateSchema(
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "_");
 
-  Logger.info(`Generating schema: ${schemaName} from file: ${inputFilePath}`);
+  Logger.info`Generating schema: ${schemaName} from file: ${inputFilePath}`;
   Logger.debugObject("CSV Headers", csvHeaders);
 
   // Generate field definitions
@@ -158,7 +160,7 @@ export function generateSchema(
       },
     };
 
-    Logger.debug(`Created field definition for: ${header}`);
+    Logger.debug`Created field definition for: ${header}`;
     Logger.debugObject(`Field Details for ${header}`, field);
     return field;
   });
@@ -174,7 +176,7 @@ export function generateSchema(
     },
   };
 
-  Logger.info(`${schemaName} schema added to dictionary`);
+  Logger.info`${schemaName} schema added to dictionary`;
   Logger.debugObject("Schema Details", schema);
   return schema;
 }

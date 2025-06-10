@@ -1,9 +1,9 @@
-// src/services/generateEsMappingFromJSON.ts - Cleaned up exports
+// src/services/generateEsMappingFromJSON.ts - Updated with consolidated error handling
 import fs from "fs";
 import path from "path";
 import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 
 // ---- Type Inference Configuration ----
 
@@ -36,10 +36,12 @@ function inferFieldType(
   rules: TypeInferenceRules = defaultRules
 ): ElasticsearchField {
   try {
-    Logger.debug(`Inferring type for field: ${keyName}`);
+    Logger.debug`Inferring type for field: ${keyName}`;
 
     if (sampleValue === null || sampleValue === undefined) {
-      Logger.debug("Null/undefined value detected, defaulting to keyword");
+      Logger.debugString(
+        "Null/undefined value detected, defaulting to keyword"
+      );
       return { type: "keyword" as const, null_value: "No Data" };
     }
 
@@ -48,12 +50,12 @@ function inferFieldType(
         keyName.toLowerCase().includes(pattern)
       )
     ) {
-      Logger.debug("Field matches exclude pattern, setting as keyword");
+      Logger.debugString("Field matches exclude pattern, setting as keyword");
       return { type: "keyword" as const };
     }
 
     if (typeof sampleValue === "object" && !Array.isArray(sampleValue)) {
-      Logger.debug(`Processing nested object for ${keyName}`);
+      Logger.debug`Processing nested object for ${keyName}`;
       const properties: Record<string, ElasticsearchField> = {};
       for (const [key, value] of Object.entries(sampleValue)) {
         properties[key] = inferFieldType(key, value, rules);
@@ -62,7 +64,7 @@ function inferFieldType(
     }
 
     if (Array.isArray(sampleValue)) {
-      Logger.debug(`Processing array for ${keyName}`);
+      Logger.debug`Processing array for ${keyName}`;
 
       if (sampleValue.length === 0) {
         return { type: "keyword" as const };
@@ -99,15 +101,15 @@ function inferFieldType(
 
     if (typeof sampleValue === "number") {
       if (Number.isInteger(sampleValue)) {
-        Logger.debug("Detected integer type");
+        Logger.debugString("Detected integer type");
         return { type: "integer" as const };
       }
-      Logger.debug("Detected float type");
+      Logger.debugString("Detected float type");
       return { type: "float" as const };
     }
 
     if (typeof sampleValue === "boolean") {
-      Logger.debug("Detected boolean type");
+      Logger.debugString("Detected boolean type");
       return { type: "boolean" as const };
     }
 
@@ -118,29 +120,34 @@ function inferFieldType(
         )
       ) {
         if (isValidDate(sampleValue)) {
-          Logger.debug("Detected date type");
+          Logger.debugString("Detected date type");
           return { type: "date" as const };
         }
       }
 
       if (sampleValue.length > rules.maxTextLength) {
-        Logger.debug("Detected text type (long string)");
+        Logger.debugString("Detected text type (long string)");
         return { type: "text" as const };
       }
 
-      Logger.debug("Detected keyword type");
+      Logger.debugString("Detected keyword type");
       return { type: "keyword" as const };
     }
 
-    Logger.debug("Using default keyword type for unknown value type");
+    Logger.debugString("Using default keyword type for unknown value type");
     return { type: "keyword" as const };
   } catch (error) {
-    Logger.error("Error inferring field type");
+    Logger.errorString("Error inferring field type");
     Logger.debugObject("Error details", { keyName, sampleValue, error });
-    throw new ComposerError(
+    // UPDATED: Use ErrorFactory
+    throw ErrorFactory.generation(
       "Error inferring field type",
-      ErrorCodes.GENERATION_FAILED,
-      { keyName, sampleValue, error }
+      { keyName, sampleValue, error },
+      [
+        "Check that the JSON value is valid",
+        "Ensure the field name doesn't contain special characters",
+        "Verify the JSON structure is properly formatted",
+      ]
     );
   }
 }
@@ -152,12 +159,10 @@ export function generateMappingFromJson(
   options: MappingOptions = {}
 ): ElasticsearchMapping {
   try {
-    Logger.debug("generateEsMappingFromJSON running");
-    Logger.debug(
-      `Processing file: ${path.basename(
-        jsonFilePath
-      )} within generateEsMappingFromJSON function`
-    );
+    Logger.debugString("generateEsMappingFromJSON running");
+    Logger.debug`Processing file: ${path.basename(
+      jsonFilePath
+    )} within generateEsMappingFromJSON function`;
 
     const ignoredFields = options.ignoredFields || [];
     const skipMetadata = options.skipMetadata || false;
@@ -169,13 +174,15 @@ export function generateMappingFromJson(
     };
 
     if (ignoredFields.length > 0) {
-      Logger.info(
-        `Fields that will be excluded from mapping: ${ignoredFields.join(", ")}`
-      );
+      Logger.info`Fields that will be excluded from mapping: ${ignoredFields.join(
+        ", "
+      )}`;
     }
 
     if (skipMetadata) {
-      Logger.info("Submission metadata fields will be excluded from mapping");
+      Logger.infoString(
+        "Submission metadata fields will be excluded from mapping"
+      );
     }
 
     if (indexName === "default" || indexName === "data") {
@@ -185,7 +192,7 @@ export function generateMappingFromJson(
       );
       indexName = "data";
     } else {
-      Logger.info(`Using index name: ${indexName}`);
+      Logger.info`Using index name: ${indexName}`;
     }
 
     const startTime = Date.now();
@@ -198,9 +205,15 @@ export function generateMappingFromJson(
     }
 
     if (typeof jsonData !== "object" || jsonData === null) {
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory
+      throw ErrorFactory.file(
         "Invalid JSON: Expected a non-null object",
-        ErrorCodes.INVALID_FILE
+        jsonFilePath,
+        [
+          "Ensure the JSON file contains a valid object structure",
+          "Check that the file is not empty or corrupted",
+          "Verify the JSON syntax is correct",
+        ]
       );
     }
 
@@ -216,7 +229,7 @@ export function generateMappingFromJson(
 
       Object.entries(data).forEach(([key, value]) => {
         if (ignoredFields.includes(key)) {
-          Logger.debug(`Ignoring field: ${key}`);
+          Logger.debug`Ignoring field: ${key}`;
           return;
         }
 
@@ -268,7 +281,7 @@ export function generateMappingFromJson(
       },
     };
 
-    Logger.debug("Mapping configuration generated successfully");
+    Logger.debugString("Mapping configuration generated successfully");
     Logger.debugObject("Generated Mapping", mapping);
     return mapping;
   } catch (error) {
@@ -276,24 +289,30 @@ export function generateMappingFromJson(
     const errorStack =
       error instanceof Error ? error.stack : "No stack trace available";
 
-    Logger.error("Error generating mapping from JSON");
+    Logger.errorString("Error generating mapping from JSON");
     Logger.debugObject("Error details", {
       filePath: jsonFilePath,
       errorMessage,
       stack: errorStack,
     });
 
-    if (error instanceof ComposerError) {
+    if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    throw new ComposerError(
+    // UPDATED: Use ErrorFactory
+    throw ErrorFactory.generation(
       `Error generating mapping from JSON: ${errorMessage}`,
-      ErrorCodes.GENERATION_FAILED,
       {
         filePath: jsonFilePath,
         errorMessage,
         stack: errorStack,
-      }
+      },
+      [
+        "Check that the JSON file is valid and properly formatted",
+        "Ensure the file contains the expected data structure",
+        "Verify file permissions and accessibility",
+        "Check that the JSON follows the expected schema format",
+      ]
     );
   }
 }

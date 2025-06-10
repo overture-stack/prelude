@@ -1,7 +1,7 @@
-// src/cli/commandOptions.ts - Integrated with profiles, cleaned up
+// src/cli/commandOptions.ts - Updated with consolidated error handling and logger
 import { Command, Option } from "commander";
 import { Profile, Profiles } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 import { Logger } from "../utils/logger";
 import {
   CLIOutput,
@@ -31,7 +31,7 @@ const PROFILE_DESCRIPTIONS = new Map([
  * Configure CLI command options - separated from parsing logic
  */
 export function configureCommandOptions(program: Command): Command {
-  Logger.debug("Configuring command options");
+  Logger.debug`Configuring command options`;
 
   return program
     .name("composer")
@@ -45,14 +45,15 @@ export function configureCommandOptions(program: Command): Command {
         .default(Profiles.GENERATE_SONG_SCHEMA)
         .argParser((value) => {
           if (!Object.values(Profiles).includes(value as Profile)) {
-            throw new ComposerError(
-              `Invalid profile: ${value}. Valid profiles are:\n${Array.from(
-                PROFILE_DESCRIPTIONS.entries()
-              )
-                .map(([profile, desc]) => `  ${profile}: ${desc}`)
-                .join("\n")}`,
-              ErrorCodes.INVALID_ARGS
+            // UPDATED: Use ErrorFactory with formatted suggestions
+            const suggestions = Array.from(PROFILE_DESCRIPTIONS.entries()).map(
+              ([profile, desc]) => `  ${profile}: ${desc}`
             );
+
+            throw ErrorFactory.args(`Invalid profile: ${value}`, [
+              "Valid profiles are:",
+              ...suggestions,
+            ]);
           }
           return value as Profile;
         })
@@ -96,7 +97,7 @@ export function configureCommandOptions(program: Command): Command {
       const opts = thisCommand.opts();
       if (opts.debug) {
         Logger.enableDebug();
-        Logger.debug(`Full command options: ${JSON.stringify(opts, null, 2)}`);
+        Logger.debug`Full command options: ${JSON.stringify(opts, null, 2)}`;
       }
     });
 }
@@ -105,7 +106,7 @@ export function configureCommandOptions(program: Command): Command {
  * Parse command line arguments into structured CLIOutput
  */
 export function parseOptions(opts: any): CLIOutput {
-  Logger.debug("Parsing command line arguments");
+  Logger.debug`Parsing command line arguments`;
 
   // Build elasticsearch config
   const elasticsearchConfig: ElasticsearchConfig = {
@@ -155,7 +156,7 @@ export function parseOptions(opts: any): CLIOutput {
   };
 
   if (opts.debug) {
-    Logger.debug(`Parsed CLI output: ${JSON.stringify(output, null, 2)}`);
+    Logger.debug`Parsed CLI output: ${JSON.stringify(output, null, 2)}`;
   }
 
   return output;

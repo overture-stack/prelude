@@ -1,31 +1,31 @@
-// src/services/generateSongSchema.ts - Cleaned up exports
+// src/services/generateSongSchema.ts - Updated with consolidated error handling
 import { Logger } from "../utils/logger";
 import type { SongSchema, SongField, SongOptions } from "../types";
 
 function inferSongType(propertyName: string, value: any): string | string[] {
-  Logger.debug(`Inferring type for field: ${propertyName}`);
+  Logger.debug`Inferring type for field: ${propertyName}`;
 
   if (!isNaN(Number(value))) {
     if (Number.isInteger(Number(value))) {
-      Logger.debug("Detected integer type");
+      Logger.debugString("Detected integer type");
       return "integer";
     }
-    Logger.debug("Detected number type");
+    Logger.debugString("Detected number type");
     return "number";
   }
 
   if (typeof value === "boolean" || value === "true" || value === "false") {
-    Logger.debug("Detected boolean type");
+    Logger.debugString("Detected boolean type");
     return "boolean";
   }
 
-  Logger.debug("Defaulting to string type");
+  Logger.debugString("Defaulting to string type");
   return "string";
 }
 
 function generateSongField(propertyName: string, value: any): SongField {
   if (Array.isArray(value)) {
-    Logger.debug(`Generating field for array: ${propertyName}`);
+    Logger.debug`Generating field for array: ${propertyName}`;
     const itemType =
       value.length > 0
         ? generateSongField("arrayItem", value[0])
@@ -38,7 +38,7 @@ function generateSongField(propertyName: string, value: any): SongField {
   }
 
   if (typeof value === "object" && value !== null) {
-    Logger.debug(`Generating field for object: ${propertyName}`);
+    Logger.debug`Generating field for object: ${propertyName}`;
     const { fields, fieldNames } = generateSongFields(value);
 
     return {
@@ -51,7 +51,7 @@ function generateSongField(propertyName: string, value: any): SongField {
     };
   }
 
-  Logger.debug(`Generating field for primitive: ${propertyName}`);
+  Logger.debug`Generating field for primitive: ${propertyName}`;
   return {
     type: inferSongType(propertyName, value),
   };
@@ -61,7 +61,7 @@ function generateSongFields(data: Record<string, any>): {
   fields: Record<string, SongField>;
   fieldNames: string[];
 } {
-  Logger.debug("Generating field definitions");
+  Logger.debugString("Generating field definitions");
 
   const fields: Record<string, SongField> = {};
   const fieldNames: string[] = [];
@@ -71,11 +71,9 @@ function generateSongFields(data: Record<string, any>): {
       const value = data[propertyName];
       fields[propertyName] = generateSongField(propertyName, value);
       fieldNames.push(propertyName);
-      Logger.debug(`Generated field definition for: ${propertyName}`);
+      Logger.debug`Generated field definition for: ${propertyName}`;
     } catch (error) {
-      Logger.warn(
-        `Error generating field definition for ${propertyName}: ${error}`
-      );
+      Logger.warn`Error generating field definition for ${propertyName}: ${error}`;
       fields[propertyName] = { type: "object" };
       fieldNames.push(propertyName);
     }
@@ -90,8 +88,8 @@ export function SongSchema(
   schemaName: string,
   options?: SongOptions
 ): SongSchema {
-  Logger.debug("Generating SONG schema");
-  Logger.debug(`Schema name: ${schemaName}`);
+  Logger.debugString("Generating SONG schema");
+  Logger.debug`Schema name: ${schemaName}`;
 
   const schemaFields: Record<string, any> = {};
   const requiredFields: string[] = ["experiment"];
@@ -102,13 +100,13 @@ export function SongSchema(
         "experiment",
         sampleData.experiment
       );
-      Logger.debug("Added experiment field to schema");
+      Logger.debugString("Added experiment field to schema");
     } catch (error) {
-      Logger.warn(`Error generating experiment field: ${error}`);
+      Logger.warn`Error generating experiment field: ${error}`;
       schemaFields.experiment = { type: "object" };
     }
   } else {
-    Logger.warn(
+    Logger.warnString(
       "No experiment data provided in sample, adding empty placeholder"
     );
     schemaFields.experiment = { type: "object" };
@@ -120,10 +118,10 @@ export function SongSchema(
         "workflow",
         sampleData.workflow
       );
-      Logger.debug("Added workflow field to schema");
+      Logger.debugString("Added workflow field to schema");
       requiredFields.push("workflow");
     } catch (error) {
-      Logger.warn(`Error generating workflow field: ${error}`);
+      Logger.warn`Error generating workflow field: ${error}`;
       schemaFields.workflow = { type: "object" };
     }
   }
@@ -143,14 +141,14 @@ export function SongSchema(
     },
   };
 
-  Logger.debug("Song schema generated successfully");
+  Logger.debugString("Song schema generated successfully");
   Logger.debugObject("Generated Schema", schema);
   return schema;
 }
 
 export function validateSongSchema(schema: SongSchema): boolean {
   try {
-    Logger.debug("Validating SONG schema");
+    Logger.debugString("Validating SONG schema");
 
     if (!schema.name) {
       throw new Error("Schema must have a name");
@@ -180,13 +178,13 @@ export function validateSongSchema(schema: SongSchema): boolean {
       throw new Error("The experiment field must be required");
     }
 
-    Logger.debug("Schema validation passed");
+    Logger.debugString("Schema validation passed");
     return true;
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
 
-    Logger.debug(`Schema validation failed: ${errorMessage}`);
+    Logger.debug`Schema validation failed: ${errorMessage}`;
     return false;
   }
 }

@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 import { generateMappingFromCSV } from "../services/generateEsMappingFromCSV";
 import {
   generateMappingFromJson,
@@ -120,10 +120,16 @@ export class MappingCommand extends Command {
     );
 
     if (invalidFiles.length > 0) {
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(
         "Invalid file types detected. Only .csv and .json files are supported",
-        ErrorCodes.INVALID_FILE,
-        { invalidFiles }
+        undefined,
+        [
+          "Ensure all input files have .csv or .json extensions",
+          `Invalid files: ${invalidFiles.join(", ")}`,
+          "Supported formats: CSV for tabular data, JSON for structured data",
+          "Example: -f data.csv metadata.json",
+        ]
       );
     }
 
@@ -134,21 +140,32 @@ export class MappingCommand extends Command {
       )
     );
     if (extensions.size > 1) {
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(
         "For now all input files must be of the same type (either all CSV or all JSON)",
-        ErrorCodes.INVALID_FILE,
-        Logger.warn(
-          "Merging JSON and CSV data into a single mapping will part of a future release"
-        )
+        undefined,
+        [
+          "Use either all CSV files OR all JSON files, not mixed",
+          "CSV files: for tabular data like spreadsheets",
+          "JSON files: for structured metadata",
+          "Merging different file types will be supported in a future release",
+        ]
       );
     }
 
     // Validate index pattern - access elasticsearchConfig directly
     if (cliOutput.elasticsearchConfig?.index) {
       if (!/^[a-z0-9][a-z0-9_-]*$/.test(cliOutput.elasticsearchConfig.index)) {
-        throw new ComposerError(
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.args(
           "Invalid index pattern. Must start with a letter or number and contain only lowercase letters, numbers, hyphens, and underscores",
-          ErrorCodes.INVALID_ARGS
+          [
+            "Index names must be lowercase",
+            "Start with a letter or number",
+            "Use only letters, numbers, hyphens, and underscores",
+            "Example: --index my_data_index",
+            "Invalid characters: spaces, dots, uppercase letters",
+          ]
         );
       }
     }
@@ -163,9 +180,7 @@ export class MappingCommand extends Command {
     // Normalize output path for mapping files specifically
     if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
       outputPath = path.join(outputPath, this.defaultOutputFileName);
-      Logger.debug(
-        `Output is a directory, will create ${this.defaultOutputFileName} inside it`
-      );
+      Logger.debug`Output is a directory, will create ${this.defaultOutputFileName} inside it`;
     } else if (!outputPath.endsWith(".json")) {
       outputPath += ".json";
       Logger.info`Adding .json extension to output path`;
@@ -211,13 +226,19 @@ export class MappingCommand extends Command {
 
       return finalMapping;
     } catch (error) {
-      if (error instanceof ComposerError) {
+      if (error instanceof Error && error.name === "ComposerError") {
         throw error;
       }
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory
+      throw ErrorFactory.generation(
         "Error generating Elasticsearch mapping",
-        ErrorCodes.GENERATION_FAILED,
-        error
+        error,
+        [
+          "Check that input files are properly formatted",
+          "Ensure output directory is writable",
+          "Verify file permissions and disk space",
+          "For CSV files, check header format and delimiter",
+        ]
       );
     }
   }
@@ -240,9 +261,16 @@ export class MappingCommand extends Command {
       // Validate CSV structure
       const csvHeadersValid = await validateCSVHeaders(filePath, delimiter);
       if (!csvHeadersValid) {
-        throw new ComposerError(
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.file(
           `CSV file ${filePath} has invalid headers`,
-          ErrorCodes.VALIDATION_FAILED
+          filePath,
+          [
+            "Check that the CSV has proper column headers",
+            "Ensure headers don't contain special characters",
+            "Verify the delimiter is correct",
+            "Headers should be unique and non-empty",
+          ]
         );
       }
 
@@ -251,9 +279,15 @@ export class MappingCommand extends Command {
       const [headerLine, sampleLine] = fileContent.split("\n");
 
       if (!headerLine || !sampleLine) {
-        throw new ComposerError(
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.file(
           `CSV file ${filePath} must contain at least a header row and one data row`,
-          ErrorCodes.INVALID_FILE
+          filePath,
+          [
+            "Ensure the CSV has at least 2 rows (headers + data)",
+            "Check that the file is not corrupted",
+            "Verify the CSV format is correct",
+          ]
         );
       }
 
@@ -262,9 +296,15 @@ export class MappingCommand extends Command {
       const sampleValues = parseCSVLine(sampleLine, delimiter, false)[0];
 
       if (!headers || !sampleValues) {
-        throw new ComposerError(
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.parsing(
           `Failed to parse CSV headers or sample data in ${filePath}`,
-          ErrorCodes.INVALID_FILE
+          { filePath, delimiter },
+          [
+            "Check that the delimiter is correct",
+            "Ensure the CSV format is valid",
+            "Verify there are no unescaped quotes or special characters",
+          ]
         );
       }
 
@@ -280,11 +320,9 @@ export class MappingCommand extends Command {
       const newHeaders = allHeaders.size - originalHeaderCount;
       processedFileCount++;
 
-      Logger.debug(
-        `Found ${headers.length} fields in ${path.basename(
-          filePath
-        )} (${newHeaders} new fields)`
-      );
+      Logger.debug`Found ${headers.length} fields in ${path.basename(
+        filePath
+      )} (${newHeaders} new fields)`;
 
       // Show timing for large files
       const fileEndTime = Date.now();
@@ -325,6 +363,7 @@ export class MappingCommand extends Command {
       jsonOptions
     );
   }
+
   private logMappingSummary(
     mapping: ElasticsearchMapping,
     outputPath: string,
@@ -332,14 +371,14 @@ export class MappingCommand extends Command {
   ): void {
     try {
       // Index pattern info
-      Logger.info(`Index Pattern created: ${mapping.index_patterns[0]}`);
+      Logger.info`Index Pattern created: ${mapping.index_patterns[0]}`;
 
       // Aliases info
       const aliasNames = Object.keys(mapping.aliases);
       if (aliasNames.length > 0) {
-        Logger.info(`Alias(es) used: ${aliasNames.join(", ")}`);
+        Logger.info`Alias(es) used: ${aliasNames.join(", ")}`;
       } else {
-        Logger.info("No aliases defined");
+        Logger.infoString("No aliases defined");
       }
 
       // Fields info with count
@@ -351,7 +390,7 @@ export class MappingCommand extends Command {
       );
 
       // Log detailed field information
-      Logger.info(
+      Logger.infoString(
         `Field Analysis: ${fieldCount} total fields\n` +
           `  • Top-level fields: ${fieldBreakdown.topLevelFields}\n` +
           `  • Nested array fields: ${fieldBreakdown.nestedFields}\n` +
@@ -362,22 +401,22 @@ export class MappingCommand extends Command {
 
       // Metadata skipping info
       if (options.skipMetadata) {
-        Logger.info("Submission metadata excluded from mapping");
+        Logger.infoString("Submission metadata excluded from mapping");
       }
 
       // Shards and replicas
-      Logger.info(`Shards: ${mapping.settings.number_of_shards}`);
-      Logger.info(`Replicas: ${mapping.settings.number_of_replicas}`);
+      Logger.info`Shards: ${mapping.settings.number_of_shards}`;
+      Logger.info`Replicas: ${mapping.settings.number_of_replicas}`;
 
       // Ensure success logging
-      Logger.success("Elasticsearch mapping generated successfully");
+      Logger.successString("Elasticsearch mapping generated successfully");
 
       // Use generic logging for file path to avoid template literal issues
       Logger.generic(`    - Saved to: ${outputPath}`);
     } catch (error) {
       // Fallback logging in case of any unexpected errors
-      Logger.error("Error in logging mapping summary");
-      Logger.debug(`${error}`);
+      Logger.errorString("Error in logging mapping summary");
+      Logger.debug`${error}`;
     }
   }
 }

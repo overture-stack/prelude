@@ -1,7 +1,7 @@
-// src/services/generateEsMappingFromCSV.ts - Cleaned up exports
+// src/services/generateEsMappingFromCSV.ts - Updated with consolidated error handling
 import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 
 // ---- Type Inference Configuration ----
 
@@ -30,10 +30,10 @@ function inferFieldType(
   rules: TypeInferenceRules = defaultRules
 ): ElasticsearchField {
   try {
-    Logger.debug(`Inferring type for field: ${headerName}`);
+    Logger.debug`Inferring type for field: ${headerName}`;
 
     if (!sampleValue || sampleValue.trim() === "") {
-      Logger.debug(
+      Logger.debugString(
         "Empty value detected, defaulting to keyword with null value"
       );
       return { type: "keyword" as const, null_value: "No Data" };
@@ -44,22 +44,22 @@ function inferFieldType(
         headerName.toLowerCase().includes(pattern)
       )
     ) {
-      Logger.debug("Field matches exclude pattern, setting as keyword");
+      Logger.debugString("Field matches exclude pattern, setting as keyword");
       return { type: "keyword" as const };
     }
 
     if (!isNaN(Number(sampleValue))) {
       if (Number.isInteger(Number(sampleValue))) {
-        Logger.debug("Detected integer type");
+        Logger.debugString("Detected integer type");
         return { type: "integer" as const };
       }
-      Logger.debug("Detected float type");
+      Logger.debugString("Detected float type");
       return { type: "float" as const };
     }
 
     const lowerValue = sampleValue.toLowerCase();
     if (rules.booleanValues.includes(lowerValue)) {
-      Logger.debug("Detected boolean type");
+      Logger.debugString("Detected boolean type");
       return { type: "boolean" as const };
     }
 
@@ -69,25 +69,30 @@ function inferFieldType(
       )
     ) {
       if (isValidDate(sampleValue)) {
-        Logger.debug("Detected date type");
+        Logger.debugString("Detected date type");
         return { type: "date" as const };
       }
     }
 
     if (sampleValue.length > rules.maxTextLength) {
-      Logger.debug("Detected text type (long string)");
+      Logger.debugString("Detected text type (long string)");
       return { type: "text" as const };
     }
 
-    Logger.debug("Detected keyword type");
+    Logger.debugString("Detected keyword type");
     return { type: "keyword" as const };
   } catch (error) {
-    Logger.error("Error inferring field type");
+    Logger.errorString("Error inferring field type");
     Logger.debugObject("Error details", { headerName, sampleValue, error });
-    throw new ComposerError(
+    // UPDATED: Use ErrorFactory
+    throw ErrorFactory.generation(
       "Error inferring field type",
-      ErrorCodes.GENERATION_FAILED,
-      { headerName, sampleValue, error }
+      { headerName, sampleValue, error },
+      [
+        "Check that the sample value is valid",
+        "Ensure the header name doesn't contain special characters",
+        "Verify the CSV data is properly formatted",
+      ]
     );
   }
 }
@@ -105,8 +110,8 @@ export function generateMappingFromCSV(
   options: CSVMappingOptions = {}
 ): ElasticsearchMapping {
   try {
-    Logger.debug("generateEsMappingFromCSV running");
-    Logger.debug(`Processing ${csvHeaders.length} CSV columns`);
+    Logger.debugString("generateEsMappingFromCSV running");
+    Logger.debug`Processing ${csvHeaders.length} CSV columns`;
 
     const skipMetadata = options.skipMetadata || false;
     const customRules = options.customRules || {};
@@ -117,7 +122,9 @@ export function generateMappingFromCSV(
     };
 
     if (skipMetadata) {
-      Logger.info("Submission metadata fields will be excluded from mapping");
+      Logger.infoString(
+        "Submission metadata fields will be excluded from mapping"
+      );
     }
 
     if (indexName === "default" || indexName === "data") {
@@ -127,10 +134,10 @@ export function generateMappingFromCSV(
       );
       indexName = "data";
     } else {
-      Logger.info(`Using index name: ${indexName}`);
+      Logger.info`Using index name: ${indexName}`;
     }
 
-    Logger.info(`Analyzing ${csvHeaders.length} fields for type inference`);
+    Logger.info`Analyzing ${csvHeaders.length} fields for type inference`;
 
     const typeInferenceStart = Date.now();
     const properties: Record<string, ElasticsearchField> = {};
@@ -175,26 +182,26 @@ export function generateMappingFromCSV(
       Logger.timing("Type inference", typeInferenceTime);
     }
 
-    Logger.debug("Field analysis complete");
+    Logger.debugString("Field analysis complete");
 
     // Log field type distribution if debug enabled
     if (numericFieldCount > 0) {
-      Logger.debug(`Numeric fields: ${numericFieldCount}`);
+      Logger.debug`Numeric fields: ${numericFieldCount}`;
     }
     if (dateFieldCount > 0) {
-      Logger.debug(`Date fields: ${dateFieldCount}`);
+      Logger.debug`Date fields: ${dateFieldCount}`;
     }
     if (booleanFieldCount > 0) {
-      Logger.debug(`Boolean fields: ${booleanFieldCount}`);
+      Logger.debug`Boolean fields: ${booleanFieldCount}`;
     }
     if (textFieldCount > 0) {
-      Logger.debug(`Text fields: ${textFieldCount}`);
+      Logger.debug`Text fields: ${textFieldCount}`;
     }
     if (keywordFieldCount > 0) {
-      Logger.debug(`Keyword fields: ${keywordFieldCount}`);
+      Logger.debug`Keyword fields: ${keywordFieldCount}`;
     }
     if (complexFieldCount > 0) {
-      Logger.debug(`Complex fields: ${complexFieldCount}`);
+      Logger.debug`Complex fields: ${complexFieldCount}`;
     }
 
     // Create data properties with or without submission metadata
@@ -235,16 +242,22 @@ export function generateMappingFromCSV(
       },
     };
 
-    Logger.debug("Mapping configuration generated successfully");
+    Logger.debugString("Mapping configuration generated successfully");
     Logger.debugObject("Generated Mapping", mapping);
     return mapping;
   } catch (error) {
-    Logger.error("Error generating mapping from CSV");
+    Logger.errorString("Error generating mapping from CSV");
     Logger.debugObject("Error details", { csvHeaders, error });
-    throw new ComposerError(
+    // UPDATED: Use ErrorFactory
+    throw ErrorFactory.generation(
       "Error generating mapping from CSV",
-      ErrorCodes.GENERATION_FAILED,
-      { csvHeaders, error }
+      { csvHeaders, error },
+      [
+        "Check that all CSV headers are valid",
+        "Ensure sample data is properly formatted",
+        "Verify there are no special characters in headers",
+        "Check that the CSV structure is consistent",
+      ]
     );
   }
 }

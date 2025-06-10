@@ -1,8 +1,8 @@
-// src/commands/commandRegistry.ts - Simplified
+// src/commands/commandRegistry.ts - Updated with consolidated error handling
 import { Command } from "./baseCommand";
 import { Profile, Profiles } from "../types";
 import { Logger } from "../utils/logger";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 
 // Import command classes
 import { SongCommand } from "./songCommand";
@@ -67,14 +67,17 @@ export class CommandRegistry {
   static createCommand(profile: Profile): Command {
     const config = this.commands.get(profile);
     if (!config) {
-      throw new ComposerError(
-        `Unknown profile: ${profile}`,
-        ErrorCodes.INVALID_ARGS,
-        { availableProfiles: Array.from(this.commands.keys()) }
-      );
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args(`Unknown profile: ${profile}`, [
+        "Available profiles:",
+        ...Array.from(this.commands.entries()).map(
+          ([p, c]) => `  ${p}: ${c.description}`
+        ),
+        "Use --help to see all available options",
+      ]);
     }
 
-    Logger.debug(`Creating command: ${config.name}`);
+    Logger.debug`Creating command: ${config.name}`;
     return config.createCommand();
   }
 
