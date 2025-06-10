@@ -2,7 +2,7 @@
 
 import { setupCLI } from "./cli";
 import { CommandFactory } from "./commands/commandFactory";
-import { ConductorError, ErrorCodes, handleError } from "./utils/errors"; // Add ConductorError and ErrorCodes
+import { ConductorError, ErrorCodes, handleError } from "./utils/errors";
 import { Logger } from "./utils/logger";
 import chalk from "chalk";
 
@@ -23,10 +23,12 @@ async function main() {
     Logger.debug`Starting CLI setup`;
 
     Logger.debug`Creating command instance`;
-    const command = CommandFactory.createCommand(cliOutput.profile);
+    // Convert the CLI profile to the command factory profile type
+    const command = CommandFactory.createCommand(cliOutput.profile as any);
 
     Logger.debug`Running command`;
-    const result = await command.run(cliOutput);
+    // Use the CLI output type directly
+    const result = await command.run(cliOutput as any);
 
     // Check command result and handle errors
     if (!result.success) {

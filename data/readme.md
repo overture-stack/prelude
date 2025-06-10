@@ -33,3 +33,13 @@ conductor lyricRegister -c exampleCategory --dict-name example-dictionary -v 1.0
 
 conductor lyricUpload -d ./data/segmentedData
 ```
+
+```
+conductor songCreateStudy -i demo -n demo
+
+conductor songUploadSchema -s ./configs/songSchemas/song-schema.json
+
+conductor songSubmitAnalysis -a ./data/file-metadata.json -i demo -d ./data/fileData/
+
+conductor songPublishAnalysis -a analysis-id
+```

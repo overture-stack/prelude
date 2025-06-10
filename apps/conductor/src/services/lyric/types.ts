@@ -24,7 +24,7 @@ export interface LyricRegistrationResponse {
 /**
  * Parameters for data submission to Lyric
  */
-export interface LyricSubmissionParams {
+interface LyricSubmissionParams {
   categoryId: string;
   organization: string;
   dataDirectory: string;
@@ -35,7 +35,7 @@ export interface LyricSubmissionParams {
 /**
  * Response from Lyric data submission
  */
-export interface LyricSubmissionResponse {
+interface LyricSubmissionResponse {
   submissionId: string;
   status: string;
   [key: string]: any;
@@ -54,7 +54,7 @@ export interface DataSubmissionResult {
 /**
  * Lyric category information
  */
-export interface LyricCategory {
+interface LyricCategory {
   id: string;
   name: string;
   description?: string;
@@ -63,7 +63,7 @@ export interface LyricCategory {
 /**
  * Lyric dictionary information
  */
-export interface LyricDictionary {
+interface LyricDictionary {
   id: string;
   name: string;
   version: string;

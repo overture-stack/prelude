@@ -1,21 +1,9 @@
+// src/commands/commandFactory.ts
 /**
- * Command Factory Module
+ * Command Factory Module - Updated to remove songScoreSubmitCommand
  *
  * This module implements the Factory Pattern to create command instances based on the provided profile.
- * It serves as the central registry for all available commands in the Conductor service and
- * decouples command selection from command execution.
- *
- * The factory pattern allows for:
- * 1. Dynamic command creation based on runtime configuration
- * 2. Centralized command registration
- * 3. Easy addition of new commands without modifying existing code (Open/Closed Principle)
- * 4. Validation of profiles and helpful error messages
- *
- * Related files:
- * - baseCommand.ts: Defines the abstract Command class and interface
- * - types/cli.ts: Contains CLI argument interfaces and type definitions
- * - types/constants.ts: Defines available profiles as constants
- * - Individual command implementations (uploadCommand.ts etc.)
+ * Updated to use the refactored SONG/Score services and remove the combined songScoreSubmit command.
  */
 
 import type { Profile } from "../types";
@@ -31,16 +19,13 @@ import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
 import { LyricUploadCommand } from "./lyricUploadCommand";
 import { SongUploadSchemaCommand } from "./songUploadSchemaCommand";
 import { SongCreateStudyCommand } from "./songCreateStudyCommand";
-import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand";
-import { ScoreManifestUploadCommand } from "./scoreManifestUploadCommand";
+import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand"; // Now includes Score functionality
 import { SongPublishAnalysisCommand } from "./songPublishAnalysisCommand";
-import { SongScoreSubmitCommand } from "./songScoreSubmitCommand";
 import { MaestroIndexCommand } from "./maestroIndexCommand";
+// Note: scoreManifestUploadCommand and songScoreSubmitCommand are removed
 
 /**
  * Type definition for command class constructors.
- * This type allows for both command classes that implement the Command interface
- * and those that extend the abstract Command class.
  */
 type CommandConstructor = new () =>
   | Command
@@ -48,7 +33,6 @@ type CommandConstructor = new () =>
 
 /**
  * Maps each profile to its corresponding command constructor.
- * Used for type-checking the PROFILE_TO_COMMAND mapping.
  */
 type CommandMap = {
   [K in Profile]: CommandConstructor;
@@ -56,7 +40,7 @@ type CommandMap = {
 
 /**
  * Maps profile identifiers to user-friendly display names.
- * Used for logging and error messages to improve user experience.
+ * Updated to reflect the combined functionality.
  */
 const PROFILE_DISPLAY_NAMES: Record<string, string> = {
   [Profiles.UPLOAD]: "CSV Upload",
@@ -65,22 +49,14 @@ const PROFILE_DISPLAY_NAMES: Record<string, string> = {
   [Profiles.LYRIC_DATA]: "Lyric Data Loading",
   [Profiles.song_upload_schema]: "SONG Schema Upload",
   [Profiles.song_create_study]: "SONG Study Creation",
-  [Profiles.song_submit_analysis]: "SONG Analysis Submission",
-  [Profiles.score_manifest_upload]: "Score Manifest Upload",
+  [Profiles.song_submit_analysis]: "SONG Analysis Submission & File Upload", // Updated description
   [Profiles.song_publish_analysis]: "SONG Analysis Publication",
-  [Profiles.song_score_submit]: "SONG/SCORE End-to-End Workflow",
+  [Profiles.INDEX_REPOSITORY]: "Repository Indexing",
 };
 
 /**
  * Maps profile identifiers to their corresponding command classes.
- * This is the core registry of available commands in the system.
- *
- * When adding a new command:
- * 1. Create the command class extending the base Command class
- * 2. Import it at the top of this file
- * 3. Add the profile to the Profiles enum in types/constants.ts
- * 4. Add an entry to this mapping
- * 5. Add a display name to PROFILE_DISPLAY_NAMES
+ * Updated to remove songScoreSubmit and scoreManifestUpload.
  */
 const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.UPLOAD]: UploadCommand,
@@ -91,16 +67,12 @@ const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.song_upload_schema]: SongUploadSchemaCommand,
   [Profiles.song_create_study]: SongCreateStudyCommand,
   [Profiles.song_submit_analysis]: SongSubmitAnalysisCommand,
-  [Profiles.score_manifest_upload]: ScoreManifestUploadCommand,
   [Profiles.song_publish_analysis]: SongPublishAnalysisCommand,
-  [Profiles.song_score_submit]: SongScoreSubmitCommand,
+  // Note: score_manifest_upload and song_score_submit profiles are removed
 } as const;
 
 /**
  * Factory class responsible for creating command instances based on the requested profile.
- *
- * The factory pattern encapsulates the logic of selecting and instantiating the appropriate
- * command, providing a clean interface for the CLI entry point.
  */
 export class CommandFactory {
   /**
@@ -109,12 +81,6 @@ export class CommandFactory {
    * @param profile - The profile identifier from the CLI arguments
    * @returns An instance of the appropriate Command implementation
    * @throws ConductorError if the profile is not supported
-   *
-   * Usage:
-   * ```
-   * const command = CommandFactory.createCommand(cliOutput.profile);
-   * await command.run(cliOutput);
-   * ```
    */
   static createCommand(
     profile: Profile

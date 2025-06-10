@@ -1,9 +1,4 @@
-/**
- * CLI Entry Point Module
- *
- * This module serves as the main entry point for the Conductor CLI application.
- * It handles command-line argument parsing, environment configuration, and command setup.
- */
+// src/cli/index.ts - Fixed version removing references to deleted profiles
 
 import { Command } from "commander";
 import { Config } from "../types/cli";
@@ -16,7 +11,7 @@ import { Logger } from "../utils/logger";
 
 /**
  * Type definition for supported CLI profiles.
- * This should match the available profiles in the Profiles enum.
+ * Updated to remove deleted profiles.
  */
 export type CLIprofile =
   | "upload"
@@ -27,9 +22,8 @@ export type CLIprofile =
   | "songUploadSchema"
   | "songCreateStudy"
   | "songSubmitAnalysis"
-  | "scoreManifestUpload"
-  | "songPublishAnalysis"
-  | "songScoreSubmit";
+  | "songPublishAnalysis";
+// Removed: "scoreManifestUpload" and "songScoreSubmit"
 
 /**
  * Standardized output from the CLI parsing process.
@@ -83,7 +77,7 @@ export async function setupCLI(): Promise<CLIOutput> {
     Logger.debug("Remaining arguments:", program.args);
 
     // Determine the profile based on the command name
-    let profile: CLIprofile = Profiles.UPLOAD; // Default to upload instead of index management
+    let profile: CLIprofile = Profiles.UPLOAD; // Default to upload
     switch (commandName) {
       case "upload":
         profile = Profiles.UPLOAD;
@@ -109,15 +103,10 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "songSubmitAnalysis":
         profile = Profiles.song_submit_analysis;
         break;
-      case "scoreManifestUpload":
-        profile = Profiles.score_manifest_upload;
-        break;
       case "songPublishAnalysis":
         profile = Profiles.song_publish_analysis;
         break;
-      case "songScoreSubmit":
-        profile = Profiles.song_score_submit;
-        break;
+      // Removed cases for scoreManifestUpload and songScoreSubmit
     }
 
     // Validate options and environment if needed
@@ -129,9 +118,8 @@ export async function setupCLI(): Promise<CLIOutput> {
       profile !== Profiles.song_upload_schema &&
       profile !== Profiles.song_create_study &&
       profile !== Profiles.song_submit_analysis &&
-      profile !== Profiles.score_manifest_upload &&
-      profile !== Profiles.song_publish_analysis &&
-      profile !== Profiles.song_score_submit
+      profile !== Profiles.song_publish_analysis
+      // Removed references to deleted profiles
     ) {
       await validateEnvironment({
         elasticsearchUrl: options.url || envConfig.elasticsearchUrl,

@@ -1,3 +1,5 @@
+// src/types/cli.ts - Update to match the CLI profile type
+
 import { Profiles } from "./constants";
 
 export type Profile = (typeof Profiles)[keyof typeof Profiles];
@@ -37,14 +39,10 @@ export interface Config {
     organization?: string;
     description?: string;
     analysisFile?: string;
-    analysisPath?: string;
     allowDuplicates?: boolean;
     ignoreUndefinedMd5?: boolean;
-  };
-  score?: {
-    url?: string;
-    authToken?: string;
-    analysisId?: string;
+    // Combined Score functionality (now part of song config)
+    scoreUrl?: string;
     dataDir?: string;
     outputDir?: string;
     manifestFile?: string;
@@ -60,7 +58,7 @@ export interface Config {
 }
 
 export interface CLIOutput {
-  profile: Profile;
+  profile: Profile; // Use the Profile type from constants
   debug?: boolean;
   filePaths: string[];
   config: Config;
@@ -77,7 +75,6 @@ export interface EnvConfig {
   lecternUrl?: string;
   lyricUrl?: string;
   songUrl?: string;
-  scoreUrl?: string;
   lyricData?: string;
   categoryId?: string;
   organization?: string;

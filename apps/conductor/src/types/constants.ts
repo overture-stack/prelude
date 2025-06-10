@@ -1,8 +1,9 @@
+// src/types/constants.ts
 /**
  * Constants used throughout the application
  *
  * This file defines constants for profiles, error codes, and other application-wide values.
- * New profiles should be added here to make them available throughout the application.
+ * Updated to remove scoreManifestUpload and songScoreSubmit profiles.
  */
 
 /**
@@ -30,15 +31,9 @@ export const Profiles = {
   /** Create study in SONG server */
   song_create_study: "songCreateStudy",
 
-  /** Submit analysis to SONG server */
+  /** Submit analysis to SONG server and upload files to Score (combined workflow) */
   song_submit_analysis: "songSubmitAnalysis",
-
-  /** Generate manifest and upload with Score */
-  score_manifest_upload: "scoreManifestUpload",
 
   /** Publish analysis in SONG server */
   song_publish_analysis: "songPublishAnalysis",
-
-  /** Combined SONG/SCORE workflow */
-  song_score_submit: "songScoreSubmit",
 } as const;
