@@ -157,9 +157,9 @@ export abstract class Command {
       await validateFile(filePath);
     }
 
-    // Validate delimiter if provided
-    if (cliOutput.delimiter) {
-      validateDelimiter(cliOutput.delimiter);
+    // Validate delimiter if provided - access csvDelimiter directly
+    if (cliOutput.csvDelimiter) {
+      validateDelimiter(cliOutput.csvDelimiter);
     }
   }
 

@@ -1,4 +1,4 @@
-// Updated lecternCommand.ts
+// Updated lecternCommand.ts - Fixed to use new CLIOutput structure
 import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
@@ -110,7 +110,7 @@ export class DictionaryCommand extends Command {
     cliOutput.filePaths = csvFiles;
     Logger.info(`Processing ${csvFiles.length} CSV files`);
 
-    // Validate CSV headers for each file
+    // Validate CSV headers for each file - use csvDelimiter directly
     const validFiles: string[] = [];
     const invalidFiles: string[] = [];
 
@@ -118,7 +118,7 @@ export class DictionaryCommand extends Command {
       try {
         const csvHeadersValid = await validateCSVHeaders(
           filePath,
-          cliOutput.config.delimiter
+          cliOutput.csvDelimiter // Access delimiter directly
         );
         if (csvHeadersValid) {
           validFiles.push(filePath);
@@ -157,7 +157,7 @@ export class DictionaryCommand extends Command {
 
   protected async execute(cliOutput: CLIOutput): Promise<any> {
     const { dictionaryConfig } = cliOutput;
-    const delimiter = cliOutput.config.delimiter;
+    const delimiter = cliOutput.csvDelimiter; // Access delimiter directly
 
     // Get output path, similar to MappingCommand
     let outputPath = cliOutput.outputPath!;

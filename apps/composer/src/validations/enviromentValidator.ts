@@ -58,35 +58,3 @@ export async function validateEnvironment(
   environmentValidated = true;
   return true;
 }
-
-/**
- * Validates that all required npm dependencies are installed.
- */
-export async function validateDependencies(
-  composerPath: string
-): Promise<boolean> {
-  Logger.debug("Setting up configuration generator");
-  Logger.debug("Checking Composer dependencies");
-
-  try {
-    const nodeModulesPath = path.join(composerPath, "node_modules");
-    if (!fs.existsSync(nodeModulesPath)) {
-      throw new ComposerError(
-        "node_modules not found. Consider running 'npm install'",
-        ErrorCodes.ENV_ERROR
-      );
-    }
-
-    Logger.debug("Dependencies validation complete");
-    return true;
-  } catch (error) {
-    if (error instanceof ComposerError) {
-      throw error;
-    }
-    throw new ComposerError(
-      "Error validating dependencies",
-      ErrorCodes.ENV_ERROR,
-      error
-    );
-  }
-}

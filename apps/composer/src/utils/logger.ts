@@ -1,6 +1,7 @@
+// src/utils/logger.ts - Made LogLevel private
 import chalk from "chalk";
 
-export enum LogLevel {
+enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   SUCCESS = 2,
@@ -92,9 +93,6 @@ export class Logger {
     console.log(chalk.gray("🔍 **Debug mode enabled**"));
   }
 
-  /**
-   * Tagged template helper that automatically bolds interpolated values.
-   */
   static formatVariables(
     strings: TemplateStringsArray,
     ...values: any[]
@@ -106,9 +104,6 @@ export class Logger {
     }, "");
   }
 
-  /**
-   * Core log function that accepts either a tagged template literal or a plain string.
-   */
   private static log(
     level: LogLevel,
     strings: TemplateStringsArray | string,
@@ -228,6 +223,7 @@ export class Logger {
       console.log(chalk.gray`  - ${file}`);
     });
   }
+
   static errorfileList(title: string, files: string[]): void {
     if (files.length === 0) return;
     Logger.error`${title}:\n`;
@@ -235,10 +231,10 @@ export class Logger {
       console.log(chalk.gray`  - ${file}`);
     });
   }
+
   static showReferenceCommands(): void {
     this.header("Command Examples");
 
-    // Dictionary Generation
     this.generic(chalk.bold.magenta("Generate Lectern Dictionary:"));
     this.generic(
       chalk.white(
@@ -283,7 +279,6 @@ export class Logger {
     );
     this.generic("");
 
-    // Song Schema Generation
     this.generic(chalk.bold.magenta("Generate Song Schema:"));
     this.generic(chalk.white("composer -p SongSchema -f schema-template.json"));
     this.generic(chalk.gray("Options:"));
@@ -314,7 +309,6 @@ export class Logger {
     );
     this.generic("");
 
-    // Elasticsearch Mapping Generation
     this.generic(chalk.bold.magenta("Generate Elasticsearch Mapping:"));
     this.generic(chalk.white("composer -p ElasticsearchMapping -f data.csv"));
     this.generic(chalk.gray("Options:"));
@@ -377,7 +371,6 @@ export class Logger {
     );
     this.generic("");
 
-    // Arranger Configuration Generation
     this.generic(chalk.bold.magenta("Generate Arranger Configs:"));
     this.generic(chalk.white("composer -p ArrangerConfigs -f metadata.csv"));
     this.generic(chalk.gray("Options:"));

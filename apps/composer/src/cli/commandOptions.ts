@@ -1,11 +1,34 @@
+// src/cli/commandOptions.ts - Integrated with profiles, cleaned up
 import { Command, Option } from "commander";
-import { Profile, Profiles, CLIOutput } from "../types";
+import { Profile, Profiles } from "../types";
 import { ComposerError, ErrorCodes } from "../utils/errors";
-import { PROFILE_DESCRIPTIONS } from "./profiles";
 import { Logger } from "../utils/logger";
+import {
+  CLIOutput,
+  ElasticsearchConfig,
+  DictionaryConfig,
+  SongConfig,
+} from "../types";
+
+// Profile descriptions integrated here
+const PROFILE_DESCRIPTIONS = new Map([
+  [Profiles.GENERATE_SONG_SCHEMA, "Generate Song schema from JSON metadata"],
+  [
+    Profiles.GENERATE_LECTERN_DICTIONARY,
+    "Generate Lectern dictionary from CSV files",
+  ],
+  [
+    Profiles.GENERATE_ELASTICSEARCH_MAPPING,
+    "Generate Elasticsearch mapping from CSV or JSON",
+  ],
+  [
+    Profiles.GENERATE_ARRANGER_CONFIGS,
+    "Generate Arranger configs from Elasticsearch mapping",
+  ],
+]);
 
 /**
- * Configures and returns the CLI command with all available options
+ * Configure CLI command options - separated from parsing logic
  */
 export function configureCommandOptions(program: Command): Command {
   Logger.debug("Configuring command options");
@@ -18,12 +41,10 @@ export function configureCommandOptions(program: Command): Command {
     .option("--debug", "Enable debug logging")
     .addOption(
       new Option("-p, --profile <profile>", "Execution profile")
-        .choices(Object.keys(Profiles))
-        .default("default")
+        .choices(Object.values(Profiles))
+        .default(Profiles.GENERATE_SONG_SCHEMA)
         .argParser((value) => {
-          Logger.debug`Parsing profile value: ${value}`;
           if (!Object.values(Profiles).includes(value as Profile)) {
-            Logger.debug`Invalid profile detected: ${value}`;
             throw new ComposerError(
               `Invalid profile: ${value}. Valid profiles are:\n${Array.from(
                 PROFILE_DESCRIPTIONS.entries()
@@ -33,7 +54,6 @@ export function configureCommandOptions(program: Command): Command {
               ErrorCodes.INVALID_ARGS
             );
           }
-          Logger.debug`Profile validated: ${value}`;
           return value as Profile;
         })
     )
@@ -48,11 +68,7 @@ export function configureCommandOptions(program: Command): Command {
       "-o, --output <path>",
       "Output file path for generated schemas or mapping"
     )
-    .option(
-      "--arranger-doc-type <type>",
-      "Arranger document type (file or analysis)",
-      "file"
-    )
+    .option("--arranger-doc-type <type>", "Arranger document type", "file")
     .option("-n, --name <n>", "Dictionary/Schema name")
     .option(
       "-d, --description <text>",
@@ -74,69 +90,72 @@ export function configureCommandOptions(program: Command): Command {
     .helpOption("-h, --help", "Display help for command")
     .addHelpText("after", () => {
       Logger.showReferenceCommands();
-      return ""; // Return empty string since we handle the formatting in showReferenceCommands
+      return "";
     })
     .hook("preAction", (thisCommand) => {
       const opts = thisCommand.opts();
       if (opts.debug) {
         Logger.enableDebug();
-        Logger.debug`Full command options: ${JSON.stringify(opts, null, 2)}`;
+        Logger.debug(`Full command options: ${JSON.stringify(opts, null, 2)}`);
       }
     });
 }
 
 /**
- * Parse command line arguments and convert them to CLIOutput format
+ * Parse command line arguments into structured CLIOutput
  */
-export function parseCommandLineArgs(opts: any): CLIOutput {
+export function parseOptions(opts: any): CLIOutput {
   Logger.debug("Parsing command line arguments");
 
+  // Build elasticsearch config
+  const elasticsearchConfig: ElasticsearchConfig = {
+    index: opts.index || "data",
+    shards: parseInt(opts.shards || "1", 10),
+    replicas: parseInt(opts.replicas || "1", 10),
+    ignoredFields: opts.ignoreFields || [],
+    skipMetadata: opts.skipMetadata || false,
+  };
+
+  // Build dictionary config if needed
+  const dictionaryConfig: DictionaryConfig | undefined =
+    opts.name || opts.description || opts.version
+      ? {
+          name: opts.name || "lectern_dictionary",
+          description:
+            opts.description || "Generated dictionary from CSV files",
+          version: opts.version || "1.0.0",
+        }
+      : undefined;
+
+  // Build song config if needed
+  const songConfig: SongConfig | undefined =
+    opts.name || opts.fileTypes
+      ? {
+          name: opts.name,
+          fileTypes: opts.fileTypes,
+        }
+      : undefined;
+
   const output: CLIOutput = {
-    profile: opts.profile || "default",
+    profile: opts.profile,
     debug: opts.debug || false,
     filePaths: opts.files || [],
     outputPath: opts.output,
     force: opts.force || false,
-    config: {
-      elasticsearch: {
-        index: opts.index || "data",
-        shards: parseInt(opts.shards || "1", 10),
-        replicas: parseInt(opts.replicas || "1", 10),
-        ignoredFields: opts.ignoreFields || [],
-        skipMetadata: opts.skipMetadata || false, // Add skip metadata option
-      },
-      delimiter: opts.delimiter || ",",
-    },
-    envConfig: {
-      fileMetadataSample: opts.fileMetadataSample || "",
-      tabularSample: opts.tabularSample || "",
-      songSchema: opts.songSchema || "",
-      lecternDictionary: opts.lecternDictionary || "",
-      esConfigDir: opts.esConfigDir || "",
-      arrangerConfigDir: opts.arrangerConfigDir || "",
-    },
+    elasticsearchConfig,
+    csvDelimiter: opts.delimiter || ",",
+    envConfig: {}, // Will be populated by environment loader
+    dictionaryConfig,
+    songConfig,
     arrangerConfig: opts.arrangerDocType
       ? {
           documentType: opts.arrangerDocType,
         }
       : undefined,
-    delimiter: opts.delimiter,
-    dictionaryConfig: {
-      name: opts.name || "lectern_dictionary",
-      description: opts.description || "Generated dictionary from CSV files",
-      version: opts.version || "1.0.0",
-    },
-    songConfig:
-      opts.name || opts.fileTypes
-        ? {
-            name: opts.name || `song_schema`,
-            fileTypes: opts.fileTypes,
-          }
-        : undefined,
   };
 
   if (opts.debug) {
-    Logger.debug`Parsed CLI output: ${JSON.stringify(output, null, 2)}`;
+    Logger.debug(`Parsed CLI output: ${JSON.stringify(output, null, 2)}`);
   }
 
   return output;

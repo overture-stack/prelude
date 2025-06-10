@@ -95,21 +95,3 @@ export function expandDirectoryPaths(
 
   return expandedPaths;
 }
-
-/**
- * Gets all CSV files from the provided paths (directories or files)
- * @param paths Array of file or directory paths
- * @returns Array of CSV file paths
- */
-export function getCSVFiles(paths: string[]): string[] {
-  return expandDirectoryPaths(paths, [".csv"]);
-}
-
-/**
- * Gets all JSON files from the provided paths (directories or files)
- * @param paths Array of file or directory paths
- * @returns Array of JSON file paths
- */
-export function getJSONFiles(paths: string[]): string[] {
-  return expandDirectoryPaths(paths, [".json"]);
-}

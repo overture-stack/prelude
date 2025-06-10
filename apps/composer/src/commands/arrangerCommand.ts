@@ -151,7 +151,7 @@ export class ArrangerCommand extends Command {
       Logger.debug("Generating Arranger configurations");
       const configs = ArrangerConfigs(
         mapping,
-        cliOutput.config.elasticsearch?.index
+        cliOutput.elasticsearchConfig?.index // Access elasticsearch config directly
       );
 
       // Write each configuration to a separate file

@@ -70,9 +70,7 @@ export async function validateCSVHeaders(
  * @returns Promise resolving to true if all headers are valid
  * @throws ComposerError with details if validation fails
  */
-export async function validateCSVStructure(
-  headers: string[]
-): Promise<boolean> {
+async function validateCSVStructure(headers: string[]): Promise<boolean> {
   try {
     Logger.debug("Starting CSV structure validation");
 

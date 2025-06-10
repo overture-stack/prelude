@@ -1,3 +1,4 @@
+// src/services/generateLecternDictionary.ts - Cleaned up exports
 import { Logger } from "../utils/logger";
 import * as path from "path";
 import type {
@@ -5,7 +6,6 @@ import type {
   LecternSchema,
   LecternField,
   ValueType,
-  MetaData,
 } from "../types";
 
 // ---- Value Type Inference ----
@@ -25,11 +25,9 @@ import type {
  * inferValueType("score", "85.5") → "number"
  * inferValueType("name", "John") → "string"
  */
-export function inferValueType(
-  headerName: string,
-  sampleValue: string
-): ValueType {
-  Logger.debug`Inferring type for field: ${headerName}`;
+// Made private - no longer exported
+function inferValueType(headerName: string, sampleValue: string): ValueType {
+  Logger.debug(`Inferring type for field: ${headerName}`);
 
   // Handle empty values
   if (!sampleValue || sampleValue.trim() === "") {
@@ -85,9 +83,9 @@ export function generateDictionary(
   version: string
 ): LecternDictionary {
   Logger.info("Generating Lectern dictionary");
-  Logger.info`Dictionary Name: ${dictionaryName}`;
-  Logger.info`Description: ${description}`;
-  Logger.info`Version: ${version}`;
+  Logger.info(`Dictionary Name: ${dictionaryName}`);
+  Logger.info(`Description: ${description}`);
+  Logger.info(`Version: ${version}`);
 
   const dictionary = {
     name: dictionaryName,
@@ -97,8 +95,7 @@ export function generateDictionary(
     schemas: [],
   };
 
-  Logger.debug`${dictionaryName} dictionary generated`;
-
+  Logger.debug(`${dictionaryName} dictionary generated`);
   Logger.debugObject("Dictionary Details", dictionary);
   return dictionary;
 }
@@ -143,7 +140,7 @@ export function generateSchema(
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "_");
 
-  Logger.info`Generating schema: ${schemaName} from file: ${inputFilePath}`;
+  Logger.info(`Generating schema: ${schemaName} from file: ${inputFilePath}`);
   Logger.debugObject("CSV Headers", csvHeaders);
 
   // Generate field definitions
@@ -161,7 +158,7 @@ export function generateSchema(
       },
     };
 
-    Logger.debug`Created field definition for: ${header}`;
+    Logger.debug(`Created field definition for: ${header}`);
     Logger.debugObject(`Field Details for ${header}`, field);
     return field;
   });
@@ -177,7 +174,7 @@ export function generateSchema(
     },
   };
 
-  Logger.info`${schemaName} schema added to dictionary`;
+  Logger.info(`${schemaName} schema added to dictionary`);
   Logger.debugObject("Schema Details", schema);
   return schema;
 }

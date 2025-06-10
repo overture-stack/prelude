@@ -143,9 +143,9 @@ export class MappingCommand extends Command {
       );
     }
 
-    // Validate index pattern
-    if (cliOutput.config.elasticsearch?.index) {
-      if (!/^[a-z0-9][a-z0-9_-]*$/.test(cliOutput.config.elasticsearch.index)) {
+    // Validate index pattern - access elasticsearchConfig directly
+    if (cliOutput.elasticsearchConfig?.index) {
+      if (!/^[a-z0-9][a-z0-9_-]*$/.test(cliOutput.elasticsearchConfig.index)) {
         throw new ComposerError(
           "Invalid index pattern. Must start with a letter or number and contain only lowercase letters, numbers, hyphens, and underscores",
           ErrorCodes.INVALID_ARGS
@@ -172,12 +172,13 @@ export class MappingCommand extends Command {
     }
 
     try {
+      // Access elasticsearch config directly from CLIOutput
       const mappingOptions: MappingOptions = {
-        index_pattern: cliOutput.config.elasticsearch?.index || "default",
-        number_of_shards: cliOutput.config.elasticsearch?.shards || 1,
-        number_of_replicas: cliOutput.config.elasticsearch?.replicas || 0,
-        ignoredFields: cliOutput.config.elasticsearch?.ignoredFields || [],
-        skipMetadata: cliOutput.config.elasticsearch?.skipMetadata || false,
+        index_pattern: cliOutput.elasticsearchConfig?.index || "default",
+        number_of_shards: cliOutput.elasticsearchConfig?.shards || 1,
+        number_of_replicas: cliOutput.elasticsearchConfig?.replicas || 0,
+        ignoredFields: cliOutput.elasticsearchConfig?.ignoredFields || [],
+        skipMetadata: cliOutput.elasticsearchConfig?.skipMetadata || false,
       };
 
       Logger.debugObject("Mapping options", mappingOptions);
@@ -189,7 +190,7 @@ export class MappingCommand extends Command {
       const finalMapping = isCSV
         ? await this.handleCSVMapping(
             cliOutput.filePaths,
-            cliOutput.config.delimiter,
+            cliOutput.csvDelimiter, // Access delimiter directly
             mappingOptions
           )
         : await this.handleJSONMapping(cliOutput.filePaths, mappingOptions);

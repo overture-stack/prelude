@@ -23,7 +23,3 @@ export interface ElasticsearchMapping {
     number_of_replicas: number;
   };
 }
-
-export interface ElasticsearchError extends Error {
-  name: string;
-}
