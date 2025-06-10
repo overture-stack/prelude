@@ -1,10 +1,12 @@
-// src/types/cli.ts - Update to match the CLI profile type
+// src/types/cli.ts - Updated to remove unused exports
 
 import { Profiles } from "./constants";
 
-export type Profile = (typeof Profiles)[keyof typeof Profiles];
+// Keep this as it's used by commands (but don't export it)
+type Profile = (typeof Profiles)[keyof typeof Profiles];
 
-export interface Config {
+// Keep main config interface (used throughout)
+interface Config {
   elasticsearch: {
     url: string;
     user?: string;
@@ -41,7 +43,6 @@ export interface Config {
     analysisFile?: string;
     allowDuplicates?: boolean;
     ignoreUndefinedMd5?: boolean;
-    // Combined Score functionality (now part of song config)
     scoreUrl?: string;
     dataDir?: string;
     outputDir?: string;
@@ -57,25 +58,16 @@ export interface Config {
   delimiter: string;
 }
 
-export interface CLIOutput {
-  profile: Profile; // Use the Profile type from constants
+// Keep this as it's used in CLI setup
+interface CLIOutput {
+  profile: Profile;
   debug?: boolean;
   filePaths: string[];
   config: Config;
   outputPath?: string;
-  envConfig: EnvConfig;
-  options: any; // Allows for flexible option handling
+  envConfig: any; // Simplified - we can remove EnvConfig interface
+  options: any;
 }
 
-export interface EnvConfig {
-  elasticsearchUrl: string;
-  esUser?: string;
-  esPassword?: string;
-  indexName?: string;
-  lecternUrl?: string;
-  lyricUrl?: string;
-  songUrl?: string;
-  lyricData?: string;
-  categoryId?: string;
-  organization?: string;
-}
+// Export only what's actually used externally
+export { Config, CLIOutput };

@@ -2,6 +2,7 @@
  * Validation Types
  *
  * Type definitions for the validation system.
+ * Only export what's used by external modules.
  */
 
 /**
@@ -19,9 +20,9 @@ export interface ValidationResult {
 }
 
 /**
- * Header validation result with field information
+ * Header validation result with field information - Keep internal if not used externally
  */
-export interface HeaderValidation extends ValidationResult {
+interface HeaderValidation extends ValidationResult {
   /** List of valid fields */
   fields?: string[];
 
@@ -30,9 +31,9 @@ export interface HeaderValidation extends ValidationResult {
 }
 
 /**
- * Detailed CSV validation result
+ * Detailed CSV validation result - Keep internal if not used externally
  */
-export interface CSVValidationResult extends ValidationResult {
+interface CSVValidationResult extends ValidationResult {
   /** Header validation result */
   header?: HeaderValidation;
 

@@ -1,4 +1,4 @@
-// src/commands/lecternUploadCommand.ts
+// src/commands/lecternUploadCommand.ts - Updated to use new configuration system
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -6,11 +6,12 @@ import chalk from "chalk";
 import { ConductorError, ErrorCodes } from "../utils/errors";
 import { LecternService } from "../services/lectern";
 import { LecternSchemaUploadParams } from "../services/lectern/types";
+import { ServiceConfigManager } from "../config/serviceConfigManager";
 import * as fs from "fs";
 
 /**
  * Command for uploading schemas to the Lectern service
- * Much simpler now with service layer handling all the complexity!
+ * Now uses the simplified configuration system!
  */
 export class LecternUploadCommand extends Command {
   constructor() {
@@ -40,27 +41,28 @@ export class LecternUploadCommand extends Command {
         ErrorCodes.FILE_NOT_FOUND
       );
     }
-
-    // Validate Lectern URL
-    const lecternUrl = this.getLecternUrl(options);
-    if (!lecternUrl) {
-      throw new ConductorError(
-        "Lectern URL not specified. Use --lectern-url or set LECTERN_URL environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
-    }
   }
 
   /**
    * Executes the Lectern schema upload process
+   * Much simpler now with the new configuration system!
    */
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { options } = cliOutput;
 
     try {
-      // Extract configuration
+      // Extract configuration using the new simplified system
       const schemaFile = this.getSchemaFile(options)!;
-      const serviceConfig = this.extractServiceConfig(options);
+
+      // Use the new ServiceConfigManager - much cleaner!
+      const serviceConfig = ServiceConfigManager.createLecternConfig({
+        url: options.lecternUrl,
+        authToken: options.authToken,
+      });
+
+      // Validate the configuration
+      ServiceConfigManager.validateConfig(serviceConfig);
+
       const uploadParams = this.extractUploadParams(schemaFile);
 
       // Create service instance
@@ -81,7 +83,7 @@ export class LecternUploadCommand extends Command {
       // Log upload info
       this.logUploadInfo(schemaFile, serviceConfig.url);
 
-      // Upload schema - much simpler now!
+      // Upload schema
       const result = await lecternService.uploadSchema(uploadParams);
 
       // Log success
@@ -101,26 +103,6 @@ export class LecternUploadCommand extends Command {
    */
   private getSchemaFile(options: any): string | undefined {
     return options.schemaFile || process.env.LECTERN_SCHEMA;
-  }
-
-  /**
-   * Get Lectern URL from various sources
-   */
-  private getLecternUrl(options: any): string | undefined {
-    return options.lecternUrl || process.env.LECTERN_URL;
-  }
-
-  /**
-   * Extract service configuration from options
-   */
-  private extractServiceConfig(options: any) {
-    return {
-      url: this.getLecternUrl(options)!,
-      timeout: 10000,
-      retries: 3,
-      authToken:
-        options.authToken || process.env.LECTERN_AUTH_TOKEN || "bearer123",
-    };
   }
 
   /**

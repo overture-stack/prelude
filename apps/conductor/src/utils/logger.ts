@@ -1,6 +1,7 @@
+// src/utils/logger.ts - Remove unused exports
 import chalk from "chalk";
 
-export enum LogLevel {
+enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   SUCCESS = 2,
@@ -472,103 +473,6 @@ export class Logger {
     this.generic(
       chalk.gray(
         "Example: conductor songCreateStudy -i my-study -n 'My Research Study' -g MyOrg"
-      )
-    );
-    this.generic("");
-
-    // SONG Submit Analysis commands (now includes Score functionality)
-    this.generic(
-      chalk.bold.magenta("SONG Analysis Submission & File Upload Commands:")
-    );
-    this.generic(
-      chalk.white(
-        "conductor songSubmitAnalysis -a analysis.json -i study-id -d ./data"
-      )
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-a, --analysis-file <path> Analysis JSON file to submit (required)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-s, --score-url <url>     Score server URL (default: http://localhost:8087)"
-      )
-    );
-    this.generic(
-      chalk.gray("-i, --study-id <id>       Study ID (default: demo)")
-    );
-    this.generic(
-      chalk.gray(
-        "-d, --data-dir <path>     Directory containing data files (default: ./data)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--output-dir <path>       Directory for manifest file (default: ./output)"
-      )
-    );
-    this.generic(
-      chalk.gray("-m, --manifest-file <path> Path for manifest file (optional)")
-    );
-    this.generic(
-      chalk.gray(
-        "--allow-duplicates        Allow duplicate analysis submissions"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-t, --auth-token <token>  Authentication token (default: 123)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--ignore-undefined-md5    Ignore files with undefined MD5 checksums"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor songSubmitAnalysis -a metadata.json -i my-study -d ./my-data"
-      )
-    );
-    this.generic("");
-
-    // SONG Publish Analysis commands
-    this.generic(chalk.bold.magenta("SONG Publish Analysis Commands:"));
-    this.generic(chalk.white("conductor songPublishAnalysis -a analysis-id"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray("-a, --analysis-id <id>    Analysis ID to publish (required)")
-    );
-    this.generic(
-      chalk.gray("-i, --study-id <id>       Study ID (default: demo)")
-    );
-    this.generic(
-      chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-t, --auth-token <token>  Authentication token (default: 123)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--ignore-undefined-md5    Ignore files with undefined MD5 checksums"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor songPublishAnalysis -a 4d9ed1c5-1053-4377-9ed1-c51053f3771f -i my-study"
       )
     );
     this.generic("");

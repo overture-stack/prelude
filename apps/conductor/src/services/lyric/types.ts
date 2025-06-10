@@ -1,4 +1,4 @@
-// src/services/lyric/types.ts
+// src/services/lyric/types.ts - Remove unused exports
 
 /**
  * Parameters for dictionary registration
@@ -42,9 +42,9 @@ interface LyricSubmissionResponse {
 }
 
 /**
- * Data submission workflow result
+ * Data submission workflow result - Don't export if not used externally
  */
-export interface DataSubmissionResult {
+interface DataSubmissionResult {
   submissionId: string;
   status: "COMMITTED" | "PENDING" | "VALID" | "INVALID";
   filesSubmitted: string[];
