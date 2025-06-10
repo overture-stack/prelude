@@ -11,7 +11,7 @@ import { Logger } from "../../utils/logger";
 /**
  * Interface for bulk operation options
  */
-export interface BulkOptions {
+interface BulkOptions {
   /** Maximum number of retries for failed bulk operations */
   maxRetries?: number;
 
@@ -102,46 +102,6 @@ export async function sendBulkWriteRequest(
     throw new ConductorError(
       "Failed to send bulk request after retries",
       ErrorCodes.ES_ERROR
-    );
-  }
-}
-
-/**
- * Sends a batch of records to Elasticsearch with improved error handling.
- *
- * @param client - The Elasticsearch client instance
- * @param records - An array of records to be indexed
- * @param indexName - The name of the Elasticsearch index
- * @param onFailure - Callback function to handle failed records
- * @param options - Optional configuration for bulk operations
- */
-export async function sendBatchToElasticsearch(
-  client: Client,
-  records: object[],
-  indexName: string,
-  onFailure: (count: number) => void,
-  options?: BulkOptions
-): Promise<void> {
-  if (records.length === 0) {
-    Logger.debug("No records to send to Elasticsearch");
-    return;
-  }
-
-  try {
-    Logger.debug(
-      `Sending batch of ${records.length} records to index: ${indexName}`
-    );
-    await sendBulkWriteRequest(client, records, indexName, onFailure, options);
-  } catch (error) {
-    Logger.error(
-      `Failed to send batch to Elasticsearch: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-    throw new ConductorError(
-      "Failed to send batch to Elasticsearch",
-      ErrorCodes.ES_ERROR,
-      error
     );
   }
 }

@@ -15,7 +15,7 @@
  * - baseCommand.ts: Defines the abstract Command class and interface
  * - types/cli.ts: Contains CLI argument interfaces and type definitions
  * - types/constants.ts: Defines available profiles as constants
- * - Individual command implementations (uploadCommand.ts, indexManagementCommand.ts, etc.)
+ * - Individual command implementations (uploadCommand.ts etc.)
  */
 
 import type { Profile } from "../types";
@@ -26,7 +26,6 @@ import { Logger } from "../utils/logger";
 
 // Import individual commands
 import { UploadCommand } from "./uploadCsvCommand";
-import { IndexManagementCommand } from "./indexManagementCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
 import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
 import { LyricUploadCommand } from "./lyricUploadCommand";
@@ -61,7 +60,6 @@ type CommandMap = {
  */
 const PROFILE_DISPLAY_NAMES: Record<string, string> = {
   [Profiles.UPLOAD]: "CSV Upload",
-  [Profiles.INDEX_MANAGEMENT]: "Elasticsearch Indices Management",
   [Profiles.LECTERN_UPLOAD]: "Lectern Schema Upload",
   [Profiles.LYRIC_REGISTER]: "Lyric Dictionary Registration",
   [Profiles.LYRIC_DATA]: "Lyric Data Loading",
@@ -86,7 +84,6 @@ const PROFILE_DISPLAY_NAMES: Record<string, string> = {
  */
 const PROFILE_TO_COMMAND: Partial<CommandMap> = {
   [Profiles.UPLOAD]: UploadCommand,
-  [Profiles.INDEX_MANAGEMENT]: IndexManagementCommand,
   [Profiles.LECTERN_UPLOAD]: LecternUploadCommand,
   [Profiles.LYRIC_REGISTER]: LyricRegistrationCommand,
   [Profiles.LYRIC_DATA]: LyricUploadCommand,

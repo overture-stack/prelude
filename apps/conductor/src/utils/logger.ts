@@ -367,7 +367,7 @@ export class Logger {
 
     // Lyric Data commands
     this.generic(chalk.bold.magenta("Lyric Data Upload Command:"));
-    this.generic(chalk.white("conductor lyricData -d ./data-directory"));
+    this.generic(chalk.white("conductor lyricUpload -d ./data-directory"));
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray(

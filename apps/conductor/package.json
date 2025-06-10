@@ -1,36 +1,39 @@
 {
   "name": "conductor",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "ts-node src/main.ts",
-    "build": "tsc",
-    "test": "node --test src/__tests__/*.test.js",
-    "test:watch": "node --test --watch src/__tests__/*.test.js",
-    "test:coverage": "node --test --experimental-test-coverage src/__tests__/*.test.js"
-  },
+  "description": "Data processing pipeline for Elasticsearch and associated services",
+  "main": "dist/main.js",
   "bin": {
     "conductor": "./dist/main.js"
   },
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "elasticsearch",
+    "data-processing",
+    "csv",
+    "cli"
+  ],
+  "author": "Your Name",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@elastic/elasticsearch": "^7.17.14",
-    "@types/axios": "^0.9.36",
-    "axios": "^1.8.1",
+    "@elastic/elasticsearch": "^7.17.0",
+    "axios": "^1.6.0",
     "chalk": "^4.1.2",
-    "commander": "^12.1.0",
-    "csv-parse": "^5.6.0",
-    "ts-node": "^10.9.2",
-    "uuid": "^11.0.3"
+    "commander": "^9.4.1",
+    "csv-parse": "^5.3.3",
+    "dotenv": "^16.5.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/chalk": "^0.4.31",
-    "@types/commander": "^2.12.5",
-    "@types/node": "^22.9.3",
-    "@types/uuid": "^10.0.0",
-    "typescript": "^5.7.2"
+    "@types/chalk": "^2.2.0",
+    "@types/node": "^18.0.0",
+    "@types/uuid": "^9.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^4.9.0"
   }
 }

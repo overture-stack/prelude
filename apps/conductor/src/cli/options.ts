@@ -48,27 +48,6 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // Setup indices command
-  program
-    .command("indexManagement")
-    .description("Set up Elasticsearch indices and templates")
-    .option("-t, --template-file <path>", "Template JSON file")
-    .option("-n, --template-name <name>", "Template name")
-    .option("-i, --index-name <name>", "Index name")
-    .option("-a, --alias-name <name>", "Alias name")
-    .option("-o, --output <path>", "Output directory for generated files")
-    .option("--force", "Force overwrite of existing files")
-    .option("--url <url>", "Elasticsearch URL")
-    .option("--user <username>", "Elasticsearch username", "elastic")
-    .option(
-      "--password <password>",
-      "Elasticsearch password",
-      "myelasticpassword"
-    )
-    .action(() => {
-      /* Handled by main.ts */
-    });
-
   // Lectern schema upload command
   program
     .command("lecternUpload")

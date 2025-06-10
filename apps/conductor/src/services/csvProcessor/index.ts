@@ -15,35 +15,6 @@ import { formatDuration, calculateETA, createProgressBar } from "./progressBar";
 import { createRecordMetadata } from "./metadata";
 
 /**
- * Updates the progress display in the console
- *
- * @param processed - Number of processed records
- * @param total - Total number of records
- * @param startTime - When processing started
- */
-export function updateProgressDisplay(
-  processed: number,
-  total: number,
-  startTime: number
-): void {
-  const elapsedMs = Math.max(1, Date.now() - startTime);
-  const progress = Math.min(100, (processed / total) * 100);
-  const progressBar = createProgressBar(progress);
-  const eta = calculateETA(processed, total, elapsedMs / 1000);
-  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
-
-  // Use \r to overwrite previous line
-  process.stdout.write("\r");
-  process.stdout.write(
-    ` ${progressBar} | ` + // Added space before progress bar
-      `${processed}/${total} | ` +
-      `⏱ ${formatDuration(elapsedMs)} | ` +
-      `🏁 ${eta} | ` +
-      `⚡${recordsPerSecond} rows/sec` // Added space after rows/sec
-  );
-}
-
-/**
  * Processes a CSV file and indexes the data into Elasticsearch.
  *
  * @param filePath - Path to the CSV file to process
@@ -166,6 +137,35 @@ export async function processCSVFile(
       config.delimiter
     );
   }
+}
+
+/**
+ * Updates the progress display in the console
+ *
+ * @param processed - Number of processed records
+ * @param total - Total number of records
+ * @param startTime - When processing started
+ */
+function updateProgressDisplay(
+  processed: number,
+  total: number,
+  startTime: number
+): void {
+  const elapsedMs = Math.max(1, Date.now() - startTime);
+  const progress = Math.min(100, (processed / total) * 100);
+  const progressBar = createProgressBar(progress);
+  const eta = calculateETA(processed, total, elapsedMs / 1000);
+  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
+
+  // Use \r to overwrite previous line
+  process.stdout.write("\r");
+  process.stdout.write(
+    ` ${progressBar} | ` + // Added space before progress bar
+      `${processed}/${total} | ` +
+      `⏱ ${formatDuration(elapsedMs)} | ` +
+      `🏁 ${eta} | ` +
+      `⚡${recordsPerSecond} rows/sec` // Added space after rows/sec
+  );
 }
 
 /**
