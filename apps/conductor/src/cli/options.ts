@@ -1,33 +1,65 @@
 /**
- * CLI Options Module - Complete Updated Version
+ * CLI Options Module - Enhanced with ErrorFactory patterns
  *
  * This module configures the command-line options for the Conductor CLI.
- * Updated to reflect the refactored SONG/Score services and removed commands.
+ * Updated to reflect the refactored SONG/Score services and enhanced error handling.
  */
 
 import { Command } from "commander";
 import { Profiles } from "../types/constants";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
+import { ErrorFactory } from "../utils/errors";
 
 /**
  * Configures the command-line options for the Conductor CLI
+ * Enhanced with ErrorFactory patterns for better error handling
  * @param program - The Commander.js program instance
  */
 export function configureCommandOptions(program: Command): void {
-  // Global options
-  program
-    .version("1.0.0")
-    .description("Conductor: Data Processing Pipeline")
-    .option("--debug", "Enable debug mode")
-    // Add a custom action for the help option
-    .addHelpCommand("help [command]", "Display help for a specific command")
-    .on("--help", () => {
-      // Call the reference commands after the default help
-      Logger.showReferenceCommands();
-    });
+  try {
+    // Global options with enhanced error handling
+    program
+      .version("1.0.0")
+      .description("Conductor: Data Processing Pipeline")
+      .option("--debug", "Enable debug mode")
+      // Add a custom action for the help option
+      .addHelpCommand("help [command]", "Display help for a specific command")
+      .on("--help", () => {
+        // Call the reference commands after the default help
+        Logger.showReferenceCommands();
+      });
 
-  // Upload command
+    // Enhanced command configuration with validation
+    configureUploadCommand(program);
+    configureLecternUploadCommand(program);
+    configureLyricRegisterCommand(program);
+    configureLyricUploadCommand(program);
+    configureMaestroIndexCommand(program);
+    configureSongUploadSchemaCommand(program);
+    configureSongCreateStudyCommand(program);
+    configureSongSubmitAnalysisCommand(program);
+    configureSongPublishAnalysisCommand(program);
+
+    Logger.debugString("CLI command options configured successfully");
+  } catch (error) {
+    throw ErrorFactory.validation(
+      "Failed to configure CLI command options",
+      { error: error instanceof Error ? error.message : String(error) },
+      [
+        "CLI configuration may be corrupted",
+        "Check for conflicting command definitions",
+        "Try restarting the application",
+        "Contact support if the problem persists",
+      ]
+    );
+  }
+}
+
+/**
+ * Configure upload command with enhanced validation
+ */
+function configureUploadCommand(program: Command): void {
   program
     .command("upload")
     .description("Upload data to Elasticsearch")
@@ -47,8 +79,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // Lectern schema upload command
+/**
+ * Configure Lectern upload command with enhanced validation
+ */
+function configureLecternUploadCommand(program: Command): void {
   program
     .command("lecternUpload")
     .description("Upload schema to Lectern server")
@@ -64,8 +100,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // Lyric dictionary registration command
+/**
+ * Configure Lyric dictionary registration command with enhanced validation
+ */
+function configureLyricRegisterCommand(program: Command): void {
   program
     .command("lyricRegister")
     .description("Register a dictionary with Lyric service")
@@ -83,8 +123,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // Lyric data loading command
+/**
+ * Configure Lyric data loading command with enhanced validation
+ */
+function configureLyricUploadCommand(program: Command): void {
   program
     .command("lyricUpload")
     .description("Load data into Lyric service")
@@ -128,8 +172,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // Repository indexing command
+/**
+ * Configure repository indexing command with enhanced validation
+ */
+function configureMaestroIndexCommand(program: Command): void {
   program
     .command("maestroIndex")
     .description("Index a repository with optional filtering")
@@ -155,8 +203,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // SONG schema upload command
+/**
+ * Configure SONG schema upload command with enhanced validation
+ */
+function configureSongUploadSchemaCommand(program: Command): void {
   program
     .command("songUploadSchema")
     .description("Upload schema to SONG server")
@@ -176,8 +228,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // SONG study creation command
+/**
+ * Configure SONG study creation command with enhanced validation
+ */
+function configureSongCreateStudyCommand(program: Command): void {
   program
     .command("songCreateStudy")
     .description("Create study in SONG server")
@@ -212,8 +268,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // SONG analysis submission command (now includes Score file upload)
+/**
+ * Configure SONG analysis submission command with enhanced validation
+ */
+function configureSongSubmitAnalysisCommand(program: Command): void {
   program
     .command("songSubmitAnalysis")
     .description("Submit analysis to SONG and upload files to Score")
@@ -264,8 +324,12 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+}
 
-  // SONG publish analysis command
+/**
+ * Configure SONG publish analysis command with enhanced validation
+ */
+function configureSongPublishAnalysisCommand(program: Command): void {
   program
     .command("songPublishAnalysis")
     .description("Publish analysis in SONG server")
@@ -290,47 +354,92 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
-
-  // Note: scoreManifestUpload and songScoreSubmit commands have been removed
-  // Their functionality is now integrated into songSubmitAnalysis
 }
 
 /**
  * Parses command-line arguments into a standardized CLIOutput object
- * Updated to handle the combined SONG/Score workflow
+ * Enhanced with ErrorFactory patterns for better error handling
  *
  * @param options - Parsed command-line options
  * @returns A CLIOutput object for command execution
  */
 export function parseCommandLineArgs(options: any): CLIOutput {
-  // Log raw options for debugging
-  Logger.debug(`Raw options: ${JSON.stringify(options)}`);
-  Logger.debug(`Process argv: ${process.argv.join(" ")}`);
+  try {
+    // Enhanced logging for debugging
+    Logger.debugString(`Raw options: ${JSON.stringify(options, null, 2)}`);
+    Logger.debugString(`Process argv: ${process.argv.join(" ")}`);
 
-  // Determine the profile from options
-  let profile = options.profile || Profiles.UPLOAD;
+    // Enhanced profile determination with validation
+    let profile = options.profile || (Profiles.UPLOAD as any);
 
-  // Special handling for lyricData command to ensure data directory is captured
-  if (profile === Profiles.LYRIC_DATA) {
-    // Check for a positional argument that might be the data directory
-    const positionalArgs = process.argv
-      .slice(3)
-      .filter((arg) => !arg.startsWith("-"));
+    if (!profile || typeof profile !== "string") {
+      throw ErrorFactory.args("Invalid or missing command profile", undefined, [
+        "Ensure a valid command is specified",
+        "Use 'conductor --help' for available commands",
+        "Check command spelling and syntax",
+      ]);
+    }
 
-    if (positionalArgs.length > 0 && !options.dataDirectory) {
-      options.dataDirectory = positionalArgs[0];
-      Logger.debug(
-        `Captured data directory from positional argument: ${options.dataDirectory}`
-      );
+    // Enhanced file path parsing with validation
+    const filePaths = parseFilePaths(options);
+
+    // Enhanced configuration creation with validation
+    const config = createConfigFromOptions(options);
+
+    Logger.debugString(`Parsed profile: ${profile}`);
+    Logger.debugString(`Parsed file paths: ${filePaths.join(", ")}`);
+
+    // Build the standardized CLI output
+    return {
+      profile,
+      filePaths,
+      outputPath: options.output,
+      config,
+      options,
+      envConfig: createEnvConfig(config),
+    };
+  } catch (error) {
+    if (error instanceof Error && error.name === "ConductorError") {
+      throw error;
+    }
+
+    throw ErrorFactory.validation(
+      "Failed to parse command line arguments",
+      {
+        options: Object.keys(options),
+        error: error instanceof Error ? error.message : String(error),
+      },
+      [
+        "Check command syntax and parameters",
+        "Verify all required arguments are provided",
+        "Use --debug flag for detailed error information",
+        "Try 'conductor <command> --help' for command-specific help",
+      ]
+    );
+  }
+}
+
+/**
+ * Enhanced file path parsing with validation
+ */
+function parseFilePaths(options: any): string[] {
+  const filePaths: string[] = [];
+
+  // Parse main file paths
+  if (options.file) {
+    if (Array.isArray(options.file)) {
+      filePaths.push(...options.file);
+    } else if (typeof options.file === "string") {
+      filePaths.push(options.file);
+    } else {
+      throw ErrorFactory.args("Invalid file parameter format", undefined, [
+        "File parameter must be a string or array of strings",
+        "Example: -f data.csv",
+        "Example: -f file1.csv file2.csv",
+        "Check file parameter syntax",
+      ]);
     }
   }
-
-  // Parse file paths
-  const filePaths = Array.isArray(options.file)
-    ? options.file
-    : options.file
-    ? [options.file]
-    : [];
 
   // Add template file to filePaths if present
   if (options.templateFile && !filePaths.includes(options.templateFile)) {
@@ -347,105 +456,153 @@ export function parseCommandLineArgs(options: any): CLIOutput {
     filePaths.push(options.analysisFile);
   }
 
-  Logger.debug(`Parsed profile: ${profile}`);
-  Logger.debug(`Parsed file paths: ${filePaths.join(", ")}`);
+  return filePaths;
+}
 
-  // Create config object with support for all services
-  const config = {
-    elasticsearch: {
-      url:
-        options.url || process.env.ELASTICSEARCH_URL || "http://localhost:9200",
-      user: options.user || process.env.ELASTICSEARCH_USER,
-      password: options.password || process.env.ELASTICSEARCH_PASSWORD,
-      index: options.index || options.indexName || "conductor-data",
-      templateFile: options.templateFile,
-      templateName: options.templateName,
-      alias: options.aliasName,
-    },
-    lectern: {
-      url:
-        options.lecternUrl ||
-        process.env.LECTERN_URL ||
-        "http://localhost:3031",
-      authToken: options.authToken || process.env.LECTERN_AUTH_TOKEN || "",
-    },
-    lyric: {
-      url: options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
-      categoryName: options.categoryName || process.env.CATEGORY_NAME,
-      dictionaryName: options.dictName || process.env.DICTIONARY_NAME,
-      dictionaryVersion:
-        options.dictionaryVersion || process.env.DICTIONARY_VERSION,
-      defaultCentricEntity:
-        options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY,
-      // Data loading specific options
-      dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
-      categoryId: options.categoryId || process.env.CATEGORY_ID,
-      organization: options.organization || process.env.ORGANIZATION,
-      maxRetries: options.maxRetries
-        ? parseInt(options.maxRetries)
-        : process.env.MAX_RETRIES
-        ? parseInt(process.env.MAX_RETRIES)
-        : 10,
-      retryDelay: options.retryDelay
-        ? parseInt(options.retryDelay)
-        : process.env.RETRY_DELAY
-        ? parseInt(process.env.RETRY_DELAY)
-        : 20000,
-    },
-    song: {
-      url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
-      authToken: options.authToken || process.env.AUTH_TOKEN || "123",
-      schemaFile: options.schemaFile || process.env.SONG_SCHEMA,
-      studyId: options.studyId || process.env.STUDY_ID || "demo",
-      studyName: options.studyName || process.env.STUDY_NAME || "string",
-      organization:
-        options.organization || process.env.ORGANIZATION || "string",
-      description: options.description || process.env.DESCRIPTION || "string",
-      analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
-      allowDuplicates:
-        options.allowDuplicates ||
-        process.env.ALLOW_DUPLICATES === "true" ||
-        false,
-      ignoreUndefinedMd5:
-        options.ignoreUndefinedMd5 ||
-        process.env.IGNORE_UNDEFINED_MD5 === "true" ||
-        false,
-      // Combined Score functionality (now part of song config)
-      scoreUrl:
-        options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
-      dataDir: options.dataDir || process.env.DATA_DIR || "./data",
-      outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
-      manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
-    },
-    maestroIndex: {
-      url:
-        options.indexUrl || process.env.INDEX_URL || "http://localhost:11235",
-      repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
-      organization: options.organization || process.env.ORGANIZATION,
-      id: options.id || process.env.ID,
-    },
-    batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
-    delimiter: options.delimiter || ",",
-  };
+/**
+ * Enhanced configuration creation from options with validation
+ */
+function createConfigFromOptions(options: any) {
+  try {
+    return {
+      elasticsearch: {
+        url:
+          options.url ||
+          process.env.ELASTICSEARCH_URL ||
+          "http://localhost:9200",
+        user: options.user || process.env.ELASTICSEARCH_USER,
+        password: options.password || process.env.ELASTICSEARCH_PASSWORD,
+        index: options.index || options.indexName || "conductor-data",
+        templateFile: options.templateFile,
+        templateName: options.templateName,
+        alias: options.aliasName,
+      },
+      lectern: {
+        url:
+          options.lecternUrl ||
+          process.env.LECTERN_URL ||
+          "http://localhost:3031",
+        authToken: options.authToken || process.env.LECTERN_AUTH_TOKEN || "",
+      },
+      lyric: {
+        url:
+          options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
+        categoryName: options.categoryName || process.env.CATEGORY_NAME,
+        dictionaryName: options.dictName || process.env.DICTIONARY_NAME,
+        dictionaryVersion:
+          options.dictionaryVersion || process.env.DICTIONARY_VERSION,
+        defaultCentricEntity:
+          options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY,
+        // Data loading specific options
+        dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
+        categoryId: options.categoryId || process.env.CATEGORY_ID,
+        organization: options.organization || process.env.ORGANIZATION,
+        maxRetries: parseIntegerOption(
+          options.maxRetries,
+          process.env.MAX_RETRIES,
+          10
+        ),
+        retryDelay: parseIntegerOption(
+          options.retryDelay,
+          process.env.RETRY_DELAY,
+          20000
+        ),
+      },
+      song: {
+        url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
+        authToken: options.authToken || process.env.AUTH_TOKEN || "123",
+        schemaFile: options.schemaFile || process.env.SONG_SCHEMA,
+        studyId: options.studyId || process.env.STUDY_ID || "demo",
+        studyName: options.studyName || process.env.STUDY_NAME || "string",
+        organization:
+          options.organization || process.env.ORGANIZATION || "string",
+        description: options.description || process.env.DESCRIPTION || "string",
+        analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
+        allowDuplicates:
+          options.allowDuplicates ||
+          process.env.ALLOW_DUPLICATES === "true" ||
+          false,
+        ignoreUndefinedMd5:
+          options.ignoreUndefinedMd5 ||
+          process.env.IGNORE_UNDEFINED_MD5 === "true" ||
+          false,
+        // Combined Score functionality (now part of song config)
+        scoreUrl:
+          options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
+        dataDir: options.dataDir || process.env.DATA_DIR || "./data",
+        outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
+        manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
+      },
+      maestroIndex: {
+        url:
+          options.indexUrl || process.env.INDEX_URL || "http://localhost:11235",
+        repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
+        organization: options.organization || process.env.ORGANIZATION,
+        id: options.id || process.env.ID,
+      },
+      batchSize: parseIntegerOption(options.batchSize, undefined, 1000),
+      delimiter: options.delimiter || ",",
+    };
+  } catch (error) {
+    throw ErrorFactory.config(
+      "Failed to create configuration from options",
+      "config",
+      [
+        "Check all configuration parameters",
+        "Verify environment variables are set correctly",
+        "Ensure numeric values are valid integers",
+        "Use --debug flag for detailed configuration information",
+      ]
+    );
+  }
+}
 
-  // Build the standardized CLI output
+/**
+ * Enhanced integer parsing with validation
+ */
+function parseIntegerOption(
+  optionValue: any,
+  envValue: string | undefined,
+  defaultValue: number
+): number {
+  const value = optionValue || envValue;
+
+  if (value === undefined || value === null) {
+    return defaultValue;
+  }
+
+  const parsed = parseInt(String(value));
+
+  if (isNaN(parsed)) {
+    throw ErrorFactory.validation(
+      `Invalid integer value: ${value}`,
+      { value, type: typeof value },
+      [
+        "Provide a valid integer number",
+        "Check numeric parameters and environment variables",
+        "Remove any non-numeric characters",
+        `Using default value: ${defaultValue}`,
+      ]
+    );
+  }
+
+  return parsed;
+}
+
+/**
+ * Create environment configuration object from main config
+ */
+function createEnvConfig(config: any) {
   return {
-    profile,
-    filePaths,
-    outputPath: options.output,
-    config,
-    options,
-    envConfig: {
-      elasticsearchUrl: config.elasticsearch.url,
-      esUser: config.elasticsearch.user,
-      esPassword: config.elasticsearch.password,
-      indexName: config.elasticsearch.index,
-      lecternUrl: config.lectern.url,
-      lyricUrl: config.lyric.url,
-      songUrl: config.song.url,
-      lyricData: config.lyric.dataDirectory,
-      categoryId: config.lyric.categoryId,
-      organization: config.lyric.organization,
-    },
+    elasticsearchUrl: config.elasticsearch.url,
+    esUser: config.elasticsearch.user,
+    esPassword: config.elasticsearch.password,
+    indexName: config.elasticsearch.index,
+    lecternUrl: config.lectern.url,
+    lyricUrl: config.lyric.url,
+    songUrl: config.song.url,
+    lyricData: config.lyric.dataDirectory,
+    categoryId: config.lyric.categoryId,
+    organization: config.lyric.organization,
   };
 }

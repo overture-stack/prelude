@@ -1,7 +1,7 @@
-// src/services/base/BaseService.ts
+// src/services/base/BaseService.ts - Enhanced with ErrorFactory patterns
 import { HttpService } from "./HttpService";
 import { Logger } from "../../utils/logger";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import { ServiceConfig, HealthCheckResult } from "./types";
 
 export abstract class BaseService {
@@ -21,7 +21,7 @@ export abstract class BaseService {
     const startTime = Date.now();
 
     try {
-      Logger.info(`Checking ${this.serviceName} health...`);
+      Logger.info`Checking ${this.serviceName} health at ${this.config.url}${this.healthEndpoint}`;
 
       const response = await this.http.get(this.healthEndpoint, {
         timeout: 5000,
@@ -32,11 +32,9 @@ export abstract class BaseService {
       const isHealthy = this.isHealthyResponse(response.data, response.status);
 
       if (isHealthy) {
-        Logger.info(`✓ ${this.serviceName} is healthy (${responseTime}ms)`);
+        Logger.success`${this.serviceName} is healthy (${responseTime}ms)`;
       } else {
-        Logger.warn(
-          `⚠ ${this.serviceName} health check returned unhealthy status`
-        );
+        Logger.warn`${this.serviceName} health check returned unhealthy status`;
       }
 
       return {
@@ -46,13 +44,14 @@ export abstract class BaseService {
       };
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      Logger.error(
-        `✗ ${this.serviceName} health check failed (${responseTime}ms)`
-      );
+      Logger.error`${this.serviceName} health check failed (${responseTime}ms)`;
+
+      // Enhanced error context for health check failures
+      const healthError = this.createHealthCheckError(error, responseTime);
 
       return {
         healthy: false,
-        message: error instanceof Error ? error.message : String(error),
+        message: healthError.message,
         responseTime,
       };
     }
@@ -84,15 +83,23 @@ export abstract class BaseService {
   }
 
   protected handleServiceError(error: unknown, operation: string): never {
-    if (error instanceof ConductorError) {
+    if (error instanceof Error && error.name === "ConductorError") {
       throw error;
     }
 
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new ConductorError(
-      `${this.serviceName} ${operation} failed: ${errorMessage}`,
-      ErrorCodes.CONNECTION_ERROR,
-      { service: this.serviceName, operation, originalError: error }
+    // Enhanced error handling with service context
+    throw ErrorFactory.connection(
+      `${this.serviceName} ${operation} failed`,
+      this.serviceName,
+      this.config.url,
+      [
+        `Check that ${this.serviceName} is running and accessible`,
+        `Verify service URL: ${this.config.url}`,
+        "Check network connectivity and firewall settings",
+        "Confirm authentication credentials if required",
+        `Test manually: curl ${this.config.url}${this.healthEndpoint}`,
+        "Check service logs for additional details",
+      ]
     );
   }
 
@@ -100,10 +107,13 @@ export abstract class BaseService {
     return url.endsWith("/") ? url.slice(0, -1) : url;
   }
 
-  // Updated validation method with better type support
+  /**
+   * Enhanced validation method with better error messages
+   */
   protected validateRequiredFields<T extends Record<string, unknown>>(
     data: T,
-    fields: (keyof T)[]
+    fields: (keyof T)[],
+    context?: string
   ): void {
     const missingFields = fields.filter(
       (field) =>
@@ -111,18 +121,34 @@ export abstract class BaseService {
     );
 
     if (missingFields.length > 0) {
-      throw new ConductorError(
-        `Missing required fields: ${missingFields.join(", ")}`,
-        ErrorCodes.VALIDATION_FAILED,
-        { missingFields, provided: Object.keys(data) }
+      const contextMsg = context ? ` for ${context}` : "";
+
+      throw ErrorFactory.validation(
+        `Missing required fields${contextMsg}`,
+        {
+          missingFields: missingFields.map(String),
+          provided: Object.keys(data),
+          context,
+        },
+        [
+          `Provide values for: ${missingFields.map(String).join(", ")}`,
+          "Check the request payload structure",
+          "Verify all required parameters are included",
+          context
+            ? `Review ${context} documentation for required fields`
+            : "Review API documentation",
+        ]
       );
     }
   }
 
-  // Alternative validation method for simple objects
+  /**
+   * Alternative validation method for simple objects
+   */
   protected validateRequired(
     data: Record<string, unknown>,
-    fields: string[]
+    fields: string[],
+    context?: string
   ): void {
     const missingFields = fields.filter(
       (field) =>
@@ -130,11 +156,198 @@ export abstract class BaseService {
     );
 
     if (missingFields.length > 0) {
-      throw new ConductorError(
-        `Missing required fields: ${missingFields.join(", ")}`,
-        ErrorCodes.VALIDATION_FAILED,
-        { missingFields, provided: Object.keys(data) }
+      const contextMsg = context ? ` for ${context}` : "";
+
+      throw ErrorFactory.validation(
+        `Missing required fields${contextMsg}`,
+        {
+          missingFields,
+          provided: Object.keys(data),
+          context,
+        },
+        [
+          `Provide values for: ${missingFields.join(", ")}`,
+          "Check the request payload structure",
+          "Verify all required parameters are included",
+          context
+            ? `Review ${context} documentation for required fields`
+            : "Review API documentation",
+        ]
       );
     }
+  }
+
+  /**
+   * Enhanced file validation with specific error context
+   */
+  protected validateFileExists(filePath: string, fileType?: string): void {
+    const fs = require("fs");
+
+    if (!filePath) {
+      throw ErrorFactory.args(
+        `${fileType || "File"} path not provided`,
+        undefined,
+        [
+          `Specify a ${fileType || "file"} path`,
+          "Check command line arguments",
+          "Verify the parameter is not empty",
+        ]
+      );
+    }
+
+    if (!fs.existsSync(filePath)) {
+      throw ErrorFactory.file(
+        `${fileType || "File"} not found: ${filePath}`,
+        filePath,
+        [
+          "Check that the file path is correct",
+          "Ensure the file exists at the specified location",
+          "Verify file permissions allow read access",
+          `Current directory: ${process.cwd()}`,
+        ]
+      );
+    }
+
+    // Check if file is readable
+    try {
+      fs.accessSync(filePath, fs.constants.R_OK);
+    } catch (error) {
+      throw ErrorFactory.file(
+        `${fileType || "File"} is not readable: ${filePath}`,
+        filePath,
+        [
+          "Check file permissions",
+          "Ensure the file is not locked by another process",
+          "Verify you have read access to the file",
+          "Try copying the file to a different location",
+        ]
+      );
+    }
+
+    // Check if file has content
+    const stats = fs.statSync(filePath);
+    if (stats.size === 0) {
+      throw ErrorFactory.file(
+        `${fileType || "File"} is empty: ${filePath}`,
+        filePath,
+        [
+          "Ensure the file contains data",
+          "Check if the file was properly created",
+          "Verify the file is not corrupted",
+        ]
+      );
+    }
+  }
+
+  /**
+   * Enhanced JSON parsing with specific error context
+   */
+  protected parseJsonFile(filePath: string, fileType?: string): any {
+    this.validateFileExists(filePath, fileType);
+
+    const fs = require("fs");
+    const path = require("path");
+
+    try {
+      const fileContent = fs.readFileSync(filePath, "utf-8");
+      return JSON.parse(fileContent);
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw ErrorFactory.file(
+          `Invalid JSON format in ${fileType || "file"}: ${path.basename(
+            filePath
+          )}`,
+          filePath,
+          [
+            "Check JSON syntax for errors (missing commas, brackets, quotes)",
+            "Validate JSON structure using a JSON validator",
+            "Ensure file encoding is UTF-8",
+            "Try viewing the file in a JSON editor",
+            `JSON error: ${error.message}`,
+          ]
+        );
+      }
+
+      throw ErrorFactory.file(
+        `Error reading ${fileType || "file"}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        filePath,
+        [
+          "Check file permissions and accessibility",
+          "Verify file is not corrupted",
+          "Ensure file is properly formatted",
+          "Try opening the file manually to inspect content",
+        ]
+      );
+    }
+  }
+
+  /**
+   * Create enhanced health check error with service-specific guidance
+   */
+  private createHealthCheckError(error: unknown, responseTime: number): Error {
+    const baseUrl = this.normalizeUrl(this.config.url);
+
+    if (error instanceof Error) {
+      // Connection refused
+      if (error.message.includes("ECONNREFUSED")) {
+        return ErrorFactory.connection(
+          `Cannot connect to ${this.serviceName} - connection refused`,
+          this.serviceName,
+          baseUrl,
+          [
+            `Check that ${this.serviceName} is running`,
+            `Verify service URL: ${baseUrl}`,
+            "Check if the service port is correct",
+            "Confirm no firewall is blocking the connection",
+            `Test connection: curl ${baseUrl}${this.healthEndpoint}`,
+          ]
+        );
+      }
+
+      // Timeout
+      if (
+        error.message.includes("timeout") ||
+        error.message.includes("ETIMEDOUT")
+      ) {
+        return ErrorFactory.connection(
+          `${this.serviceName} health check timed out (${responseTime}ms)`,
+          this.serviceName,
+          baseUrl,
+          [
+            "Service may be overloaded or starting up",
+            "Check service performance and resource usage",
+            "Verify network latency is acceptable",
+            "Consider increasing timeout if service is slow",
+            "Check service logs for performance issues",
+          ]
+        );
+      }
+
+      // Authentication errors
+      if (error.message.includes("401") || error.message.includes("403")) {
+        return ErrorFactory.connection(
+          `${this.serviceName} authentication failed`,
+          this.serviceName,
+          baseUrl,
+          [
+            "Check authentication credentials",
+            "Verify API tokens are valid and not expired",
+            "Confirm proper authentication headers",
+            "Check service authentication configuration",
+          ]
+        );
+      }
+    }
+
+    // Generic connection error
+    return ErrorFactory.connection(
+      `${this.serviceName} health check failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      this.serviceName,
+      baseUrl
+    );
   }
 }

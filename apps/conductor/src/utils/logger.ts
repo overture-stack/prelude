@@ -1,4 +1,4 @@
-// src/utils/logger.ts - Remove unused exports
+// src/utils/logger.ts - Enhanced with consistent template literal patterns
 import chalk from "chalk";
 
 enum LogLevel {
@@ -109,6 +109,7 @@ export class Logger {
 
   /**
    * Core log function that accepts either a tagged template literal or a plain string.
+   * Prefer template literals for variable interpolation, plain strings for static messages.
    */
   private static log(
     level: LogLevel,
@@ -134,33 +135,57 @@ export class Logger {
     }
   }
 
-  static debug(strings: TemplateStringsArray | string, ...values: any[]): void {
+  // Template literal methods (preferred for variable interpolation)
+  static debug(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.DEBUG, strings, ...values);
   }
 
-  static info(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static info(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.INFO, strings, ...values);
   }
 
-  static success(
-    strings: TemplateStringsArray | string,
-    ...values: any[]
-  ): void {
+  static success(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.SUCCESS, strings, ...values);
   }
 
-  static warn(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static warn(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.WARN, strings, ...values);
   }
 
-  static error(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static error(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.ERROR, strings, ...values);
   }
 
-  static tip(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static tip(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.TIP, strings, ...values);
   }
 
+  // String methods (preferred for static messages)
+  static debugString(message: string): void {
+    this.log(LogLevel.DEBUG, message);
+  }
+
+  static infoString(message: string): void {
+    this.log(LogLevel.INFO, message);
+  }
+
+  static successString(message: string): void {
+    this.log(LogLevel.SUCCESS, message);
+  }
+
+  static warnString(message: string): void {
+    this.log(LogLevel.WARN, message);
+  }
+
+  static errorString(message: string): void {
+    this.log(LogLevel.ERROR, message);
+  }
+
+  static tipString(message: string): void {
+    this.log(LogLevel.TIP, message);
+  }
+
+  // Utility methods (unchanged)
   static generic(message: string): void {
     console.log(this.formatMessage(message, LogLevel.GENERIC));
   }
@@ -402,8 +427,8 @@ export class Logger {
     );
     this.generic("");
 
-    // SONG Upload commands
-    this.generic(chalk.bold.magenta("SONG Schema Upload Commands:"));
+    // Song Upload commands
+    this.generic(chalk.bold.magenta("Song Schema Upload Commands:"));
     this.generic(chalk.white("conductor songUploadSchema -s schema.json"));
     this.generic(chalk.gray("Options:"));
     this.generic(
@@ -413,7 +438,7 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
       )
     );
     this.generic(
@@ -432,15 +457,15 @@ export class Logger {
     );
     this.generic("");
 
-    // SONG Create Study commands
-    this.generic(chalk.bold.magenta("SONG Create Study Commands:"));
+    // Song Create Study commands
+    this.generic(chalk.bold.magenta("Song Create Study Commands:"));
     this.generic(
       chalk.white("conductor songCreateStudy -i study-id -n study-name")
     );
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
       )
     );
     this.generic(
@@ -473,6 +498,105 @@ export class Logger {
     this.generic(
       chalk.gray(
         "Example: conductor songCreateStudy -i my-study -n 'My Research Study' -g MyOrg"
+      )
+    );
+    this.generic("");
+
+    // Song Submit Analysis commands
+    this.generic(chalk.bold.magenta("Song Submit Analysis Commands:"));
+    this.generic(chalk.white("conductor songSubmitAnalysis -a analysis.json"));
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray(
+        "-a, --analysis-file <path> Analysis JSON file to submit (required)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-s, --score-url <url>     Score server URL (default: http://localhost:8087)"
+      )
+    );
+    this.generic(
+      chalk.gray("-i, --study-id <id>       Study ID (default: demo)")
+    );
+    this.generic(
+      chalk.gray(
+        "--allow-duplicates        Allow duplicate analysis submissions"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-d, --data-dir <path>     Directory containing data files (default: ./data)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--output-dir <path>       Directory for manifest file output (default: ./output)"
+      )
+    );
+    this.generic(
+      chalk.gray("-m, --manifest-file <path> Path for manifest file")
+    );
+    this.generic(
+      chalk.gray(
+        "-t, --auth-token <token>  Authentication token (default: 123)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--ignore-undefined-md5    Ignore files with undefined MD5 checksums"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--force                   Force studyId from command line instead of from file"
+      )
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor songSubmitAnalysis -a analysis.json -i my-study -d ./data"
+      )
+    );
+    this.generic("");
+
+    // Song Publish Analysis commands
+    this.generic(chalk.bold.magenta("Song Publish Analysis Commands:"));
+    this.generic(chalk.white("conductor songPublishAnalysis -a analysis-id"));
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-a, --analysis-id <id>    Analysis ID to publish (required)")
+    );
+    this.generic(
+      chalk.gray("-i, --study-id <id>       Study ID (default: demo)")
+    );
+    this.generic(
+      chalk.gray(
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "-t, --auth-token <token>  Authentication token (default: 123)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--ignore-undefined-md5    Ignore files with undefined MD5 checksums"
+      )
+    );
+    this.generic(
+      chalk.gray("-o, --output <path>    Output directory for logs")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor songPublishAnalysis -a analysis-123 -i my-study"
       )
     );
     this.generic("");

@@ -60,7 +60,7 @@ interface Config {
 
 // Keep this as it's used in CLI setup
 interface CLIOutput {
-  profile: Profile;
+  profile: string;
   debug?: boolean;
   filePaths: string[];
   config: Config;
