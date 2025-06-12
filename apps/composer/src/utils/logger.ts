@@ -1,12 +1,14 @@
+// src/utils/logger.ts - Standardized logger with consistent template literal usage
 import chalk from "chalk";
 
+// Make LogLevel public for use in other modules
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   SUCCESS = 2,
   WARN = 3,
   ERROR = 4,
-  HELP = 5,
+  TIP = 5,
   GENERIC = 6,
   SECTION = 7,
   INPUT = 8,
@@ -17,6 +19,52 @@ interface LoggerConfig {
   debug: boolean;
 }
 
+// Centralized configuration for icons and colors
+const LOG_CONFIG = {
+  icons: {
+    [LogLevel.DEBUG]: "🔍",
+    [LogLevel.INFO]: "▸",
+    [LogLevel.SUCCESS]: "✓",
+    [LogLevel.WARN]: "⚠",
+    [LogLevel.ERROR]: "✗",
+    [LogLevel.TIP]: "    💡",
+    [LogLevel.GENERIC]: "",
+    [LogLevel.SECTION]: "",
+    [LogLevel.INPUT]: "❔",
+  } as const,
+
+  colors: {
+    [LogLevel.DEBUG]: chalk.bold.gray,
+    [LogLevel.INFO]: chalk.bold.cyan,
+    [LogLevel.SUCCESS]: chalk.bold.green,
+    [LogLevel.WARN]: chalk.bold.yellow,
+    [LogLevel.ERROR]: chalk.bold.red,
+    [LogLevel.TIP]: chalk.bold.yellow,
+    [LogLevel.GENERIC]: chalk.white,
+    [LogLevel.SECTION]: chalk.bold.blue,
+    [LogLevel.INPUT]: chalk.bold.yellow,
+  } as const,
+
+  labels: {
+    [LogLevel.DEBUG]: "Debug",
+    [LogLevel.INFO]: "Info",
+    [LogLevel.SUCCESS]: "Success",
+    [LogLevel.WARN]: "Warn",
+    [LogLevel.ERROR]: "Error",
+    [LogLevel.TIP]: "",
+    [LogLevel.GENERIC]: "",
+    [LogLevel.SECTION]: "",
+    [LogLevel.INPUT]: "User Input",
+  } as const,
+
+  needsNewLine: new Set([
+    LogLevel.ERROR,
+    LogLevel.INPUT,
+    LogLevel.WARN,
+    LogLevel.SUCCESS,
+  ]),
+} as const;
+
 export class Logger {
   private static config: LoggerConfig = {
     level: LogLevel.INFO,
@@ -24,50 +72,9 @@ export class Logger {
   };
 
   private static formatMessage(message: string, level: LogLevel): string {
-    const icons = {
-      [LogLevel.DEBUG]: "🔍",
-      [LogLevel.INFO]: "▸",
-      [LogLevel.SUCCESS]: "✓",
-      [LogLevel.WARN]: "⚠",
-      [LogLevel.ERROR]: "✗",
-      [LogLevel.HELP]: "💡",
-      [LogLevel.GENERIC]: "",
-      [LogLevel.SECTION]: "",
-      [LogLevel.INPUT]: "❔",
-    };
+    const { icons, colors, labels, needsNewLine } = LOG_CONFIG;
 
-    const colors: Record<LogLevel, (text: string) => string> = {
-      [LogLevel.DEBUG]: chalk.bold.gray,
-      [LogLevel.INFO]: chalk.bold.cyan,
-      [LogLevel.SUCCESS]: chalk.bold.green,
-      [LogLevel.WARN]: chalk.bold.yellow,
-      [LogLevel.ERROR]: chalk.bold.red,
-      [LogLevel.HELP]: chalk.bold.yellow,
-      [LogLevel.GENERIC]: chalk.white,
-      [LogLevel.SECTION]: chalk.bold.blue,
-      [LogLevel.INPUT]: chalk.bold.yellow,
-    };
-
-    const levelLabels = {
-      [LogLevel.DEBUG]: "Debug",
-      [LogLevel.INFO]: "Info",
-      [LogLevel.SUCCESS]: "Success",
-      [LogLevel.WARN]: "Warn",
-      [LogLevel.ERROR]: "Error",
-      [LogLevel.HELP]: "Help",
-      [LogLevel.GENERIC]: "",
-      [LogLevel.SECTION]: "",
-      [LogLevel.INPUT]: "User Input",
-    };
-
-    const needsNewLine = [
-      LogLevel.ERROR,
-      LogLevel.INPUT,
-      LogLevel.WARN,
-      LogLevel.SUCCESS,
-    ].includes(level);
-
-    const prefix = needsNewLine ? "\n" : "";
+    const prefix = needsNewLine.has(level) ? "\n" : "";
 
     if (level === LogLevel.GENERIC) {
       return colors[level](message);
@@ -78,7 +85,7 @@ export class Logger {
     }
 
     return `${prefix}${colors[level](
-      `${icons[level]} ${levelLabels[level]} `
+      `${icons[level]} ${labels[level]} `
     )}${message}`;
   }
 
@@ -93,7 +100,8 @@ export class Logger {
   }
 
   /**
-   * Tagged template helper that automatically bolds interpolated values.
+   * Formats template literal strings with highlighted variables
+   * Standardized approach for all logging methods
    */
   static formatVariables(
     strings: TemplateStringsArray,
@@ -107,20 +115,34 @@ export class Logger {
   }
 
   /**
-   * Core log function that accepts either a tagged template literal or a plain string.
+   * Internal logging method with standardized template literal support
    */
   private static log(
     level: LogLevel,
-    strings: TemplateStringsArray | string,
+    strings: TemplateStringsArray,
     ...values: any[]
   ): void {
     if (this.config.level > level && level !== LogLevel.DEBUG) return;
     if (!this.config.debug && level === LogLevel.DEBUG) return;
 
-    const message =
-      typeof strings === "string"
-        ? strings
-        : this.formatVariables(strings, ...values);
+    const message = this.formatVariables(strings, ...values);
+    const formattedMessage = this.formatMessage(message, level);
+
+    if (level === LogLevel.WARN) {
+      console.warn(formattedMessage);
+    } else if (level === LogLevel.ERROR) {
+      console.error(formattedMessage);
+    } else {
+      console.log(formattedMessage);
+    }
+  }
+
+  /**
+   * Overloaded logging method for backwards compatibility with string arguments
+   */
+  private static logString(level: LogLevel, message: string): void {
+    if (this.config.level > level && level !== LogLevel.DEBUG) return;
+    if (!this.config.debug && level === LogLevel.DEBUG) return;
 
     const formattedMessage = this.formatMessage(message, level);
 
@@ -133,33 +155,57 @@ export class Logger {
     }
   }
 
-  static debug(strings: TemplateStringsArray | string, ...values: any[]): void {
+  // Standardized template literal methods
+  static debug(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.DEBUG, strings, ...values);
   }
 
-  static info(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static info(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.INFO, strings, ...values);
   }
 
-  static success(
-    strings: TemplateStringsArray | string,
-    ...values: any[]
-  ): void {
+  static success(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.SUCCESS, strings, ...values);
   }
 
-  static warn(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static warn(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.WARN, strings, ...values);
   }
 
-  static error(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static error(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.ERROR, strings, ...values);
   }
 
-  static help(strings: TemplateStringsArray | string, ...values: any[]): void {
-    this.log(LogLevel.HELP, strings, ...values);
+  static tip(strings: TemplateStringsArray, ...values: any[]): void {
+    this.log(LogLevel.TIP, strings, ...values);
   }
 
+  // String-based methods for backwards compatibility
+  static debugString(message: string): void {
+    this.logString(LogLevel.DEBUG, message);
+  }
+
+  static infoString(message: string): void {
+    this.logString(LogLevel.INFO, message);
+  }
+
+  static successString(message: string): void {
+    this.logString(LogLevel.SUCCESS, message);
+  }
+
+  static warnString(message: string): void {
+    this.logString(LogLevel.WARN, message);
+  }
+
+  static errorString(message: string): void {
+    this.logString(LogLevel.ERROR, message);
+  }
+
+  static tipString(message: string): void {
+    this.logString(LogLevel.TIP, message);
+  }
+
+  // Special purpose methods
   static generic(message: string): void {
     console.log(this.formatMessage(message, LogLevel.GENERIC));
   }
@@ -173,16 +219,14 @@ export class Logger {
   }
 
   static header(text: string): void {
-    const separator = "═".repeat(text.length + 6);
-    console.log(`\n${chalk.bold.magenta(separator)}`);
-    console.log(`${chalk.bold.magenta("  " + text + "  ")}`);
-    console.log(`${chalk.bold.magenta(separator)}\n`);
+    console.log(`${chalk.bold.magenta(text + "  \n")}`);
   }
 
   static commandInfo(command: string, description: string): void {
     console.log`${chalk.bold.blue(command)}: ${description}`;
   }
 
+  // Enhanced default value methods with consistent template literal support
   static defaultValueInfo(message: string, overrideCommand: string): void {
     if (this.config.level <= LogLevel.INFO) {
       console.log(this.formatMessage(message, LogLevel.INFO));
@@ -197,6 +241,7 @@ export class Logger {
     }
   }
 
+  // Debug object logging with standardized formatting
   static debugObject(label: string, obj: any): void {
     if (this.config.debug) {
       console.log(chalk.gray`🔍 ${label}:`);
@@ -212,6 +257,7 @@ export class Logger {
     }
   }
 
+  // Timing utility with template literal support
   static timing(label: string, timeMs: number): void {
     const formattedTime =
       timeMs < 1000
@@ -221,24 +267,27 @@ export class Logger {
     console.log(chalk.gray`⏱ ${label}: ${formattedTime}`);
   }
 
+  // File list utilities
   static fileList(title: string, files: string[]): void {
     if (files.length === 0) return;
-    Logger.warn`${title}:\n`;
+    this.warnString(`${title}:\n`);
     files.forEach((file) => {
       console.log(chalk.gray`  - ${file}`);
     });
   }
-  static errorfileList(title: string, files: string[]): void {
+
+  static errorFileList(title: string, files: string[]): void {
     if (files.length === 0) return;
-    Logger.error`${title}:\n`;
+    this.errorString(`${title}:\n`);
     files.forEach((file) => {
       console.log(chalk.gray`  - ${file}`);
     });
   }
+
+  // Add this method to the Logger class in logger.ts
   static showReferenceCommands(): void {
     this.header("Command Examples");
 
-    // Dictionary Generation
     this.generic(chalk.bold.magenta("Generate Lectern Dictionary:"));
     this.generic(
       chalk.white(
@@ -283,7 +332,6 @@ export class Logger {
     );
     this.generic("");
 
-    // Song Schema Generation
     this.generic(chalk.bold.magenta("Generate Song Schema:"));
     this.generic(chalk.white("composer -p SongSchema -f schema-template.json"));
     this.generic(chalk.gray("Options:"));
@@ -314,7 +362,6 @@ export class Logger {
     );
     this.generic("");
 
-    // Elasticsearch Mapping Generation
     this.generic(chalk.bold.magenta("Generate Elasticsearch Mapping:"));
     this.generic(chalk.white("composer -p ElasticsearchMapping -f data.csv"));
     this.generic(chalk.gray("Options:"));
@@ -323,7 +370,7 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "-f, --files <paths...>  Input file paths (CSV or JSON, space separated) (required)"
+        "-f, --files <paths...>  Input file paths (CSV, JSON, or Lectern dictionary, space separated) (required)"
       )
     );
     this.generic(
@@ -360,24 +407,26 @@ export class Logger {
       )
     );
     this.generic("");
+    this.generic(chalk.bold.cyan("    From CSV files:"));
     this.generic(
       chalk.gray(
-        "Example: composer -p ElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
+        "    composer -p ElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
       )
     );
+    this.generic(chalk.bold.cyan("    From JSON files:"));
     this.generic(
       chalk.gray(
-        "Example with ignored fields: composer -p ElasticsearchMapping -f donor_data.json --ignore-fields entityName organization isValid id"
+        "    composer -p ElasticsearchMapping -f donor_data.json --ignore-fields entityName organization isValid id"
       )
     );
+    this.generic(chalk.bold.cyan("    From Lectern Dictionary:"));
     this.generic(
       chalk.gray(
-        "Example without metadata: composer -p ElasticsearchMapping -f donor_data.json --skip-metadata"
+        "    composer -p ElasticsearchMapping -f clinical-dictionary.json -i clinical_data -o mapping.json"
       )
     );
     this.generic("");
 
-    // Arranger Configuration Generation
     this.generic(chalk.bold.magenta("Generate Arranger Configs:"));
     this.generic(chalk.white("composer -p ArrangerConfigs -f metadata.csv"));
     this.generic(chalk.gray("Options:"));

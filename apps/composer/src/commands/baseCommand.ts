@@ -1,5 +1,5 @@
 import { CLIOutput } from "../types";
-import { ComposerError, ErrorCodes, handleError } from "../utils/errors";
+import { ErrorFactory, handleError } from "../utils/errors"; // UPDATED: Import from utils/errors
 import { Logger } from "../utils/logger";
 import * as fs from "fs";
 import * as path from "path";
@@ -45,6 +45,8 @@ export abstract class Command {
         Logger.debug`Running ${this.name} command with debug enabled`;
       }
 
+      Logger.header(`♫ Generating ${this.name} Configurations`);
+
       // Validate input arguments
       await this.validate(cliOutput);
 
@@ -54,7 +56,7 @@ export abstract class Command {
 
       // If no output path specified, use the default
       if (!cliOutput.outputPath?.trim()) {
-        Logger.debug("No output directory specified.");
+        Logger.debug`No output directory specified`;
         usingDefaultPath = true;
         cliOutput.outputPath = path.join(this.defaultOutputPath);
       }
@@ -68,7 +70,7 @@ export abstract class Command {
           "Use -o or --output <path> to specify a different location"
         );
       } else {
-        Logger.info`Output directory set to: ${cliOutput.outputPath}`;
+        Logger.debug`Output directory set to: ${cliOutput.outputPath}`;
       }
 
       // Check for existing files and confirm overwrite if needed
@@ -78,19 +80,17 @@ export abstract class Command {
           cliOutput.outputPath
         );
         if (!shouldContinue) {
-          Logger.info("Operation cancelled by user.");
+          Logger.infoString("Operation cancelled by user.");
           return;
         }
       } else if (cliOutput.force === true) {
-        Logger.debug("Force flag enabled, skipping overwrite confirmation");
+        Logger.debug`Force flag enabled, skipping overwrite confirmation`;
       }
-
-      Logger.header(`Generating ${this.name} Configurations`);
 
       // Execute the specific command implementation
       await this.execute(cliOutput);
     } catch (error) {
-      handleError(error);
+      handleError(error); // UPDATED: Use consolidated handleError
     }
   }
 
@@ -126,10 +126,12 @@ export abstract class Command {
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     if (!cliOutput.filePaths?.length) {
-      throw new ComposerError(
-        "No input files provided",
-        ErrorCodes.INVALID_ARGS
-      );
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args("No input files provided", [
+        "Use -f or --files to specify input files",
+        "Example: -f data.csv metadata.json",
+        "Multiple files can be specified: -f file1.csv file2.csv",
+      ]);
     }
 
     // Expand directory paths to file paths
@@ -137,29 +139,31 @@ export abstract class Command {
     const expandedPaths = expandDirectoryPaths(cliOutput.filePaths);
 
     if (expandedPaths.length === 0) {
-      throw new ComposerError(
-        "No valid input files found",
-        ErrorCodes.INVALID_ARGS
-      );
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args("No valid input files found", [
+        "Check that the specified paths exist",
+        "Ensure files have the correct extensions",
+        "If using directories, ensure they contain supported files",
+      ]);
     }
 
     // If we found more files than were originally specified, log this info
     if (expandedPaths.length > originalPaths.length) {
-      Logger.info(`Found ${expandedPaths.length} files from specified paths`);
+      Logger.info`Found ${expandedPaths.length} files from specified paths`;
     }
 
     // Replace the original file paths with expanded ones
     cliOutput.filePaths = expandedPaths;
-    Logger.debug(`Expanded file paths: ${cliOutput.filePaths.join(", ")}`);
+    Logger.debug`Expanded file paths: ${cliOutput.filePaths.join(", ")}`;
 
     // Validate each input file
     for (const filePath of cliOutput.filePaths) {
       await validateFile(filePath);
     }
 
-    // Validate delimiter if provided
-    if (cliOutput.delimiter) {
-      validateDelimiter(cliOutput.delimiter);
+    // Validate delimiter if provided - access csvDelimiter directly
+    if (cliOutput.csvDelimiter) {
+      validateDelimiter(cliOutput.csvDelimiter);
     }
   }
 
@@ -191,15 +195,11 @@ export abstract class Command {
       Logger.debug`Output path appears to be a file: ${outputPath}`;
       directoryPath = path.dirname(outputPath);
       outputFileName = path.basename(outputPath);
-      Logger.debug(
-        `Using directory: ${directoryPath}, fileName: ${outputFileName}`
-      );
+      Logger.debug`Using directory: ${directoryPath}, fileName: ${outputFileName}`;
     } else {
       // If outputPath is a directory, use the default filename
       outputFileName = this.defaultOutputFileName;
-      Logger.debug(
-        `Output path is a directory, using default filename: ${outputFileName}`
-      );
+      Logger.debug`Output path is a directory, using default filename: ${outputFileName}`;
     }
 
     // Create the output directory if it doesn't exist

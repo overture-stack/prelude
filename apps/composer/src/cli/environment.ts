@@ -1,14 +1,12 @@
+// src/cli/environment.ts - Updated with Lectern dictionary support
 import { EnvConfig } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
-import {
-  CONFIG_PATHS,
-  BASE_CONFIG_DIR,
-  getDefaultOutputPathForProfile,
-} from "../utils/paths";
+import { BASE_CONFIG_DIR } from "../utils/paths";
 
 /**
  * Maps config key to environment variable name
+ * Added support for Lectern dictionary options
  */
 const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
   // Input files
@@ -31,34 +29,25 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
   esShards: "ES_SHARDS",
   esReplicas: "ES_REPLICAS",
   esIgnoredFields: "ES_IGNORED_FIELDS",
-  esSkipMetadata: "ES_SKIP_METADATA", // Added environment variable for skip metadata option
+  esIgnoredSchemas: "ES_IGNORED_SCHEMAS", // NEW: Environment variable for ignored schemas
+  esSkipMetadata: "ES_SKIP_METADATA",
 
   // CSV options
   csvDelimiter: "CSV_DELIMITER",
 
   // Arranger options
   arrangerDocType: "ARRANGER_DOC_TYPE",
-
-  // Legacy variables
-  dataFile: "TABULAR_DATA_FILE",
-  indexName: "TABULAR_INDEX_NAME",
-  fileMetadataSample: "FILE_METADATA_SAMPLE",
-  tabularSample: "TABULAR_SAMPLE",
-  songSchema: "GENERATE_SONG_SCHEMA",
-  lecternDictionary: "LECTERN_DICTIONARY",
-  esConfigDir: "ES_CONFIG_DIR",
-  arrangerConfigDir: "ARRANGER_CONFIG_DIR",
 };
 
 /**
- * Loads and validates environment configuration with defaults
+ * Enhanced environment configuration with Lectern dictionary support
  */
 export function loadEnvironmentConfig(): EnvConfig {
   try {
-    Logger.debug("Loading environment configuration");
+    Logger.debug`Loading environment configuration`;
 
     const config: EnvConfig = {
-      // New variables aligned with Docker Compose
+      // Input and output
       inputFiles: process.env.FILES?.split(",").map((f) => f.trim()),
       outputPath: process.env.OUTPUT_PATH || BASE_CONFIG_DIR,
 
@@ -77,7 +66,7 @@ export function loadEnvironmentConfig(): EnvConfig {
       esShards: parseInt(process.env.ES_SHARDS || "1", 10),
       esReplicas: parseInt(process.env.ES_REPLICAS || "1", 10),
       esIgnoredFields: process.env.ES_IGNORED_FIELDS?.split(/\s+/),
-      // Parse boolean environment variable
+      esIgnoredSchemas: process.env.ES_IGNORED_SCHEMAS?.split(/\s+/), // NEW: Parse ignored schemas
       esSkipMetadata: process.env.ES_SKIP_METADATA?.toLowerCase() === "true",
 
       // CSV options
@@ -85,37 +74,28 @@ export function loadEnvironmentConfig(): EnvConfig {
 
       // Arranger options
       arrangerDocType: process.env.ARRANGER_DOC_TYPE || "file",
-
-      // Maintain backward compatibility with old variables
-      dataFile: process.env.TABULAR_DATA_FILE,
-      indexName: process.env.TABULAR_INDEX_NAME,
-      fileMetadataSample:
-        process.env.FILE_METADATA_SAMPLE || CONFIG_PATHS.samples.fileMetadata,
-      tabularSample: process.env.TABULAR_SAMPLE || CONFIG_PATHS.samples.tabular,
-      songSchema: process.env.GENERATE_SONG_SCHEMA || CONFIG_PATHS.song.dir,
-      lecternDictionary:
-        process.env.LECTERN_DICTIONARY || CONFIG_PATHS.lectern.dir,
-      esConfigDir: process.env.ES_CONFIG_DIR || CONFIG_PATHS.elasticsearch.dir,
-      arrangerConfigDir:
-        process.env.ARRANGER_CONFIG_DIR || CONFIG_PATHS.arranger.dir,
     };
 
     // Log overridden defaults
     Object.entries(config).forEach(([key, value]) => {
       const envVar = ENV_VAR_MAP[key as keyof EnvConfig];
       if (process.env[envVar]) {
-        Logger.debug(`Using custom ${key}: ${value}`);
+        Logger.debug`Using custom ${key}: ${value}`;
       }
     });
 
     Logger.debugObject("Environment configuration", config);
     return config;
   } catch (error) {
-    if (error instanceof ComposerError) throw error;
-    throw new ComposerError(
+    throw ErrorFactory.environment(
       "Failed to load environment configuration",
-      ErrorCodes.ENV_ERROR,
-      error
+      error,
+      [
+        "Check that environment variables are properly formatted",
+        "Ensure numeric values (like ES_SHARDS) are valid integers",
+        "Verify file paths are accessible",
+        "For space-separated lists (like ES_IGNORED_SCHEMAS), use proper formatting",
+      ]
     );
   }
 }
