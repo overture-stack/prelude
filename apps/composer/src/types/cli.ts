@@ -1,4 +1,4 @@
-// src/types/cli.ts - Fixed to match usage
+// src/types/cli.ts - Updated to include Lectern dictionary support
 import { Profiles } from "./profiles";
 import { ArrangerConfig } from "./arranger";
 
@@ -10,6 +10,7 @@ export interface ElasticsearchConfig {
   shards: number;
   replicas: number;
   ignoredFields?: string[];
+  ignoredSchemas?: string[]; // NEW: Support for ignoring schemas in Lectern dictionaries
   skipMetadata?: boolean;
 }
 
@@ -46,6 +47,7 @@ export interface EnvConfig {
   esShards?: number;
   esReplicas?: number;
   esIgnoredFields?: string[];
+  esIgnoredSchemas?: string[]; // NEW: Environment support for ignored schemas
   esSkipMetadata?: boolean;
 
   // CSV options

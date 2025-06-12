@@ -83,7 +83,6 @@ export function expandDirectoryPaths(
       throw ErrorFactory.file(`Cannot access path: ${inputPath}`, inputPath, [
         "Check that the path exists and is accessible",
         "Verify file permissions allow reading",
-        "Ensure the path is not corrupted or on a disconnected drive",
       ]);
     }
   });

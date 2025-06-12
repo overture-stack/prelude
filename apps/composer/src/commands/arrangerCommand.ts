@@ -79,7 +79,6 @@ export class ArrangerCommand extends Command {
           "Use --arranger-doc-type to specify the document type",
           "Example: --arranger-doc-type file",
           "Example: --arranger-doc-type analysis",
-          "The document type affects how data is organized in Arranger",
         ]
       );
     }

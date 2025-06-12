@@ -1,4 +1,4 @@
-// src/utils/errors.ts - Consolidated error handling
+// src/utils/errors.ts - Updated to use tips for suggestions
 import { Logger } from "./logger";
 
 export class ComposerError extends Error {
@@ -133,11 +133,11 @@ export function handleError(error: unknown, showHelp?: () => void): never {
   if (error instanceof ComposerError) {
     Logger.error`[${error.code}] ${error.message}`;
 
-    // Show suggestions if available
+    // Show suggestions using tip logging instead of info
     if (error.suggestions && error.suggestions.length > 0) {
-      Logger.section("Suggestions");
+      Logger.section("\nSuggestions\n");
       error.suggestions.forEach((suggestion) => {
-        Logger.infoString(suggestion);
+        Logger.tipString(suggestion);
       });
     }
 

@@ -1,7 +1,7 @@
-// src/cli/commandOptions.ts - Updated with consolidated error handling and logger
+// src/cli/commandOptions.ts - Updated with case-insensitive profile matching
 import { Command, Option } from "commander";
 import { Profile, Profiles } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import {
   CLIOutput,
@@ -44,18 +44,23 @@ export function configureCommandOptions(program: Command): Command {
         .choices(Object.values(Profiles))
         .default(Profiles.GENERATE_SONG_SCHEMA)
         .argParser((value) => {
-          if (!Object.values(Profiles).includes(value as Profile)) {
+          // Find matching profile (case-insensitive)
+          const matchingProfile = Object.values(Profiles).find(
+            (profile) => profile.toLowerCase() === value.toLowerCase()
+          );
+
+          if (!matchingProfile) {
             // UPDATED: Use ErrorFactory with formatted suggestions
             const suggestions = Array.from(PROFILE_DESCRIPTIONS.entries()).map(
-              ([profile, desc]) => `  ${profile}: ${desc}`
+              ([profile, desc]) => `  ▸ ${profile}: ${desc}`
             );
 
             throw ErrorFactory.args(`Invalid profile: ${value}`, [
-              "Valid profiles are:",
+              "Valid profiles are (case-insensitive):\n",
               ...suggestions,
             ]);
           }
-          return value as Profile;
+          return matchingProfile as Profile;
         })
     )
     .requiredOption(

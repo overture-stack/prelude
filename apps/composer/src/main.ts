@@ -4,28 +4,19 @@ import { setupCLI } from "./cli";
 import { CommandRegistry } from "./commands/commandRegistry";
 import { handleError } from "./utils/errors"; // UPDATED: Import from utils/errors
 import { Logger } from "./utils/logger";
-import chalk from "chalk";
 
 async function main() {
   try {
     const cliOutput = await setupCLI();
-
-    Logger.header(`Conductor: Data Processing Utilities`);
-    console.log(chalk.grey.italic`  Version: 1.0.0`);
-    console.log(chalk.grey.italic`  Profile: ${cliOutput.profile}`);
-    Logger.generic(" ");
+    Logger.debug`  Version: 1.0.0`;
+    Logger.debug`  Profile: ${cliOutput.profile}`;
     Logger.initialize();
     Logger.debug`Starting CLI setup`;
-
     Logger.debug`Executing command via registry`;
     await CommandRegistry.execute(cliOutput.profile, cliOutput);
   } catch (error) {
-    // UPDATED: Use consolidated handleError function
-    handleError(error, () => {
-      Logger.section("Available Commands");
-      CommandRegistry.showHelp();
-    });
+    handleError(error, () => {});
   }
 }
 
-main().catch(handleError); // UPDATED: Use consolidated handleError
+main().catch(handleError);

@@ -1,8 +1,8 @@
-// src/commands/commandRegistry.ts - Updated with consolidated error handling
+// src/commands/commandRegistry.ts - Updated to support Lectern dictionaries
 import { Command } from "./baseCommand";
 import { Profile, Profiles } from "../types";
 import { Logger } from "../utils/logger";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 
 // Import command classes
 import { SongCommand } from "./songCommand";
@@ -19,7 +19,7 @@ interface CommandConfig {
 }
 
 /**
- * Simplified command registry with reduced complexity
+ * Simplified command registry with Lectern dictionary support for mapping generation
  */
 export class CommandRegistry {
   private static readonly commands = new Map<Profile, CommandConfig>([
@@ -45,8 +45,9 @@ export class CommandRegistry {
       Profiles.GENERATE_ELASTICSEARCH_MAPPING,
       {
         name: "ElasticsearchMapping",
-        description: "Generate Elasticsearch mapping from CSV or JSON",
-        fileTypes: [".csv", ".json"],
+        description:
+          "Generate Elasticsearch mapping from CSV, JSON, or Lectern dictionary",
+        fileTypes: [".csv", ".json"], // Note: Lectern dictionaries are JSON files
         createCommand: () => new MappingCommand(),
       },
     ],
@@ -67,7 +68,6 @@ export class CommandRegistry {
   static createCommand(profile: Profile): Command {
     const config = this.commands.get(profile);
     if (!config) {
-      // UPDATED: Use ErrorFactory with helpful suggestions
       throw ErrorFactory.args(`Unknown profile: ${profile}`, [
         "Available profiles:",
         ...Array.from(this.commands.entries()).map(
@@ -112,6 +112,7 @@ export class CommandRegistry {
 
   /**
    * Validate file types for a given profile
+   * Note: For ElasticsearchMapping, Lectern dictionaries are validated by content, not just extension
    */
   static validateFileTypes(
     profile: Profile,
@@ -137,18 +138,5 @@ export class CommandRegistry {
       invalidFiles,
       supportedTypes: config.fileTypes,
     };
-  }
-
-  /**
-   * Display help information for all commands
-   */
-  static showHelp(): void {
-    Logger.header("Available Commands");
-
-    for (const [profile, config] of this.commands) {
-      Logger.commandInfo(profile, config.description);
-      Logger.generic(`  Supported files: ${config.fileTypes.join(", ")}`);
-      Logger.generic("");
-    }
   }
 }

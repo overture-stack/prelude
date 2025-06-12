@@ -1,12 +1,12 @@
-// src/cli/environment.ts - Updated with consolidated error handling
+// src/cli/environment.ts - Updated with Lectern dictionary support
 import { EnvConfig } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import { BASE_CONFIG_DIR } from "../utils/paths";
 
 /**
  * Maps config key to environment variable name
- * Removed legacy/unused variables
+ * Added support for Lectern dictionary options
  */
 const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
   // Input files
@@ -29,6 +29,7 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
   esShards: "ES_SHARDS",
   esReplicas: "ES_REPLICAS",
   esIgnoredFields: "ES_IGNORED_FIELDS",
+  esIgnoredSchemas: "ES_IGNORED_SCHEMAS", // NEW: Environment variable for ignored schemas
   esSkipMetadata: "ES_SKIP_METADATA",
 
   // CSV options
@@ -39,8 +40,7 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
 };
 
 /**
- * Simplified environment configuration
- * Removed legacy variables that are no longer used
+ * Enhanced environment configuration with Lectern dictionary support
  */
 export function loadEnvironmentConfig(): EnvConfig {
   try {
@@ -66,6 +66,7 @@ export function loadEnvironmentConfig(): EnvConfig {
       esShards: parseInt(process.env.ES_SHARDS || "1", 10),
       esReplicas: parseInt(process.env.ES_REPLICAS || "1", 10),
       esIgnoredFields: process.env.ES_IGNORED_FIELDS?.split(/\s+/),
+      esIgnoredSchemas: process.env.ES_IGNORED_SCHEMAS?.split(/\s+/), // NEW: Parse ignored schemas
       esSkipMetadata: process.env.ES_SKIP_METADATA?.toLowerCase() === "true",
 
       // CSV options
@@ -86,7 +87,6 @@ export function loadEnvironmentConfig(): EnvConfig {
     Logger.debugObject("Environment configuration", config);
     return config;
   } catch (error) {
-    // UPDATED: Use ErrorFactory
     throw ErrorFactory.environment(
       "Failed to load environment configuration",
       error,
@@ -94,6 +94,7 @@ export function loadEnvironmentConfig(): EnvConfig {
         "Check that environment variables are properly formatted",
         "Ensure numeric values (like ES_SHARDS) are valid integers",
         "Verify file paths are accessible",
+        "For space-separated lists (like ES_IGNORED_SCHEMAS), use proper formatting",
       ]
     );
   }

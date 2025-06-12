@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 import { parseCSVLine } from "../utils/csvParser";
 import { Logger } from "../utils/logger";
 
@@ -25,7 +25,6 @@ export async function validateCSVHeaders(
 
     if (!headerLine) {
       Logger.debug`CSV file is empty or has no headers`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
       throw ErrorFactory.file("CSV file is empty or has no headers", filePath, [
         "Ensure the CSV file contains at least one row of headers",
         "Check that the file is not corrupted",
@@ -36,7 +35,6 @@ export async function validateCSVHeaders(
     const headers = parseCSVLine(headerLine, delimiter, true)[0];
     if (!headers) {
       Logger.debug`Failed to parse CSV headers`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
       throw ErrorFactory.file("Failed to parse CSV headers", filePath, [
         "Check that the delimiter is correct",
         "Ensure headers don't contain unescaped quotes",
@@ -53,7 +51,6 @@ export async function validateCSVHeaders(
     if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    // UPDATED: Use ErrorFactory
     throw ErrorFactory.validation("Error validating CSV headers", error, [
       "Check that the file exists and is readable",
       "Verify the CSV format is correct",
@@ -87,7 +84,6 @@ async function validateCSVStructure(headers: string[]): Promise<boolean> {
     // Validate basic header presence
     if (cleanedHeaders.length === 0) {
       Logger.debug`No valid headers found in CSV file`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
       throw ErrorFactory.validation(
         "No valid headers found in CSV file",
         undefined,
@@ -101,7 +97,6 @@ async function validateCSVStructure(headers: string[]): Promise<boolean> {
 
     if (cleanedHeaders.length !== headers.length) {
       Logger.debug`Empty or whitespace-only headers detected`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
       throw ErrorFactory.validation(
         "Empty or whitespace-only headers detected",
         { originalCount: headers.length, cleanedCount: cleanedHeaders.length },
@@ -173,9 +168,8 @@ async function validateCSVStructure(headers: string[]): Promise<boolean> {
     });
 
     if (invalidHeaders.length > 0) {
-      Logger.debug`Invalid headers detected`;
-      Logger.fileList("The following header(s) are invalid", invalidHeaders);
-      // UPDATED: Use ErrorFactory with helpful suggestions
+      Logger.debug`Invalid headers detected: ${invalidHeaders.join(", ")}`;
+      // Don't log the file list here - let the command handle it
       throw ErrorFactory.validation(
         "Invalid header names detected",
         { invalidHeaders },
@@ -185,6 +179,7 @@ async function validateCSVStructure(headers: string[]): Promise<boolean> {
           "Avoid reserved words like _id, _type, etc.",
           "Remove special characters and spaces from headers",
           `Keep header names under ${maxLength} characters`,
+          `Invalid headers: ${invalidHeaders.join(", ")}`,
         ]
       );
     }
@@ -203,12 +198,7 @@ async function validateCSVStructure(headers: string[]): Promise<boolean> {
       .map(([header, _]) => header);
 
     if (duplicates.length > 0) {
-      Logger.debug`Duplicate headers found`;
-      Logger.debugObject("Duplicate headers", {
-        duplicates,
-        counts: headerCounts,
-      });
-      // UPDATED: Use ErrorFactory with helpful suggestions
+      Logger.debug`Duplicate headers found: ${duplicates.join(", ")}`;
       throw ErrorFactory.validation(
         "Duplicate headers found in CSV file",
         { duplicates, counts: headerCounts },
@@ -216,6 +206,7 @@ async function validateCSVStructure(headers: string[]): Promise<boolean> {
           "Ensure all column headers are unique",
           "Remove or rename duplicate headers",
           "Check for accidentally repeated columns",
+          `Duplicate headers: ${duplicates.join(", ")}`,
         ]
       );
     }
@@ -229,7 +220,6 @@ async function validateCSVStructure(headers: string[]): Promise<boolean> {
     if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    // UPDATED: Use ErrorFactory
     throw ErrorFactory.validation("Error validating CSV structure", error, [
       "Check the CSV file format",
       "Verify headers follow naming conventions",

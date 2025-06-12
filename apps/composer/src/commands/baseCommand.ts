@@ -45,6 +45,8 @@ export abstract class Command {
         Logger.debug`Running ${this.name} command with debug enabled`;
       }
 
+      Logger.header(`♫ Generating ${this.name} Configurations`);
+
       // Validate input arguments
       await this.validate(cliOutput);
 
@@ -68,7 +70,7 @@ export abstract class Command {
           "Use -o or --output <path> to specify a different location"
         );
       } else {
-        Logger.info`Output directory set to: ${cliOutput.outputPath}`;
+        Logger.debug`Output directory set to: ${cliOutput.outputPath}`;
       }
 
       // Check for existing files and confirm overwrite if needed
@@ -84,8 +86,6 @@ export abstract class Command {
       } else if (cliOutput.force === true) {
         Logger.debug`Force flag enabled, skipping overwrite confirmation`;
       }
-
-      Logger.header(`Generating ${this.name} Configurations`);
 
       // Execute the specific command implementation
       await this.execute(cliOutput);

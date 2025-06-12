@@ -122,7 +122,6 @@ export class SongCommand extends Command {
           "Ensure the file contains valid JSON syntax",
           "Check for missing quotes, commas, or brackets",
           "Use a JSON validator to verify the format",
-          "Ensure the file encoding is UTF-8",
         ]);
       }
 
@@ -136,8 +135,6 @@ export class SongCommand extends Command {
           [
             "Ensure the JSON has an 'experiment' property",
             "The experiment object should contain sample metadata",
-            'Example: {"experiment": {"study_id": "STUDY001", ...}}',
-            "Check the SONG schema documentation for required fields",
           ]
         );
       }
@@ -198,7 +195,6 @@ export class SongCommand extends Command {
     } catch (error) {
       Logger.debug`Error during execution: ${error}`;
       if (error instanceof Error && error.name === "ComposerError") {
-        Logger.errorString(error.message);
         throw error;
       }
       // UPDATED: Use ErrorFactory

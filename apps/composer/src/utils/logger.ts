@@ -8,7 +8,7 @@ export enum LogLevel {
   SUCCESS = 2,
   WARN = 3,
   ERROR = 4,
-  HELP = 5,
+  TIP = 5,
   GENERIC = 6,
   SECTION = 7,
   INPUT = 8,
@@ -27,7 +27,7 @@ const LOG_CONFIG = {
     [LogLevel.SUCCESS]: "✓",
     [LogLevel.WARN]: "⚠",
     [LogLevel.ERROR]: "✗",
-    [LogLevel.HELP]: "💡",
+    [LogLevel.TIP]: "    💡",
     [LogLevel.GENERIC]: "",
     [LogLevel.SECTION]: "",
     [LogLevel.INPUT]: "❔",
@@ -39,7 +39,7 @@ const LOG_CONFIG = {
     [LogLevel.SUCCESS]: chalk.bold.green,
     [LogLevel.WARN]: chalk.bold.yellow,
     [LogLevel.ERROR]: chalk.bold.red,
-    [LogLevel.HELP]: chalk.bold.yellow,
+    [LogLevel.TIP]: chalk.bold.yellow,
     [LogLevel.GENERIC]: chalk.white,
     [LogLevel.SECTION]: chalk.bold.blue,
     [LogLevel.INPUT]: chalk.bold.yellow,
@@ -51,7 +51,7 @@ const LOG_CONFIG = {
     [LogLevel.SUCCESS]: "Success",
     [LogLevel.WARN]: "Warn",
     [LogLevel.ERROR]: "Error",
-    [LogLevel.HELP]: "Help",
+    [LogLevel.TIP]: "",
     [LogLevel.GENERIC]: "",
     [LogLevel.SECTION]: "",
     [LogLevel.INPUT]: "User Input",
@@ -176,8 +176,8 @@ export class Logger {
     this.log(LogLevel.ERROR, strings, ...values);
   }
 
-  static help(strings: TemplateStringsArray, ...values: any[]): void {
-    this.log(LogLevel.HELP, strings, ...values);
+  static tip(strings: TemplateStringsArray, ...values: any[]): void {
+    this.log(LogLevel.TIP, strings, ...values);
   }
 
   // String-based methods for backwards compatibility
@@ -201,6 +201,10 @@ export class Logger {
     this.logString(LogLevel.ERROR, message);
   }
 
+  static tipString(message: string): void {
+    this.logString(LogLevel.TIP, message);
+  }
+
   // Special purpose methods
   static generic(message: string): void {
     console.log(this.formatMessage(message, LogLevel.GENERIC));
@@ -215,10 +219,7 @@ export class Logger {
   }
 
   static header(text: string): void {
-    const separator = "═".repeat(text.length + 6);
-    console.log(`\n${chalk.bold.magenta(separator)}`);
-    console.log(`${chalk.bold.magenta("  " + text + "  ")}`);
-    console.log(`${chalk.bold.magenta(separator)}\n`);
+    console.log(`${chalk.bold.magenta(text + "  \n")}`);
   }
 
   static commandInfo(command: string, description: string): void {
@@ -283,6 +284,7 @@ export class Logger {
     });
   }
 
+  // Add this method to the Logger class in logger.ts
   static showReferenceCommands(): void {
     this.header("Command Examples");
 
@@ -368,7 +370,7 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "-f, --files <paths...>  Input file paths (CSV or JSON, space separated) (required)"
+        "-f, --files <paths...>  Input file paths (CSV, JSON, or Lectern dictionary, space separated) (required)"
       )
     );
     this.generic(
@@ -405,19 +407,22 @@ export class Logger {
       )
     );
     this.generic("");
+    this.generic(chalk.bold.cyan("    From CSV files:"));
     this.generic(
       chalk.gray(
-        "Example: composer -p ElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
+        "    composer -p ElasticsearchMapping -f data.csv metadata.csv -i my_index --shards 3 --replicas 2 -o es-mapping.json"
       )
     );
+    this.generic(chalk.bold.cyan("    From JSON files:"));
     this.generic(
       chalk.gray(
-        "Example with ignored fields: composer -p ElasticsearchMapping -f donor_data.json --ignore-fields entityName organization isValid id"
+        "    composer -p ElasticsearchMapping -f donor_data.json --ignore-fields entityName organization isValid id"
       )
     );
+    this.generic(chalk.bold.cyan("    From Lectern Dictionary:"));
     this.generic(
       chalk.gray(
-        "Example without metadata: composer -p ElasticsearchMapping -f donor_data.json --skip-metadata"
+        "    composer -p ElasticsearchMapping -f clinical-dictionary.json -i clinical_data -o mapping.json"
       )
     );
     this.generic("");

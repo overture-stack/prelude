@@ -1,14 +1,18 @@
+// src/commands/mappingCommands.ts - Updated to support Lectern dictionaries
 import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 import { generateMappingFromCSV } from "../services/generateEsMappingFromCSV";
 import {
   generateMappingFromJson,
-  // Renamed to avoid conflict
   MappingOptions as JsonMappingOptions,
 } from "../services/generateEsMappingFromJSON";
+import {
+  generateMappingFromLectern,
+  LecternMappingOptions,
+} from "../services/generateESMappingFromLectern";
 import { validateCSVHeaders } from "../validations";
 import { parseCSVLine } from "../utils/csvParser";
 import { Logger } from "../utils/logger";
@@ -22,6 +26,7 @@ interface MappingOptions {
   number_of_shards?: number;
   number_of_replicas?: number;
   ignoredFields?: string[];
+  ignoredSchemas?: string[];
   skipMetadata?: boolean;
 }
 
@@ -98,6 +103,42 @@ export class MappingCommand extends Command {
   }
 
   /**
+   * Detect input file type based on content and extension
+   */
+  private detectFileType(filePath: string): "csv" | "json" | "lectern" {
+    const extension = path.extname(filePath).toLowerCase();
+
+    if (extension === ".csv") {
+      return "csv";
+    }
+
+    if (extension === ".json") {
+      try {
+        const content = fs.readFileSync(filePath, "utf-8");
+        const data = JSON.parse(content);
+
+        // Check if it's a Lectern dictionary
+        if (
+          data.schemas &&
+          Array.isArray(data.schemas) &&
+          data.name &&
+          data.version
+        ) {
+          return "lectern";
+        }
+
+        // Otherwise it's a regular JSON file
+        return "json";
+      } catch (error) {
+        Logger.warn`Error reading JSON file for type detection: ${error}`;
+        return "json"; // Default to JSON and let validation catch issues
+      }
+    }
+
+    return "json"; // Default fallback
+  }
+
+  /**
    * Override isUsingDefaultPath to handle mapping-specific defaults
    */
   protected isUsingDefaultPath(cliOutput: CLIOutput): boolean {
@@ -120,43 +161,76 @@ export class MappingCommand extends Command {
     );
 
     if (invalidFiles.length > 0) {
-      // UPDATED: Use ErrorFactory with helpful suggestions
       throw ErrorFactory.file(
         "Invalid file types detected. Only .csv and .json files are supported",
         undefined,
         [
           "Ensure all input files have .csv or .json extensions",
           `Invalid files: ${invalidFiles.join(", ")}`,
-          "Supported formats: CSV for tabular data, JSON for structured data",
-          "Example: -f data.csv metadata.json",
+          "Supported formats: CSV for tabular data, JSON for structured data or Lectern dictionaries",
+          "Example: -f data.csv metadata.json dictionary.json",
         ]
       );
     }
 
-    // Ensure all files are the same type
-    const extensions = new Set(
-      cliOutput.filePaths.map((filePath) =>
-        path.extname(filePath).toLowerCase()
-      )
+    // For mixed file types, ensure they're compatible
+    const fileTypes = cliOutput.filePaths.map((filePath) =>
+      this.detectFileType(filePath)
     );
-    if (extensions.size > 1) {
-      // UPDATED: Use ErrorFactory with helpful suggestions
+    const uniqueTypes = new Set(fileTypes);
+
+    // Allow CSV files together, JSON files together, or single Lectern dictionary
+    if (uniqueTypes.size > 1) {
+      const hasLectern = fileTypes.includes("lectern");
+      const hasCSV = fileTypes.includes("csv");
+      const hasJSON = fileTypes.includes("json");
+
+      if (hasLectern && (hasCSV || hasJSON)) {
+        throw ErrorFactory.file(
+          "Lectern dictionaries must be processed alone, not mixed with other file types",
+          undefined,
+          [
+            "Process Lectern dictionaries separately from CSV/JSON files",
+            "Use one Lectern dictionary file per mapping generation",
+            "Example: -f dictionary.json (for Lectern)",
+            "Example: -f data.csv metadata.csv (for CSV)",
+          ]
+        );
+      }
+
+      if (hasCSV && hasJSON) {
+        throw ErrorFactory.file(
+          "CSV and JSON files cannot be mixed (except Lectern dictionaries)",
+          undefined,
+          [
+            "Use either all CSV files OR all JSON files, not mixed",
+            "CSV files: for tabular data like spreadsheets",
+            "JSON files: for structured metadata",
+            "Lectern dictionaries: can be processed alone",
+          ]
+        );
+      }
+    }
+
+    // Special validation for Lectern dictionaries
+    const lecternFiles = cliOutput.filePaths.filter(
+      (filePath) => this.detectFileType(filePath) === "lectern"
+    );
+    if (lecternFiles.length > 1) {
       throw ErrorFactory.file(
-        "For now all input files must be of the same type (either all CSV or all JSON)",
+        "Only one Lectern dictionary can be processed at a time",
         undefined,
         [
-          "Use either all CSV files OR all JSON files, not mixed",
-          "CSV files: for tabular data like spreadsheets",
-          "JSON files: for structured metadata",
-          "Merging different file types will be supported in a future release",
+          "Use a single Lectern dictionary file",
+          "Merge multiple dictionaries before processing if needed",
+          "Example: -f combined-dictionary.json",
         ]
       );
     }
 
-    // Validate index pattern - access elasticsearchConfig directly
+    // Validate index pattern
     if (cliOutput.elasticsearchConfig?.index) {
       if (!/^[a-z0-9][a-z0-9_-]*$/.test(cliOutput.elasticsearchConfig.index)) {
-        // UPDATED: Use ErrorFactory with helpful suggestions
         throw ErrorFactory.args(
           "Invalid index pattern. Must start with a letter or number and contain only lowercase letters, numbers, hyphens, and underscores",
           [
@@ -164,7 +238,6 @@ export class MappingCommand extends Command {
             "Start with a letter or number",
             "Use only letters, numbers, hyphens, and underscores",
             "Example: --index my_data_index",
-            "Invalid characters: spaces, dots, uppercase letters",
           ]
         );
       }
@@ -198,17 +271,39 @@ export class MappingCommand extends Command {
 
       Logger.debugObject("Mapping options", mappingOptions);
 
-      // Generate mapping based on file type
-      const fileExtension = path.extname(cliOutput.filePaths[0]).toLowerCase();
-      const isCSV = fileExtension === ".csv";
+      // Detect file type and generate mapping accordingly
+      const firstFilePath = cliOutput.filePaths[0];
+      const fileType = this.detectFileType(firstFilePath);
 
-      const finalMapping = isCSV
-        ? await this.handleCSVMapping(
+      let finalMapping: ElasticsearchMapping;
+
+      switch (fileType) {
+        case "csv":
+          Logger.info`Processing CSV files`;
+          finalMapping = await this.handleCSVMapping(
             cliOutput.filePaths,
-            cliOutput.csvDelimiter, // Access delimiter directly
+            cliOutput.csvDelimiter,
             mappingOptions
-          )
-        : await this.handleJSONMapping(cliOutput.filePaths, mappingOptions);
+          );
+          break;
+
+        case "lectern":
+          Logger.info`Processing Lectern dictionary`;
+          finalMapping = await this.handleLecternMapping(
+            firstFilePath,
+            mappingOptions
+          );
+          break;
+
+        case "json":
+        default:
+          Logger.info`Processing JSON files`;
+          finalMapping = await this.handleJSONMapping(
+            cliOutput.filePaths,
+            mappingOptions
+          );
+          break;
+      }
 
       // Ensure output directory exists
       const outputDir = path.dirname(outputPath);
@@ -218,18 +313,18 @@ export class MappingCommand extends Command {
       fs.writeFileSync(outputPath, JSON.stringify(finalMapping, null, 2));
 
       // Show summary
-      this.logMappingSummary(finalMapping, outputPath, mappingOptions);
-
-      // Track total execution time
-      const executionTime = Date.now() - startTime;
-      Logger.timing("Execution completed in", executionTime);
+      this.logMappingSummary(
+        finalMapping,
+        outputPath,
+        mappingOptions,
+        fileType
+      );
 
       return finalMapping;
     } catch (error) {
       if (error instanceof Error && error.name === "ComposerError") {
         throw error;
       }
-      // UPDATED: Use ErrorFactory
       throw ErrorFactory.generation(
         "Error generating Elasticsearch mapping",
         error,
@@ -238,6 +333,7 @@ export class MappingCommand extends Command {
           "Ensure output directory is writable",
           "Verify file permissions and disk space",
           "For CSV files, check header format and delimiter",
+          "For Lectern dictionaries, verify schema structure",
         ]
       );
     }
@@ -261,7 +357,6 @@ export class MappingCommand extends Command {
       // Validate CSV structure
       const csvHeadersValid = await validateCSVHeaders(filePath, delimiter);
       if (!csvHeadersValid) {
-        // UPDATED: Use ErrorFactory with helpful suggestions
         throw ErrorFactory.file(
           `CSV file ${filePath} has invalid headers`,
           filePath,
@@ -279,7 +374,6 @@ export class MappingCommand extends Command {
       const [headerLine, sampleLine] = fileContent.split("\n");
 
       if (!headerLine || !sampleLine) {
-        // UPDATED: Use ErrorFactory with helpful suggestions
         throw ErrorFactory.file(
           `CSV file ${filePath} must contain at least a header row and one data row`,
           filePath,
@@ -296,7 +390,6 @@ export class MappingCommand extends Command {
       const sampleValues = parseCSVLine(sampleLine, delimiter, false)[0];
 
       if (!headers || !sampleValues) {
-        // UPDATED: Use ErrorFactory with helpful suggestions
         throw ErrorFactory.parsing(
           `Failed to parse CSV headers or sample data in ${filePath}`,
           { filePath, delimiter },
@@ -327,7 +420,6 @@ export class MappingCommand extends Command {
       // Show timing for large files
       const fileEndTime = Date.now();
       if (fileEndTime - fileStartTime > 500) {
-        // Only show timing if processing took over 500ms
         Logger.timing(
           `Processed file ${processedFileCount}/${filePaths.length}`,
           fileEndTime - fileStartTime
@@ -354,7 +446,7 @@ export class MappingCommand extends Command {
     // Convert from local MappingOptions to JsonMappingOptions
     const jsonOptions: JsonMappingOptions = {
       ignoredFields: options.ignoredFields,
-      skipMetadata: options.skipMetadata, // Pass the skipMetadata option
+      skipMetadata: options.skipMetadata,
     };
 
     return generateMappingFromJson(
@@ -364,12 +456,43 @@ export class MappingCommand extends Command {
     );
   }
 
+  private async handleLecternMapping(
+    filePath: string,
+    options: MappingOptions
+  ) {
+    Logger.info`Processing Lectern dictionary: ${path.basename(filePath)}`;
+
+    // Convert from local MappingOptions to LecternMappingOptions
+    const lecternOptions: LecternMappingOptions = {
+      ignoredFields: options.ignoredFields,
+      ignoredSchemas: options.ignoredSchemas,
+      skipMetadata: options.skipMetadata,
+    };
+
+    return generateMappingFromLectern(
+      filePath,
+      options.index_pattern || "default",
+      lecternOptions
+    );
+  }
+
   private logMappingSummary(
     mapping: ElasticsearchMapping,
     outputPath: string,
-    options: MappingOptions
+    options: MappingOptions,
+    sourceType?: string
   ): void {
     try {
+      // Source type info
+      if (sourceType) {
+        const sourceTypeNames: Record<string, string> = {
+          csv: "CSV files",
+          json: "JSON files",
+          lectern: "Lectern dictionary",
+        };
+        Logger.info`Source: ${sourceTypeNames[sourceType] || sourceType}`;
+      }
+
       // Index pattern info
       Logger.info`Index Pattern created: ${mapping.index_patterns[0]}`;
 
