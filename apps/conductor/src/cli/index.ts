@@ -2,17 +2,16 @@
 
 import { Command } from "commander";
 import { Config, CLIOutput } from "../types/cli";
-import { Config, CLIOutput } from "../types/cli";
 import { parseCommandLineArgs } from "./options";
 import { configureCommandOptions } from "./options";
 import { validateEnvironment } from "../validations/environment";
+import { ServiceConfigManager } from "../config/serviceConfigManager";
 import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
 
 /**
  * Type definition for supported CLI profiles.
  */
-type CLIprofile =
 type CLIprofile =
   | "upload"
   | "lecternUpload"
@@ -22,7 +21,6 @@ type CLIprofile =
   | "songUploadSchema"
   | "songCreateStudy"
   | "songSubmitAnalysis"
-  | "songPublishAnalysis";
   | "songPublishAnalysis";
 
 /**
