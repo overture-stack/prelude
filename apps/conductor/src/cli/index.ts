@@ -46,7 +46,6 @@ export async function setupCLI(): Promise<CLIOutput> {
     Logger.debugString("Conductor CLI setup starting");
 
     // Configure command options
-    // Configure command options
     configureCommandOptions(program);
     program.parse(process.argv);
 
