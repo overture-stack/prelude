@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "./logger";
-import { ComposerError, ErrorCodes } from "./errors";
+import { ErrorFactory } from "./errors"; // UPDATED: Import ErrorFactory
 
 /**
  * Expands directory paths to individual file paths, filtering by extension if specified
@@ -24,7 +24,7 @@ export function expandDirectoryPaths(
       const stats = fs.statSync(inputPath);
 
       if (stats.isDirectory()) {
-        Logger.debug(`Processing directory: ${inputPath}`);
+        Logger.debug`Processing directory: ${inputPath}`;
 
         // Read all files in the directory
         const filesInDir = fs
@@ -47,25 +47,21 @@ export function expandDirectoryPaths(
 
               return true;
             } catch (error) {
-              Logger.debug(`Error accessing file ${file}: ${error}`);
+              Logger.debug`Error accessing file ${file}: ${error}`;
               return false;
             }
           });
 
         if (filesInDir.length === 0) {
           if (extensions && extensions.length > 0) {
-            Logger.warn(
-              `No files with extensions ${extensions.join(
-                ", "
-              )} found in directory: ${inputPath}`
-            );
+            Logger.warn`No files with extensions ${extensions.join(
+              ", "
+            )} found in directory: ${inputPath}`;
           } else {
-            Logger.warn(`Directory is empty: ${inputPath}`);
+            Logger.warn`Directory is empty: ${inputPath}`;
           }
         } else {
-          Logger.debug(
-            `Found ${filesInDir.length} files in directory ${inputPath}`
-          );
+          Logger.debug`Found ${filesInDir.length} files in directory ${inputPath}`;
           expandedPaths = [...expandedPaths, ...filesInDir];
         }
       } else {
@@ -75,41 +71,21 @@ export function expandDirectoryPaths(
           if (extensions.includes(ext)) {
             expandedPaths.push(inputPath);
           } else {
-            Logger.debug(
-              `Skipping file with unsupported extension: ${inputPath}`
-            );
+            Logger.debug`Skipping file with unsupported extension: ${inputPath}`;
           }
         } else {
           expandedPaths.push(inputPath);
         }
       }
     } catch (error) {
-      Logger.debug(`Error accessing path ${inputPath}: ${error}`);
-      throw new ComposerError(
-        `Cannot access path: ${inputPath}`,
-        ErrorCodes.FILE_NOT_FOUND,
-        error
-      );
+      Logger.debug`Error accessing path ${inputPath}: ${error}`;
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(`Cannot access path: ${inputPath}`, inputPath, [
+        "Check that the path exists and is accessible",
+        "Verify file permissions allow reading",
+      ]);
     }
   });
 
   return expandedPaths;
-}
-
-/**
- * Gets all CSV files from the provided paths (directories or files)
- * @param paths Array of file or directory paths
- * @returns Array of CSV file paths
- */
-export function getCSVFiles(paths: string[]): string[] {
-  return expandDirectoryPaths(paths, [".csv"]);
-}
-
-/**
- * Gets all JSON files from the provided paths (directories or files)
- * @param paths Array of file or directory paths
- * @returns Array of JSON file paths
- */
-export function getJSONFiles(paths: string[]): string[] {
-  return expandDirectoryPaths(paths, [".json"]);
 }

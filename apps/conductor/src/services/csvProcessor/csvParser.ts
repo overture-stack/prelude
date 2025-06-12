@@ -9,7 +9,6 @@ import { Logger } from "../../utils/logger";
  * This module provides core functionality for processing CSV files:
  * - Counting lines in CSV files (excluding headers)
  * - Parsing individual CSV lines into arrays
- * - Converting CSV rows into structured records with proper type conversion
  *
  * Used by the Conductor to prepare data for Elasticsearch ingestion.
  * Handles type conversion, null values, and submitter metadata.
@@ -83,56 +82,4 @@ export function parseCSVLine(
     }`;
     return [];
   }
-}
-/**
- * Creates a record object from CSV row data with proper type conversion
- * @param rowValues - Array of values from CSV row
- * @param headers - Array of column headers
- * @param metadata - Additional metadata to include in record
- * @returns Record object with processed values and metadata
- */
-
-export function createRecordFromRow(
-  rowValues: any[],
-  headers: string[],
-  metadata: any
-): Record<string, any> {
-  Logger.debug`Creating record from row with ${rowValues.length} values and ${headers.length} headers`;
-
-  // Initialize record with metadata
-  const record: Record<string, any> = {
-    submission_metadata: metadata,
-  };
-
-  // Process each value in the row
-  headers.forEach((header, index) => {
-    const rowValue = rowValues[index];
-
-    // Handle null/empty values
-    if (
-      rowValue === undefined ||
-      rowValue === null ||
-      rowValue === "" ||
-      (typeof rowValue === "string" && rowValue.trim() === "")
-    ) {
-      record[header] = null;
-    }
-    // Convert numeric strings to numbers
-    else if (!isNaN(Number(rowValue)) && rowValue.toString().trim() !== "") {
-      record[header] = Number(rowValue);
-    }
-    // Clean and store string values
-    else {
-      record[header] = rowValue.toString().trim();
-    }
-  });
-
-  // Log detailed conversion in debug mode
-  Logger.debugObject("Record conversion result", {
-    recordFields: Object.keys(record).length - 1, // Subtract metadata
-    hasMetadata: !!record.submission_metadata,
-    sampleFields: Object.keys(record).slice(0, 3),
-  });
-
-  return record;
 }

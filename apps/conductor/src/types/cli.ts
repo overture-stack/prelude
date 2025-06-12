@@ -1,8 +1,12 @@
+// src/types/cli.ts - Updated to remove unused exports
+
 import { Profiles } from "./constants";
 
-export type Profile = (typeof Profiles)[keyof typeof Profiles];
+// Keep this as it's used by commands (but don't export it)
+type Profile = (typeof Profiles)[keyof typeof Profiles];
 
-export interface Config {
+// Keep main config interface (used throughout)
+interface Config {
   elasticsearch: {
     url: string;
     user?: string;
@@ -37,14 +41,9 @@ export interface Config {
     organization?: string;
     description?: string;
     analysisFile?: string;
-    analysisPath?: string;
     allowDuplicates?: boolean;
     ignoreUndefinedMd5?: boolean;
-  };
-  score?: {
-    url?: string;
-    authToken?: string;
-    analysisId?: string;
+    scoreUrl?: string;
     dataDir?: string;
     outputDir?: string;
     manifestFile?: string;
@@ -59,99 +58,16 @@ export interface Config {
   delimiter: string;
 }
 
-export interface CLIOutput {
+// Keep this as it's used in CLI setup
+interface CLIOutput {
   profile: Profile;
   debug?: boolean;
   filePaths: string[];
   config: Config;
   outputPath?: string;
-  envConfig: EnvConfig;
-  options: any; // Allows for flexible option handling
+  envConfig: any; // Simplified - we can remove EnvConfig interface
+  options: any;
 }
 
-export interface EnvConfig {
-  elasticsearchUrl: string;
-  esUser?: string;
-  esPassword?: string;
-  indexName?: string;
-  lecternUrl?: string;
-  lyricUrl?: string;
-  songUrl?: string;
-  scoreUrl?: string;
-  lyricData?: string;
-  categoryId?: string;
-  organization?: string;
-}
-
-export interface UploadOptions {
-  files: string[];
-  index?: string;
-  batchSize?: number;
-  delimiter?: string;
-}
-
-export interface IndexManagementOptions {
-  templateFile: string;
-  templateName: string;
-  indexName: string;
-  aliasName?: string;
-}
-
-export interface LyricDataOptions {
-  lyricUrl?: string;
-  lecternUrl?: string;
-  dataDirectory?: string;
-  categoryId?: string;
-  organization?: string;
-  maxRetries?: number;
-  retryDelay?: number;
-}
-
-export interface SongStudyOptions {
-  songUrl?: string;
-  studyId?: string;
-  studyName?: string;
-  organization?: string;
-  description?: string;
-  authToken?: string;
-  force?: boolean;
-}
-
-export interface SongAnalysisOptions {
-  songUrl?: string;
-  analysisFile: string;
-  studyId?: string;
-  allowDuplicates?: boolean;
-  authToken?: string;
-  force?: boolean;
-}
-
-export interface ScoreManifestOptions {
-  analysisId: string;
-  dataDir?: string;
-  outputDir?: string;
-  manifestFile?: string;
-  songUrl?: string;
-  scoreUrl?: string;
-  authToken?: string;
-}
-
-export interface SongPublishOptions {
-  analysisId: string;
-  studyId?: string;
-  songUrl?: string;
-  authToken?: string;
-  ignoreUndefinedMd5?: boolean;
-}
-
-export interface SongScoreSubmitOptions {
-  analysisPath: string;
-  studyId?: string;
-  dataDir?: string;
-  outputDir?: string;
-  manifestFile?: string;
-  songUrl?: string;
-  scoreUrl?: string;
-  authToken?: string;
-  ignoreUndefinedMd5?: boolean;
-}
+// Export only what's actually used externally
+export { Config, CLIOutput };

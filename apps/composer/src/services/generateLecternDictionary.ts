@@ -1,3 +1,4 @@
+// src/services/generateLecternDictionary.ts - Updated with consolidated error handling
 import { Logger } from "../utils/logger";
 import * as path from "path";
 import type {
@@ -5,7 +6,6 @@ import type {
   LecternSchema,
   LecternField,
   ValueType,
-  MetaData,
 } from "../types";
 
 // ---- Value Type Inference ----
@@ -25,15 +25,15 @@ import type {
  * inferValueType("score", "85.5") → "number"
  * inferValueType("name", "John") → "string"
  */
-export function inferValueType(
-  headerName: string,
-  sampleValue: string
-): ValueType {
+// Made private - no longer exported
+function inferValueType(headerName: string, sampleValue: string): ValueType {
   Logger.debug`Inferring type for field: ${headerName}`;
 
   // Handle empty values
   if (!sampleValue || sampleValue.trim() === "") {
-    Logger.debug("Empty sample value detected, defaulting to string type");
+    Logger.debugString(
+      "Empty sample value detected, defaulting to string type"
+    );
     return "string";
   }
 
@@ -41,22 +41,22 @@ export function inferValueType(
   const lowerValue = sampleValue.toLowerCase();
   const booleanValues = ["true", "false", "yes", "no", "0", "1"];
   if (booleanValues.includes(lowerValue)) {
-    Logger.debug("Detected boolean type");
+    Logger.debugString("Detected boolean type");
     return "boolean";
   }
 
   // Check for numeric values
   if (!isNaN(Number(sampleValue))) {
     if (Number.isInteger(Number(sampleValue))) {
-      Logger.debug("Detected integer type");
+      Logger.debugString("Detected integer type");
       return "integer";
     }
-    Logger.debug("Detected number type");
+    Logger.debugString("Detected number type");
     return "number";
   }
 
   // Default to string type
-  Logger.debug("Detected string type");
+  Logger.debugString("Detected string type");
   return "string";
 }
 
@@ -84,7 +84,7 @@ export function generateDictionary(
   description: string,
   version: string
 ): LecternDictionary {
-  Logger.info("Generating Lectern dictionary");
+  Logger.infoString("Generating Lectern dictionary");
   Logger.info`Dictionary Name: ${dictionaryName}`;
   Logger.info`Description: ${description}`;
   Logger.info`Version: ${version}`;
@@ -98,7 +98,6 @@ export function generateDictionary(
   };
 
   Logger.debug`${dictionaryName} dictionary generated`;
-
   Logger.debugObject("Dictionary Details", dictionary);
   return dictionary;
 }

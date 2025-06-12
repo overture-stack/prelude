@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 
 /**
@@ -21,57 +21,65 @@ export async function validateFile(filePath: string): Promise<boolean> {
     // Verify file existence
     if (!fs.existsSync(filePath)) {
       Logger.debug`File does not exist: ${filePath}`;
-      throw new ComposerError(
-        `File '${filePath}' does not exist`,
-        ErrorCodes.FILE_NOT_FOUND
-      );
+      throw ErrorFactory.file(`File '${filePath}' does not exist`, filePath, [
+        "Check the file path for typos",
+        "Ensure the file hasn't been moved or deleted",
+        "Verify you're in the correct directory",
+        "Use absolute paths if relative paths are problematic",
+      ]);
     }
 
     // Verify parent directory existence
     const dirPath = path.dirname(filePath);
     if (!fs.existsSync(dirPath)) {
-      Logger.error`Directory does not exist: ${dirPath}`;
-      throw new ComposerError(
-        `Directory does not exist: ${dirPath}`,
-        ErrorCodes.FILE_NOT_FOUND
-      );
+      // Don't log error here - let the centralized handler do it
+      throw ErrorFactory.file(`Directory does not exist: ${dirPath}`, dirPath, [
+        "Check that the parent directory exists",
+        "Ensure the full path is correct",
+        "Create the directory if it's missing",
+      ]);
     }
 
     // Check file permissions
     try {
       fs.accessSync(filePath, fs.constants.R_OK);
     } catch (error) {
-      Logger.error`File is not readable: ${filePath}`;
-      throw new ComposerError(
-        `File '${filePath}' is not readable`,
-        ErrorCodes.INVALID_FILE,
-        error
-      );
+      // Don't log error here - let the centralized handler do it
+      throw ErrorFactory.file(`File '${filePath}' is not readable`, filePath, [
+        "Check file permissions (chmod +r on Unix/Linux/Mac)",
+        "Ensure the file is not locked by another application",
+        "Verify you have read access to the file",
+        "Try running with elevated permissions if necessary",
+      ]);
     }
 
     // Verify file has content
     const stats = fs.statSync(filePath);
     if (stats.size === 0) {
-      Logger.error`File is empty: ${filePath}`;
-      throw new ComposerError(
-        `File '${filePath}' is empty`,
-        ErrorCodes.INVALID_FILE
-      );
+      // Don't log error here - let the centralized handler do it
+      throw ErrorFactory.file(`File '${filePath}' is empty`, filePath, [
+        "Ensure the file contains data",
+        "Verify the file was saved properly",
+      ]);
     }
+
     Logger.debug`File '${filePath}' is valid and readable`;
     return true;
   } catch (error) {
-    Logger.debug("Error during file validation");
+    Logger.debug`Error during file validation`;
     Logger.debugObject("Error details", error);
 
-    if (error instanceof ComposerError) {
+    // If it's already a ComposerError, just re-throw it
+    if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    throw new ComposerError(
-      "Error validating file",
-      ErrorCodes.INVALID_FILE,
-      error
-    );
+
+    // Otherwise, wrap it in a ComposerError
+    throw ErrorFactory.file("Error validating file", filePath, [
+      "Check that the file exists and is accessible",
+      "Verify file permissions and format",
+      "Ensure the path is correct",
+    ]);
   }
 }
 
@@ -83,16 +91,18 @@ export async function validateFile(filePath: string): Promise<boolean> {
  * @throws ComposerError if delimiter is invalid
  */
 export function validateDelimiter(delimiter: string): boolean {
-  Logger.info`Validating delimiter: '${delimiter}'`;
+  Logger.debug`Validating delimiter: '${delimiter}'`;
 
   if (!delimiter || delimiter.length !== 1) {
-    Logger.debug("Invalid delimiter: must be a single character");
-    throw new ComposerError(
-      "Delimiter must be a single character",
-      ErrorCodes.INVALID_ARGS
-    );
+    Logger.debug`Invalid delimiter: must be a single character`;
+    throw ErrorFactory.args("Delimiter must be a single character", [
+      "Use a single character for the delimiter",
+      "Common delimiters: ',' (comma), ';' (semicolon), '\\t' (tab)",
+      "Example: --delimiter ','",
+      "For tab delimiter use: --delimiter $'\\t'",
+    ]);
   }
 
-  Logger.debug("Delimiter validation successful");
+  Logger.debug`Delimiter validation successful`;
   return true;
 }

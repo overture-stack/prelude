@@ -1,8 +1,8 @@
 /**
- * CLI Options Module
+ * CLI Options Module - Complete Updated Version
  *
  * This module configures the command-line options for the Conductor CLI.
- * It sets up the available commands, their options, and handles parsing arguments.
+ * Updated to reflect the refactored SONG/Score services and removed commands.
  */
 
 import { Command } from "commander";
@@ -35,27 +35,6 @@ export function configureCommandOptions(program: Command): void {
     .option("-i, --index <name>", "Elasticsearch index name")
     .option("-b, --batch-size <size>", "Batch size for uploads")
     .option("--delimiter <char>", "CSV delimiter character")
-    .option("-o, --output <path>", "Output directory for generated files")
-    .option("--force", "Force overwrite of existing files")
-    .option("--url <url>", "Elasticsearch URL")
-    .option("--user <username>", "Elasticsearch username", "elastic")
-    .option(
-      "--password <password>",
-      "Elasticsearch password",
-      "myelasticpassword"
-    )
-    .action(() => {
-      /* Handled by main.ts */
-    });
-
-  // Setup indices command
-  program
-    .command("indexManagement")
-    .description("Set up Elasticsearch indices and templates")
-    .option("-t, --template-file <path>", "Template JSON file")
-    .option("-n, --template-name <name>", "Template name")
-    .option("-i, --index-name <name>", "Index name")
-    .option("-a, --alias-name <name>", "Alias name")
     .option("-o, --output <path>", "Output directory for generated files")
     .option("--force", "Force overwrite of existing files")
     .option("--url <url>", "Elasticsearch URL")
@@ -150,6 +129,33 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
+  // Repository indexing command
+  program
+    .command("maestroIndex")
+    .description("Index a repository with optional filtering")
+    .option(
+      "--index-url <url>",
+      "Indexing service URL",
+      process.env.INDEX_URL || "http://localhost:11235"
+    )
+    .option(
+      "--repository-code <code>",
+      "Repository code to index",
+      process.env.REPOSITORY_CODE
+    )
+    .option(
+      "--organization <name>",
+      "Organization name filter",
+      process.env.ORGANIZATION
+    )
+    .option("--id <id>", "Specific ID to index", process.env.ID)
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Skip confirmation prompts")
+    .option("--debug", "Enable detailed debug logging")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
   // SONG schema upload command
   program
     .command("songUploadSchema")
@@ -207,22 +213,47 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // SONG analysis submission command
+  // SONG analysis submission command (now includes Score file upload)
   program
     .command("songSubmitAnalysis")
-    .description("Submit analysis to SONG server")
+    .description("Submit analysis to SONG and upload files to Score")
     .option("-a, --analysis-file <path>", "Analysis JSON file to submit")
     .option(
       "-u, --song-url <url>",
       "SONG server URL",
       process.env.SONG_URL || "http://localhost:8080"
     )
+    .option(
+      "-s, --score-url <url>",
+      "Score server URL",
+      process.env.SCORE_URL || "http://localhost:8087"
+    )
     .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
     .option("--allow-duplicates", "Allow duplicate analysis submissions", false)
+    .option(
+      "-d, --data-dir <path>",
+      "Directory containing data files",
+      process.env.DATA_DIR || "./data"
+    )
+    .option(
+      "--output-dir <path>",
+      "Directory for manifest file output",
+      process.env.OUTPUT_DIR || "./output"
+    )
+    .option(
+      "-m, --manifest-file <path>",
+      "Path for manifest file",
+      process.env.MANIFEST_FILE
+    )
     .option(
       "-t, --auth-token <token>",
       "Authentication token",
       process.env.AUTH_TOKEN || "123"
+    )
+    .option(
+      "--ignore-undefined-md5",
+      "Ignore files with undefined MD5 checksums",
+      false
     )
     .option("-o, --output <path>", "Output directory for response logs")
     .option(
@@ -234,75 +265,7 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // Score manifest upload command
-  program
-    .command("scoreManifestUpload")
-    .description("Generate manifest and upload files with Score")
-    .option("-a, --analysis-id <id>", "Analysis ID from Song submission")
-    .option(
-      "-d, --data-dir <path>",
-      "Directory containing data files",
-      process.env.DATA_DIR || "./data"
-    )
-    .option(
-      "-o, --output-dir <path>",
-      "Directory for manifest file output",
-      process.env.OUTPUT_DIR || "./output"
-    )
-    .option(
-      "-m, --manifest-file <path>",
-      "Path for manifest file",
-      process.env.MANIFEST_FILE
-    )
-    .option(
-      "-u, --song-url <url>",
-      "SONG server URL",
-      process.env.SONG_URL || "http://localhost:8080"
-    )
-    .option(
-      "-s, --score-url <url>",
-      "Score server URL",
-      process.env.SCORE_URL || "http://localhost:8087"
-    )
-    .option(
-      "-t, --auth-token <token>",
-      "Authentication token",
-      process.env.AUTH_TOKEN || "123"
-    )
-    .action(() => {
-      /* Handled by main.ts */
-    });
-
-  // Add this to the configureCommandOptions function, after the other commands
-
-  // Repository indexing command
-  program
-    .command("maestroIndex")
-    .description("Index a repository with optional filtering")
-    .option(
-      "--index-url <url>",
-      "Indexing service URL",
-      process.env.INDEX_URL || "http://localhost:11235"
-    )
-    .option(
-      "--repository-code <code>",
-      "Repository code to index",
-      process.env.REPOSITORY_CODE
-    )
-    .option(
-      "--organization <name>",
-      "Organization name filter",
-      process.env.ORGANIZATION
-    )
-    .option("--id <id>", "Specific ID to index", process.env.ID)
-    .option("-o, --output <path>", "Output directory for response logs")
-    .option("--force", "Skip confirmation prompts")
-    .option("--debug", "Enable detailed debug logging")
-    .action(() => {
-      /* Handled by main.ts */
-    });
-
-  // Song publish analysis command
+  // SONG publish analysis command
   program
     .command("songPublishAnalysis")
     .description("Publish analysis in SONG server")
@@ -323,63 +286,18 @@ export function configureCommandOptions(program: Command): void {
       "Ignore files with undefined MD5 checksums",
       false
     )
+    .option("-o, --output <path>", "Output directory for response logs")
     .action(() => {
       /* Handled by main.ts */
     });
 
-  // Combined SONG/SCORE submission command
-  program
-    .command("songScoreSubmit")
-    .description(
-      "End-to-end workflow: Submit analysis to SONG, upload to SCORE, and publish"
-    )
-    .option(
-      "-p, --analysis-path <path>",
-      "Path to analysis JSON file",
-      process.env.ANALYSIS_PATH || "./analysis.json"
-    )
-    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
-    .option(
-      "-u, --song-url <url>",
-      "SONG server URL",
-      process.env.SONG_URL || "http://localhost:8080"
-    )
-    .option(
-      "-s, --score-url <url>",
-      "Score server URL",
-      process.env.SCORE_URL || "http://localhost:8087"
-    )
-    .option(
-      "-d, --data-dir <path>",
-      "Directory containing data files",
-      process.env.DATA_DIR || "./data/fileData"
-    )
-    .option(
-      "-o, --output-dir <path>",
-      "Directory for manifest file output",
-      process.env.OUTPUT_DIR || "./output"
-    )
-    .option(
-      "-m, --manifest-file <path>",
-      "Path for manifest file",
-      process.env.MANIFEST_FILE
-    )
-    .option(
-      "-t, --auth-token <token>",
-      "Authentication token",
-      process.env.AUTH_TOKEN || "123"
-    )
-    .option(
-      "--ignore-undefined-md5",
-      "Ignore files with undefined MD5 checksums",
-      false
-    )
-    .action(() => {
-      /* Handled by main.ts */
-    });
+  // Note: scoreManifestUpload and songScoreSubmit commands have been removed
+  // Their functionality is now integrated into songSubmitAnalysis
 }
+
 /**
  * Parses command-line arguments into a standardized CLIOutput object
+ * Updated to handle the combined SONG/Score workflow
  *
  * @param options - Parsed command-line options
  * @returns A CLIOutput object for command execution
@@ -427,11 +345,6 @@ export function parseCommandLineArgs(options: any): CLIOutput {
   // Add analysis file to filePaths if present for SONG analysis submission
   if (options.analysisFile && !filePaths.includes(options.analysisFile)) {
     filePaths.push(options.analysisFile);
-  }
-
-  // Add analysis path to filePaths if present for songScoreSubmit command
-  if (options.analysisPath && !filePaths.includes(options.analysisPath)) {
-    filePaths.push(options.analysisPath);
   }
 
   Logger.debug(`Parsed profile: ${profile}`);
@@ -489,7 +402,6 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         options.organization || process.env.ORGANIZATION || "string",
       description: options.description || process.env.DESCRIPTION || "string",
       analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
-      analysisPath: options.analysisPath || process.env.ANALYSIS_PATH,
       allowDuplicates:
         options.allowDuplicates ||
         process.env.ALLOW_DUPLICATES === "true" ||
@@ -498,14 +410,19 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         options.ignoreUndefinedMd5 ||
         process.env.IGNORE_UNDEFINED_MD5 === "true" ||
         false,
-    },
-    score: {
-      url: options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
-      authToken: options.authToken || process.env.AUTH_TOKEN || "123",
-      analysisId: options.analysisId || process.env.ANALYSIS_ID,
+      // Combined Score functionality (now part of song config)
+      scoreUrl:
+        options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
       dataDir: options.dataDir || process.env.DATA_DIR || "./data",
       outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
       manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
+    },
+    maestroIndex: {
+      url:
+        options.indexUrl || process.env.INDEX_URL || "http://localhost:11235",
+      repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
+      organization: options.organization || process.env.ORGANIZATION,
+      id: options.id || process.env.ID,
     },
     batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
     delimiter: options.delimiter || ",",
@@ -526,7 +443,9 @@ export function parseCommandLineArgs(options: any): CLIOutput {
       lecternUrl: config.lectern.url,
       lyricUrl: config.lyric.url,
       songUrl: config.song.url,
-      scoreUrl: config.score.url,
+      lyricData: config.lyric.dataDirectory,
+      categoryId: config.lyric.categoryId,
+      organization: config.lyric.organization,
     },
   };
 }

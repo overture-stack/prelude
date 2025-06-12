@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { parseCSVLine } from "../utils/csvParser";
 import { Logger } from "../utils/logger";
 
@@ -24,36 +24,38 @@ export async function validateCSVHeaders(
     const [headerLine] = fileContent.split("\n");
 
     if (!headerLine) {
-      Logger.debug("CSV file is empty or has no headers");
-      throw new ComposerError(
-        "CSV file is empty or has no headers",
-        ErrorCodes.INVALID_FILE
-      );
+      Logger.debug`CSV file is empty or has no headers`;
+      throw ErrorFactory.file("CSV file is empty or has no headers", filePath, [
+        "Ensure the CSV file contains at least one row of headers",
+        "Check that the file is not corrupted",
+        "Verify the file encoding is UTF-8",
+      ]);
     }
 
     const headers = parseCSVLine(headerLine, delimiter, true)[0];
     if (!headers) {
-      Logger.debug("Failed to parse CSV headers");
-      throw new ComposerError(
-        "Failed to parse CSV headers",
-        ErrorCodes.INVALID_FILE
-      );
+      Logger.debug`Failed to parse CSV headers`;
+      throw ErrorFactory.file("Failed to parse CSV headers", filePath, [
+        "Check that the delimiter is correct",
+        "Ensure headers don't contain unescaped quotes",
+        "Verify the CSV format is valid",
+      ]);
     }
 
     Logger.debug`Parsed headers: ${headers.join(", ")}`;
     return validateCSVStructure(headers);
   } catch (error) {
-    Logger.debug("Error during CSV header validation");
+    Logger.debug`Error during CSV header validation`;
     Logger.debugObject("Error details", error);
 
-    if (error instanceof ComposerError) {
+    if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    throw new ComposerError(
-      "Error validating CSV headers",
-      ErrorCodes.VALIDATION_FAILED,
-      error
-    );
+    throw ErrorFactory.validation("Error validating CSV headers", error, [
+      "Check that the file exists and is readable",
+      "Verify the CSV format is correct",
+      "Ensure proper file permissions",
+    ]);
   }
 }
 
@@ -70,11 +72,9 @@ export async function validateCSVHeaders(
  * @returns Promise resolving to true if all headers are valid
  * @throws ComposerError with details if validation fails
  */
-export async function validateCSVStructure(
-  headers: string[]
-): Promise<boolean> {
+async function validateCSVStructure(headers: string[]): Promise<boolean> {
   try {
-    Logger.debug("Starting CSV structure validation");
+    Logger.debug`Starting CSV structure validation`;
 
     // Clean and filter headers
     const cleanedHeaders = headers
@@ -83,18 +83,28 @@ export async function validateCSVStructure(
 
     // Validate basic header presence
     if (cleanedHeaders.length === 0) {
-      Logger.debug("No valid headers found in CSV file");
-      throw new ComposerError(
+      Logger.debug`No valid headers found in CSV file`;
+      throw ErrorFactory.validation(
         "No valid headers found in CSV file",
-        ErrorCodes.VALIDATION_FAILED
+        undefined,
+        [
+          "Ensure the first row contains column headers",
+          "Check that headers are not empty or whitespace-only",
+          "Verify the CSV format is correct",
+        ]
       );
     }
 
     if (cleanedHeaders.length !== headers.length) {
-      Logger.debug("Empty or whitespace-only headers detected");
-      throw new ComposerError(
+      Logger.debug`Empty or whitespace-only headers detected`;
+      throw ErrorFactory.validation(
         "Empty or whitespace-only headers detected",
-        ErrorCodes.VALIDATION_FAILED
+        { originalCount: headers.length, cleanedCount: cleanedHeaders.length },
+        [
+          "Remove empty header columns",
+          "Ensure all headers have meaningful names",
+          "Check for trailing commas in the header row",
+        ]
       );
     }
 
@@ -158,12 +168,19 @@ export async function validateCSVStructure(
     });
 
     if (invalidHeaders.length > 0) {
-      Logger.debug("Invalid headers detected");
-      Logger.fileList("The following header(s) are invalid", invalidHeaders);
-      throw new ComposerError(
+      Logger.debug`Invalid headers detected: ${invalidHeaders.join(", ")}`;
+      // Don't log the file list here - let the command handle it
+      throw ErrorFactory.validation(
         "Invalid header names detected",
-        ErrorCodes.VALIDATION_FAILED,
-        { invalidHeaders }
+        { invalidHeaders },
+        [
+          "Use only letters, numbers, and underscores in header names",
+          "Headers must start with a letter or underscore",
+          "Avoid reserved words like _id, _type, etc.",
+          "Remove special characters and spaces from headers",
+          `Keep header names under ${maxLength} characters`,
+          `Invalid headers: ${invalidHeaders.join(", ")}`,
+        ]
       );
     }
 
@@ -181,31 +198,32 @@ export async function validateCSVStructure(
       .map(([header, _]) => header);
 
     if (duplicates.length > 0) {
-      Logger.debug("Duplicate headers found");
-      Logger.debugObject("Duplicate headers", {
-        duplicates,
-        counts: headerCounts,
-      });
-      throw new ComposerError(
+      Logger.debug`Duplicate headers found: ${duplicates.join(", ")}`;
+      throw ErrorFactory.validation(
         "Duplicate headers found in CSV file",
-        ErrorCodes.VALIDATION_FAILED,
-        { duplicates, counts: headerCounts }
+        { duplicates, counts: headerCounts },
+        [
+          "Ensure all column headers are unique",
+          "Remove or rename duplicate headers",
+          "Check for accidentally repeated columns",
+          `Duplicate headers: ${duplicates.join(", ")}`,
+        ]
       );
     }
 
-    Logger.debug("CSV header structure is valid");
+    Logger.debug`CSV header structure is valid`;
     return true;
   } catch (error) {
-    Logger.debug("Error during CSV structure validation");
+    Logger.debug`Error during CSV structure validation`;
     Logger.debugObject("Error details", error);
 
-    if (error instanceof ComposerError) {
+    if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    throw new ComposerError(
-      "Error validating CSV structure",
-      ErrorCodes.VALIDATION_FAILED,
-      error
-    );
+    throw ErrorFactory.validation("Error validating CSV structure", error, [
+      "Check the CSV file format",
+      "Verify headers follow naming conventions",
+      "Ensure no duplicate or invalid headers",
+    ]);
   }
 }

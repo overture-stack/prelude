@@ -1,42 +1,31 @@
-import { Profiles } from "./constants";
+// src/types/cli.ts - Updated to include Lectern dictionary support
+import { Profiles } from "./profiles";
 import { ArrangerConfig } from "./arranger";
 
 export type Profile = (typeof Profiles)[keyof typeof Profiles];
 
-export interface Config {
-  elasticsearch: {
-    index: string;
-    shards: number;
-    replicas: number;
-    ignoredFields?: string[]; // Fields to exclude from mapping
-    skipMetadata?: boolean; // Option to skip submission metadata
-  };
-  delimiter: string;
+// Core configuration interfaces
+export interface ElasticsearchConfig {
+  index: string;
+  shards: number;
+  replicas: number;
+  ignoredFields?: string[];
+  ignoredSchemas?: string[]; // NEW: Support for ignoring schemas in Lectern dictionaries
+  skipMetadata?: boolean;
 }
 
-export interface CLIOutput {
-  profile: Profile;
-  debug?: boolean;
-  filePaths: string[];
-  force?: boolean;
-  config: Config;
-  outputPath?: string;
-  outputPathProvided?: boolean;
-  arrangerConfigDir?: string;
-  envConfig: EnvConfig;
-  delimiter?: string;
-  dictionaryConfig?: {
-    name: string;
-    description: string;
-    version: string;
-  };
-  songConfig?: {
-    name?: string;
-    fileTypes?: string[];
-  };
-  arrangerConfig?: ArrangerConfig;
+export interface DictionaryConfig {
+  name: string;
+  description: string;
+  version: string;
 }
 
+export interface SongConfig {
+  name?: string;
+  fileTypes?: string[];
+}
+
+// Simplified environment config
 export interface EnvConfig {
   // Input files
   inputFiles?: string[];
@@ -58,21 +47,31 @@ export interface EnvConfig {
   esShards?: number;
   esReplicas?: number;
   esIgnoredFields?: string[];
-  esSkipMetadata?: boolean; // Environment variable for skip metadata option
+  esIgnoredSchemas?: string[]; // NEW: Environment support for ignored schemas
+  esSkipMetadata?: boolean;
 
   // CSV options
   csvDelimiter?: string;
 
   // Arranger options
   arrangerDocType?: string;
+}
 
-  // Legacy variables
-  dataFile?: string;
-  indexName?: string;
-  fileMetadataSample?: string;
-  tabularSample?: string;
-  songSchema?: string;
-  lecternDictionary?: string;
-  esConfigDir?: string;
-  arrangerConfigDir?: string;
+// Main CLI output interface
+export interface CLIOutput {
+  profile: Profile;
+  debug?: boolean;
+  filePaths: string[];
+  force?: boolean;
+  outputPath?: string;
+  envConfig: EnvConfig;
+
+  // Direct configuration access - flattened for easier use
+  elasticsearchConfig: ElasticsearchConfig;
+  csvDelimiter: string;
+
+  // Command-specific configs (optional)
+  dictionaryConfig?: DictionaryConfig;
+  songConfig?: SongConfig;
+  arrangerConfig?: ArrangerConfig;
 }

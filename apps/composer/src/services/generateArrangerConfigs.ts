@@ -337,7 +337,7 @@ export function ArrangerConfigs(
     const fieldTypeMap = new Map<string, string>();
 
     // Store the initial mapping structure for better debugging
-    Logger.debug("Analyzing initial mapping structure");
+    Logger.debugString("Analyzing initial mapping structure");
 
     // Find all field types from the Elasticsearch mapping and store them
     function recursivelyTrackFieldTypes(
@@ -350,7 +350,7 @@ export function ArrangerConfigs(
 
         // Store this field's type
         fieldTypeMap.set(formattedPath, field.type);
-        Logger.debug(`Field: ${formattedPath}, Type: ${field.type}`);
+        Logger.debug`Field: ${formattedPath}, Type: ${field.type}`;
 
         // Recursively process nested properties
         if (field.properties) {
@@ -416,11 +416,11 @@ export function ArrangerConfigs(
       },
     };
 
-    Logger.debug("Configuration generated successfully");
+    Logger.debugString("Configuration generated successfully");
     return configs;
   } catch (error) {
-    Logger.error("Error generating Arranger configurations");
-    Logger.error(`${error}`);
+    Logger.errorString("Error generating Arranger configurations");
+    Logger.errorString(`${error}`);
     throw error;
   }
 }

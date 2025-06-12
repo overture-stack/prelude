@@ -74,28 +74,3 @@ export async function validateFiles(
 
   return { valid: errors.length === 0, errors };
 }
-
-/**
- * Checks if a file is readable by attempting to open and read a portion of it.
- * Returns a structured result with a validity flag and error messages.
- */
-export async function validateFileReadable(
-  filePath: string
-): Promise<ValidationResult> {
-  try {
-    const fd = fs.openSync(filePath, "r");
-    const buffer = Buffer.alloc(1024);
-    fs.readSync(fd, buffer, 0, 1024, 0);
-    fs.closeSync(fd);
-    return { valid: true, errors: [] };
-  } catch (error) {
-    return {
-      valid: false,
-      errors: [
-        `File ${filePath} is not readable: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      ],
-    };
-  }
-}

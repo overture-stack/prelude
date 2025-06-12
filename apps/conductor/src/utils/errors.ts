@@ -1,3 +1,4 @@
+// src/utils/errors.ts - Remove unused exports
 import { Logger } from "./logger";
 
 export class ConductorError extends Error {
@@ -33,7 +34,8 @@ export const ErrorCodes = {
   USER_CANCELLED: "[USER_CANCELLED]",
 } as const;
 
-export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
+// Remove the exported type - just use typeof if needed internally
+// type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 
 function formatErrorDetails(details: any): string {
   if (typeof details === "string") {

@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 import { SongSchema, validateSongSchema } from "../services/generateSongSchema";
 import { validateFile, validateEnvironment } from "../validations";
 import { Profiles } from "../types";
@@ -41,26 +41,28 @@ export class SongCommand extends Command {
   }
 
   protected async validate(cliOutput: CLIOutput): Promise<void> {
-    Logger.debug("Starting SongCommand validation");
+    Logger.debug`Starting SongCommand validation`;
     await super.validate(cliOutput);
 
     // Ensure only one JSON file is provided
     if (cliOutput.filePaths.length !== 1) {
-      Logger.debug(
-        `Invalid number of JSON files: ${cliOutput.filePaths.length}`
-      );
-      throw new ComposerError(
-        "You must provide exactly one JSON file",
-        ErrorCodes.INVALID_ARGS
-      );
+      Logger.debug`Invalid number of JSON files: ${cliOutput.filePaths.length}`;
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args("You must provide exactly one JSON file", [
+        "Song schema generation requires a single JSON input file",
+        "Example: -f sample-data.json",
+        "Multiple files are not supported for Song schema generation",
+      ]);
     }
 
     if (!cliOutput.outputPath) {
-      Logger.debug("Output path validation failed");
-      throw new ComposerError(
-        "Output path is required",
-        ErrorCodes.INVALID_ARGS
-      );
+      Logger.debug`Output path validation failed`;
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args("Output path is required", [
+        "Use -o or --output to specify where to save the schema",
+        "Example: -o song-schema.json",
+        "The output will be a JSON schema file",
+      ]);
     }
 
     // Validate and sanitize schema name if provided
@@ -74,27 +76,35 @@ export class SongCommand extends Command {
     Logger.debug`Validating file extension: ${fileExtension}`;
 
     if (fileExtension !== ".json") {
-      Logger.debug("File extension validation failed - not JSON");
-      throw new ComposerError(
+      Logger.debug`File extension validation failed - not JSON`;
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(
         "Song schema generation requires a JSON input file",
-        ErrorCodes.INVALID_FILE
+        filePath,
+        [
+          "Ensure the input file has a .json extension",
+          "The file should contain sample metadata in JSON format",
+          "Example: sample-metadata.json",
+        ]
       );
     }
 
     const fileValid = await validateFile(filePath);
     if (!fileValid) {
       Logger.debug`File not found or invalid: ${filePath}`;
-      throw new ComposerError(
-        `Invalid file ${filePath}`,
-        ErrorCodes.INVALID_FILE
-      );
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(`Invalid file ${filePath}`, filePath, [
+        "Check that the file exists and is readable",
+        "Ensure the JSON file is properly formatted",
+        "Verify file permissions allow reading",
+      ]);
     }
 
-    Logger.debug("SongCommand validation completed successfully");
+    Logger.debug`SongCommand validation completed successfully`;
   }
 
   protected async execute(cliOutput: CLIOutput): Promise<void> {
-    Logger.debug("Starting SongCommand execution");
+    Logger.debug`Starting SongCommand execution`;
     const outputPath = cliOutput.outputPath!;
     const filePath = cliOutput.filePaths[0];
 
@@ -107,19 +117,25 @@ export class SongCommand extends Command {
         sampleData = JSON.parse(fileContent);
       } catch (error) {
         Logger.debug`JSON parsing failed: ${error}`;
-        throw new ComposerError(
-          "Invalid JSON file",
-          ErrorCodes.INVALID_FILE,
-          error
-        );
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.file("Invalid JSON file", filePath, [
+          "Ensure the file contains valid JSON syntax",
+          "Check for missing quotes, commas, or brackets",
+          "Use a JSON validator to verify the format",
+        ]);
       }
 
       // Validate JSON structure - only require experiment object
       if (!sampleData || !sampleData.experiment) {
-        Logger.debug("Invalid JSON structure - missing experiment object");
-        throw new ComposerError(
+        Logger.debug`Invalid JSON structure - missing experiment object`;
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.validation(
           "JSON must contain an experiment object",
-          ErrorCodes.VALIDATION_FAILED
+          { providedKeys: Object.keys(sampleData || {}) },
+          [
+            "Ensure the JSON has an 'experiment' property",
+            "The experiment object should contain sample metadata",
+          ]
         );
       }
 
@@ -139,21 +155,27 @@ export class SongCommand extends Command {
       };
 
       if (songOptions.fileTypes.length > 0) {
-        Logger.debug(
-          `Configured file types: ${songOptions.fileTypes.join(", ")}`
-        );
+        Logger.debug`Configured file types: ${songOptions.fileTypes.join(
+          ", "
+        )}`;
       }
 
       // Generate and validate schema
-      Logger.info("Generating schema");
+      Logger.info`Generating schema`;
       const songSchema = SongSchema(sampleData, schemaName, songOptions);
 
-      Logger.debug("Validating generated schema");
+      Logger.debug`Validating generated schema`;
       if (!validateSongSchema(songSchema)) {
-        Logger.debug("Generated schema validation failed");
-        throw new ComposerError(
+        Logger.debug`Generated schema validation failed`;
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.validation(
           "Generated schema validation failed",
-          ErrorCodes.VALIDATION_FAILED
+          { schemaName },
+          [
+            "Check that the input JSON contains valid experiment data",
+            "Ensure all required fields are present",
+            "Verify the schema structure meets SONG requirements",
+          ]
         );
       }
 
@@ -167,20 +189,21 @@ export class SongCommand extends Command {
       fs.writeFileSync(outputPath, JSON.stringify(songSchema, null, 2));
 
       Logger.success`Schema template saved to ${outputPath}`;
-      Logger.warn(
+      Logger.warnString(
         "Remember to update your schema with any specific validation requirements, including fileTypes and externalValidations options."
       );
     } catch (error) {
       Logger.debug`Error during execution: ${error}`;
-      if (error instanceof ComposerError) {
-        Logger.error(error.message);
+      if (error instanceof Error && error.name === "ComposerError") {
         throw error;
       }
-      throw new ComposerError(
-        "Error generating SONG schema",
-        ErrorCodes.GENERATION_FAILED,
-        error
-      );
+      // UPDATED: Use ErrorFactory
+      throw ErrorFactory.generation("Error generating SONG schema", error, [
+        "Check that the input JSON file is valid",
+        "Ensure the output directory is writable",
+        "Verify the JSON contains required experiment data",
+        "Check file permissions and disk space",
+      ]);
     }
   }
 }

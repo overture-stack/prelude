@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ComposerError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
 import { ArrangerConfigs } from "../services/generateArrangerConfigs";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
@@ -40,26 +40,28 @@ export class ArrangerCommand extends Command {
    * @throws {ComposerError} If validation fails
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
-    Logger.debug("Starting ArrangerCommand validation");
+    Logger.debug`Starting ArrangerCommand validation`;
     await super.validate(cliOutput);
 
     if (!cliOutput.outputPath) {
-      Logger.debug("Output path validation failed");
-      throw new ComposerError(
-        "Output path is required",
-        ErrorCodes.INVALID_ARGS
-      );
+      Logger.debug`Output path validation failed`;
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args("Output path is required", [
+        "Use -o or --output to specify where to save the configurations",
+        "Example: -o arranger-configs/",
+        "The output will be multiple JSON configuration files",
+      ]);
     }
 
     // Ensure only one mapping file is provided
     if (cliOutput.filePaths.length !== 1) {
-      Logger.debug(
-        `Invalid number of mapping files: ${cliOutput.filePaths.length}`
-      );
-      throw new ComposerError(
-        "You must provide exactly one mapping file",
-        ErrorCodes.INVALID_ARGS
-      );
+      Logger.debug`Invalid number of mapping files: ${cliOutput.filePaths.length}`;
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args("You must provide exactly one mapping file", [
+        "Arranger config generation requires a single Elasticsearch mapping file",
+        "Example: -f elasticsearch-mapping.json",
+        "Use the ElasticsearchMapping profile first to generate a mapping file",
+      ]);
     }
 
     const validDocumentTypes = ["file", "analysis"];
@@ -68,11 +70,16 @@ export class ArrangerCommand extends Command {
 
     if (!documentType || !validDocumentTypes.includes(documentType)) {
       Logger.debug`Invalid document type: ${documentType}`;
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.args(
         `Invalid document type. Must be one of: ${validDocumentTypes.join(
           ", "
         )}`,
-        ErrorCodes.INVALID_ARGS
+        [
+          "Use --arranger-doc-type to specify the document type",
+          "Example: --arranger-doc-type file",
+          "Example: --arranger-doc-type analysis",
+        ]
       );
     }
 
@@ -89,22 +96,30 @@ export class ArrangerCommand extends Command {
     Logger.debug`Validating file extension: ${fileExtension}`;
 
     if (fileExtension !== ".json") {
-      Logger.debug("File extension validation failed - not JSON");
-      throw new ComposerError(
+      Logger.debug`File extension validation failed - not JSON`;
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(
         "Arranger configs require a JSON mapping file",
-        ErrorCodes.INVALID_FILE
+        filePath,
+        [
+          "Ensure the input is an Elasticsearch mapping file in JSON format",
+          "Use the ElasticsearchMapping profile to generate a mapping first",
+          "Example: composer -p ElasticsearchMapping -f data.csv -o mapping.json",
+        ]
       );
     }
 
     if (!fs.existsSync(filePath)) {
       Logger.debug`File not found at path: ${filePath}`;
-      throw new ComposerError(
-        `File not found: ${filePath}`,
-        ErrorCodes.INVALID_FILE
-      );
+      // UPDATED: Use ErrorFactory with helpful suggestions
+      throw ErrorFactory.file(`File not found: ${filePath}`, filePath, [
+        "Check that the mapping file exists",
+        "Verify the file path is correct",
+        "Ensure you have read permissions for the file",
+      ]);
     }
 
-    Logger.debug("ArrangerCommand validation completed successfully");
+    Logger.debug`ArrangerCommand validation completed successfully`;
   }
 
   /**
@@ -114,44 +129,45 @@ export class ArrangerCommand extends Command {
    * @throws {ComposerError} If generation fails
    */
   protected async execute(cliOutput: CLIOutput): Promise<any> {
-    Logger.debug("Starting ArrangerCommand execution");
+    Logger.debug`Starting ArrangerCommand execution`;
     let outputPath = cliOutput.outputPath!;
 
     // Normalize output path for arranger config files
     if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
       outputPath = path.join(outputPath, this.defaultOutputFileName);
-      Logger.debug(
-        `Output is a directory, will create ${this.defaultOutputFileName} inside it`
-      );
+      Logger.debug`Output is a directory, will create ${this.defaultOutputFileName} inside it`;
     }
 
     const filePath = cliOutput.filePaths[0];
 
     try {
-      Logger.info("Reading mapping file");
+      Logger.info`Reading mapping file`;
       Logger.debug`Reading file from path: ${filePath}`;
       const mappingContent = fs.readFileSync(filePath, "utf-8");
 
       let mapping;
       try {
-        Logger.debug("Parsing JSON mapping content");
+        Logger.debug`Parsing JSON mapping content`;
         mapping = JSON.parse(mappingContent);
       } catch (error) {
         Logger.debug`JSON parsing failed: ${error}`;
-        throw new ComposerError(
-          "Invalid JSON mapping file",
-          ErrorCodes.INVALID_FILE
-        );
+        // UPDATED: Use ErrorFactory with helpful suggestions
+        throw ErrorFactory.file("Invalid JSON mapping file", filePath, [
+          "Ensure the mapping file contains valid JSON",
+          "Check for syntax errors like missing commas or brackets",
+          "Verify the file is a proper Elasticsearch mapping",
+          "Use a JSON validator to check the file format",
+        ]);
       }
 
       // Ensure output directory exists
       const outputDir = path.dirname(outputPath);
       this.createDirectoryIfNotExists(outputDir);
 
-      Logger.debug("Generating Arranger configurations");
+      Logger.debug`Generating Arranger configurations`;
       const configs = ArrangerConfigs(
         mapping,
-        cliOutput.config.elasticsearch?.index
+        cliOutput.elasticsearchConfig?.index // Access elasticsearch config directly
       );
 
       // Write each configuration to a separate file
@@ -168,7 +184,7 @@ export class ArrangerCommand extends Command {
       fs.writeFileSync(tableFilePath, JSON.stringify(configs.table, null, 2));
       fs.writeFileSync(facetsFilePath, JSON.stringify(configs.facets, null, 2));
 
-      Logger.debug("Configuration generation completed");
+      Logger.debug`Configuration generation completed`;
       Logger.success`Configuration files saved to:`;
       Logger.generic(`    - ${baseFilePath}`);
       Logger.generic(`    - ${extendedFilePath}`);
@@ -178,14 +194,20 @@ export class ArrangerCommand extends Command {
       return configs;
     } catch (error) {
       Logger.debug`Error during execution: ${error}`;
-      if (error instanceof ComposerError) {
-        Logger.error(error.message);
+      if (error instanceof Error && error.name === "ComposerError") {
+        Logger.errorString(error.message);
         throw error;
       }
-      throw new ComposerError(
+      // UPDATED: Use ErrorFactory
+      throw ErrorFactory.generation(
         "Failed to generate Arranger configurations",
-        ErrorCodes.GENERATION_FAILED,
-        error
+        error,
+        [
+          "Check that the mapping file is a valid Elasticsearch mapping",
+          "Ensure the output directory is writable",
+          "Verify the JSON structure matches expected format",
+          "Check file permissions and disk space",
+        ]
       );
     }
   }

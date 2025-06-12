@@ -494,7 +494,7 @@ services:
   # ---------------------------------------------------------------------------------- #
   song:
     profiles: ["phase3", "default"]
-    image: ghcr.io/overture-stack/song-server:a81a8e48
+    image: ghcr.io/overture-stack/song-server:5.3.0
     container_name: song
     platform: linux/amd64
     depends_on:
@@ -584,7 +584,7 @@ services:
   # -----------------------------------------------------------------------------------#
   score:
     profiles: ["phase3", "default"]
-    image: ghcr.io/overture-stack/score-server:6c4a3a3c
+    image: ghcr.io/overture-stack/score-server:0ebf2f8c
     container_name: score
     platform: linux/amd64
     depends_on:

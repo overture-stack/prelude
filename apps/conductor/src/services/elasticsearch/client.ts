@@ -12,43 +12,11 @@ import { Logger } from "../../utils/logger";
 /**
  * Interface for Elasticsearch client options
  */
-export interface ESClientOptions {
+interface ESClientOptions {
   url: string;
   username?: string;
   password?: string;
   requestTimeout?: number;
-}
-
-/**
- * Creates an Elasticsearch client using the provided configuration.
- *
- * @param options - Configuration options for the Elasticsearch client
- * @returns A configured Elasticsearch client instance
- * @throws ConductorError if client creation fails
- */
-export function createClient(options: ESClientOptions): Client {
-  const clientOptions: ClientOptions = {
-    node: options.url,
-    requestTimeout: options.requestTimeout || 10000, // 10 seconds timeout
-  };
-
-  if (options.username && options.password) {
-    clientOptions.auth = {
-      username: options.username,
-      password: options.password,
-    };
-  }
-
-  try {
-    return new Client(clientOptions);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new ConductorError(
-      `Failed to create Elasticsearch client: ${errorMessage}`,
-      ErrorCodes.CONNECTION_ERROR,
-      error
-    );
-  }
 }
 
 /**
@@ -88,6 +56,39 @@ export async function validateConnection(client: Client): Promise<boolean> {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new ConductorError(
       `Failed to connect to Elasticsearch: ${errorMessage}`,
+      ErrorCodes.CONNECTION_ERROR,
+      error
+    );
+  }
+}
+
+/**
+ * Creates an Elasticsearch client using the provided configuration.
+ * Private helper function for createClientFromConfig.
+ *
+ * @param options - Configuration options for the Elasticsearch client
+ * @returns A configured Elasticsearch client instance
+ * @throws ConductorError if client creation fails
+ */
+function createClient(options: ESClientOptions): Client {
+  const clientOptions: ClientOptions = {
+    node: options.url,
+    requestTimeout: options.requestTimeout || 10000, // 10 seconds timeout
+  };
+
+  if (options.username && options.password) {
+    clientOptions.auth = {
+      username: options.username,
+      password: options.password,
+    };
+  }
+
+  try {
+    return new Client(clientOptions);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new ConductorError(
+      `Failed to create Elasticsearch client: ${errorMessage}`,
       ErrorCodes.CONNECTION_ERROR,
       error
     );

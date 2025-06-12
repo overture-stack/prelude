@@ -2,12 +2,13 @@
  * Elasticsearch Types
  *
  * Type definitions for Elasticsearch operations and responses.
+ * Only export types that are used by external modules.
  */
 
 /**
- * Elasticsearch bulk operation response item
+ * Elasticsearch bulk operation response item - Keep internal
  */
-export interface ESBulkResponseItem {
+interface ESBulkResponseItem {
   index?: {
     _index: string;
     _type?: string;
@@ -31,18 +32,18 @@ export interface ESBulkResponseItem {
 }
 
 /**
- * Elasticsearch bulk operation response
+ * Elasticsearch bulk operation response - Keep internal
  */
-export interface ESBulkResponse {
+interface ESBulkResponse {
   took: number;
   errors: boolean;
   items: ESBulkResponseItem[];
 }
 
 /**
- * Elasticsearch index mapping property
+ * Elasticsearch index mapping property - Keep internal
  */
-export interface ESMappingProperty {
+interface ESMappingProperty {
   type: string;
   fields?: {
     [key: string]: {
@@ -56,27 +57,27 @@ export interface ESMappingProperty {
 }
 
 /**
- * Elasticsearch index mapping
+ * Elasticsearch index mapping - Keep internal
  */
-export interface ESIndexMapping {
+interface ESIndexMapping {
   properties: {
     [key: string]: ESMappingProperty;
   };
 }
 
 /**
- * Elasticsearch index settings
+ * Elasticsearch index settings - Keep internal
  */
-export interface ESIndexSettings {
+interface ESIndexSettings {
   number_of_shards: number;
   number_of_replicas: number;
   [key: string]: any;
 }
 
 /**
- * Elasticsearch index information response
+ * Elasticsearch index information response - Keep internal
  */
-export interface ESIndexInfo {
+interface ESIndexInfo {
   [indexName: string]: {
     aliases: Record<string, any>;
     mappings: ESIndexMapping;
@@ -85,3 +86,5 @@ export interface ESIndexInfo {
     };
   };
 }
+
+export {};
