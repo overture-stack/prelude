@@ -191,6 +191,4 @@ curl -I http://localhost:8080/lyric/
 
 - This is an HTTP-only configuration (no SSL/HTTPS)
 - Based on Ubuntu/Debian nginx structure with sites-available/sites-enabled
-- Includes websocket support for real-time features
 - Security headers are minimal for development use
-- No rate limiting or advanced security features

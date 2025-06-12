@@ -1,8 +1,8 @@
 server {
-    listen 8080;
-    listen [::]:8080;
-    server_name localhost;
-
+    listen 80;
+    listen [::]:80;
+    server_name {SITE_NAME};
+    
     # Frontend
     location / {
         proxy_pass http://localhost:3000;
@@ -20,11 +20,6 @@ server {
         include proxy_params;
     }
 
-    location /api/molecular_arranger/ {
-        proxy_pass http://localhost:5060/;
-        include proxy_params;
-    }
-
     # General Arranger APIs (for direct access)
     location /datatable1-api/ {
         proxy_pass http://localhost:5050/;
@@ -33,11 +28,6 @@ server {
 
     location /datatable2-api/ {
         proxy_pass http://localhost:5051/;
-        include proxy_params;
-    }
-
-    location /molecular-api/ {
-        proxy_pass http://localhost:5060/;
         include proxy_params;
     }
 
