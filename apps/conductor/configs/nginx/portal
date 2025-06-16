@@ -1,82 +1,89 @@
+# Generic Nginx Site Configuration Template
+# This template shows the structure - the actual script generates config dynamically
+# Replace {SITE_NAME} and {PORT_*} with actual values
+
+# Main site
 server {
     listen 80;
     listen [::]:80;
     server_name {SITE_NAME};
-    
-    # Frontend
+
+    # Frontend application
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:{FRONTEND_PORT};
         include proxy_params;
     }
 
-    # Specific Arranger dataset endpoints that the frontend expects
-    location /api/datatable1_arranger/ {
-        proxy_pass http://localhost:5050/;
+    # API endpoints for arranger datasets
+    # These paths are expected by the frontend
+    location /api/dataset_1_arranger/ {
+        proxy_pass http://localhost:{ARRANGER_1_PORT}/;
         include proxy_params;
     }
 
-    location /api/datatable2_arranger/ {
-        proxy_pass http://localhost:5051/;
+    # Add more dataset endpoints as needed:
+    # location /api/dataset_2_arranger/ {
+    #     proxy_pass http://localhost:{ARRANGER_2_PORT}/;
+    #     include proxy_params;
+    # }
+}
+
+# Lyric API service
+server {
+    listen 80;
+    listen [::]:80;
+    server_name lyric.{SITE_NAME};
+
+    location / {
+        proxy_pass http://localhost:{LYRIC_PORT}/;
         include proxy_params;
     }
+}
 
-    # General Arranger APIs (for direct access)
-    location /datatable1-api/ {
-        proxy_pass http://localhost:5050/;
+# Arranger 1 service
+server {
+    listen 80;
+    listen [::]:80;
+    server_name arranger_1.{SITE_NAME};
+
+    location / {
+        proxy_pass http://localhost:{ARRANGER_1_PORT}/;
         include proxy_params;
     }
+}
 
-    location /datatable2-api/ {
-        proxy_pass http://localhost:5051/;
+# Lectern service
+server {
+    listen 80;
+    listen [::]:80;
+    server_name lectern.{SITE_NAME};
+
+    location / {
+        proxy_pass http://localhost:{LECTERN_PORT}/;
         include proxy_params;
     }
+}
 
-    # Additional services
-    location /lyric/ {
-        proxy_pass http://localhost:3030/;
+# Maestro service
+server {
+    listen 80;
+    listen [::]:80;
+    server_name maestro.{SITE_NAME};
+
+    location / {
+        proxy_pass http://localhost:{MAESTRO_PORT}/;
         include proxy_params;
     }
+}
 
-    # Dictionary registration endpoint
-    location /lyric/dictionary/register {
-        proxy_pass http://localhost:3030/dictionary/register;
-        include proxy_params;
-    }
+# Elasticsearch service
+server {
+    listen 80;
+    listen [::]:80;
+    server_name es.{SITE_NAME};
 
-    location /lyric/api-docs/ {
-        proxy_pass http://localhost:3030/api-docs/;
-        include proxy_params;
-    }
-
-    location /lectern/ {
-        proxy_pass http://localhost:3031/;
-        include proxy_params;
-    }
-
-    location /song/ {
-        proxy_pass http://localhost:8080/;
-        include proxy_params;
-    }
-
-    location /score/ {
-        proxy_pass http://localhost:8087/;
-        include proxy_params;
-    }
-
-    location /maestro/ {
-        proxy_pass http://localhost:11235/;
-        include proxy_params;
-    }
-
-    # Elasticsearch endpoint
-    location /es/ {
-        proxy_pass http://localhost:9200/;
-        include proxy_params;
-    }
-
-    # Minio object storage
-    location /minio/ {
-        proxy_pass http://localhost:9000/;
+    location / {
+        proxy_pass http://localhost:{ES_PORT}/;
         include proxy_params;
     }
 }
