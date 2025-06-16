@@ -1,5 +1,5 @@
 // src/commands/lyricUploadCommand.ts - Enhanced with ErrorFactory patterns
-import { Command, CommandResult } from "./baseCommand";
+import { Command } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
@@ -53,64 +53,53 @@ export class LyricUploadCommand extends Command {
   /**
    * Executes the Lyric data loading process
    */
-  protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
-    try {
-      // Extract and validate configuration
-      const submissionParams = this.extractSubmissionParams(cliOutput);
-      const serviceConfig = this.extractServiceConfig(cliOutput);
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
+    // Extract and validate configuration
+    const submissionParams = this.extractSubmissionParams(cliOutput);
+    const serviceConfig = this.extractServiceConfig(cliOutput);
 
-      Logger.info`Starting Lyric data loading process`;
-      Logger.info`Data Directory: ${submissionParams.dataDirectory}`;
-      Logger.info`Category ID: ${submissionParams.categoryId}`;
-      Logger.info`Organization: ${submissionParams.organization}`;
+    Logger.info`Starting Lyric data loading process`;
+    Logger.info`Data Directory: ${submissionParams.dataDirectory}`;
+    Logger.info`Category ID: ${submissionParams.categoryId}`;
+    Logger.info`Organization: ${submissionParams.organization}`;
 
-      // Create service with enhanced error handling
-      const lyricSubmissionService = new LyricSubmissionService(serviceConfig);
+    // Create service with enhanced error handling
+    const lyricSubmissionService = new LyricSubmissionService(serviceConfig);
 
-      // Enhanced health check with specific feedback
-      Logger.info`Checking Lyric service health...`;
-      const healthResult = await lyricSubmissionService.checkHealth();
-      if (!healthResult.healthy) {
-        throw ErrorFactory.connection(
-          "Lyric service health check failed",
-          "Lyric",
-          serviceConfig.url,
-          [
-            "Check that Lyric service is running",
-            `Verify service URL: ${serviceConfig.url}`,
-            "Check network connectivity and firewall settings",
-            "Review Lyric service logs for errors",
-            `Test manually: curl ${serviceConfig.url}/health`,
-            healthResult.message
-              ? `Health check message: ${healthResult.message}`
-              : "",
-          ].filter(Boolean)
-        );
-      }
-
-      // Log submission info with enhanced context
-      this.logSubmissionInfo(submissionParams, serviceConfig.url);
-
-      // Execute the complete workflow with enhanced progress tracking
-      Logger.info`Starting data submission workflow...`;
-      const result = await lyricSubmissionService.submitDataWorkflow(
-        submissionParams
+    // Enhanced health check with specific feedback
+    Logger.debug`Checking Lyric service health...`;
+    const healthResult = await lyricSubmissionService.checkHealth();
+    if (!healthResult.healthy) {
+      throw ErrorFactory.connection(
+        "Lyric service health check failed",
+        "Lyric",
+        serviceConfig.url,
+        [
+          "Check that Lyric service is running",
+          `Verify service URL: ${serviceConfig.url}`,
+          "Check network connectivity and firewall settings",
+          "Review Lyric service logs for errors",
+          `Test manually: curl ${serviceConfig.url}/health`,
+          healthResult.message
+            ? `Health check message: ${healthResult.message}`
+            : "",
+        ].filter(Boolean)
       );
-
-      // Enhanced success logging
-      this.logSuccess(result);
-
-      return {
-        success: true,
-        details: {
-          submissionParams,
-          serviceUrl: serviceConfig.url,
-          submissionResult: result,
-        },
-      };
-    } catch (error) {
-      return this.handleExecutionError(error, cliOutput);
     }
+
+    // Log submission info with enhanced context
+    this.logSubmissionInfo(submissionParams, serviceConfig.url);
+
+    // Execute the complete workflow with enhanced progress tracking
+    Logger.info`Starting data submission workflow...`;
+    const result = await lyricSubmissionService.submitDataWorkflow(
+      submissionParams
+    );
+
+    // Enhanced success logging
+    this.logSuccess(result);
+
+    // Success - method completes normally
   }
 
   /**
@@ -510,84 +499,5 @@ export class LyricUploadCommand extends Command {
     Logger.tipString(
       "Data is now available in Lyric for analysis and querying"
     );
-  }
-
-  /**
-   * Enhanced execution error handling with context-specific guidance
-   */
-  private handleExecutionError(
-    error: unknown,
-    cliOutput: CLIOutput
-  ): CommandResult {
-    const dataDirectory = this.getDataDirectory(cliOutput) || "unknown";
-    const serviceUrl = this.getLyricUrl(cliOutput);
-
-    if (error instanceof Error && error.name === "ConductorError") {
-      // Add data loading context to existing errors
-      return {
-        success: false,
-        errorMessage: error.message,
-        errorCode: (error as any).code,
-        details: {
-          ...(error as any).details,
-          dataDirectory,
-          command: "lyricUpload",
-          serviceUrl,
-        },
-      };
-    }
-
-    // Handle service-specific errors
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    let suggestions = [
-      "Check Lyric service connectivity and availability",
-      "Verify data directory contains valid CSV files",
-      "Ensure category ID and organization are correct",
-      "Review Lyric service logs for additional details",
-      "Use --debug flag for detailed error information",
-    ];
-
-    // Add specific suggestions based on error content
-    if (
-      errorMessage.includes("validation") ||
-      errorMessage.includes("INVALID")
-    ) {
-      suggestions.unshift(
-        "Data validation failed - check CSV file format and content"
-      );
-      suggestions.unshift(
-        "Verify data matches the registered dictionary schema"
-      );
-      suggestions.unshift("Check for required fields and data types");
-    } else if (
-      errorMessage.includes("timeout") ||
-      errorMessage.includes("ETIMEDOUT")
-    ) {
-      suggestions.unshift("Upload timed out - files may be too large");
-      suggestions.unshift("Try uploading smaller batches of files");
-      suggestions.unshift("Check network stability and connection speed");
-    } else if (
-      errorMessage.includes("category") ||
-      errorMessage.includes("404")
-    ) {
-      suggestions.unshift("Category ID may not exist in Lyric");
-      suggestions.unshift("Verify category was properly registered");
-      suggestions.unshift(
-        "Check with Lyric administrator for valid category IDs"
-      );
-    }
-
-    return {
-      success: false,
-      errorMessage: `Lyric data loading failed: ${errorMessage}`,
-      errorCode: "CONNECTION_ERROR",
-      details: {
-        originalError: error,
-        dataDirectory,
-        suggestions,
-        command: "lyricUpload",
-        serviceUrl,
-      },
-    };
   }
 }

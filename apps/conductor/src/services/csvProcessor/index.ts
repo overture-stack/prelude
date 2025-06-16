@@ -7,6 +7,7 @@ import { countFileLines, parseCSVLine } from "./csvParser";
 import { Logger } from "../../utils/logger";
 import {
   validateCSVStructure,
+  validateCSVHeaders,
   validateHeadersMatchMappings,
 } from "../../validations";
 import { ErrorFactory } from "../../utils/errors";
@@ -124,14 +125,21 @@ export async function processCSVFile(
               );
             }
 
-            Logger.info`Validating headers against the ${config.elasticsearch.index} mapping`;
+            Logger.debug`Validating CSV headers and structure`;
+
+            // Validate CSV structure using the available validation function
             await validateCSVStructure(headers);
-            Logger.info`Headers validated against index mapping`;
+
+            Logger.info`Validating headers against the ${config.elasticsearch.index} mapping`;
+
+            // Validate headers match Elasticsearch index mapping
             await validateHeadersMatchMappings(
               client,
               headers,
               config.elasticsearch.index
             );
+
+            Logger.success`Headers validated successfully`;
             isFirstLine = false;
 
             Logger.generic(`\n Processing data into elasticsearch...\n`);
@@ -148,206 +156,219 @@ export async function processCSVFile(
               filePath,
               1,
               [
-                "Check that the first row contains valid column headers",
-                "Verify the CSV delimiter is correct",
+                "Check CSV header format and structure",
                 "Ensure headers follow naming conventions",
-                "Check file encoding (should be UTF-8)",
+                "Verify delimiter is correct",
+                "Check for special characters in headers",
+                "Ensure headers match Elasticsearch index mapping",
               ]
             );
           }
         }
 
-        // Enhanced row processing
-        let rowValues: string[];
-        try {
-          const parseResult = parseCSVLine(line, config.delimiter);
-          rowValues = parseResult[0] || [];
-        } catch (error) {
-          Logger.warn`Error parsing line ${
-            processedRecords + 1
-          }: ${line.substring(0, 50)}`;
-          failedRecords++;
-          continue;
-        }
+        // Enhanced data row processing
+        if (!isFirstLine) {
+          try {
+            const parsedRow = parseCSVLine(line, config.delimiter, false);
+            const rowData = parsedRow[0];
 
-        // Enhanced record creation
-        try {
-          const metadata = createRecordMetadata(
-            filePath,
-            processingStartTime,
-            processedRecords + 1
-          );
-          const record = {
-            submission_metadata: metadata,
-            data: Object.fromEntries(headers.map((h, i) => [h, rowValues[i]])),
-          };
+            if (!rowData || rowData.length === 0) {
+              Logger.debug`Skipping empty row at line ${processedRecords + 2}`;
+              continue;
+            }
 
-          batchedRecords.push(record);
-          processedRecords++;
+            // Enhanced row validation
+            if (rowData.length !== headers.length) {
+              Logger.warn`Row ${processedRecords + 2} has ${
+                rowData.length
+              } columns, expected ${headers.length} (header count)`;
+            }
 
-          // Update progress more frequently
-          if (processedRecords % 10 === 0) {
-            updateProgressDisplay(
+            // Create record with metadata and data
+            const metadata = createRecordMetadata(
+              filePath,
+              processingStartTime,
+              processedRecords + 1
+            );
+
+            // Create the final record structure
+            const record = {
+              submission_metadata: metadata,
+              ...Object.fromEntries(
+                headers.map((header, index) => [header, rowData[index] || null])
+              ),
+            };
+
+            batchedRecords.push(record);
+            processedRecords++;
+
+            // Enhanced batch processing with progress tracking
+            if (batchedRecords.length >= config.batchSize) {
+              await processBatch(
+                client,
+                batchedRecords,
+                config,
+                processedRecords,
+                totalLines
+              );
+              batchedRecords.length = 0; // Clear the array
+            }
+
+            // Enhanced progress reporting
+            if (processedRecords % 1000 === 0) {
+              const progress = ((processedRecords / totalLines) * 100).toFixed(
+                1
+              );
+              Logger.info`Processed ${processedRecords.toLocaleString()} records (${progress}%)`;
+            }
+          } catch (rowError) {
+            failedRecords++;
+            CSVProcessingErrorHandler.handleProcessingError(
+              rowError,
               processedRecords,
-              totalLines - 1, // Subtract 1 to account for header
-              startTime
+              false,
+              config.delimiter
             );
           }
-
-          if (batchedRecords.length >= config.batchSize) {
-            await sendBatchToElasticsearch(
-              client,
-              batchedRecords,
-              config.elasticsearch.index,
-              (count) => {
-                failedRecords += count;
-              }
-            );
-            batchedRecords.length = 0;
-          }
-        } catch (error) {
-          Logger.warn`Error processing record ${processedRecords + 1}: ${
-            error instanceof Error ? error.message : String(error)
-          }`;
-          failedRecords++;
         }
       } catch (lineError) {
-        // Handle individual line processing errors
-        Logger.warn`Error processing line: ${line.substring(0, 50)}`;
+        // Handle line-level errors
+        if (isFirstLine) {
+          throw lineError; // Re-throw header errors
+        }
+
         failedRecords++;
+        Logger.error`Error processing line ${processedRecords + 2}: ${
+          lineError instanceof Error ? lineError.message : String(lineError)
+        }`;
+
+        // Continue processing other lines for data errors
+        if (failedRecords > processedRecords * 0.1) {
+          // Stop if more than 10% of records fail
+          throw ErrorFactory.csv(
+            `Too many failed records (${failedRecords} failures in ${processedRecords} processed)`,
+            filePath,
+            processedRecords + 2,
+            [
+              "Check CSV data format and consistency",
+              "Verify data types match expected format",
+              "Review failed records for common patterns",
+              "Consider fixing source data before reprocessing",
+            ]
+          );
+        }
       }
     }
 
-    // Final batch and progress update
+    // Process any remaining records in the final batch
     if (batchedRecords.length > 0) {
-      await sendBatchToElasticsearch(
+      await processBatch(
         client,
         batchedRecords,
-        config.elasticsearch.index,
-        (count) => {
-          failedRecords += count;
-        }
+        config,
+        processedRecords,
+        totalLines
       );
     }
 
-    // Ensure final progress is displayed
-    updateProgressDisplay(processedRecords, totalLines, startTime);
+    // Enhanced completion logging
+    const duration = Date.now() - startTime;
+    const recordsPerSecond = Math.round(processedRecords / (duration / 1000));
 
-    // Display final summary
-    CSVProcessingErrorHandler.displaySummary(
-      processedRecords,
-      failedRecords,
-      startTime
-    );
-  } catch (error) {
-    // Enhanced cleanup
-    try {
-      rl.close();
-    } catch (closeError) {
-      Logger.debug`Error closing readline interface: ${closeError}`;
+    Logger.success`CSV processing completed successfully`;
+    Logger.info`Processed ${processedRecords.toLocaleString()} records in ${formatDuration(
+      duration
+    )}`;
+    Logger.info`Average rate: ${recordsPerSecond.toLocaleString()} records/second`;
+
+    if (failedRecords > 0) {
+      Logger.warn`${failedRecords} records failed to process`;
+      Logger.tipString(
+        "Review error messages above for details on failed records"
+      );
     }
-
-    // Use the error handler to process and throw the error
-    CSVProcessingErrorHandler.handleProcessingError(
-      error,
-      processedRecords,
-      isFirstLine,
-      config.delimiter
-    );
-  }
-}
-
-/**
- * Updates the progress display in the console
- *
- * @param processed - Number of processed records
- * @param total - Total number of records
- * @param startTime - When processing started
- */
-function updateProgressDisplay(
-  processed: number,
-  total: number,
-  startTime: number
-): void {
-  const elapsedMs = Math.max(1, Date.now() - startTime);
-  const progress = Math.min(100, (processed / total) * 100);
-  const progressBar = createProgressBar(progress);
-  const eta = calculateETA(processed, total, elapsedMs / 1000);
-  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
-
-  // Use \r to overwrite previous line
-  process.stdout.write("\r");
-  process.stdout.write(
-    ` ${progressBar} | ` + // Added space before progress bar
-      `${processed}/${total} | ` +
-      `⏱ ${formatDuration(elapsedMs)} | ` +
-      `🏁 ${eta} | ` +
-      `⚡${recordsPerSecond} rows/sec` // Added space after rows/sec
-  );
-}
-
-/**
- * Sends a batch of records to Elasticsearch with enhanced error handling
- *
- * @param client - Elasticsearch client
- * @param records - Records to send
- * @param indexName - Target index
- * @param onFailure - Callback to track failed records
- */
-async function sendBatchToElasticsearch(
-  client: Client,
-  records: object[],
-  indexName: string,
-  onFailure: (count: number) => void
-): Promise<void> {
-  if (!client) {
-    throw ErrorFactory.args(
-      "Elasticsearch client is required for batch processing",
-      "sendBatchToElasticsearch",
-      [
-        "Ensure Elasticsearch client is properly initialized",
-        "Check client connection and configuration",
-        "Verify Elasticsearch service is running",
-      ]
-    );
-  }
-
-  if (!records || records.length === 0) {
-    Logger.debug`No records to send to Elasticsearch`;
-    return;
-  }
-
-  if (!indexName) {
-    throw ErrorFactory.args(
-      "Index name is required for Elasticsearch batch operation",
-      "sendBatchToElasticsearch",
-      [
-        "Provide a valid Elasticsearch index name",
-        "Check index configuration",
-        "Use --index parameter to specify target index",
-      ]
-    );
-  }
-
-  try {
-    await sendBulkWriteRequest(client, records, indexName, onFailure);
   } catch (error) {
+    // Enhanced error handling for the entire processing operation
     if (error instanceof Error && error.name === "ConductorError") {
       throw error;
     }
 
-    throw ErrorFactory.connection(
-      `Failed to send batch to Elasticsearch: ${
+    throw ErrorFactory.csv(
+      `CSV processing failed: ${
         error instanceof Error ? error.message : String(error)
       }`,
-      "Elasticsearch",
+      filePath,
       undefined,
       [
-        "Check Elasticsearch service connectivity",
-        "Verify index exists and is writable",
-        "Ensure sufficient cluster resources",
-        "Review batch size settings",
-        "Check network connectivity",
+        "Check CSV file format and structure",
+        "Verify all required fields are present",
+        "Ensure data types are consistent",
+        "Check file permissions and accessibility",
+        "Review Elasticsearch connectivity and settings",
+      ]
+    );
+  } finally {
+    // Ensure resources are properly cleaned up
+    try {
+      if (rl) rl.close();
+      if (fileStream) fileStream.destroy();
+    } catch (cleanupError) {
+      Logger.debug`Error during cleanup: ${cleanupError}`;
+    }
+  }
+}
+
+/**
+ * Enhanced batch processing with comprehensive error handling
+ */
+async function processBatch(
+  client: Client,
+  records: object[],
+  config: Config,
+  processedRecords: number,
+  totalLines: number
+): Promise<void> {
+  try {
+    Logger.debug`Processing batch of ${records.length} records`;
+
+    // Enhanced progress calculation
+    const progress = Math.min((processedRecords / totalLines) * 100, 100);
+    const eta = calculateETA(Date.now(), processedRecords, totalLines);
+
+    Logger.info`${createProgressBar(progress, 30)} ${progress.toFixed(
+      1
+    )}% ${eta}`;
+
+    // Enhanced bulk write with proper function signature
+    await sendBulkWriteRequest(
+      client,
+      records,
+      config.elasticsearch.index,
+      (failureCount: number) => {
+        if (failureCount > 0) {
+          Logger.warn`${failureCount} records failed to index in this batch`;
+        }
+      },
+      {
+        maxRetries: 3,
+        refresh: true,
+      }
+    );
+
+    Logger.debug`Successfully processed batch of ${records.length} records`;
+  } catch (batchError) {
+    throw ErrorFactory.connection(
+      `Batch processing failed: ${
+        batchError instanceof Error ? batchError.message : String(batchError)
+      }`,
+      "Elasticsearch",
+      config.elasticsearch.url,
+      [
+        "Check Elasticsearch connectivity and health",
+        "Verify index exists and has proper permissions",
+        "Review batch size - try reducing if too large",
+        "Check cluster resources (disk space, memory)",
+        "Ensure proper authentication credentials",
       ]
     );
   }

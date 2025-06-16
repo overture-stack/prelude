@@ -1,8 +1,13 @@
-// src/utils/errors.ts - Enhanced with ErrorFactory pattern
+// src/utils/errors.ts - Updated to match composer 1:1
 import { Logger } from "./logger";
 
 export class ConductorError extends Error {
-  constructor(message: string, public code: string, public details?: any) {
+  constructor(
+    message: string,
+    public code: string,
+    public details?: any,
+    public suggestions?: string[] // CHANGED: Added direct suggestions property
+  ) {
     super(message);
     this.name = "ConductorError";
   }
@@ -14,25 +19,28 @@ export class ConductorError extends Error {
   }
 }
 
+// CHANGED: Removed brackets from error codes
 export const ErrorCodes = {
-  INVALID_ARGS: "[INVALID_ARGS]",
-  FILE_NOT_FOUND: "[FILE_NOT_FOUND]",
-  INVALID_FILE: "[INVALID_FILE]",
-  VALIDATION_FAILED: "[VALIDATION_FAILED]",
-  ENV_ERROR: "[ENV_ERROR]",
-  PARSING_ERROR: "[PARSING_ERROR]",
-  FILE_ERROR: "[FILE_ERROR]",
-  FILE_WRITE_ERROR: "[FILE_WRITE_ERROR]",
-  CONNECTION_ERROR: "[CONNECTION_ERROR]",
-  AUTH_ERROR: "[AUTH_ERROR]",
-  INDEX_NOT_FOUND: "[INDEX_NOT_FOUND]",
-  TRANSFORM_ERROR: "[TRANSFORM_ERROR]",
-  CLI_ERROR: "[CLI_ERROR]",
-  CSV_ERROR: "[CSV_ERROR]",
-  ES_ERROR: "[ES_ERROR]",
-  UNKNOWN_ERROR: "[UNKNOWN_ERROR]",
-  USER_CANCELLED: "[USER_CANCELLED]",
+  INVALID_ARGS: "INVALID_ARGS",
+  FILE_NOT_FOUND: "FILE_NOT_FOUND",
+  INVALID_FILE: "INVALID_FILE",
+  VALIDATION_FAILED: "VALIDATION_FAILED",
+  ENV_ERROR: "ENV_ERROR",
+  PARSING_ERROR: "PARSING_ERROR",
+  FILE_ERROR: "FILE_ERROR",
+  FILE_WRITE_ERROR: "FILE_WRITE_ERROR",
+  CONNECTION_ERROR: "CONNECTION_ERROR",
+  AUTH_ERROR: "AUTH_ERROR",
+  INDEX_NOT_FOUND: "INDEX_NOT_FOUND",
+  TRANSFORM_ERROR: "TRANSFORM_ERROR",
+  CLI_ERROR: "CLI_ERROR",
+  CSV_ERROR: "CSV_ERROR",
+  ES_ERROR: "ES_ERROR",
+  UNKNOWN_ERROR: "UNKNOWN_ERROR",
+  USER_CANCELLED: "USER_CANCELLED",
 } as const;
+
+type ErrorCodes = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 
 /**
  * Factory for creating consistent, user-friendly errors with actionable suggestions
@@ -62,10 +70,13 @@ export class ErrorFactory {
       defaultSuggestions.push(`Current directory: ${process.cwd()}`);
     }
 
-    return new ConductorError(message, ErrorCodes.FILE_NOT_FOUND, {
-      ...details,
-      suggestions: suggestions.length ? suggestions : defaultSuggestions,
-    });
+    // CHANGED: Pass suggestions as 4th parameter instead of embedding in details
+    return new ConductorError(
+      message,
+      ErrorCodes.FILE_NOT_FOUND,
+      details,
+      suggestions.length ? suggestions : defaultSuggestions
+    );
   }
 
   /**
@@ -82,10 +93,12 @@ export class ErrorFactory {
       "Ensure data types match expected values",
     ];
 
-    return new ConductorError(message, ErrorCodes.VALIDATION_FAILED, {
-      ...details,
-      suggestions: suggestions.length ? suggestions : defaultSuggestions,
-    });
+    return new ConductorError(
+      message,
+      ErrorCodes.VALIDATION_FAILED,
+      details,
+      suggestions.length ? suggestions : defaultSuggestions
+    );
   }
 
   /**
@@ -113,10 +126,13 @@ export class ErrorFactory {
           "Confirm connection parameters",
         ];
 
-    return new ConductorError(message, ErrorCodes.CONNECTION_ERROR, {
-      ...details,
-      suggestions: suggestions.length ? suggestions : defaultSuggestions,
-    });
+    // CHANGED: Pass suggestions as 4th parameter
+    return new ConductorError(
+      message,
+      ErrorCodes.CONNECTION_ERROR,
+      details,
+      suggestions.length ? suggestions : defaultSuggestions
+    );
   }
 
   /**
@@ -142,10 +158,13 @@ export class ErrorFactory {
           "Ensure all required settings are provided",
         ];
 
-    return new ConductorError(message, ErrorCodes.ENV_ERROR, {
-      ...details,
-      suggestions: suggestions.length ? suggestions : defaultSuggestions,
-    });
+    // CHANGED: Pass suggestions as 4th parameter
+    return new ConductorError(
+      message,
+      ErrorCodes.ENV_ERROR,
+      details,
+      suggestions.length ? suggestions : defaultSuggestions
+    );
   }
 
   /**
@@ -171,10 +190,13 @@ export class ErrorFactory {
           "Verify all required arguments are provided",
         ];
 
-    return new ConductorError(message, ErrorCodes.INVALID_ARGS, {
-      ...details,
-      suggestions: suggestions.length ? suggestions : defaultSuggestions,
-    });
+    // CHANGED: Pass suggestions as 4th parameter
+    return new ConductorError(
+      message,
+      ErrorCodes.INVALID_ARGS,
+      details,
+      suggestions.length ? suggestions : defaultSuggestions
+    );
   }
 
   /**
@@ -197,10 +219,13 @@ export class ErrorFactory {
       "Check for special characters in data",
     ];
 
-    return new ConductorError(message, ErrorCodes.CSV_ERROR, {
-      ...details,
-      suggestions: suggestions.length ? suggestions : defaultSuggestions,
-    });
+    // CHANGED: Pass suggestions as 4th parameter
+    return new ConductorError(
+      message,
+      ErrorCodes.CSV_ERROR,
+      details,
+      suggestions.length ? suggestions : defaultSuggestions
+    );
   }
 
   /**
@@ -227,10 +252,13 @@ export class ErrorFactory {
           "Confirm index permissions",
         ];
 
-    return new ConductorError(message, ErrorCodes.INDEX_NOT_FOUND, {
-      ...details,
-      suggestions: suggestions.length ? suggestions : defaultSuggestions,
-    });
+    // CHANGED: Pass suggestions as 4th parameter
+    return new ConductorError(
+      message,
+      ErrorCodes.INDEX_NOT_FOUND,
+      details,
+      suggestions.length ? suggestions : defaultSuggestions
+    );
   }
 }
 
@@ -248,48 +276,50 @@ function formatErrorDetails(details: any): string {
   }
 }
 
-export function handleError(
-  error: unknown,
-  showAvailableProfiles?: () => void
-): never {
+/**
+ * Centralized error handler for the application
+ * @param error - The error to handle
+ * @param showHelp - Optional callback to show help information
+ */
+export function handleError(error: unknown, showHelp?: () => void): never {
   if (error instanceof ConductorError) {
-    // Basic error message for all users
-    Logger.errorString(error.message);
+    Logger.error`[${error.code}] ${error.message}`;
 
-    // Show suggestions if available
-    if (
-      error.details?.suggestions &&
-      Array.isArray(error.details.suggestions)
-    ) {
-      Logger.generic("\n💡 Suggestions:");
-      error.details.suggestions.forEach((suggestion: string) => {
-        Logger.generic(`  • ${suggestion}`);
+    // CHANGED: Read suggestions from direct property and use Logger.section + Logger.tipString
+    if (error.suggestions && error.suggestions.length > 0) {
+      Logger.section("\nSuggestions\n");
+      error.suggestions.forEach((suggestion) => {
+        Logger.tipString(suggestion);
       });
     }
 
-    // Detailed error only in debug mode
+    // Show help if callback provided
+    if (showHelp) {
+      showHelp();
+    }
+
+    // Show details in debug mode
     if (process.argv.includes("--debug")) {
       if (error.details) {
+        const formattedDetails = formatErrorDetails(error.details);
         Logger.debugString("Error details:");
-        Logger.debugString(formatErrorDetails(error.details));
+        Logger.debugString(formattedDetails);
       }
 
       Logger.debugString("Stack trace:");
       Logger.debugString(error.stack || "No stack trace available");
     }
-
-    if (showAvailableProfiles) {
-      showAvailableProfiles();
-    }
   } else {
-    // For unexpected errors, just output the message
-    Logger.error`Unexpected error: ${
-      error instanceof Error ? error.message : String(error)
-    }`;
+    Logger.debugString("Unexpected error occurred");
 
-    if (process.argv.includes("--debug") && error instanceof Error) {
-      Logger.debugString("Stack trace:");
-      Logger.debugString(error.stack || "No stack trace available");
+    if (error instanceof Error) {
+      Logger.debugString(error.message);
+      if (process.argv.includes("--debug")) {
+        Logger.debugString("Stack trace:");
+        Logger.debugString(error.stack || "No stack trace available");
+      }
+    } else {
+      Logger.debugString(String(error));
     }
   }
 

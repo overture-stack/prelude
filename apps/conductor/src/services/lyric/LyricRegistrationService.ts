@@ -31,7 +31,7 @@ export class LyricRegistrationService extends BaseService {
       // Enhanced parameter validation
       this.validateRegistrationParams(params);
 
-      Logger.info`Registering Lyric dictionary: ${params.dictionaryName} v${params.dictionaryVersion}`;
+      Logger.debug`Registering Lyric dictionary: ${params.dictionaryName} v${params.dictionaryVersion}`;
       Logger.debug`Registration details - Category: ${params.categoryName}, Entity: ${params.defaultCentricEntity}`;
 
       // Enhanced form data preparation
@@ -51,7 +51,7 @@ export class LyricRegistrationService extends BaseService {
       // Enhanced response validation
       this.validateRegistrationResponse(response.data, params);
 
-      Logger.success`Dictionary registered successfully with Lyric`;
+      Logger.debug`Dictionary registered service successful`;
 
       return {
         success: true,

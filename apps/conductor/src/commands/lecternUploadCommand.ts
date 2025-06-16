@@ -1,12 +1,12 @@
 // src/commands/lecternUploadCommand.ts - Enhanced with ErrorFactory patterns
-import { Command, CommandResult } from "./baseCommand";
+import { Command } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
 import { ErrorFactory } from "../utils/errors";
 import { LecternService } from "../services/lectern";
 import { LecternSchemaUploadParams } from "../services/lectern/types";
-import { ServiceConfigManager } from "../config/serviceConfigManager";
+import { ServiceConfigManager } from "../cli/serviceConfigManager";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -67,74 +67,62 @@ export class LecternUploadCommand extends Command {
   /**
    * Executes the Lectern schema upload process with enhanced error handling
    */
-  protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
 
-    try {
-      // Extract configuration using the new simplified system
-      const schemaFile = this.getSchemaFile(options)!;
-      const fileName = path.basename(schemaFile);
+    // Extract configuration using the new simplified system
+    const schemaFile = this.getSchemaFile(options)!;
+    const fileName = path.basename(schemaFile);
 
-      Logger.info`Starting Lectern schema upload for: ${fileName}`;
+    Logger.debug`Starting Lectern schema upload for: ${fileName}`;
 
-      // Use the new ServiceConfigManager
-      const serviceConfig = ServiceConfigManager.createLecternConfig({
-        url: options.lecternUrl,
-        authToken: options.authToken,
-      });
+    // Use the new ServiceConfigManager
+    const serviceConfig = ServiceConfigManager.createLecternConfig({
+      url: options.lecternUrl,
+      authToken: options.authToken,
+    });
 
-      // Validate the configuration
-      ServiceConfigManager.validateConfig(serviceConfig);
+    // Validate the configuration
+    ServiceConfigManager.validateConfig(serviceConfig);
 
-      // Parse and validate schema content
-      const uploadParams = this.extractUploadParams(schemaFile);
+    // Parse and validate schema content
+    const uploadParams = this.extractUploadParams(schemaFile);
 
-      // Create service instance with enhanced error handling
-      const lecternService = new LecternService(serviceConfig);
+    // Create service instance with enhanced error handling
+    const lecternService = new LecternService(serviceConfig);
 
-      // Enhanced health check with specific feedback
-      Logger.info`Checking Lectern service health...`;
-      const healthResult = await lecternService.checkHealth();
-      if (!healthResult.healthy) {
-        throw ErrorFactory.connection(
-          "Lectern service health check failed",
-          "Lectern",
-          serviceConfig.url,
-          [
-            "Check that Lectern service is running",
-            `Verify service URL: ${serviceConfig.url}`,
-            "Check network connectivity",
-            "Review Lectern service logs for errors",
-            `Test manually: curl ${serviceConfig.url}/health`,
-            healthResult.message
-              ? `Health check message: ${healthResult.message}`
-              : "",
-          ].filter(Boolean)
-        );
-      }
-
-      // Log upload info with enhanced context
-      this.logUploadInfo(fileName, serviceConfig.url, uploadParams);
-
-      // Upload schema with enhanced error context
-      Logger.info`Uploading schema to Lectern service...`;
-      const result = await lecternService.uploadSchema(uploadParams);
-
-      // Enhanced success logging
-      this.logSuccess(result, fileName);
-
-      return {
-        success: true,
-        details: {
-          schemaFile,
-          fileName,
-          serviceUrl: serviceConfig.url,
-          uploadResult: result,
-        },
-      };
-    } catch (error) {
-      return this.handleExecutionError(error, cliOutput);
+    // Enhanced health check with specific feedback
+    Logger.debug`Checking Lectern service health...`;
+    const healthResult = await lecternService.checkHealth();
+    if (!healthResult.healthy) {
+      throw ErrorFactory.connection(
+        "Lectern service health check failed",
+        "Lectern",
+        serviceConfig.url,
+        [
+          "Check that Lectern service is running",
+          `Verify service URL: ${serviceConfig.url}`,
+          "Check network connectivity",
+          "Review Lectern service logs for errors",
+          `Test manually: curl ${serviceConfig.url}/health`,
+          healthResult.message
+            ? `Health check message: ${healthResult.message}`
+            : "",
+        ].filter(Boolean)
+      );
     }
+
+    // Log upload info with enhanced context
+    this.logUploadInfo(fileName, serviceConfig.url, uploadParams);
+
+    // Upload schema with enhanced error context
+    Logger.info`Uploading schema to Lectern service...`;
+    const result = await lecternService.uploadSchema(uploadParams);
+
+    // Enhanced success logging
+    this.logSuccess(result, fileName);
+
+    // Success - method completes normally
   }
 
   /**
@@ -357,22 +345,22 @@ export class LecternUploadCommand extends Command {
     serviceUrl: string,
     params: LecternSchemaUploadParams
   ): void {
-    Logger.info`${chalk.bold.cyan("Lectern Schema Upload Details:")}`;
-    Logger.generic(`  File: ${fileName}`);
-    Logger.generic(`  Target: ${serviceUrl}/dictionaries`);
+    Logger.generic(`${chalk.bold.cyan("Lectern Schema Upload Details:\n")}`);
+    Logger.generic(`  ▸ File: ${fileName}`);
+    Logger.debug`  ▸ Target: ${serviceUrl}/dictionaries`;
 
     // Parse schema for additional info
     try {
       const schema = JSON.parse(params.schemaContent);
-      Logger.generic(`  Schema Name: ${schema.name || "Unnamed"}`);
-      Logger.generic(
-        `  Schema Count: ${
+      Logger.generic(`  ▸ Schema Name: ${schema.name || "Unnamed"}`);
+      Logger.debugString(
+        `  ▸ Schema Count: ${
           Array.isArray(schema.schemas) ? schema.schemas.length : 0
         }`
       );
 
       if (schema.version) {
-        Logger.generic(`  Version: ${schema.version}`);
+        Logger.generic(`  ▸ Version: ${schema.version}\n`);
       }
     } catch (error) {
       Logger.debug`Could not parse schema for logging: ${error}`;
@@ -404,68 +392,5 @@ export class LecternUploadCommand extends Command {
     Logger.tipString(
       "Schema is now available for use in Lectern-compatible services"
     );
-  }
-
-  /**
-   * Enhanced execution error handling with context-specific guidance
-   */
-  private handleExecutionError(
-    error: unknown,
-    cliOutput: CLIOutput
-  ): CommandResult {
-    const schemaFile = this.getSchemaFile(cliOutput.options);
-    const fileName = schemaFile ? path.basename(schemaFile) : "unknown";
-
-    if (error instanceof Error && error.name === "ConductorError") {
-      // Add file context to existing errors
-      return {
-        success: false,
-        errorMessage: error.message,
-        errorCode: (error as any).code,
-        details: {
-          ...(error as any).details,
-          schemaFile,
-          fileName,
-          command: "lecternUpload",
-        },
-      };
-    }
-
-    // Handle service-specific errors
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    let suggestions = [
-      "Check Lectern service connectivity",
-      "Verify schema file format and content",
-      "Review service logs for additional details",
-      "Use --debug flag for detailed error information",
-    ];
-
-    // Add specific suggestions based on error content
-    if (errorMessage.includes("404")) {
-      suggestions.unshift("Check Lectern service URL and endpoints");
-      suggestions.unshift("Verify Lectern service is properly configured");
-    } else if (
-      errorMessage.includes("authentication") ||
-      errorMessage.includes("401")
-    ) {
-      suggestions.unshift("Check authentication token if required");
-      suggestions.unshift("Verify API credentials");
-    } else if (errorMessage.includes("timeout")) {
-      suggestions.unshift("Lectern service may be slow or overloaded");
-      suggestions.unshift("Try again or increase timeout settings");
-    }
-
-    return {
-      success: false,
-      errorMessage: `Lectern schema upload failed: ${errorMessage}`,
-      errorCode: "CONNECTION_ERROR",
-      details: {
-        originalError: error,
-        schemaFile,
-        fileName,
-        suggestions,
-        command: "lecternUpload",
-      },
-    };
   }
 }

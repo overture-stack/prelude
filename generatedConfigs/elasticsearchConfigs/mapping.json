@@ -1,5 +1,7 @@
 {
-  "index_patterns": ["datatable1-*"],
+  "index_patterns": [
+    "datatable1-*"
+  ],
   "aliases": {
     "datatable1_centric": {}
   },

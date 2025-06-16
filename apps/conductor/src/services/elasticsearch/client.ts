@@ -84,12 +84,12 @@ export async function validateConnection(client: Client): Promise<boolean> {
     const health = healthResult ? (healthResult as any).body : null;
 
     // Log detailed connection information
-    Logger.success`Connected to Elasticsearch cluster successfully (${responseTime}ms)`;
-    Logger.info`Cluster: ${info.cluster_name}`;
-    Logger.info`Version: ${info.version.number}`;
+    Logger.debug`Connected to Elasticsearch cluster successfully (${responseTime}ms)`;
+    Logger.debug`Cluster: ${info.cluster_name}`;
+    Logger.debug`Version: ${info.version.number}`;
 
     if (health) {
-      Logger.info`Cluster Status: ${health.status}`;
+      Logger.debug`Cluster Status: ${health.status}`;
       Logger.debug`Active Nodes: ${health.number_of_nodes}`;
 
       // Provide health warnings

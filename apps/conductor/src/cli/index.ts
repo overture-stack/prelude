@@ -2,10 +2,10 @@
 
 import { Command } from "commander";
 import { Config, CLIOutput } from "../types/cli";
-import { parseCommandLineArgs } from "./options";
-import { configureCommandOptions } from "./options";
-import { validateEnvironment } from "../validations/environment";
-import { ServiceConfigManager } from "../config/serviceConfigManager";
+import { parseCommandLineArgs } from "./commandOptions";
+import { configureCommandOptions } from "./commandOptions";
+import { validateEnvironment } from "../validations/environmentValidator";
+import { ServiceConfigManager } from "./serviceConfigManager";
 import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
 

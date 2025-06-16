@@ -45,7 +45,7 @@ export abstract class Command {
         Logger.debug`Running ${this.name} command with debug enabled`;
       }
 
-      Logger.header(`♫ Generating ${this.name} Configurations`);
+      Logger.header(`\n♫ Generating ${this.name} Configurations`);
 
       // Validate input arguments
       await this.validate(cliOutput);

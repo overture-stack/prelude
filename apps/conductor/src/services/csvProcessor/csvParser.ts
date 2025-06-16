@@ -274,7 +274,18 @@ export function parseCSVLine(
     const result = csvParse(line, parseOptions);
 
     if (!result || !Array.isArray(result)) {
-      throw new Error("CSV parse returned invalid result");
+      throw ErrorFactory.csv(
+        "CSV parsing returned invalid result",
+        undefined,
+        isHeaderRow ? 1 : undefined,
+        [
+          "Check CSV line format and structure",
+          "Verify delimiter is correct for this file",
+          "Ensure proper CSV escaping for special characters",
+          "Check for malformed CSV syntax",
+          `Current delimiter: '${delimiter.replace("\t", "\\t")}'`,
+        ]
+      );
     }
 
     if (result.length === 0) {
@@ -292,7 +303,18 @@ export function parseCSVLine(
     const parsedData = result[0];
 
     if (!Array.isArray(parsedData)) {
-      throw new Error("Parsed CSV data is not in expected array format");
+      throw ErrorFactory.csv(
+        "Parsed CSV data is not in expected array format",
+        undefined,
+        isHeaderRow ? 1 : undefined,
+        [
+          "Check CSV parsing library compatibility",
+          "Verify CSV line structure is valid",
+          "Ensure delimiter matches file format",
+          "Check for unusual CSV formatting",
+          `Current delimiter: '${delimiter.replace("\t", "\\t")}'`,
+        ]
+      );
     }
 
     // Enhanced validation for header rows

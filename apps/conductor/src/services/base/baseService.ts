@@ -21,7 +21,7 @@ export abstract class BaseService {
     const startTime = Date.now();
 
     try {
-      Logger.info`Checking ${this.serviceName} health at ${this.config.url}${this.healthEndpoint}`;
+      Logger.debug`Checking ${this.serviceName} health at ${this.config.url}${this.healthEndpoint}`;
 
       const response = await this.http.get(this.healthEndpoint, {
         timeout: 5000,
@@ -32,7 +32,7 @@ export abstract class BaseService {
       const isHealthy = this.isHealthyResponse(response.data, response.status);
 
       if (isHealthy) {
-        Logger.success`${this.serviceName} is healthy (${responseTime}ms)`;
+        Logger.debug`${this.serviceName} is healthy (${responseTime}ms)`;
       } else {
         Logger.warn`${this.serviceName} health check returned unhealthy status`;
       }

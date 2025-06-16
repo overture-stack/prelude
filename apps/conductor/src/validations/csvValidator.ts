@@ -1,111 +1,152 @@
-import { Client } from "@elastic/elasticsearch";
+import * as fs from "fs";
 import { ErrorFactory } from "../utils/errors";
-import { VALIDATION_CONSTANTS } from "./constants";
+import { parseCSVLine } from "../services/csvProcessor/csvParser"; // Updated import
 import { Logger } from "../utils/logger";
-import * as path from "path";
 
 /**
- * Module for validating CSV files against structural and naming rules.
- * Enhanced with ErrorFactory for better user feedback and actionable suggestions.
+ * Validates the header structure of a CSV file.
+ * Reads the first line of the file and validates the headers.
+ *
+ * @param filePath - Path to the CSV file
+ * @param delimiter - Character used to separate values in the CSV
+ * @returns Promise resolving to true if headers are valid
+ * @throws ConductorError if headers are invalid or file can't be read
  */
+export async function validateCSVHeaders(
+  filePath: string,
+  delimiter: string
+): Promise<boolean> {
+  try {
+    Logger.debug`Validating CSV headers for file: ${filePath}`;
+    Logger.debug`Using delimiter: '${delimiter}'`;
+
+    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const [headerLine] = fileContent.split("\n");
+
+    if (!headerLine) {
+      Logger.debug`CSV file is empty or has no headers`;
+      throw ErrorFactory.file("CSV file is empty or has no headers", filePath, [
+        "Ensure the CSV file contains at least one row of headers",
+        "Check that the file is not corrupted",
+        "Verify the file encoding is UTF-8",
+      ]);
+    }
+
+    const headers = parseCSVLine(headerLine, delimiter, true)[0];
+    if (!headers) {
+      Logger.debug`Failed to parse CSV headers`;
+      throw ErrorFactory.file("Failed to parse CSV headers", filePath, [
+        "Check that the delimiter is correct",
+        "Ensure headers don't contain unescaped quotes",
+        "Verify the CSV format is valid",
+      ]);
+    }
+
+    Logger.debug`Parsed headers: ${headers.join(", ")}`;
+    return validateCSVStructure(headers);
+  } catch (error) {
+    Logger.debug`Error during CSV header validation`;
+    Logger.debugObject("Error details", error);
+
+    if (error instanceof Error && error.name === "ConductorError") {
+      throw error;
+    }
+    throw ErrorFactory.validation("Error validating CSV headers", error, [
+      "Check that the file exists and is readable",
+      "Verify the CSV format is correct",
+      "Ensure proper file permissions",
+    ]);
+  }
+}
 
 /**
  * Validates CSV headers against naming conventions and rules.
- * Provides detailed, actionable feedback for common issues.
+ * Enhanced with ErrorFactory patterns for consistent error handling.
  *
- * @param headers - Array of header strings to validate
- * @param filePath - Optional file path for context in error messages
- * @returns Promise resolving to true if all headers are valid
- * @throws Enhanced ConductorError with specific suggestions if validation fails
+ * @param headers - Array of header strings from CSV file
+ * @returns boolean indicating if headers are valid
+ * @throws ConductorError if headers fail validation
  */
-export async function validateCSVStructure(
-  headers: string[],
-  filePath?: string
-): Promise<boolean> {
-  const fileName = filePath ? path.basename(filePath) : "CSV file";
-  Logger.debug`Validating CSV structure with ${headers.length} headers`;
-
+export function validateCSVStructure(headers: string[]): boolean {
   try {
-    // Clean and filter headers
-    const cleanedHeaders = headers
-      .map((header) => header.trim())
-      .filter((header) => header !== "");
+    Logger.debug`Validating CSV structure with ${headers.length} headers`;
 
-    // Validate basic header presence
-    if (cleanedHeaders.length === 0) {
+    // Enhanced validation: Check for empty headers
+    if (!headers || headers.length === 0) {
+      throw ErrorFactory.csv("CSV file has no headers", undefined, 1, [
+        "Ensure the CSV file contains column headers",
+        "Check that the first row is not empty",
+        "Verify the CSV format is correct",
+      ]);
+    }
+
+    // Enhanced validation: Check for duplicate headers
+    const duplicateHeaders = headers.filter(
+      (header, index) => headers.indexOf(header) !== index
+    );
+    if (duplicateHeaders.length > 0) {
       throw ErrorFactory.csv(
-        `No valid headers found in ${fileName}`,
-        filePath,
+        `Duplicate headers found: ${[...new Set(duplicateHeaders)].join(", ")}`,
+        undefined,
         1,
         [
-          "Ensure the first row contains column headers",
-          "Check that headers are not empty or whitespace-only",
-          "Verify the file has proper CSV structure",
-          "Inspect the file manually to check format",
+          "Ensure all column headers are unique",
+          "Remove or rename duplicate headers",
+          "Check for extra spaces in header names",
         ]
       );
     }
 
-    if (cleanedHeaders.length !== headers.length) {
-      const emptyCount = headers.length - cleanedHeaders.length;
-
+    // Enhanced validation: Check for empty/whitespace headers
+    const emptyHeaders = headers.filter(
+      (header, index) => !header || header.trim() === ""
+    );
+    if (emptyHeaders.length > 0) {
       throw ErrorFactory.csv(
-        `${emptyCount} empty or whitespace-only headers detected in ${fileName}`,
-        filePath,
+        `Empty headers detected (${emptyHeaders.length} of ${headers.length})`,
+        undefined,
         1,
         [
-          `Remove ${emptyCount} empty column(s) from the header row`,
-          "Ensure all columns have meaningful names",
-          "Check for extra commas or delimiters in the header row",
-          "Verify the CSV delimiter is correct",
+          "Ensure all columns have header names",
+          "Remove empty columns from the CSV",
+          "Check for extra delimiters in the header row",
         ]
       );
     }
 
-    // Validate headers against all rules with detailed feedback
-    const validationIssues = analyzeHeaderIssues(cleanedHeaders);
-
-    if (validationIssues.invalidHeaders.length > 0) {
-      const suggestions = generateHeaderSuggestions(validationIssues);
-
-      throw ErrorFactory.csv(
-        `Invalid header names detected in ${fileName}`,
-        filePath,
-        1,
-        suggestions
+    // Enhanced validation: Check for headers with special characters that might cause issues
+    const problematicHeaders = headers.filter((header) => {
+      const trimmed = header.trim();
+      return (
+        trimmed.includes(",") ||
+        trimmed.includes(";") ||
+        trimmed.includes("\t") ||
+        trimmed.includes("\n") ||
+        trimmed.includes("\r")
       );
-    }
+    });
 
-    // Check for duplicate headers
-    const duplicateIssues = findDuplicateHeaders(cleanedHeaders);
-    if (duplicateIssues.duplicates.length > 0) {
-      throw ErrorFactory.csv(
-        `Duplicate headers found in ${fileName}`,
-        filePath,
-        1,
-        [
-          `Remove duplicate columns: ${duplicateIssues.duplicates.join(", ")}`,
-          "Each column must have a unique name",
-          "Consider adding suffixes to distinguish similar columns (e.g., name_1, name_2)",
-          "Check for accidental copy-paste errors in headers",
-        ]
-      );
-    }
-
-    // Optional: Check for generic headers and provide suggestions
-    const genericHeaders = findGenericHeaders(cleanedHeaders);
-    if (genericHeaders.length > 0) {
-      Logger.warn`Generic headers detected in ${fileName}: ${genericHeaders.join(
+    if (problematicHeaders.length > 0) {
+      Logger.warn`Headers contain special characters: ${problematicHeaders.join(
         ", "
       )}`;
       Logger.tipString(
-        "Consider using more descriptive column names for better data organization"
+        "Consider renaming headers to avoid commas, semicolons, tabs, or line breaks"
       );
     }
 
-    Logger.debug`CSV header structure validation passed for ${fileName}`;
-    Logger.debugObject("Valid Headers", cleanedHeaders);
+    // Enhanced validation: Check for very long headers
+    const longHeaders = headers.filter((header) => header.length > 100);
+    if (longHeaders.length > 0) {
+      Logger.warn`Very long headers detected (>100 chars): ${longHeaders
+        .map((h) => h.substring(0, 50) + "...")
+        .join(", ")}`;
+      Logger.tipString(
+        "Consider shortening header names for better readability"
+      );
+    }
 
+    Logger.debug`CSV structure validation passed: ${headers.length} valid headers`;
     return true;
   } catch (error) {
     if (error instanceof Error && error.name === "ConductorError") {
@@ -113,336 +154,17 @@ export async function validateCSVStructure(
     }
 
     throw ErrorFactory.csv(
-      `Error validating CSV structure in ${fileName}: ${
+      `CSV structure validation failed: ${
         error instanceof Error ? error.message : String(error)
       }`,
-      filePath,
+      undefined,
       1,
       [
-        "Check file format and encoding (should be UTF-8)",
-        "Verify CSV structure is valid",
-        "Ensure headers follow naming conventions",
-        "Try opening the file in a text editor to inspect manually",
+        "Check CSV header format and structure",
+        "Ensure headers are properly formatted",
+        "Verify no special characters in headers",
+        "Review CSV file for formatting issues",
       ]
     );
   }
-}
-
-/**
- * Validates CSV headers against Elasticsearch index mappings.
- * Provides specific guidance for mapping mismatches.
- *
- * @param client - Elasticsearch client instance
- * @param headers - Array of CSV headers to validate
- * @param indexName - Target Elasticsearch index name
- * @param filePath - Optional file path for context
- * @returns Promise resolving to true if headers are compatible
- * @throws Enhanced errors with mapping-specific guidance
- */
-export async function validateHeadersMatchMappings(
-  client: Client,
-  headers: string[],
-  indexName: string,
-  filePath?: string
-): Promise<boolean> {
-  const fileName = filePath ? path.basename(filePath) : "CSV file";
-  Logger.debug`Validating headers against index ${indexName} mappings`;
-
-  try {
-    // Try to get mappings from the existing index
-    const { body } = await client.indices.getMapping({
-      index: indexName,
-    });
-
-    // Type-safe navigation
-    const mappings = body[indexName]?.mappings;
-    if (!mappings) {
-      throw ErrorFactory.index(
-        `No mappings found for index '${indexName}'`,
-        indexName,
-        [
-          `Create the index with proper mappings first`,
-          `Check index name spelling: '${indexName}'`,
-          "List available indices: GET /_cat/indices",
-          "Use a different index name with --index parameter",
-        ]
-      );
-    }
-
-    // Navigate to the nested properties
-    const expectedFields = mappings.properties?.data?.properties
-      ? Object.keys(mappings.properties.data.properties)
-      : [];
-
-    Logger.debug`Found ${expectedFields.length} fields in index '${indexName}' mapping`;
-
-    // Clean up headers for comparison
-    const cleanedHeaders = headers
-      .map((header: string) => header.trim())
-      .filter((header: string) => header !== "");
-
-    if (cleanedHeaders.length === 0) {
-      throw ErrorFactory.csv(
-        `No valid headers found in ${fileName}`,
-        filePath,
-        1,
-        [
-          "Ensure the CSV has proper column headers",
-          "Check the first row of the file",
-          "Verify CSV format and delimiter",
-        ]
-      );
-    }
-
-    // Analyze header/mapping compatibility
-    const compatibility = analyzeHeaderMappingCompatibility(
-      cleanedHeaders,
-      expectedFields,
-      fileName,
-      indexName
-    );
-
-    // Handle significant mismatches
-    if (compatibility.hasSignificantMismatch) {
-      throw ErrorFactory.validation(
-        `Significant header/field mismatch between ${fileName} and index '${indexName}'`,
-        {
-          extraHeaders: compatibility.extraHeaders,
-          missingFields: compatibility.missingFields,
-          expectedFields,
-          foundHeaders: cleanedHeaders,
-          file: filePath,
-        },
-        [
-          `CSV has ${compatibility.extraHeaders.length} extra headers not in index mapping`,
-          `Index expects ${compatibility.missingFields.length} fields not in CSV`,
-          "Consider updating the index mapping or modifying the CSV structure",
-          `Extra headers: ${compatibility.extraHeaders.slice(0, 5).join(", ")}${
-            compatibility.extraHeaders.length > 5 ? "..." : ""
-          }`,
-          `Missing fields: ${compatibility.missingFields
-            .slice(0, 5)
-            .join(", ")}${compatibility.missingFields.length > 5 ? "..." : ""}`,
-          "Use --force to proceed anyway (may result in indexing issues)",
-        ]
-      );
-    }
-
-    // Log warnings for minor mismatches
-    if (compatibility.extraHeaders.length > 0) {
-      Logger.warn`Extra headers in ${fileName} not in index mapping: ${compatibility.extraHeaders.join(
-        ", "
-      )}`;
-      Logger.tipString(
-        "These fields will be added to documents but may not be properly indexed"
-      );
-    }
-
-    if (compatibility.missingFields.length > 0) {
-      Logger.warn`Missing fields from index mapping in ${fileName}: ${compatibility.missingFields.join(
-        ", "
-      )}`;
-      Logger.tipString(
-        "Data for these fields will be null in the indexed documents"
-      );
-    }
-
-    Logger.debug`Headers validated against index mapping for ${fileName}`;
-    return true;
-  } catch (error: any) {
-    // Enhanced error handling for index-specific issues
-    if (error.meta?.body?.error?.type === "index_not_found_exception") {
-      throw ErrorFactory.index(
-        `Index '${indexName}' does not exist`,
-        indexName,
-        [
-          `Create the index first: PUT /${indexName}`,
-          "Check index name spelling and case sensitivity",
-          "List available indices: GET /_cat/indices",
-          "Use a different index name with --index parameter",
-          `Example: conductor upload -f ${fileName} --index my-data-index`,
-        ]
-      );
-    }
-
-    if (error instanceof Error && error.name === "ConductorError") {
-      throw error;
-    }
-
-    throw ErrorFactory.connection(
-      `Error validating headers against index '${indexName}': ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-      "Elasticsearch",
-      undefined,
-      [
-        "Check Elasticsearch connectivity",
-        "Verify index exists and is accessible",
-        "Confirm proper authentication",
-        "Check network and firewall settings",
-      ]
-    );
-  }
-}
-
-/**
- * Analyze header issues for detailed feedback
- */
-function analyzeHeaderIssues(headers: string[]) {
-  const invalidHeaders: string[] = [];
-  const issues: Record<string, string[]> = {};
-
-  headers.forEach((header: string) => {
-    const headerIssues: string[] = [];
-
-    // Check for invalid characters
-    const hasInvalidChars = VALIDATION_CONSTANTS.INVALID_CHARS.some((char) =>
-      header.includes(char)
-    );
-    if (hasInvalidChars) {
-      const foundChars = VALIDATION_CONSTANTS.INVALID_CHARS.filter((char) =>
-        header.includes(char)
-      );
-      headerIssues.push(
-        `contains invalid characters: ${foundChars.join(", ")}`
-      );
-    }
-
-    // Check length
-    if (Buffer.from(header).length > VALIDATION_CONSTANTS.MAX_HEADER_LENGTH) {
-      headerIssues.push(
-        `too long (${Buffer.from(header).length} > ${
-          VALIDATION_CONSTANTS.MAX_HEADER_LENGTH
-        } chars)`
-      );
-    }
-
-    // Check reserved words
-    if (VALIDATION_CONSTANTS.RESERVED_WORDS.includes(header.toLowerCase())) {
-      headerIssues.push("is a reserved word");
-    }
-
-    // Check GraphQL naming
-    if (!VALIDATION_CONSTANTS.GRAPHQL_NAME_PATTERN.test(header)) {
-      headerIssues.push(
-        "doesn't follow naming pattern (use letters, numbers, underscores only)"
-      );
-    }
-
-    if (headerIssues.length > 0) {
-      invalidHeaders.push(header);
-      issues[header] = headerIssues;
-    }
-  });
-
-  return { invalidHeaders, issues };
-}
-
-/**
- * Generate specific suggestions based on header validation issues
- */
-function generateHeaderSuggestions(validationIssues: any): string[] {
-  const suggestions: string[] = [];
-
-  suggestions.push(
-    `Fix these ${validationIssues.invalidHeaders.length} invalid header(s):`
-  );
-
-  Object.entries(validationIssues.issues).forEach(
-    ([header, issues]: [string, any]) => {
-      suggestions.push(`  • "${header}": ${issues.join(", ")}`);
-    }
-  );
-
-  suggestions.push("Header naming rules:");
-  suggestions.push("  - Use only letters, numbers, and underscores");
-  suggestions.push("  - Start with a letter or underscore");
-  suggestions.push(
-    "  - Avoid special characters: " +
-      VALIDATION_CONSTANTS.INVALID_CHARS.join(" ")
-  );
-  suggestions.push(
-    "  - Keep under " + VALIDATION_CONSTANTS.MAX_HEADER_LENGTH + " characters"
-  );
-  suggestions.push(
-    "  - Avoid reserved words: " +
-      VALIDATION_CONSTANTS.RESERVED_WORDS.join(", ")
-  );
-
-  return suggestions;
-}
-
-/**
- * Find duplicate headers with counts
- */
-function findDuplicateHeaders(headers: string[]) {
-  const headerCounts: Record<string, number> = headers.reduce(
-    (acc: Record<string, number>, header: string) => {
-      acc[header] = (acc[header] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
-
-  const duplicates = Object.entries(headerCounts)
-    .filter(([_, count]) => count > 1)
-    .map(([header, count]) => `${header} (${count}x)`);
-
-  return {
-    duplicates: duplicates.map((d) => d.split(" (")[0]),
-    counts: headerCounts,
-  };
-}
-
-/**
- * Find generic headers that could be improved
- */
-function findGenericHeaders(headers: string[]): string[] {
-  const genericPatterns = [
-    /^col\d*$/i,
-    /^column\d*$/i,
-    /^field\d*$/i,
-    /^\d+$/,
-    /^[a-z]$/i,
-  ];
-
-  return headers.filter(
-    (header) =>
-      genericPatterns.some((pattern) => pattern.test(header)) ||
-      ["data", "value", "item", "element", "entry"].includes(
-        header.toLowerCase()
-      )
-  );
-}
-
-/**
- * Analyze compatibility between CSV headers and index mapping
- */
-function analyzeHeaderMappingCompatibility(
-  headers: string[],
-  expectedFields: string[],
-  fileName: string,
-  indexName: string
-) {
-  // Check for extra headers not in the mapping
-  const extraHeaders = headers.filter(
-    (header: string) => !expectedFields.includes(header)
-  );
-
-  // Check for fields in the mapping that aren't in the headers
-  const missingFields = expectedFields.filter(
-    (field: string) =>
-      field !== "submission_metadata" && !headers.includes(field)
-  );
-
-  // Determine if this is a significant mismatch
-  const hasSignificantMismatch =
-    extraHeaders.length > expectedFields.length * 0.5 ||
-    missingFields.length > expectedFields.length * 0.5;
-
-  return {
-    extraHeaders,
-    missingFields,
-    hasSignificantMismatch,
-  };
 }

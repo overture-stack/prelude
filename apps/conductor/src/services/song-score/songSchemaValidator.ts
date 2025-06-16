@@ -2,8 +2,9 @@
  * SONG Schema Validator
  *
  * Validates schema files against SONG-specific requirements based on SONG documentation.
+ * Enhanced with ErrorFactory patterns for consistent error handling.
  */
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 
 /**
  * Required fields for SONG analysis schemas
@@ -25,37 +26,52 @@ export function validateSongSchema(schema: any): {
 
   // Check if schema is an object
   if (!schema || typeof schema !== "object") {
-    throw new ConductorError(
+    throw ErrorFactory.validation(
       "Invalid schema format: Schema must be a JSON object",
-      ErrorCodes.INVALID_FILE
+      { schema, type: typeof schema },
+      [
+        "Ensure the schema file contains a valid JSON object",
+        "Check JSON syntax for errors (missing commas, brackets, quotes)",
+        "Verify the file is properly formatted",
+        "Use a JSON validator to check structure",
+      ]
     );
   }
 
   // Check for required fields
   for (const field of REQUIRED_FIELDS) {
     if (typeof schema[field] === "undefined" || schema[field] === null) {
-      throw new ConductorError(
+      throw ErrorFactory.validation(
         `Invalid schema: Missing required field '${field}'`,
-        ErrorCodes.INVALID_FILE,
         {
-          details: `The SONG server requires '${field}' to be present`,
-          suggestion: `Add a '${field}' field to your schema`,
-        }
+          schema: Object.keys(schema),
+          missingField: field,
+          requiredFields: REQUIRED_FIELDS,
+        },
+        [
+          `Add a '${field}' field to your schema`,
+          `The SONG server requires '${field}' to be present`,
+          `Required fields for SONG schemas: ${REQUIRED_FIELDS.join(", ")}`,
+          "Check SONG documentation for schema format requirements",
+        ]
       );
     }
   }
 
   // Validate the "schema" field is an object
   if (typeof schema.schema !== "object") {
-    throw new ConductorError(
+    throw ErrorFactory.validation(
       "Invalid schema: The 'schema' field must be an object",
-      ErrorCodes.INVALID_FILE,
       {
-        details:
-          "The 'schema' field defines the JSON schema for this analysis type",
-        suggestion:
-          "Make sure 'schema' is an object containing at least 'type' and 'properties'",
-      }
+        schemaFieldType: typeof schema.schema,
+        schemaField: schema.schema,
+      },
+      [
+        "The 'schema' field defines the JSON schema for this analysis type",
+        "Make sure 'schema' is an object containing at least 'type' and 'properties'",
+        "Use JSON Schema format for the 'schema' field",
+        'Example: { "type": "object", "properties": { ... } }',
+      ]
     );
   }
 
@@ -166,8 +182,71 @@ export function validateSongSchema(schema: any): {
     warnings.push("The 'properties' field should be an object");
   }
 
+  // Additional SONG-specific validations
+  validateSongSpecificRequirements(schema, warnings);
+
   return {
     isValid: true,
     warnings,
   };
+}
+
+/**
+ * Validates SONG-specific schema requirements
+ */
+function validateSongSpecificRequirements(
+  schema: any,
+  warnings: string[]
+): void {
+  // Check for SONG-specific analysis types
+  if (schema.name) {
+    const commonAnalysisTypes = [
+      "sequencingRead",
+      "variantCall",
+      "sequencingExperiment",
+      "alignment",
+      "transcriptome",
+      "copy_number_variation",
+      "structural_variation",
+    ];
+
+    if (!commonAnalysisTypes.includes(schema.name)) {
+      warnings.push(
+        `Analysis type '${schema.name}' is not a common SONG analysis type. ` +
+          `Common types include: ${commonAnalysisTypes
+            .slice(0, 3)
+            .join(", ")}, etc.`
+      );
+    }
+  }
+
+  // Check for required properties in certain analysis types
+  if (schema.name === "sequencingRead" && schema.schema.properties) {
+    const requiredSequencingFields = ["fileName", "fileMd5sum", "fileSize"];
+    const schemaProperties = Object.keys(schema.schema.properties);
+
+    const missingFields = requiredSequencingFields.filter(
+      (field) => !schemaProperties.includes(field)
+    );
+
+    if (missingFields.length > 0) {
+      warnings.push(
+        `Sequencing read schemas typically require: ${missingFields.join(", ")}`
+      );
+    }
+  }
+
+  // Check for version field
+  if (!schema.version) {
+    warnings.push(
+      "Consider adding a 'version' field to track schema evolution"
+    );
+  }
+
+  // Check for description field
+  if (!schema.description) {
+    warnings.push(
+      "Consider adding a 'description' field to document the schema purpose"
+    );
+  }
 }

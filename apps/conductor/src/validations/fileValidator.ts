@@ -4,13 +4,13 @@
  * Validates file existence, permissions, and basic properties
  * before processing CSV files into Elasticsearch.
  * Enhanced with ErrorFactory patterns while maintaining original scope.
+ * Updated to use centralized file utilities.
  */
 
 import * as fs from "fs";
 import * as path from "path";
 import { ValidationResult } from "../types/validations";
 import { Logger } from "../utils/logger";
-import { ErrorFactory } from "../utils/errors";
 import { ALLOWED_EXTENSIONS } from "./constants";
 
 /**
@@ -85,68 +85,4 @@ export async function validateFiles(
   }
 
   return { valid: errors.length === 0, errors };
-}
-
-/**
- * Enhanced single file validation helper (new utility, doesn't change existing API)
- */
-export function validateSingleFile(filePath: string, fileType?: string): void {
-  const fileName = path.basename(filePath);
-  const typeDescription = fileType || "file";
-
-  if (!filePath) {
-    throw ErrorFactory.args(
-      `${typeDescription} path not specified`,
-      undefined,
-      [
-        `Provide a ${typeDescription} path`,
-        "Check command line arguments",
-        `Example: --${typeDescription.toLowerCase()}-file example.json`,
-      ]
-    );
-  }
-
-  if (!fs.existsSync(filePath)) {
-    throw ErrorFactory.file(
-      `${typeDescription} not found: ${fileName}`,
-      filePath,
-      [
-        "Check that the file path is correct",
-        "Ensure the file exists at the specified location",
-        "Verify file permissions allow read access",
-        `Current directory: ${process.cwd()}`,
-      ]
-    );
-  }
-
-  // Check file readability
-  try {
-    fs.accessSync(filePath, fs.constants.R_OK);
-  } catch (error) {
-    throw ErrorFactory.file(
-      `${typeDescription} is not readable: ${fileName}`,
-      filePath,
-      [
-        "Check file permissions",
-        "Ensure the file is not locked by another process",
-        "Verify you have read access to the file",
-      ]
-    );
-  }
-
-  // Check file size
-  const stats = fs.statSync(filePath);
-  if (stats.size === 0) {
-    throw ErrorFactory.file(
-      `${typeDescription} is empty: ${fileName}`,
-      filePath,
-      [
-        `Ensure the ${typeDescription.toLowerCase()} contains data`,
-        "Check if the file was properly created",
-        "Verify the file is not corrupted",
-      ]
-    );
-  }
-
-  Logger.debug`${typeDescription} validated: ${fileName}`;
 }

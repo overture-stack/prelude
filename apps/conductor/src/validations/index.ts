@@ -8,4 +8,4 @@
 export * from "./csvValidator";
 export * from "./elasticsearchValidator";
 export * from "./fileValidator";
-export * from "./environment";
+export * from "./environmentValidator";

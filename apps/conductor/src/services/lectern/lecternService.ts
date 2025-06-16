@@ -53,7 +53,7 @@ export class LecternService extends BaseService {
       // Enhanced schema structure validation
       this.validateLecternSchemaStructure(schemaData);
 
-      Logger.info`Uploading Lectern schema: ${schemaData.name}`;
+      Logger.debug`Uploading Lectern schema: ${schemaData.name}`;
 
       // Upload to Lectern with enhanced error handling
       const response = await this.http.post<LecternUploadResponse>(

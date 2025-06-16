@@ -1,7 +1,9 @@
 .
 ├── cli
+│   ├── commandOptions.ts
+│   ├── environment.ts
 │   ├── index.ts
-│   └── options.ts
+│   └── serviceConfigManager.ts
 ├── commands
 │   ├── baseCommand.ts
 │   ├── commandRegistry.ts
@@ -14,9 +16,6 @@
 │   ├── songSubmitAnalysisCommand.ts
 │   ├── songUploadSchemaCommand.ts
 │   └── uploadCsvCommand.ts
-├── config
-│   ├── environment.ts
-│   └── serviceConfigManager.ts
 ├── main.ts
 ├── services
 │   ├── base
@@ -35,7 +34,7 @@
 │   │   └── index.ts
 │   ├── lectern
 │   │   ├── index.ts
-│   │   ├── LecternService.ts
+│   │   ├── lecternService.ts
 │   │   └── types.ts
 │   ├── lyric
 │   │   ├── LyricRegistrationService.ts
@@ -58,14 +57,15 @@
 │   └── validations.ts
 ├── utils
 │   ├── errors.ts
+│   ├── fileUtils.ts
 │   └── logger.ts
 └── validations
     ├── constants.ts
     ├── csvValidator.ts
     ├── elasticsearchValidator.ts
-    ├── environment.ts
+    ├── environmentValidator.ts
     ├── fileValidator.ts
     ├── index.ts
     └── utils.ts
 
-14 directories, 55 files
+13 directories, 56 files

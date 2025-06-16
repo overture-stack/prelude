@@ -1,104 +1,81 @@
-// src/commands/maestroIndexCommand.ts - Enhanced with ErrorFactory patterns
-import axios from "axios";
-import { Command, CommandResult } from "./baseCommand";
+/**
+ * Maestro Index Command
+ *
+ * Command for indexing data using the Maestro service.
+ * Enhanced with ErrorFactory patterns for consistent error handling.
+ */
+
+import { Command } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
-import chalk from "chalk";
 import { ErrorFactory } from "../utils/errors";
+import axios, { AxiosResponse } from "axios";
 
 /**
- * Response from index repository request
- */
-interface IndexRepositoryResponse {
-  message?: string;
-  status?: string;
-  [key: string]: unknown;
-}
-
-/**
- * Command for indexing a repository with optional organization and ID filters
- * Enhanced with ErrorFactory patterns for better user feedback
+ * Command for indexing data using Maestro service
+ * Enhanced with comprehensive validation and error handling
  */
 export class MaestroIndexCommand extends Command {
-  private readonly TIMEOUT = 30000; // 30 seconds
-
   constructor() {
-    super("maestroIndex");
-    this.defaultOutputFileName = "index-repository-results.json";
+    super("Maestro Index");
   }
 
   /**
-   * Enhanced validation with ErrorFactory patterns
+   * Enhanced validation with specific error messages for each parameter
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
 
     Logger.debug`Validating Maestro indexing parameters`;
 
-    // Enhanced repository code validation
-    const repositoryCode = this.getRepositoryCode(options);
-    this.validateRepositoryCode(repositoryCode);
-
-    // Enhanced index URL validation
-    const indexUrl = this.getIndexUrl(options);
-    this.validateIndexUrl(indexUrl);
-
-    // Optional parameter validation
-    this.validateOptionalParameters(options);
+    // Enhanced validation for each required parameter
+    this.validateIndexUrl(options);
+    this.validateRepositoryCode(options);
 
     Logger.successString("Maestro indexing parameters validated");
   }
 
   /**
-   * Executes the repository indexing process with enhanced error handling
+   * Enhanced execution with detailed logging and error handling
    */
-  protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
 
-    try {
-      // Extract configuration with enhanced validation
-      const indexUrl = this.getIndexUrl(options);
-      const repositoryCode = this.getRepositoryCode(options)!;
-      const organization = options.organization || process.env.ORGANIZATION;
-      const id = options.id || process.env.ID;
+    // Extract validated parameters
+    const indexUrl = options.indexUrl || process.env.INDEX_URL;
+    const repositoryCode =
+      options.repositoryCode || process.env.REPOSITORY_CODE;
+    const organization = options.organization || process.env.ORGANIZATION;
+    const id = options.id || process.env.ID;
 
-      // Construct the URL based on provided parameters
-      const requestUrl = this.buildRequestUrl(
-        indexUrl,
-        repositoryCode,
-        organization,
-        id
-      );
+    // Construct the URL based on provided parameters
+    const requestUrl = this.buildRequestUrl(
+      indexUrl,
+      repositoryCode,
+      organization,
+      id
+    );
 
-      // Log indexing information with enhanced context
-      this.logIndexingInfo(requestUrl, repositoryCode, organization, id);
+    // Log indexing information with enhanced context
+    this.logIndexingInfo(requestUrl, repositoryCode, organization, id);
 
-      // Make the request with enhanced error handling
-      Logger.info`Sending indexing request to Maestro...`;
-      const response = await this.makeIndexRequest(requestUrl);
+    // Make the request with enhanced error handling
+    Logger.info`Sending indexing request to Maestro...`;
+    const response = await this.makeIndexRequest(requestUrl);
 
-      // Enhanced success logging
-      this.logSuccess(response.data, repositoryCode, organization, id);
+    // Enhanced success logging
+    this.logSuccess(response.data, repositoryCode, organization, id);
 
-      return {
-        success: true,
-        details: {
-          repository: repositoryCode,
-          organization: organization || "All",
-          id: id || "All",
-          requestUrl,
-          response: response.data,
-        },
-      };
-    } catch (error) {
-      return this.handleExecutionError(error, cliOutput);
-    }
+    // Command completed successfully - no return needed
   }
 
   /**
    * Enhanced repository code validation
    */
-  private validateRepositoryCode(repositoryCode: string | undefined): void {
+  private validateRepositoryCode(options: any): void {
+    const repositoryCode =
+      options.repositoryCode || process.env.REPOSITORY_CODE;
+
     if (!repositoryCode) {
       throw ErrorFactory.args(
         "Repository code required for indexing operation",
@@ -146,56 +123,59 @@ export class MaestroIndexCommand extends Command {
   /**
    * Enhanced index URL validation
    */
-  private validateIndexUrl(indexUrl: string): void {
+  private validateIndexUrl(options: any): void {
+    const indexUrl = options.indexUrl || process.env.INDEX_URL;
+
+    if (!indexUrl) {
+      throw ErrorFactory.config(
+        "Maestro index URL not configured",
+        "indexUrl",
+        [
+          "Provide index URL: conductor maestroIndex --index-url http://localhost:11235",
+          "Set INDEX_URL environment variable",
+          "Verify Maestro service is running and accessible",
+          "Check network connectivity to Maestro service",
+          "Default Maestro port is usually 11235",
+        ]
+      );
+    }
+
     try {
       const url = new URL(indexUrl);
       if (!["http:", "https:"].includes(url.protocol)) {
-        throw new Error("Protocol must be http or https");
+        throw ErrorFactory.validation(
+          `Invalid protocol in Maestro URL: ${url.protocol}`,
+          { indexUrl, protocol: url.protocol },
+          [
+            "Protocol must be http or https",
+            "Use format: http://localhost:11235 or https://maestro.example.com",
+            "Check for typos in the URL",
+            "Verify the correct protocol with your administrator",
+          ]
+        );
       }
-      Logger.debug`Using index service URL: ${indexUrl}`;
+      Logger.debug`Using Maestro URL: ${indexUrl}`;
     } catch (error) {
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error; // Re-throw enhanced errors
+      }
+
       throw ErrorFactory.config(
-        `Invalid index service URL format: ${indexUrl}`,
+        `Invalid Maestro URL format: ${indexUrl}`,
         "indexUrl",
         [
           "Use a valid URL format: http://localhost:11235",
           "Include protocol (http:// or https://)",
           "Check for typos in the URL",
           "Verify port number is correct (usually 11235 for Maestro)",
-          "Ensure the indexing service is accessible",
+          "Ensure proper URL encoding for special characters",
         ]
       );
     }
   }
 
   /**
-   * Validate optional parameters
-   */
-  private validateOptionalParameters(options: any): void {
-    const organization = options.organization || process.env.ORGANIZATION;
-    const id = options.id || process.env.ID;
-
-    if (organization && typeof organization !== "string") {
-      Logger.warn`Invalid organization parameter type, ignoring`;
-    }
-
-    if (id && typeof id !== "string") {
-      Logger.warn`Invalid ID parameter type, ignoring`;
-    }
-
-    if (organization) {
-      Logger.debug`Organization filter: ${organization}`;
-    }
-
-    if (id) {
-      Logger.debug`ID filter: ${id}`;
-    }
-
-    Logger.debug`Optional parameters validated`;
-  }
-
-  /**
-   * Build request URL with proper encoding
+   * Build the complete request URL with query parameters
    */
   private buildRequestUrl(
     baseUrl: string,
@@ -203,286 +183,189 @@ export class MaestroIndexCommand extends Command {
     organization?: string,
     id?: string
   ): string {
-    // Normalize base URL
-    const normalizedBase = baseUrl.endsWith("/")
-      ? baseUrl.slice(0, -1)
-      : baseUrl;
+    const url = new URL(`${baseUrl}/index`);
 
-    // Build URL path
-    let urlPath = `/index/repository/${encodeURIComponent(repositoryCode)}`;
+    url.searchParams.append("repositoryCode", repositoryCode);
 
     if (organization) {
-      urlPath += `/organization/${encodeURIComponent(organization)}`;
-      if (id) {
-        urlPath += `/id/${encodeURIComponent(id)}`;
-      }
+      url.searchParams.append("organization", organization);
     }
 
-    return normalizedBase + urlPath;
+    if (id) {
+      url.searchParams.append("id", id);
+    }
+
+    return url.toString();
   }
 
   /**
-   * Make the index request with enhanced error handling
+   * Enhanced logging for indexing operation details
    */
-  private async makeIndexRequest(
-    url: string
-  ): Promise<{ data: IndexRepositoryResponse }> {
-    try {
-      const response = await axios.post(url, "", {
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        timeout: this.TIMEOUT,
-      });
+  private logIndexingInfo(
+    requestUrl: string,
+    repositoryCode: string,
+    organization?: string,
+    id?: string
+  ): void {
+    Logger.section("Maestro Indexing Operation");
+    Logger.info`Repository Code: ${repositoryCode}`;
 
+    if (organization) {
+      Logger.info`Organization: ${organization}`;
+    }
+
+    if (id) {
+      Logger.info`ID Filter: ${id}`;
+    }
+
+    Logger.debug`Full request URL: ${requestUrl}`;
+  }
+
+  /**
+   * Make the indexing request with enhanced error handling
+   */
+  private async makeIndexRequest(requestUrl: string): Promise<AxiosResponse> {
+    try {
+      const response = await axios.post(requestUrl);
       return response;
     } catch (error) {
-      // Enhanced Axios error handling with specific suggestions
-      if (this.isAxiosError(error)) {
-        const axiosError = error as any;
-        const status = axiosError.response?.status;
-        const responseData = axiosError.response?.data;
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const statusText = error.response?.statusText;
+        const responseData = error.response?.data;
 
-        // Handle specific HTTP status codes
+        // Enhanced error handling based on response status
         if (status === 404) {
           throw ErrorFactory.connection(
-            "Repository not found or indexing endpoint not available",
+            "Maestro indexing endpoint not found",
             "Maestro",
-            url,
+            requestUrl,
             [
-              "Verify the repository code is correct and exists",
-              "Check that the indexing service is running",
-              "Confirm the API endpoint is available",
-              "Verify the repository is registered in the system",
-              `Test endpoint availability: curl -X POST ${url}`,
-            ]
-          );
-        } else if (status === 401 || status === 403) {
-          throw ErrorFactory.connection(
-            "Authentication or authorization failed",
-            "Maestro",
-            url,
-            [
-              "Check if authentication is required for indexing",
-              "Verify API credentials and permissions",
-              "Ensure proper access rights for repository indexing",
-              "Contact administrator for indexing permissions",
-            ]
-          );
-        } else if (status === 400) {
-          const errorMessage =
-            responseData?.message || "Invalid request parameters";
-          throw ErrorFactory.validation(
-            `Indexing request validation failed: ${errorMessage}`,
-            { status, responseData, url },
-            [
-              "Check repository code format and validity",
-              "Verify organization and ID parameters if provided",
-              "Ensure request parameters meet API requirements",
-              "Review indexing service documentation",
-            ]
-          );
-        } else if (status === 500) {
-          throw ErrorFactory.connection(
-            "Indexing service encountered an internal error",
-            "Maestro",
-            url,
-            [
-              "The indexing service may be experiencing issues",
-              "Check indexing service logs for details",
-              "Try again later if the service is temporarily unavailable",
-              "Contact administrator if the problem persists",
-            ]
-          );
-        } else if (axiosError.code === "ECONNREFUSED") {
-          throw ErrorFactory.connection(
-            "Cannot connect to indexing service - connection refused",
-            "Maestro",
-            url,
-            [
-              "Check that the indexing service is running",
-              "Verify the service URL and port are correct",
-              "Ensure no firewall is blocking the connection",
-              "Confirm the service is accessible from your network",
-              `Test connection: curl ${url.split("/index")[0]}/health`,
-            ]
-          );
-        } else if (axiosError.code === "ETIMEDOUT") {
-          throw ErrorFactory.connection(
-            "Indexing request timed out",
-            "Maestro",
-            url,
-            [
-              "The indexing operation may be taking longer than expected",
-              "Large repositories may require more time to index",
-              "Check network connectivity and service performance",
-              "Try again with a specific organization or ID filter",
-              "Contact administrator if timeouts persist",
+              "Check that Maestro service is running",
+              "Verify the index URL is correct",
+              "Ensure Maestro service version supports this endpoint",
+              "Check Maestro service logs for errors",
+              `Test manually: curl -X POST ${requestUrl}`,
             ]
           );
         }
 
-        // Generic Axios error
+        if (status === 400) {
+          throw ErrorFactory.validation(
+            `Invalid indexing parameters: ${
+              responseData?.message || statusText
+            }`,
+            { status, responseData },
+            [
+              "Check repository code format and validity",
+              "Verify organization parameter if provided",
+              "Ensure ID parameter format is correct",
+              "Review Maestro API documentation for parameter requirements",
+              "Contact administrator for valid parameter values",
+            ]
+          );
+        }
+
+        if (status === 401 || status === 403) {
+          throw ErrorFactory.connection(
+            `Maestro access denied: ${statusText}`,
+            "Maestro",
+            requestUrl,
+            [
+              "Check authentication credentials",
+              "Verify user permissions for indexing operations",
+              "Contact administrator for access rights",
+              "Ensure proper API keys or tokens are configured",
+            ]
+          );
+        }
+
+        if (status === 500) {
+          throw ErrorFactory.connection(
+            `Maestro server error: ${responseData?.message || statusText}`,
+            "Maestro",
+            requestUrl,
+            [
+              "Maestro service encountered an internal error",
+              "Check Maestro service logs for details",
+              "Retry the operation after a brief delay",
+              "Contact system administrator if problem persists",
+              "Verify system resources and service health",
+            ]
+          );
+        }
+
+        // Generic HTTP error
         throw ErrorFactory.connection(
-          `Indexing request failed: ${axiosError.message}`,
+          `Maestro request failed: ${status} ${statusText}`,
           "Maestro",
-          url,
+          requestUrl,
           [
-            "Check indexing service connectivity and status",
-            "Verify request parameters and format",
-            "Review network settings and firewall rules",
-            "Try the request again or contact support",
+            `HTTP ${status}: ${statusText}`,
+            "Check Maestro service status and logs",
+            "Verify network connectivity",
+            "Review request parameters",
+            "Contact administrator if problem persists",
           ]
         );
       }
 
-      // Non-Axios error
-      throw error;
+      // Network or other errors
+      throw ErrorFactory.connection(
+        `Failed to connect to Maestro: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        "Maestro",
+        requestUrl,
+        [
+          "Check that Maestro service is running",
+          "Verify network connectivity",
+          "Check firewall and proxy settings",
+          "Ensure correct URL and port",
+          "Review network configuration",
+        ]
+      );
     }
   }
 
   /**
-   * Get repository code from various sources
-   */
-  private getRepositoryCode(options: any): string | undefined {
-    return options.repositoryCode || process.env.REPOSITORY_CODE;
-  }
-
-  /**
-   * Get index URL from various sources
-   */
-  private getIndexUrl(options: any): string {
-    return (
-      options.indexUrl || process.env.INDEX_URL || "http://localhost:11235"
-    );
-  }
-
-  /**
-   * Enhanced indexing information logging
-   */
-  private logIndexingInfo(
-    url: string,
-    repositoryCode: string,
-    organization?: string,
-    id?: string
-  ): void {
-    Logger.info`${chalk.bold.cyan("Maestro Repository Indexing Details:")}`;
-    Logger.generic(`  Endpoint: ${url}`);
-    Logger.generic(`  Repository Code: ${repositoryCode}`);
-
-    if (organization) {
-      Logger.generic(`  Organization Filter: ${organization}`);
-    } else {
-      Logger.generic(`  Organization Filter: All organizations`);
-    }
-
-    if (id) {
-      Logger.generic(`  ID Filter: ${id}`);
-    } else {
-      Logger.generic(`  ID Filter: All IDs`);
-    }
-  }
-
-  /**
-   * Enhanced success logging with detailed information
+   * Enhanced success logging with operation details
    */
   private logSuccess(
-    responseData: IndexRepositoryResponse,
+    responseData: any,
     repositoryCode: string,
     organization?: string,
     id?: string
   ): void {
-    Logger.success`Repository indexing request completed successfully`;
-    Logger.generic(" ");
-    Logger.generic(chalk.gray(`    ✓ Repository: ${repositoryCode}`));
+    Logger.success`Maestro indexing request completed successfully`;
+
+    // Log response details if available
+    if (responseData) {
+      if (responseData.message) {
+        Logger.info`Response: ${responseData.message}`;
+      }
+
+      if (responseData.indexedCount !== undefined) {
+        Logger.info`Records indexed: ${responseData.indexedCount}`;
+      }
+
+      if (responseData.processingTime) {
+        Logger.info`Processing time: ${responseData.processingTime}`;
+      }
+    }
+
+    // Summary of what was indexed
+    Logger.section("Indexing Summary");
+    Logger.info`Repository: ${repositoryCode}`;
 
     if (organization) {
-      Logger.generic(chalk.gray(`    ✓ Organization: ${organization}`));
-    } else {
-      Logger.generic(chalk.gray(`    ✓ Organization: All`));
+      Logger.info`Organization: ${organization}`;
     }
 
     if (id) {
-      Logger.generic(chalk.gray(`    ✓ ID: ${id}`));
-    } else {
-      Logger.generic(chalk.gray(`    ✓ ID: All`));
+      Logger.info`ID Filter: ${id}`;
     }
 
-    if (responseData?.message) {
-      Logger.generic(chalk.gray(`    ✓ Response: ${responseData.message}`));
-    }
-
-    if (responseData?.status) {
-      Logger.generic(chalk.gray(`    ✓ Status: ${responseData.status}`));
-    }
-
-    Logger.generic(" ");
-    Logger.tipString(
-      "Indexing operation has been initiated - check indexing service logs for progress"
-    );
-  }
-
-  /**
-   * Enhanced execution error handling with context-specific guidance
-   */
-  private handleExecutionError(
-    error: unknown,
-    cliOutput: CLIOutput
-  ): CommandResult {
-    const options = cliOutput.options;
-    const repositoryCode = this.getRepositoryCode(options) || "unknown";
-    const indexUrl = this.getIndexUrl(options);
-
-    if (error instanceof Error && error.name === "ConductorError") {
-      // Add indexing context to existing errors
-      return {
-        success: false,
-        errorMessage: error.message,
-        errorCode: (error as any).code,
-        details: {
-          ...(error as any).details,
-          repositoryCode,
-          command: "maestroIndex",
-          serviceUrl: indexUrl,
-        },
-      };
-    }
-
-    // Handle unexpected errors
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    const suggestions = [
-      "Check indexing service connectivity and availability",
-      "Verify repository code is correct and exists",
-      "Ensure proper network connectivity",
-      "Review indexing service configuration",
-      "Use --debug flag for detailed error information",
-      "Contact administrator if the problem persists",
-    ];
-
-    return {
-      success: false,
-      errorMessage: `Repository indexing failed: ${errorMessage}`,
-      errorCode: "CONNECTION_ERROR",
-      details: {
-        originalError: error,
-        repositoryCode,
-        suggestions,
-        command: "maestroIndex",
-        serviceUrl: indexUrl,
-      },
-    };
-  }
-
-  /**
-   * Type guard to check if an error is an Axios error
-   */
-  private isAxiosError(error: unknown): boolean {
-    return Boolean(
-      error &&
-        typeof error === "object" &&
-        "isAxiosError" in error &&
-        (error as { isAxiosError: boolean }).isAxiosError === true
-    );
+    Logger.tipString("Check Maestro logs for detailed indexing results");
   }
 }

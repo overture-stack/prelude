@@ -7,7 +7,7 @@
 
 import { validateBatchSize } from "../validations/elasticsearchValidator";
 import { validateDelimiter } from "../validations/utils";
-import { Command, CommandResult } from "./baseCommand";
+import { Command } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
@@ -38,9 +38,8 @@ export class UploadCommand extends Command {
   /**
    * Executes the upload process for all specified files
    * @param cliOutput The CLI configuration and inputs
-   * @returns Promise<CommandResult> with success/failure information
    */
-  protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     const { config, filePaths } = cliOutput;
 
     Logger.info`Starting CSV upload process for ${filePaths.length} file(s)`;
@@ -79,25 +78,15 @@ export class UploadCommand extends Command {
       }
     }
 
-    // Enhanced result reporting
+    // Enhanced result reporting with error throwing
     if (failureCount === 0) {
       Logger.success`All ${successCount} file(s) processed successfully`;
-      return {
-        success: true,
-        details: {
-          filesProcessed: successCount,
-          totalFiles: filePaths.length,
-        },
-      };
+      // Success - method completes normally
     } else if (successCount === 0) {
-      Logger.error`Failed to process all ${failureCount} file(s)`;
-      Logger.tipString("Use --debug flag for detailed error information");
-
-      return {
-        success: false,
-        errorMessage: `Failed to process all ${failureCount} files`,
-        errorCode: "VALIDATION_FAILED",
-        details: {
+      // Throw error with suggestions instead of returning failure result
+      throw ErrorFactory.validation(
+        `Failed to process ${failureCount} file(s)`,
+        {
           totalFiles: filePaths.length,
           failureDetails,
           suggestions: [
@@ -106,22 +95,18 @@ export class UploadCommand extends Command {
             "Ensure Elasticsearch is accessible",
             "Use --debug for detailed error information",
           ],
-        },
-      };
+        }
+      );
     } else {
-      // Partial success
+      // Partial success - log warning but don't fail
       Logger.warn`Processed ${successCount} of ${filePaths.length} files successfully`;
       Logger.infoString(`${failureCount} files failed - see details above`);
 
-      return {
-        success: true,
-        details: {
-          filesProcessed: successCount,
-          filesFailed: failureCount,
-          totalFiles: filePaths.length,
-          failureDetails,
-        },
-      };
+      // For partial success, we could either succeed or fail depending on requirements
+      // Here we'll succeed but warn about partial failures
+      Logger.tipString(
+        "Some files failed to process - check error details above"
+      );
     }
   }
 
@@ -239,7 +224,7 @@ export class UploadCommand extends Command {
       }
     }
 
-    Logger.successString("Input validation completed");
+    Logger.debugString("Input validation completed");
   }
 
   /**

@@ -1,5 +1,4 @@
 // src/services/song/index.ts
-export { SongService } from "./songService";
 export { SongScoreService } from "./songScoreService";
 export * from "./types";
 // Note: validateSongSchema is only used internally by SongService

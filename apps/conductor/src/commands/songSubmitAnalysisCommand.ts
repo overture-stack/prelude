@@ -1,5 +1,5 @@
 // src/commands/songSubmitAnalysisCommand.ts - Enhanced with ErrorFactory patterns
-import { Command, CommandResult } from "./baseCommand";
+import { Command } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
@@ -45,77 +45,65 @@ export class SongSubmitAnalysisCommand extends Command {
   /**
    * Executes the combined SONG/Score workflow
    */
-  protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
 
-    try {
-      // Extract configuration with enhanced validation
-      const workflowParams = this.extractWorkflowParams(options);
-      const serviceConfig = this.extractServiceConfig(options);
-      const scoreConfig = this.extractScoreConfig(options);
+    // Extract configuration with enhanced validation
+    const workflowParams = this.extractWorkflowParams(options);
+    const serviceConfig = this.extractServiceConfig(options);
+    const scoreConfig = this.extractScoreConfig(options);
 
-      Logger.info`Starting SONG/Score analysis workflow`;
-      Logger.info`Study ID: ${workflowParams.studyId}`;
-      Logger.info`Data Directory: ${workflowParams.dataDir}`;
-      Logger.info`Manifest File: ${workflowParams.manifestFile}`;
+    Logger.info`Starting SONG/Score analysis workflow`;
+    Logger.info`Study ID: ${workflowParams.studyId}`;
+    Logger.info`Data Directory: ${workflowParams.dataDir}`;
+    Logger.info`Manifest File: ${workflowParams.manifestFile}`;
 
-      // Create combined service instance with enhanced error handling
-      const songScoreService = new SongScoreService(serviceConfig, scoreConfig);
+    // Create combined service instance with enhanced error handling
+    const songScoreService = new SongScoreService(serviceConfig, scoreConfig);
 
-      // Enhanced Docker requirements validation
-      Logger.info`Validating Docker requirements for Score operations...`;
-      await songScoreService.validateDockerRequirements();
+    // Enhanced Docker requirements validation
+    Logger.info`Validating Docker requirements for Score operations...`;
+    await songScoreService.validateDockerRequirements();
 
-      // Enhanced services health check
-      Logger.info`Checking SONG and Score services health...`;
-      const healthStatus = await songScoreService.checkServicesHealth();
-      if (!healthStatus.overall) {
-        const issues = [];
-        if (!healthStatus.song) issues.push("SONG");
-        if (!healthStatus.score) issues.push("Score");
+    // Enhanced services health check
+    Logger.info`Checking SONG and Score services health...`;
+    const healthStatus = await songScoreService.checkServicesHealth();
+    if (!healthStatus.overall) {
+      const issues = [];
+      if (!healthStatus.song) issues.push("SONG");
+      if (!healthStatus.score) issues.push("Score");
 
-        throw ErrorFactory.connection(
-          `Service health check failed: ${issues.join(
-            ", "
-          )} service(s) not healthy`,
-          issues[0],
-          undefined,
-          [
-            `Check that ${issues.join(" and ")} service(s) are running`,
-            "Verify service URLs and connectivity",
-            "Review service logs for errors",
-            "Check Docker containers if using containerized services",
-            "Ensure proper authentication and permissions",
-          ]
-        );
-      }
-
-      // Log workflow info with enhanced context
-      this.logWorkflowInfo(workflowParams, serviceConfig.url, scoreConfig?.url);
-
-      // Execute the complete workflow with enhanced progress tracking
-      Logger.info`Executing SONG/Score workflow...`;
-      const result = await songScoreService.executeWorkflow(workflowParams);
-
-      // Enhanced success/partial success logging
-      if (result.success) {
-        this.logSuccess(result);
-      } else {
-        this.logPartialSuccess(result);
-      }
-
-      return {
-        success: result.success,
-        details: {
-          workflowParams,
-          serviceConfig,
-          scoreConfig,
-          workflowResult: result,
-        },
-      };
-    } catch (error) {
-      return this.handleExecutionError(error, cliOutput);
+      throw ErrorFactory.connection(
+        `Service health check failed: ${issues.join(
+          ", "
+        )} service(s) not healthy`,
+        issues[0],
+        undefined,
+        [
+          `Check that ${issues.join(" and ")} service(s) are running`,
+          "Verify service URLs and connectivity",
+          "Review service logs for errors",
+          "Check Docker containers if using containerized services",
+          "Ensure proper authentication and permissions",
+        ]
+      );
     }
+
+    // Log workflow info with enhanced context
+    this.logWorkflowInfo(workflowParams, serviceConfig.url, scoreConfig?.url);
+
+    // Execute the complete workflow with enhanced progress tracking
+    Logger.info`Executing SONG/Score workflow...`;
+    const result = await songScoreService.executeWorkflow(workflowParams);
+
+    // Enhanced success/partial success logging
+    if (result.success) {
+      this.logSuccess(result);
+    } else {
+      this.logPartialSuccess(result);
+    }
+
+    // Command completed successfully
   }
 
   /**
@@ -196,7 +184,7 @@ export class SongSubmitAnalysisCommand extends Command {
   }
 
   /**
-   * Enhanced SONG URL validation
+   * Enhanced SONG URL validation with protocol checking
    */
   private validateSongUrl(options: any): void {
     const songUrl = this.getSongUrl(options);
@@ -211,9 +199,25 @@ export class SongSubmitAnalysisCommand extends Command {
     }
 
     try {
-      new URL(songUrl);
+      const url = new URL(songUrl);
+      if (!["http:", "https:"].includes(url.protocol)) {
+        throw ErrorFactory.validation(
+          `Invalid protocol in SONG URL: ${url.protocol}`,
+          { songUrl, protocol: url.protocol },
+          [
+            "Protocol must be http or https",
+            "Use format: http://localhost:8080 or https://song.example.com",
+            "Check for typos in the URL",
+            "Verify the correct protocol with your administrator",
+          ]
+        );
+      }
       Logger.debug`Using SONG URL: ${songUrl}`;
     } catch (error) {
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error; // Re-throw enhanced errors
+      }
+
       throw ErrorFactory.config(
         `Invalid SONG URL format: ${songUrl}`,
         "songUrl",
@@ -258,15 +262,31 @@ export class SongSubmitAnalysisCommand extends Command {
   }
 
   /**
-   * Enhanced Score URL validation
+   * Enhanced Score URL validation with protocol checking
    */
   private validateScoreUrl(options: any): void {
     const scoreUrl = this.getScoreUrl(options);
 
     try {
-      new URL(scoreUrl);
+      const url = new URL(scoreUrl);
+      if (!["http:", "https:"].includes(url.protocol)) {
+        throw ErrorFactory.validation(
+          `Invalid protocol in Score URL: ${url.protocol}`,
+          { scoreUrl, protocol: url.protocol },
+          [
+            "Protocol must be http or https",
+            "Use format: http://localhost:8087 or https://score.example.com",
+            "Check for typos in the URL",
+            "Verify the correct protocol with your administrator",
+          ]
+        );
+      }
       Logger.debug`Using Score URL: ${scoreUrl}`;
     } catch (error) {
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error; // Re-throw enhanced errors
+      }
+
       throw ErrorFactory.config(
         `Invalid Score URL format: ${scoreUrl}`,
         "scoreUrl",
@@ -664,76 +684,5 @@ export class SongSubmitAnalysisCommand extends Command {
         "Analysis and files are ready but publication failed - try running songPublishAnalysis command"
       );
     }
-  }
-
-  /**
-   * Enhanced execution error handling
-   */
-  private handleExecutionError(
-    error: unknown,
-    cliOutput: CLIOutput
-  ): CommandResult {
-    const options = cliOutput.options;
-    const analysisFile = this.getAnalysisFile(options);
-    const studyId = options.studyId || process.env.STUDY_ID || "unknown";
-
-    if (error instanceof Error && error.name === "ConductorError") {
-      return {
-        success: false,
-        errorMessage: error.message,
-        errorCode: (error as any).code,
-        details: {
-          ...(error as any).details,
-          analysisFile,
-          studyId,
-          command: "songSubmitAnalysis",
-        },
-      };
-    }
-
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    let suggestions = [
-      "Check SONG and Score service connectivity",
-      "Verify analysis file format and content",
-      "Ensure study exists in SONG",
-      "Check data files are accessible",
-      "Review service logs for additional details",
-      "Use --debug flag for detailed error information",
-    ];
-
-    // Add specific suggestions based on error content
-    if (errorMessage.includes("Docker") || errorMessage.includes("container")) {
-      suggestions.unshift("Docker is required for Score operations");
-      suggestions.unshift("Ensure Docker is installed and running");
-      suggestions.unshift(
-        "Check that score-client and song-client containers are available"
-      );
-    } else if (errorMessage.includes("manifest")) {
-      suggestions.unshift(
-        "Manifest generation failed - check analysis file and data directory"
-      );
-      suggestions.unshift(
-        "Ensure data files match those referenced in analysis"
-      );
-    } else if (errorMessage.includes("upload")) {
-      suggestions.unshift(
-        "File upload failed - check Score service and file accessibility"
-      );
-      suggestions.unshift("Verify files exist in data directory");
-      suggestions.unshift("Check file permissions and sizes");
-    }
-
-    return {
-      success: false,
-      errorMessage: `SONG/Score workflow failed: ${errorMessage}`,
-      errorCode: "CONNECTION_ERROR",
-      details: {
-        originalError: error,
-        analysisFile,
-        studyId,
-        suggestions,
-        command: "songSubmitAnalysis",
-      },
-    };
   }
 }

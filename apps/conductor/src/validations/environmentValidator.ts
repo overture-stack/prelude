@@ -83,5 +83,5 @@ export async function validateEnvironment(
     );
   }
 
-  Logger.success`Environment validation passed`;
+  Logger.debug`Environment validation passed`;
 }

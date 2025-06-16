@@ -1,5 +1,5 @@
 // src/commands/lyricRegistrationCommand.ts - Enhanced with ErrorFactory patterns
-import { Command, CommandResult } from "./baseCommand";
+import { Command } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
@@ -31,77 +31,66 @@ export class LyricRegistrationCommand extends Command {
     this.validateDictionaryVersion(options);
     this.validateCentricEntity(options);
 
-    Logger.successString("Lyric registration parameters validated");
+    Logger.debugString("Lyric registration parameters validated");
   }
 
   /**
    * Executes the Lyric dictionary registration process
    */
-  protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
 
-    try {
-      // Extract configuration with enhanced validation
-      const registrationParams = this.extractRegistrationParams(options);
-      const serviceConfig = this.extractServiceConfig(options);
+    // Extract configuration with enhanced validation
+    const registrationParams = this.extractRegistrationParams(options);
+    const serviceConfig = this.extractServiceConfig(options);
 
-      Logger.info`Starting Lyric dictionary registration`;
-      Logger.info`Dictionary: ${registrationParams.dictionaryName} v${registrationParams.dictionaryVersion}`;
-      Logger.info`Category: ${registrationParams.categoryName}`;
-      Logger.info`Centric Entity: ${registrationParams.defaultCentricEntity}`;
+    Logger.debug`Starting Lyric dictionary registration`;
+    Logger.debug`Dictionary: ${registrationParams.dictionaryName} v${registrationParams.dictionaryVersion}`;
+    Logger.debug`Category: ${registrationParams.categoryName}`;
+    Logger.debug`Centric Entity: ${registrationParams.defaultCentricEntity}`;
 
-      // Create service instance with enhanced error handling
-      const lyricService = new LyricRegistrationService(serviceConfig);
+    // Create service instance with enhanced error handling
+    const lyricService = new LyricRegistrationService(serviceConfig);
 
-      // Enhanced health check with specific feedback
-      Logger.info`Checking Lyric service health...`;
-      const healthResult = await lyricService.checkHealth();
-      if (!healthResult.healthy) {
-        throw ErrorFactory.connection(
-          "Lyric service health check failed",
-          "Lyric",
-          serviceConfig.url,
-          [
-            "Check that Lyric service is running",
-            `Verify service URL: ${serviceConfig.url}`,
-            "Check network connectivity and firewall settings",
-            "Review Lyric service logs for errors",
-            `Test manually: curl ${serviceConfig.url}/health`,
-            healthResult.message
-              ? `Health check message: ${healthResult.message}`
-              : "",
-          ].filter(Boolean)
-        );
-      }
-
-      // Optional: Validate centric entity against Lectern if URL provided
-      if (options.lecternUrl) {
-        await this.validateCentricEntityAgainstLectern(
-          registrationParams,
-          options.lecternUrl
-        );
-      }
-
-      // Register dictionary with enhanced context
-      this.logRegistrationInfo(registrationParams, serviceConfig.url);
-
-      Logger.info`Submitting dictionary registration to Lyric...`;
-      const result = await lyricService.registerDictionary(registrationParams);
-
-      // Enhanced success logging
-      this.logSuccess(registrationParams, result);
-
-      return {
-        success: true,
-        details: {
-          registrationParams,
-          serviceUrl: serviceConfig.url,
-          registrationResult: result,
-        },
-      };
-    } catch (error) {
-      return this.handleExecutionError(error, cliOutput);
+    // Enhanced health check with specific feedback
+    Logger.debug`Checking Lyric service health...`;
+    const healthResult = await lyricService.checkHealth();
+    if (!healthResult.healthy) {
+      throw ErrorFactory.connection(
+        "Lyric service health check failed",
+        "Lyric",
+        serviceConfig.url,
+        [
+          "Check that Lyric service is running",
+          `Verify service URL: ${serviceConfig.url}`,
+          "Check network connectivity and firewall settings",
+          "Review Lyric service logs for errors",
+          `Test manually: curl ${serviceConfig.url}/health`,
+          healthResult.message
+            ? `Health check message: ${healthResult.message}`
+            : "",
+        ].filter(Boolean)
+      );
     }
+
+    // Optional: Validate centric entity against Lectern if URL provided
+    if (options.lecternUrl) {
+      await this.validateCentricEntityAgainstLectern(
+        registrationParams,
+        options.lecternUrl
+      );
+    }
+
+    // Register dictionary with enhanced context
+    this.logRegistrationInfo(registrationParams, serviceConfig.url);
+
+    Logger.debug`Submitting dictionary registration to Lyric...`;
+    const result = await lyricService.registerDictionary(registrationParams);
+
+    // Enhanced success logging
+    this.logSuccess(registrationParams, result);
+
+    // Success - method completes normally
   }
 
   /**
@@ -421,12 +410,14 @@ export class LyricRegistrationCommand extends Command {
     params: DictionaryRegistrationParams,
     url: string
   ): void {
-    Logger.info`${chalk.bold.cyan("Lyric Dictionary Registration Details:")}`;
-    Logger.generic(`  Service: ${url}/dictionary/register`);
-    Logger.generic(`  Category: ${params.categoryName}`);
-    Logger.generic(`  Dictionary: ${params.dictionaryName}`);
-    Logger.generic(`  Version: ${params.dictionaryVersion}`);
-    Logger.generic(`  Centric Entity: ${params.defaultCentricEntity}`);
+    Logger.generic(
+      `${chalk.bold.cyan("Lyric Dictionary Registration Details:\n")}`
+    );
+    Logger.generic(`  ▸ Service: ${url}/dictionary/register`);
+    Logger.generic(`  ▸ Category: ${params.categoryName}`);
+    Logger.generic(`  ▸ Dictionary: ${params.dictionaryName}`);
+    Logger.generic(`  ▸ Version: ${params.dictionaryVersion}`);
+    Logger.generic(`  ▸ Centric Entity: ${params.defaultCentricEntity}`);
   }
 
   /**
@@ -434,13 +425,6 @@ export class LyricRegistrationCommand extends Command {
    */
   private logSuccess(params: DictionaryRegistrationParams, result: any): void {
     Logger.success`Dictionary registered successfully with Lyric`;
-    Logger.generic(" ");
-    Logger.generic(chalk.gray(`    ✓ Category: ${params.categoryName}`));
-    Logger.generic(chalk.gray(`    ✓ Dictionary: ${params.dictionaryName}`));
-    Logger.generic(chalk.gray(`    ✓ Version: ${params.dictionaryVersion}`));
-    Logger.generic(
-      chalk.gray(`    ✓ Centric Entity: ${params.defaultCentricEntity}`)
-    );
 
     if (result.id) {
       Logger.generic(chalk.gray(`    ✓ Registration ID: ${result.id}`));
@@ -449,79 +433,5 @@ export class LyricRegistrationCommand extends Command {
     if (result.created_at) {
       Logger.generic(chalk.gray(`    ✓ Created: ${result.created_at}`));
     }
-
-    Logger.generic(" ");
-    Logger.tipString(
-      "Dictionary is now available for data submission in Lyric"
-    );
-  }
-
-  /**
-   * Enhanced execution error handling with context-specific guidance
-   */
-  private handleExecutionError(
-    error: unknown,
-    cliOutput: CLIOutput
-  ): CommandResult {
-    const options = cliOutput.options;
-    const dictionaryName =
-      options.dictName || process.env.DICTIONARY_NAME || "unknown";
-
-    if (error instanceof Error && error.name === "ConductorError") {
-      // Add registration context to existing errors
-      return {
-        success: false,
-        errorMessage: error.message,
-        errorCode: (error as any).code,
-        details: {
-          ...(error as any).details,
-          dictionaryName,
-          command: "lyricRegister",
-          serviceUrl: options.lyricUrl || process.env.LYRIC_URL,
-        },
-      };
-    }
-
-    // Handle service-specific errors
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    let suggestions = [
-      "Check Lyric service connectivity and availability",
-      "Verify all registration parameters are correct",
-      "Ensure dictionary doesn't already exist",
-      "Review Lyric service logs for additional details",
-      "Use --debug flag for detailed error information",
-    ];
-
-    // Add specific suggestions based on error content
-    if (errorMessage.includes("409") || errorMessage.includes("conflict")) {
-      suggestions.unshift("Dictionary may already be registered");
-      suggestions.unshift("Check existing dictionaries in Lyric");
-      suggestions.unshift("Use a different version number or name");
-    } else if (
-      errorMessage.includes("400") ||
-      errorMessage.includes("validation")
-    ) {
-      suggestions.unshift("Check registration parameters format and values");
-      suggestions.unshift("Verify centric entity exists in dictionary schema");
-    } else if (
-      errorMessage.includes("authentication") ||
-      errorMessage.includes("401")
-    ) {
-      suggestions.unshift("Check authentication credentials if required");
-      suggestions.unshift("Verify API access permissions");
-    }
-
-    return {
-      success: false,
-      errorMessage: `Lyric dictionary registration failed: ${errorMessage}`,
-      errorCode: "CONNECTION_ERROR",
-      details: {
-        originalError: error,
-        dictionaryName,
-        suggestions,
-        command: "lyricRegister",
-        serviceUrl: options.lyricUrl || process.env.LYRIC_URL,
-      },
-    };
   }
 }

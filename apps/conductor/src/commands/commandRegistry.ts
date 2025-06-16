@@ -1,13 +1,9 @@
 // src/commands/CommandRegistry.ts - Enhanced with ErrorFactory patterns
-/**
- * Simplified command registry to replace the complex factory pattern
- * Much cleaner than the current commandFactory.ts approach
- * Enhanced with ErrorFactory for consistent error handling
- */
 
 import { Command } from "./baseCommand";
 import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
+import { CLIOutput } from "../types/cli";
 
 // Import all command classes
 import { UploadCommand } from "./uploadCsvCommand";
@@ -118,6 +114,27 @@ export class CommandRegistry {
       },
     ],
   ]);
+
+  /**
+   * Execute a command by name (like composer)
+   * Enhanced with ErrorFactory for better error messages
+   */
+  static async execute(
+    commandName: string,
+    cliOutput: CLIOutput
+  ): Promise<void> {
+    Logger.debugString(`Executing command: ${commandName}`);
+
+    // Create and run the command
+    const command = this.createCommand(commandName);
+
+    // The command will throw errors directly if it fails (like composer)
+    // Otherwise it completes successfully
+    await command.run(cliOutput);
+
+    // If we get here, command succeeded
+    Logger.debug`Command '${commandName}' completed successfully`;
+  }
 
   /**
    * Create a command instance by name

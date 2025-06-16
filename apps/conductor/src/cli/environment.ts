@@ -4,10 +4,7 @@
  * Replaces scattered process.env reads throughout the codebase
  */
 
-/**
- * Centralized environment variable management
- * Replaces scattered process.env reads throughout the codebase
- */
+import { ErrorFactory } from "../utils/errors";
 
 interface ServiceEndpoints {
   elasticsearch: {
@@ -135,12 +132,23 @@ export class Environment {
 
   /**
    * Validate that required environment variables are set
+   * Enhanced with ErrorFactory for better user guidance
    */
   static validateRequired(requiredVars: string[]): void {
     const missing = requiredVars.filter((varName) => !process.env[varName]);
     if (missing.length > 0) {
-      throw new Error(
-        `Missing required environment variables: ${missing.join(", ")}`
+      // UPDATED: Use ErrorFactory instead of generic Error
+      throw ErrorFactory.config(
+        `Missing required environment variables: ${missing.join(", ")}`,
+        "environment",
+        [
+          `Set missing variables: ${missing.join(", ")}`,
+          "Check your .env file or environment configuration",
+          "Ensure all required services are configured",
+          "Use export VARIABLE_NAME=value to set variables",
+          "Example: export ELASTICSEARCH_URL=http://localhost:9200",
+          "Restart the application after setting variables",
+        ]
       );
     }
   }
@@ -159,6 +167,110 @@ export class Environment {
       retries: 3,
       ...overrides,
     };
+  }
+
+  /**
+   * Validate URL format for a service
+   * Enhanced with ErrorFactory for better error messages
+   */
+  static validateServiceUrl(serviceName: string, url: string): void {
+    if (!url) {
+      throw ErrorFactory.config(
+        `${serviceName} service URL not configured`,
+        `${serviceName.toLowerCase()}Url`,
+        [
+          `Set ${serviceName.toUpperCase()}_URL environment variable`,
+          `Use --${serviceName.toLowerCase()}-url parameter`,
+          "Verify the service is running and accessible",
+          "Check network connectivity",
+          `Example: export ${serviceName.toUpperCase()}_URL=http://localhost:8080`,
+        ]
+      );
+    }
+
+    try {
+      const parsedUrl = new URL(url);
+      if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        throw ErrorFactory.config(
+          `Invalid ${serviceName} URL protocol - must be http or https`,
+          `${serviceName.toLowerCase()}Url`,
+          [
+            "Use http:// or https:// protocol",
+            `Check URL format: http://localhost:8080`,
+            "Verify the service URL is correct",
+            "Include protocol in the URL",
+          ]
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error;
+      }
+
+      throw ErrorFactory.config(
+        `Invalid ${serviceName} URL format: ${url}`,
+        `${serviceName.toLowerCase()}Url`,
+        [
+          "Use a valid URL format: http://localhost:8080",
+          "Include protocol (http:// or https://)",
+          "Check for typos in the URL",
+          "Verify port number is correct",
+          "Ensure no extra spaces or characters",
+        ]
+      );
+    }
+  }
+
+  /**
+   * Validate numeric environment variable
+   * Enhanced with ErrorFactory for better error messages
+   */
+  static validateNumericEnv(
+    varName: string,
+    value: string,
+    min?: number,
+    max?: number
+  ): number {
+    const parsed = parseInt(value);
+
+    if (isNaN(parsed)) {
+      throw ErrorFactory.config(
+        `Invalid numeric value for ${varName}: ${value}`,
+        varName.toLowerCase(),
+        [
+          `Set ${varName} to a valid number`,
+          "Check environment variable format",
+          "Use only numeric values (no letters or symbols)",
+          `Example: export ${varName}=1000`,
+        ]
+      );
+    }
+
+    if (min !== undefined && parsed < min) {
+      throw ErrorFactory.config(
+        `${varName} value ${parsed} is below minimum ${min}`,
+        varName.toLowerCase(),
+        [
+          `Set ${varName} to ${min} or higher`,
+          "Check the value meets minimum requirements",
+          `Example: export ${varName}=${min}`,
+        ]
+      );
+    }
+
+    if (max !== undefined && parsed > max) {
+      throw ErrorFactory.config(
+        `${varName} value ${parsed} exceeds maximum ${max}`,
+        varName.toLowerCase(),
+        [
+          `Set ${varName} to ${max} or lower`,
+          "Check the value meets maximum requirements",
+          `Example: export ${varName}=${max}`,
+        ]
+      );
+    }
+
+    return parsed;
   }
 
   /**
