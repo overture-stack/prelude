@@ -1,15 +1,11 @@
 import { Client } from "@elastic/elasticsearch";
+import chalk from "chalk";
 import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import { ConnectionValidationResult, IndexValidationResult } from "../types";
 
 /**
- * Elasticsearch validation utilities
- * Updated to use error factory pattern for consistent error handling
- */
-
-/**
- * Validates Elasticsearch connection by making a ping request
+ * Validates Elasticsearch connection by making a ping request.
  */
 export async function validateElasticsearchConnection(
   client: Client,
@@ -32,10 +28,7 @@ export async function validateElasticsearchConnection(
   } catch (error: any) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    // Log the error message
     Logger.errorString(`Failed to connect to Elasticsearch: ${errorMessage}`);
-
-    // Add a warning with the override command info
     Logger.tipString(
       "Check Elasticsearch is running and that the correct URL and auth params are in use"
     );
@@ -59,19 +52,19 @@ export async function validateElasticsearchConnection(
 }
 
 /**
- * Get list of available indices from Elasticsearch
+ * Fetches a list of user-defined (non-system) indices from Elasticsearch.
  */
 async function getAvailableIndices(client: Client): Promise<string[]> {
   try {
     const response = await client.cat.indices({
       format: "json",
-      h: "index", // Only get index names
+      h: "index",
     });
 
     if (Array.isArray(response.body)) {
       return response.body
         .map((idx: any) => idx.index)
-        .filter((index: string) => index && !index.startsWith(".")) // Filter out system indices
+        .filter((index: string) => index && !index.startsWith("."))
         .sort();
     }
 
@@ -83,109 +76,97 @@ async function getAvailableIndices(client: Client): Promise<string[]> {
 }
 
 /**
- * Validates that an index exists
+ * Validates that a given index exists in Elasticsearch.
  */
 export async function validateIndex(
   client: Client,
   indexName: string
 ): Promise<IndexValidationResult> {
+  Logger.debug`Checking if index ${indexName} exists`;
+
   try {
-    Logger.debug`Checking if index ${indexName} exists`;
+    const { body } = await client.indices.get({ index: indexName });
 
-    // Use the more reliable get method with a try/catch
-    try {
-      const { body } = await client.indices.get({ index: indexName });
+    if (!body || !body[indexName]) {
+      Logger.errorString(`Index ${indexName} not found in response`);
 
-      // Check if we actually got back information about the requested index
-      if (!body || !body[indexName]) {
-        Logger.errorString(`Index ${indexName} not found in response`);
+      const availableIndices = await getAvailableIndices(client);
 
-        // Get available indices for better error message
-        const availableIndices = await getAvailableIndices(client);
+      const suggestions = [
+        "Check that the index name is spelled correctly",
+        "Verify the index exists in Elasticsearch",
+        "Create the index first if it doesn't exist",
+      ];
 
-        throw ErrorFactory.validation(
-          `Index ${indexName} not found`,
-          {
-            indexName,
-            responseBody: body,
-            availableIndices,
-          },
-          [
-            "Check that the index name is spelled correctly",
-            "Verify the index exists in Elasticsearch",
-            "Create the index first if it doesn't exist",
-            "Use -i <index-name> to specify a different index",
-            ...(availableIndices.length > 0
-              ? [`Available indices: ${availableIndices.join(", ")}`]
-              : ["No user indices found in Elasticsearch"]),
-          ]
-        );
-      }
-
-      Logger.debug`Index ${indexName} exists`;
-
-      return {
-        valid: true,
-        errors: [],
-        exists: true,
-      };
-    } catch (indexError: any) {
-      // Check if the error is specifically about the index not existing
-      if (
-        indexError.meta &&
-        indexError.meta.body &&
-        (indexError.meta.body.error.type === "index_not_found_exception" ||
-          indexError.meta.body.status === 404)
-      ) {
-        Logger.errorString(`Index ${indexName} does not exist`);
-
-        // Get list of available indices
-        const availableIndices = await getAvailableIndices(client);
-
-        const suggestions = [
-          "Create the index in Elasticsearch first",
-          "Use a different existing index name",
-          "Check index name spelling and case sensitivity",
-          "Use -i <index-name> to specify a different index",
-        ];
-
-        if (availableIndices.length > 0) {
-          suggestions.push(`Available indices: ${availableIndices.join(", ")}`);
-        } else {
-          suggestions.push(
-            "No user indices found in Elasticsearch - you may need to create your first index"
-          );
-        }
-
-        throw ErrorFactory.validation(
-          `Index ${indexName} does not exist`,
-          {
-            indexName,
-            errorType: "index_not_found_exception",
-            availableIndices,
-            originalError: indexError,
-          },
-          suggestions
-        );
+      if (availableIndices.length > 0) {
+        suggestions.push("");
+        suggestions.push(chalk.bold("Available indices:"));
+        suggestions.push("");
+        suggestions.push(...availableIndices.map((i) => `    ${i}`));
       } else {
-        // Some other error occurred - rethrow it
-        throw indexError;
+        suggestions.push("No user indices found in Elasticsearch");
       }
-    }
-  } catch (error: any) {
-    // If it's already a ConductorError, rethrow it
-    if (error instanceof Error && error.name === "ConductorError") {
-      throw error;
+
+      throw ErrorFactory.validation(
+        `Index ${indexName} not found`,
+        { indexName, responseBody: body, availableIndices },
+        suggestions
+      );
     }
 
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    Logger.debug`Index ${indexName} exists`;
+    return {
+      valid: true,
+      errors: [],
+      exists: true,
+    };
+  } catch (indexError: any) {
+    if (
+      indexError.meta?.body?.error?.type === "index_not_found_exception" ||
+      indexError.meta?.body?.status === 404
+    ) {
+      Logger.errorString(`Index ${indexName} does not exist`);
+
+      const availableIndices = await getAvailableIndices(client);
+
+      const suggestions = [
+        "Check the index name spelling and case sensitivity",
+        "Use -i <index-name> to specify a different index",
+        "Create the index in Elasticsearch first",
+      ];
+
+      if (availableIndices.length > 0) {
+        suggestions.push("");
+        suggestions.push(chalk.bold("Available indices:"));
+        suggestions.push("");
+        suggestions.push(...availableIndices.map((i) => `    ${i}`));
+      } else {
+        suggestions.push(
+          "No user indices found in Elasticsearch – you may need to create your first index"
+        );
+      }
+
+      throw ErrorFactory.validation(
+        `Index ${indexName} does not exist`,
+        {
+          indexName,
+          errorType: "index_not_found_exception",
+          availableIndices,
+          originalError: indexError,
+        },
+        suggestions
+      );
+    }
+
+    const errorMessage =
+      indexError instanceof Error ? indexError.message : String(indexError);
     Logger.errorString(`Index check failed: ${errorMessage}`);
 
     throw ErrorFactory.connection(
       `Failed to check if index ${indexName} exists`,
       {
         indexName,
-        originalError: error,
+        originalError: indexError,
         errorMessage,
       },
       [
@@ -199,7 +180,7 @@ export async function validateIndex(
 }
 
 /**
- * Validates that batch size is a positive number
+ * Validates that batch size is a positive number and warns about excessive size.
  */
 export function validateBatchSize(batchSize: number): void {
   if (!batchSize || isNaN(batchSize) || batchSize <= 0) {
@@ -211,7 +192,7 @@ export function validateBatchSize(batchSize: number): void {
       },
       [
         "Provide a positive number for batch size",
-        "Recommended range: 100-5000",
+        "Recommended range: 100–5000",
         "Example: --batch-size 1000",
       ]
     );
@@ -222,7 +203,7 @@ export function validateBatchSize(batchSize: number): void {
       `Batch size ${batchSize} is quite large and may cause performance issues`
     );
     Logger.tipString(
-      "Consider using a smaller batch size (1000-5000) for better performance"
+      "Consider using a smaller batch size (1000–5000) for better performance"
     );
   } else {
     Logger.debug`Batch size validated: ${batchSize}`;

@@ -28,7 +28,7 @@ const LOG_CONFIG = {
     [LogLevel.SUCCESS]: "",
     [LogLevel.WARN]: "⚠",
     [LogLevel.ERROR]: "",
-    [LogLevel.TIP]: " ▸",
+    [LogLevel.TIP]: " ",
     [LogLevel.GENERIC]: "",
     [LogLevel.SECTION]: "🔍",
     [LogLevel.INPUT]: "❔",

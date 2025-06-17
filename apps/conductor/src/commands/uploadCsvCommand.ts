@@ -18,13 +18,11 @@ import {
 import { processCSVFile } from "../services/csvProcessor";
 import {
   validateCSVStructure,
-  validateElasticsearchConnection,
   validateIndex,
   validateFiles,
 } from "../validations";
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import * as fs from "fs";
-import * as path from "path";
 
 export class UploadCommand extends Command {
   /**
