@@ -1,4 +1,4 @@
-// src/services/lectern/LecternService.ts
+// src/services/lectern/LecternService.ts - Keep it simple, let HttpService handle errors
 import { BaseService } from "../base/baseService";
 import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
@@ -73,7 +73,7 @@ export class LecternService extends BaseService {
 
       Logger.info`Uploading schema: ${schemaData.name}`;
 
-      // Upload to Lectern
+      // Upload to Lectern - let HttpService handle HTTP errors
       const response = await this.http.post<LecternUploadResponse>(
         "/dictionaries",
         schemaData

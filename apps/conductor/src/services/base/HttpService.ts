@@ -174,8 +174,14 @@ export class HttpService {
       }
 
       if (status === 400) {
+        // Use server error message instead of "Bad request"
+        const serverMessage =
+          data?.message ||
+          data?.error ||
+          "Bad request - invalid data or format";
+
         throw ErrorFactory.validation(
-          "Bad request",
+          serverMessage,
           {
             status,
             responseData: data,
@@ -342,13 +348,17 @@ export class HttpService {
 
     const status = error.response.status;
 
-    // Retry on server errors and rate limiting, but not client errors
-    if (status >= 500) return true; // Server errors
-    if (status === 429) return true; // Too Many Requests
-    if (status === 503) return true; // Service Unavailable
-    if (status === 502 || status === 504) return true; // Bad Gateway, Gateway Timeout
+    // DON'T retry 4xx client errors - they won't succeed on retry
+    if (status >= 400 && status < 500) {
+      return status === 429; // Only retry rate limiting (429 Too Many Requests)
+    }
 
-    return false; // Don't retry client errors (4xx except 429)
+    // Retry on server errors (5xx)
+    if (status >= 500) return true; // Server errors
+    if (status === 502 || status === 504) return true; // Bad Gateway, Gateway Timeout
+    if (status === 503) return true; // Service Unavailable
+
+    return false;
   }
 
   private delay(ms: number): Promise<void> {

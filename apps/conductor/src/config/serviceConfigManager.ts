@@ -75,7 +75,7 @@ export class ServiceConfigManager {
       url: env.url,
       authToken: env.authToken,
       timeout: Environment.defaults.timeouts.default,
-      retries: 3,
+      retries: 1,
       retryDelay: 1000,
       ...overrides,
     };

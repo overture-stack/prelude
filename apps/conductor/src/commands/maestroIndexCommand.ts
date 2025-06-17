@@ -23,7 +23,23 @@ export class MaestroIndexCommand extends Command {
 
   constructor() {
     super("maestroIndex");
-    this.defaultOutputFileName = "index-repository-results.json";
+  }
+
+  /**
+   * Override base validation since maestro doesn't need input files
+   */
+  protected async validate(cliOutput: CLIOutput): Promise<void> {
+    const { options } = cliOutput;
+    const repositoryCode =
+      options.repositoryCode || process.env.REPOSITORY_CODE;
+
+    if (!repositoryCode) {
+      throw ErrorFactory.args("Repository code is required", [
+        "Use --repository-code option to specify repository",
+        "Set REPOSITORY_CODE environment variable",
+        "Example: --repository-code lyric.overture",
+      ]);
+    }
   }
 
   /**
@@ -329,25 +345,5 @@ export class MaestroIndexCommand extends Command {
         "isAxiosError" in error &&
         (error as { isAxiosError: boolean }).isAxiosError === true
     );
-  }
-
-  /**
-   * Validates command line arguments
-   * @param cliOutput - The parsed command line arguments
-   * @returns Promise that resolves when validation is complete
-   * @throws ConductorError if validation fails
-   */
-  protected async validate(cliOutput: CLIOutput): Promise<void> {
-    const { options } = cliOutput;
-    const repositoryCode =
-      options.repositoryCode || process.env.REPOSITORY_CODE;
-
-    if (!repositoryCode) {
-      throw ErrorFactory.args("Repository code is required", [
-        "Use --repository-code option to specify repository",
-        "Set REPOSITORY_CODE environment variable",
-        "Example: --repository-code lyric.overture",
-      ]);
-    }
   }
 }

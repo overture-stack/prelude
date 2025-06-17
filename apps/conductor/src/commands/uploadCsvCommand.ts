@@ -2,7 +2,7 @@
  * Upload Command
  *
  * Command implementation for uploading CSV data to Elasticsearch.
- * Updated to completely eliminate duplicate error logs and fix imports.
+ * Simplified to remove unnecessary output file handling.
  */
 
 import {
@@ -33,7 +33,6 @@ export class UploadCommand extends Command {
    */
   constructor() {
     super("upload");
-    this.defaultOutputFileName = "upload-results.json";
   }
 
   /**

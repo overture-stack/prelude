@@ -1,4 +1,4 @@
-// src/commands/lecternUploadCommand.ts - Updated with error factory pattern
+// src/commands/lecternUploadCommand.ts - Simple version without over-engineering
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -11,7 +11,6 @@ import * as fs from "fs";
 
 /**
  * Command for uploading schemas to the Lectern service
- * Updated to use error factory pattern for consistent error handling
  */
 export class LecternUploadCommand extends Command {
   constructor() {
@@ -80,10 +79,10 @@ export class LecternUploadCommand extends Command {
     const { options } = cliOutput;
 
     try {
-      // Extract configuration using the new simplified system
+      // Extract configuration
       const schemaFile = this.getSchemaFile(options)!;
 
-      // Use the new ServiceConfigManager
+      // Use the ServiceConfigManager
       const serviceConfig = ServiceConfigManager.createLecternConfig({
         url: options.lecternUrl,
         authToken: options.authToken,
@@ -186,10 +185,10 @@ export class LecternUploadCommand extends Command {
   }
 
   /**
-   * Handle execution errors with the error factory pattern
+   * Handle execution errors - simple approach
    */
   private handleExecutionError(error: unknown): CommandResult {
-    // If it's already a ConductorError from the error factory, just return it
+    // If it's already a ConductorError, just return it
     if (error instanceof Error && error.name === "ConductorError") {
       const conductorError = error as any;
       return {
@@ -203,7 +202,7 @@ export class LecternUploadCommand extends Command {
     // For unexpected errors, wrap them appropriately
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    // Try to categorize the error based on the message
+    // Simple categorization
     if (
       errorMessage.includes("ECONNREFUSED") ||
       errorMessage.includes("ETIMEDOUT")
