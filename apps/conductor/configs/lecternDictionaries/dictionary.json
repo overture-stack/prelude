@@ -1,7 +1,7 @@
 {
   "name": "example-dictionary",
   "description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
-  "version": "1.0",
+  "version": "7.0",
   "meta": {
     "createdAt": "2025-03-20T10:30:00.000Z",
     "createdBy": "Mitchell Shiell",
@@ -52,7 +52,7 @@
         }
       ],
       "restrictions": {
-      "primaryKey": ["donor_id"]
+        "primaryKey": ["donor_id"]
       },
       "meta": {
         "createdAt": "2025-03-20T16:11:06.493Z",
@@ -108,7 +108,7 @@
           "valueType": "integer",
           "restrictions": {
             "required": true,
-            "range": {"min": 0, "max": 120}
+            "range": { "min": 0, "max": 120 }
           },
           "meta": {
             "displayName": "Age at Diagnosis",
@@ -137,7 +137,11 @@
           },
           "meta": {
             "displayName": "Staging System",
-            "examples": ["AJCC 8th edition", "FIGO staging system", "Gleason grade group system"]
+            "examples": [
+              "AJCC 8th edition",
+              "FIGO staging system",
+              "Gleason grade group system"
+            ]
           }
         },
         {
@@ -204,7 +208,12 @@
           "valueType": "string",
           "restrictions": {
             "required": true,
-            "codeList": ["Surgery", "Radiation therapy", "Chemotherapy", "Hormonal therapy"]
+            "codeList": [
+              "Surgery",
+              "Radiation therapy",
+              "Chemotherapy",
+              "Hormonal therapy"
+            ]
           },
           "meta": {
             "displayName": "Treatment Type"
@@ -216,7 +225,7 @@
           "valueType": "integer",
           "restrictions": {
             "required": true,
-            "range": {"min": 0}
+            "range": { "min": 0 }
           },
           "meta": {
             "displayName": "Treatment Start",
@@ -229,7 +238,7 @@
           "valueType": "integer",
           "restrictions": {
             "required": true,
-            "range": {"min": 1}
+            "range": { "min": 1 }
           },
           "meta": {
             "displayName": "Treatment Duration",
@@ -242,7 +251,11 @@
           "valueType": "string",
           "restrictions": {
             "required": true,
-            "codeList": ["Complete response", "Partial response", "Disease progression"]
+            "codeList": [
+              "Complete response",
+              "Partial response",
+              "Disease progression"
+            ]
           },
           "meta": {
             "displayName": "Treatment Response"
@@ -300,7 +313,7 @@
           "valueType": "integer",
           "restrictions": {
             "required": true,
-            "range": {"min": 0}
+            "range": { "min": 0 }
           },
           "meta": {
             "displayName": "Followup Interval",
@@ -313,7 +326,12 @@
           "valueType": "string",
           "restrictions": {
             "required": true,
-            "codeList": ["No evidence of disease", "Complete remission", "Stable", "Progression NOS"]
+            "codeList": [
+              "No evidence of disease",
+              "Complete remission",
+              "Stable",
+              "Progression NOS"
+            ]
           },
           "meta": {
             "displayName": "Disease Status"

@@ -144,7 +144,7 @@ export class LecternUploadCommand extends Command {
    */
   private extractUploadParams(schemaFile: string): LecternSchemaUploadParams {
     try {
-      Logger.info`Reading schema file: ${schemaFile}`;
+      Logger.debug`Reading schema file: ${schemaFile}`;
       const schemaContent = fs.readFileSync(schemaFile, "utf-8");
 
       return {
@@ -163,9 +163,9 @@ export class LecternUploadCommand extends Command {
    * Log upload information
    */
   private logUploadInfo(schemaFile: string, serviceUrl: string): void {
-    Logger.info`${chalk.bold.cyan("Uploading Schema to Lectern:")}`;
-    Logger.infoString(`URL: ${serviceUrl}/dictionaries`);
-    Logger.infoString(`Schema File: ${schemaFile}`);
+    Logger.debug`Uploading Schema to Lectern:`;
+    Logger.debug`URL: ${serviceUrl}/dictionaries`;
+    Logger.debug`Schema File: ${schemaFile}`;
   }
 
   /**
@@ -173,7 +173,6 @@ export class LecternUploadCommand extends Command {
    */
   private logSuccess(result: any): void {
     Logger.successString("Schema uploaded successfully");
-    Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Schema ID: ${result.id || "N/A"}`));
     Logger.generic(
       chalk.gray(`    - Schema Name: ${result.name || "Unnamed"}`)
@@ -181,7 +180,6 @@ export class LecternUploadCommand extends Command {
     Logger.generic(
       chalk.gray(`    - Schema Version: ${result.version || "N/A"}`)
     );
-    Logger.generic(" ");
   }
 
   /**

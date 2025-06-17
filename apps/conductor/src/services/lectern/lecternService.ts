@@ -92,7 +92,7 @@ export class LecternService extends BaseService {
         );
       }
 
-      Logger.success`Schema "${schemaData.name}" uploaded successfully`;
+      Logger.debug`Schema "${schemaData.name}" uploaded`;
 
       return response.data;
     } catch (error) {
