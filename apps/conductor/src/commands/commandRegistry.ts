@@ -190,7 +190,7 @@ export class CommandRegistry {
     const categories = this.getCommandsByCategory();
 
     for (const [category, commands] of categories) {
-      Logger.section(category);
+      Logger.suggestion(category);
       for (const command of commands) {
         Logger.commandInfo(command.name, command.description);
       }

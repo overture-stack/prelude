@@ -10,7 +10,7 @@ export enum LogLevel {
   ERROR = 4,
   TIP = 5,
   GENERIC = 6,
-  SECTION = 7,
+  SUGGESTION = 7,
   INPUT = 8,
 }
 
@@ -29,7 +29,7 @@ const LOG_CONFIG = {
     [LogLevel.ERROR]: "✖",
     [LogLevel.TIP]: "▸",
     [LogLevel.GENERIC]: "▸",
-    [LogLevel.SECTION]: "🔍",
+    [LogLevel.SUGGESTION]: "🔍",
     [LogLevel.INPUT]: "❔",
   } as const,
 
@@ -41,7 +41,7 @@ const LOG_CONFIG = {
     [LogLevel.ERROR]: chalk.bold.red,
     [LogLevel.TIP]: chalk.bold.white,
     [LogLevel.GENERIC]: chalk.white,
-    [LogLevel.SECTION]: chalk.bold.yellow,
+    [LogLevel.SUGGESTION]: chalk.bold.cyan,
     [LogLevel.INPUT]: chalk.bold.yellow,
   } as const,
 
@@ -53,7 +53,7 @@ const LOG_CONFIG = {
     [LogLevel.ERROR]: "Error",
     [LogLevel.TIP]: "",
     [LogLevel.GENERIC]: "",
-    [LogLevel.SECTION]: "",
+    [LogLevel.SUGGESTION]: "",
     [LogLevel.INPUT]: "User Input",
   } as const,
 
@@ -80,8 +80,8 @@ export class Logger {
       return colors[level](message);
     }
 
-    if (level === LogLevel.SECTION) {
-      return `${prefix}\n${colors[level](`\n${icons[level]} ${message}`)}`;
+    if (level === LogLevel.SUGGESTION) {
+      return `${prefix}\n${colors[level](`${icons[level]} ${message}`)}`;
     }
 
     if (level === LogLevel.TIP) {
@@ -220,8 +220,8 @@ export class Logger {
     return this.formatMessage(message, LogLevel.INPUT);
   }
 
-  static section(text: string): void {
-    console.log(this.formatMessage(text, LogLevel.SECTION));
+  static suggestion(text: string): void {
+    console.log(this.formatMessage(text, LogLevel.SUGGESTION));
   }
 
   static header(text: string): void {

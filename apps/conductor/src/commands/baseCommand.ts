@@ -188,7 +188,7 @@ export abstract class Command {
       Logger.errorString(`${wrappedError.message}`);
       if (wrappedError.suggestions && wrappedError.suggestions.length > 0) {
         Logger.generic("");
-        Logger.section("Suggestions");
+        Logger.suggestion("Suggestions");
         wrappedError.suggestions.forEach((suggestion: string) => {
           Logger.tipString(suggestion);
         });

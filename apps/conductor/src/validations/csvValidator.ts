@@ -8,7 +8,7 @@ import { Logger } from "../utils/logger";
 /**
  * Module for validating CSV files against structural and naming rules.
  * Includes validation for headers, content structure, and naming conventions.
- * Updated to remove index existence validation from validateHeadersMatchMappings.
+ * Updated to throw errors for header mismatches and provide detailed logging.
  */
 
 /**
@@ -177,7 +177,7 @@ export async function validateCSVStructure(
 /**
  * Validates CSV headers against Elasticsearch index mappings.
  * ASSUMES index already exists and has been validated elsewhere.
- * Updated to remove index existence validation.
+ * Updated to throw errors for header mismatches with detailed logging.
  *
  * @param client - Elasticsearch client instance
  * @param headers - Array of CSV headers to validate
@@ -217,11 +217,14 @@ export async function validateHeadersMatchMappings(
       : [];
 
     Logger.debug`Found ${expectedFields.length} fields in existing index mapping`;
+    Logger.debug`Expected fields: ${expectedFields.join(", ")}`;
 
     // Clean up headers for comparison
     const cleanedHeaders = headers
       .map((header: string) => header.trim())
       .filter((header: string) => header !== "");
+
+    Logger.debug`Cleaned headers: ${cleanedHeaders.join(", ")}`;
 
     if (cleanedHeaders.length === 0) {
       throw ErrorFactory.validation(
@@ -235,67 +238,100 @@ export async function validateHeadersMatchMappings(
       );
     }
 
+    // Filter out submission_metadata from expected fields as it's auto-added
+    const requiredFields = expectedFields.filter(
+      (field: string) => field !== "submission_metadata"
+    );
+
+    Logger.debug`Required fields (excluding submission_metadata): ${requiredFields.join(
+      ", "
+    )}`;
+
     // Check for extra headers not in the mapping
     const extraHeaders = cleanedHeaders.filter(
-      (header: string) => !expectedFields.includes(header)
+      (header: string) => !requiredFields.includes(header)
     );
+
+    Logger.debug`Extra headers found: ${extraHeaders.join(", ")}`;
 
     // Check for fields in the mapping that aren't in the headers
-    const missingRequiredFields = expectedFields.filter(
-      (field: string) =>
-        field !== "submission_metadata" && !cleanedHeaders.includes(field)
+    const missingRequiredFields = requiredFields.filter(
+      (field: string) => !cleanedHeaders.includes(field)
     );
 
-    // Log appropriate warnings (not errors)
-    if (extraHeaders.length > 0) {
-      Logger.warnString(
-        `Extra headers not in index mapping: ${extraHeaders.join(", ")}`
-      );
-      Logger.tipString(
-        "These fields will be added to documents but may not be properly indexed"
-      );
-    }
+    Logger.debug`Missing required fields: ${missingRequiredFields.join(", ")}`;
 
-    if (missingRequiredFields.length > 0) {
-      Logger.warnString(
-        `Missing fields from index mapping: ${missingRequiredFields.join(", ")}`
+    // If there are any mismatches, throw an error with concise information
+    if (extraHeaders.length > 0 || missingRequiredFields.length > 0) {
+      // Log concise header mismatch information
+      Logger.errorString(
+        "CSV headers do not match Elasticsearch index mapping"
       );
-      Logger.tipString(
-        "Data for these fields will be null in the indexed documents"
-      );
-    }
 
-    // Raise error if there's a significant mismatch between the headers and mapping
-    if (
-      extraHeaders.length > expectedFields.length * 0.5 ||
-      missingRequiredFields.length > expectedFields.length * 0.5
-    ) {
-      Logger.errorString("Significant header/field mismatch detected");
+      // Show only the problematic headers in a combined format
+      if (extraHeaders.length > 0 && missingRequiredFields.length > 0) {
+        if (extraHeaders.length > 0) {
+          Logger.suggestion("Extra headers (in CSV, not in mapping):");
+          extraHeaders.forEach((header) => {
+            Logger.generic(`   ▸ ${header}`);
+          });
+        }
+
+        if (missingRequiredFields.length > 0) {
+          Logger.suggestion(
+            "Missing headers (required by mapping, missing from CSV):"
+          );
+          missingRequiredFields.forEach((field) => {
+            Logger.generic(`   ▸ ${field}`);
+          });
+        }
+      } else {
+        // Show suggestions separately if only one type of issue
+        if (extraHeaders.length > 0) {
+          Logger.suggestion("Extra Headers in CSV (not in mapping)");
+          extraHeaders.forEach((header) => {
+            Logger.generic(`   ▸ ${header}`);
+          });
+        }
+
+        if (missingRequiredFields.length > 0) {
+          Logger.suggestion("Missing Headers from CSV (required by mapping)");
+          missingRequiredFields.forEach((field) => {
+            Logger.generic(`  ▸ ${field}`);
+          });
+        }
+      }
+
+      // Calculate variables for error details
+      const totalRequiredFields = requiredFields.length;
+      const totalProvidedHeaders = cleanedHeaders.length;
+      const matchingHeaders = cleanedHeaders.filter((header) =>
+        requiredFields.includes(header)
+      ).length;
+
+      const errorDetails = {
+        indexName,
+        headersProvided: cleanedHeaders,
+        headersMissing: missingRequiredFields,
+        headersExpected: requiredFields,
+        extraHeaders,
+        missingRequiredFields,
+        totalProvidedHeaders,
+        totalRequiredFields,
+        matchingHeaders,
+      };
+
       throw ErrorFactory.validation(
-        "Significant header/field mismatch detected - the CSV structure doesn't match the index mapping",
-        {
-          extraHeaders,
-          missingRequiredFields,
-          expectedFields,
-          foundHeaders: cleanedHeaders,
-          mismatchPercentage: Math.max(
-            (extraHeaders.length / expectedFields.length) * 100,
-            (missingRequiredFields.length / expectedFields.length) * 100
-          ),
-        },
-        [
-          "Update CSV headers to match the index mapping",
-          "Create a new index with mapping that matches your CSV structure",
-          `Expected fields: ${expectedFields.join(", ")}`,
-          `Found headers: ${cleanedHeaders.join(", ")}`,
-        ]
+        "Header validation failed - upload stopped",
+        errorDetails,
+        [] // Empty suggestions to avoid duplicate logging since we already showed the fix above
       );
     }
 
-    Logger.debug`Headers validated against index mapping`;
+    Logger.debug`Headers validated against index mapping - perfect match!`;
     return true;
   } catch (error: any) {
-    // Remove the index_not_found_exception handling since we assume index exists
+    // If it's already a ConductorError, just rethrow it
     if (error instanceof Error && error.name === "ConductorError") {
       throw error;
     }

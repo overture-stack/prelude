@@ -210,7 +210,7 @@ export function handleError(error: unknown, showHelp?: () => void): never {
 
     // Show suggestions using tip logging
     if (error.suggestions && error.suggestions.length > 0) {
-      Logger.section("Suggestions");
+      Logger.suggestion("Suggestions");
       error.suggestions.forEach((suggestion) => {
         Logger.tipString(suggestion);
       });

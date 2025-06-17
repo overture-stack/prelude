@@ -54,8 +54,7 @@ export class UploadCommand extends Command {
 
     for (const filePath of filePaths) {
       Logger.generic("");
-      Logger.info`Processing File: ${filePath}\n`;
-
+      Logger.info`Processing File: ${filePath}`;
       try {
         await this.processFile(filePath, config);
         Logger.debug`Successfully processed ${filePath}`;
@@ -75,11 +74,10 @@ export class UploadCommand extends Command {
             conductorError.suggestions &&
             conductorError.suggestions.length > 0
           ) {
-            Logger.section("Suggestions");
+            Logger.suggestion("Suggestions");
             conductorError.suggestions.forEach((suggestion: string) => {
               Logger.tipString(suggestion);
             });
-            Logger.generic("");
           }
 
           Logger.debug`Skipping file '${filePath}': [${conductorError.code}] ${conductorError.message}`;

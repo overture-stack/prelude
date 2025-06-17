@@ -307,6 +307,9 @@ function updateProgressDisplay(
   const eta = calculateETA(processed, total, elapsedMs / 1000);
   const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
 
+  if (processed === 10) {
+    Logger.generic("");
+  }
   // Use \r to overwrite previous line
   process.stdout.write("\r");
   process.stdout.write(
