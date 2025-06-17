@@ -3,12 +3,13 @@ import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
-import { LyricRegistrationService } from "../services/lyric/LyricRegistrationService"; // Fixed import
+import { ErrorFactory } from "../utils/errors";
+import { LyricRegistrationService } from "../services/lyric/LyricRegistrationService";
 import { DictionaryRegistrationParams } from "../services/lyric/types";
 
 /**
  * Command for registering a dictionary with the Lyric service
+ * Updated to use error factory pattern for consistent error handling
  */
 export class LyricRegistrationCommand extends Command {
   constructor() {
@@ -22,22 +23,28 @@ export class LyricRegistrationCommand extends Command {
     const { options } = cliOutput;
 
     try {
-      // Extract configuration - much cleaner now
+      // Extract configuration
       const registrationParams = this.extractRegistrationParams(options);
       const serviceConfig = this.extractServiceConfig(options);
 
-      // Create service instance using new pattern - fixed variable name
+      // Create service instance
       const lyricService = new LyricRegistrationService(serviceConfig);
 
       // Check service health first
       const healthResult = await lyricService.checkHealth();
       if (!healthResult.healthy) {
-        throw new ConductorError(
-          `Lyric service is not healthy: ${
-            healthResult.message || "Unknown error"
-          }`,
-          ErrorCodes.CONNECTION_ERROR,
-          { healthResult }
+        throw ErrorFactory.connection(
+          "Lyric service is not healthy",
+          {
+            healthResult,
+            serviceUrl: serviceConfig.url,
+          },
+          [
+            "Check that Lyric service is running",
+            `Verify the service URL: ${serviceConfig.url}`,
+            "Check network connectivity",
+            "Review service logs for errors",
+          ]
         );
       }
 
@@ -51,7 +58,7 @@ export class LyricRegistrationCommand extends Command {
         );
       }
 
-      // Register dictionary - much simpler now!
+      // Register dictionary
       this.logRegistrationInfo(registrationParams, serviceConfig.url);
 
       const result = await lyricService.registerDictionary(registrationParams);
@@ -94,12 +101,11 @@ export class LyricRegistrationCommand extends Command {
     for (const param of requiredParams) {
       const value = options[param.key] || process.env[param.envVar];
       if (!value) {
-        throw new ConductorError(
-          `${param.name} is required. Use --${param.key
-            .replace(/([A-Z])/g, "-$1")
-            .toLowerCase()} or set ${param.envVar} environment variable.`,
-          ErrorCodes.INVALID_ARGS
-        );
+        throw ErrorFactory.args(`${param.name} is required`, [
+          `Use --${param.key.replace(/([A-Z])/g, "-$1").toLowerCase()} option`,
+          `Set ${param.envVar} environment variable`,
+          "Example: --dict-name 'My Dictionary' --category-name 'research'",
+        ]);
       }
     }
   }
@@ -142,7 +148,7 @@ export class LyricRegistrationCommand extends Command {
     lecternUrl: string
   ): Promise<void> {
     try {
-      Logger.info("Validating centric entity against Lectern dictionary...");
+      Logger.info`Validating centric entity against Lectern dictionary...`;
 
       // This is a simplified version - you'd import and use LecternService here
       // For now, just showing the pattern
@@ -153,28 +159,33 @@ export class LyricRegistrationCommand extends Command {
       );
 
       if (!entities.includes(centricEntity)) {
-        throw new ConductorError(
+        throw ErrorFactory.validation(
           `Entity '${centricEntity}' does not exist in dictionary '${dictionaryName}'`,
-          ErrorCodes.VALIDATION_FAILED,
           {
             availableEntities: entities,
-            suggestion: `Available entities: ${entities.join(", ")}`,
-          }
+            centricEntity,
+            dictionaryName,
+          },
+          [
+            `Available entities: ${entities.join(", ")}`,
+            "Choose a valid entity from the dictionary",
+            "Check the dictionary schema for correct entity names",
+          ]
         );
       }
 
-      Logger.info(`✓ Entity '${centricEntity}' validated against dictionary`);
+      Logger.success`Entity '${centricEntity}' validated against dictionary`;
     } catch (error) {
-      if (error instanceof ConductorError) {
+      if (error instanceof Error && error.name === "ConductorError") {
         throw error;
       }
 
-      Logger.warn(
+      Logger.warnString(
         `Could not validate centric entity: ${
           error instanceof Error ? error.message : String(error)
         }`
       );
-      Logger.warn("Proceeding without validation...");
+      Logger.warnString("Proceeding without validation...");
     }
   }
 
@@ -199,19 +210,19 @@ export class LyricRegistrationCommand extends Command {
     params: DictionaryRegistrationParams,
     url: string
   ): void {
-    Logger.info(`${chalk.bold.cyan("Registering Dictionary:")}`);
-    Logger.info(`URL: ${url}/dictionary/register`);
-    Logger.info(`Category: ${params.categoryName}`);
-    Logger.info(`Dictionary: ${params.dictionaryName}`);
-    Logger.info(`Version: ${params.dictionaryVersion}`);
-    Logger.info(`Centric Entity: ${params.defaultCentricEntity}`);
+    Logger.info`${chalk.bold.cyan("Registering Dictionary:")}`;
+    Logger.infoString(`URL: ${url}/dictionary/register`);
+    Logger.infoString(`Category: ${params.categoryName}`);
+    Logger.infoString(`Dictionary: ${params.dictionaryName}`);
+    Logger.infoString(`Version: ${params.dictionaryVersion}`);
+    Logger.infoString(`Centric Entity: ${params.defaultCentricEntity}`);
   }
 
   /**
    * Log successful registration
    */
   private logSuccess(params: DictionaryRegistrationParams): void {
-    Logger.success("Dictionary registered successfully");
+    Logger.successString("Dictionary registered successfully");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Category: ${params.categoryName}`));
     Logger.generic(chalk.gray(`    - Dictionary: ${params.dictionaryName}`));
@@ -226,36 +237,78 @@ export class LyricRegistrationCommand extends Command {
    * Handle execution errors with helpful user feedback
    */
   private handleExecutionError(error: unknown): CommandResult {
-    if (error instanceof ConductorError) {
-      // Handle specific error types with helpful messages
-      if (
-        error.code === ErrorCodes.VALIDATION_FAILED &&
-        error.details?.availableEntities
-      ) {
-        Logger.info(
-          `\nAvailable entities: ${error.details.availableEntities.join(", ")}`
-        );
-      }
-
-      if (error.details?.suggestion) {
-        Logger.tip(error.details.suggestion);
-      }
-
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
-        details: error.details,
+        errorMessage: conductorError.message,
+        errorCode: conductorError.code,
+        details: conductorError.details,
       };
     }
 
     // Handle unexpected errors
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Categorize based on error content
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      const connectionError = ErrorFactory.connection(
+        "Failed to connect to Lyric service",
+        { originalError: error },
+        [
+          "Check that Lyric service is running",
+          "Verify the service URL and port",
+          "Check network connectivity",
+          "Review firewall settings",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: connectionError.message,
+        errorCode: connectionError.code,
+        details: connectionError.details,
+      };
+    }
+
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      const authError = ErrorFactory.auth(
+        "Authentication failed with Lyric service",
+        { originalError: error },
+        [
+          "Check your authentication credentials",
+          "Verify API token is valid",
+          "Contact administrator for access",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: authError.message,
+        errorCode: authError.code,
+        details: authError.details,
+      };
+    }
+
+    // Generic fallback
+    const genericError = ErrorFactory.connection(
+      "Dictionary registration failed",
+      { originalError: error },
+      [
+        "Check the service logs for more details",
+        "Verify your registration parameters",
+        "Try the registration again after a few moments",
+      ]
+    );
+
     return {
       success: false,
-      errorMessage: `Dictionary registration failed: ${errorMessage}`,
-      errorCode: ErrorCodes.CONNECTION_ERROR,
-      details: { originalError: error },
+      errorMessage: genericError.message,
+      errorCode: genericError.code,
+      details: genericError.details,
     };
   }
 }

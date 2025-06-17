@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { Client } from "@elastic/elasticsearch";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import { VALIDATION_CONSTANTS } from "./constants";
 import { Logger } from "../utils/logger";
@@ -8,6 +8,7 @@ import { Logger } from "../utils/logger";
 /**
  * Module for validating CSV files against structural and naming rules.
  * Includes validation for headers, content structure, and naming conventions.
+ * Updated to use error factory pattern for consistent error handling.
  */
 
 /**
@@ -36,17 +37,31 @@ export async function validateCSVStructure(
 
     // Validate basic header presence
     if (cleanedHeaders.length === 0) {
-      throw new ConductorError(
+      throw ErrorFactory.validation(
         "No valid headers found in CSV file",
-        ErrorCodes.VALIDATION_FAILED
+        { originalHeaders: headers },
+        [
+          "Ensure the CSV file has column headers",
+          "Check that the first row contains header names",
+          "Verify the file is not empty or corrupted",
+        ]
       );
     }
 
     if (cleanedHeaders.length !== headers.length) {
-      Logger.warn`Empty or whitespace-only headers detected`;
-      throw new ConductorError(
+      Logger.warnString("Empty or whitespace-only headers detected");
+      throw ErrorFactory.validation(
         "Empty or whitespace-only headers detected",
-        ErrorCodes.VALIDATION_FAILED
+        {
+          originalHeaders: headers,
+          cleanedHeaders,
+          emptyCount: headers.length - cleanedHeaders.length,
+        },
+        [
+          "Remove empty columns from your CSV file",
+          "Ensure all columns have descriptive header names",
+          "Check for trailing commas in the header row",
+        ]
       );
     }
 
@@ -67,11 +82,25 @@ export async function validateCSVStructure(
     });
 
     if (invalidHeaders.length > 0) {
-      Logger.error`Invalid header names detected: ${invalidHeaders.join(", ")}`;
-      throw new ConductorError(
+      Logger.errorString(
+        `Invalid header names detected: ${invalidHeaders.join(", ")}`
+      );
+      throw ErrorFactory.validation(
         "Invalid header names detected",
-        ErrorCodes.VALIDATION_FAILED,
-        { invalidHeaders }
+        {
+          invalidHeaders,
+          invalidChars: VALIDATION_CONSTANTS.INVALID_CHARS,
+          maxLength: VALIDATION_CONSTANTS.MAX_HEADER_LENGTH,
+          reservedWords: VALIDATION_CONSTANTS.RESERVED_WORDS,
+        },
+        [
+          `Remove invalid characters: ${VALIDATION_CONSTANTS.INVALID_CHARS.join(
+            ", "
+          )}`,
+          `Keep header names under ${VALIDATION_CONSTANTS.MAX_HEADER_LENGTH} characters`,
+          "Avoid reserved words like 'null', 'undefined', 'class'",
+          "Use alphanumeric characters and underscores only",
+        ]
       );
     }
 
@@ -89,13 +118,17 @@ export async function validateCSVStructure(
       .map(([header]) => header);
 
     if (duplicates.length > 0) {
-      Logger.error`Duplicate headers found in CSV file: ${duplicates.join(
-        ", "
-      )}`;
-      throw new ConductorError(
+      Logger.errorString(
+        `Duplicate headers found in CSV file: ${duplicates.join(", ")}`
+      );
+      throw ErrorFactory.validation(
         "Duplicate headers found in CSV file",
-        ErrorCodes.VALIDATION_FAILED,
-        { duplicates, counts: headerCounts }
+        { duplicates, headerCounts },
+        [
+          "Ensure all column headers are unique",
+          "Remove or rename duplicate columns",
+          "Check for copy-paste errors in header names",
+        ]
       );
     }
 
@@ -107,11 +140,11 @@ export async function validateCSVStructure(
     );
 
     if (genericHeaders.length > 0) {
-      Logger.warn`Generic headers detected:`;
+      Logger.warnString("Generic headers detected:");
       genericHeaders.forEach((header) => {
-        Logger.warn`Generic header: "${header}"`;
+        Logger.warnString(`Generic header: "${header}"`);
       });
-      Logger.tip`Consider using more descriptive column names`;
+      Logger.tipString("Consider using more descriptive column names");
     }
 
     Logger.debug`CSV header structure matches valid`;
@@ -121,16 +154,22 @@ export async function validateCSVStructure(
 
     return true;
   } catch (error) {
-    if (error instanceof ConductorError) {
+    if (error instanceof Error && error.name === "ConductorError") {
       throw error;
     }
-    Logger.error`Error validating CSV structure: ${
-      error instanceof Error ? error.message : String(error)
-    }`;
-    throw new ConductorError(
+    Logger.errorString(
+      `Error validating CSV structure: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+    throw ErrorFactory.validation(
       "Error validating CSV structure",
-      ErrorCodes.VALIDATION_FAILED,
-      error
+      { originalError: error },
+      [
+        "Check CSV file format and encoding",
+        "Verify file is not corrupted",
+        "Ensure proper CSV structure with valid headers",
+      ]
     );
   }
 }
@@ -161,10 +200,15 @@ export async function validateHeadersMatchMappings(
     // Type-safe navigation
     const mappings = body[indexName]?.mappings;
     if (!mappings) {
-      Logger.error`No mappings found for index ${indexName}`;
-      throw new ConductorError(
+      Logger.errorString(`No mappings found for index ${indexName}`);
+      throw ErrorFactory.validation(
         "No mappings found for the specified index",
-        ErrorCodes.VALIDATION_FAILED
+        { indexName, availableIndices: Object.keys(body) },
+        [
+          "Check that the index name is correct",
+          "Verify the index exists in Elasticsearch",
+          "Create the index with proper mappings first",
+        ]
       );
     }
 
@@ -181,10 +225,15 @@ export async function validateHeadersMatchMappings(
       .filter((header: string) => header !== "");
 
     if (cleanedHeaders.length === 0) {
-      Logger.error`No valid headers found`;
-      throw new ConductorError(
+      Logger.errorString("No valid headers found");
+      throw ErrorFactory.validation(
         "No valid headers found",
-        ErrorCodes.VALIDATION_FAILED
+        { originalHeaders: headers },
+        [
+          "Ensure CSV file has column headers",
+          "Check that headers are not empty or whitespace",
+          "Verify CSV file format",
+        ]
       );
     }
 
@@ -201,17 +250,21 @@ export async function validateHeadersMatchMappings(
 
     // Log appropriate warnings
     if (extraHeaders.length > 0) {
-      Logger.warn`Extra headers not in index mapping: ${extraHeaders.join(
-        ", "
-      )}`;
-      Logger.tip`These fields will be added to documents but may not be properly indexed`;
+      Logger.warnString(
+        `Extra headers not in index mapping: ${extraHeaders.join(", ")}`
+      );
+      Logger.tipString(
+        "These fields will be added to documents but may not be properly indexed"
+      );
     }
 
     if (missingRequiredFields.length > 0) {
-      Logger.warn`Missing fields from index mapping: ${missingRequiredFields.join(
-        ", "
-      )}`;
-      Logger.tip`Data for these fields will be null in the indexed documents`;
+      Logger.warnString(
+        `Missing fields from index mapping: ${missingRequiredFields.join(", ")}`
+      );
+      Logger.tipString(
+        "Data for these fields will be null in the indexed documents"
+      );
     }
 
     // Raise error if there's a significant mismatch between the headers and mapping
@@ -219,18 +272,25 @@ export async function validateHeadersMatchMappings(
       extraHeaders.length > expectedFields.length * 0.5 ||
       missingRequiredFields.length > expectedFields.length * 0.5
     ) {
-      Logger.error`Significant header/field mismatch detected`;
-      throw new ConductorError(
+      Logger.errorString("Significant header/field mismatch detected");
+      throw ErrorFactory.validation(
         "Significant header/field mismatch detected - the CSV structure doesn't match the index mapping",
-        ErrorCodes.VALIDATION_FAILED,
         {
           extraHeaders,
           missingRequiredFields,
-          details: {
-            expected: expectedFields,
-            found: cleanedHeaders,
-          },
-        }
+          expectedFields,
+          foundHeaders: cleanedHeaders,
+          mismatchPercentage: Math.max(
+            (extraHeaders.length / expectedFields.length) * 100,
+            (missingRequiredFields.length / expectedFields.length) * 100
+          ),
+        },
+        [
+          "Update CSV headers to match the index mapping",
+          "Create a new index with mapping that matches your CSV structure",
+          `Expected fields: ${expectedFields.join(", ")}`,
+          `Found headers: ${cleanedHeaders.join(", ")}`,
+        ]
       );
     }
 
@@ -243,33 +303,47 @@ export async function validateHeadersMatchMappings(
       error.meta.body &&
       error.meta.body.error.type === "index_not_found_exception"
     ) {
-      Logger.error`Index ${indexName} does not exist`;
-      throw new ConductorError(
-        `Index ${indexName} does not exist - create it first or use a different index name`,
-        ErrorCodes.INDEX_NOT_FOUND
+      Logger.errorString(`Index ${indexName} does not exist`);
+      throw ErrorFactory.validation(
+        `Index ${indexName} does not exist`,
+        { indexName, errorType: "index_not_found_exception" },
+        [
+          "Create the index first using Elasticsearch",
+          "Use a different existing index name",
+          "Check index name spelling and case sensitivity",
+        ]
       );
     }
 
     // Type-safe error handling for other errors
-    if (error instanceof ConductorError) {
+    if (error instanceof Error && error.name === "ConductorError") {
       throw error;
     }
 
     // Add more detailed error logging
-    Logger.error`Error validating headers against index: ${
-      error instanceof Error ? error.message : String(error)
-    }`;
-    Logger.debug`Error details: ${
-      error instanceof Error ? error.stack : "No stack trace available"
-    }`;
+    Logger.errorString(
+      `Error validating headers against index: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+    Logger.debugString(
+      `Error details: ${
+        error instanceof Error ? error.stack : "No stack trace available"
+      }`
+    );
 
-    throw new ConductorError(
+    throw ErrorFactory.connection(
       "Error validating headers against index",
-      ErrorCodes.VALIDATION_FAILED,
       {
+        indexName,
         originalError: error instanceof Error ? error.message : String(error),
         errorType: error instanceof Error ? error.name : "Unknown Error",
-      }
+      },
+      [
+        "Check Elasticsearch connection and availability",
+        "Verify index permissions and access",
+        "Ensure Elasticsearch service is running",
+      ]
     );
   }
 }

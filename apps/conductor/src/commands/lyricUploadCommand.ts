@@ -3,7 +3,7 @@ import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import {
   DataSubmissionResult,
   LyricSubmissionService,
@@ -12,7 +12,7 @@ import { DataSubmissionParams } from "../services/lyric/LyricSubmissionService";
 
 /**
  * Command for loading data into Lyric
- * Much simpler now with workflow extracted to service layer
+ * Updated to use error factory pattern for consistent error handling
  */
 export class LyricUploadCommand extends Command {
   constructor() {
@@ -34,11 +34,18 @@ export class LyricUploadCommand extends Command {
       // Check service health
       const healthResult = await lyricSubmissionService.checkHealth();
       if (!healthResult.healthy) {
-        throw new ConductorError(
-          `Lyric service is not healthy: ${
-            healthResult.message || "Unknown error"
-          }`,
-          ErrorCodes.CONNECTION_ERROR
+        throw ErrorFactory.connection(
+          "Lyric service is not healthy",
+          {
+            healthResult,
+            serviceUrl: serviceConfig.url,
+          },
+          [
+            "Check that Lyric service is running",
+            `Verify the service URL: ${serviceConfig.url}`,
+            "Check network connectivity",
+            "Review service logs for errors",
+          ]
         );
       }
 
@@ -68,10 +75,10 @@ export class LyricUploadCommand extends Command {
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     // Ensure config exists
     if (!cliOutput.config) {
-      throw new ConductorError(
-        "Configuration is missing",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("Configuration is missing", [
+        "Check CLI setup and argument parsing",
+        "Verify command line options are correct",
+      ]);
     }
 
     // Validate required parameters
@@ -92,20 +99,21 @@ export class LyricUploadCommand extends Command {
 
     for (const param of requiredParams) {
       if (!param.value) {
-        throw new ConductorError(
-          `${param.name} is required. ${param.suggestion}`,
-          ErrorCodes.INVALID_ARGS
-        );
+        throw ErrorFactory.args(`${param.name} is required`, [
+          param.suggestion,
+          "Example: --data-directory ./csv-files",
+        ]);
       }
     }
 
     // Validate data directory exists
     const dataDirectory = this.getDataDirectory(cliOutput)!;
     if (!require("fs").existsSync(dataDirectory)) {
-      throw new ConductorError(
-        `Data directory not found: ${dataDirectory}`,
-        ErrorCodes.FILE_NOT_FOUND
-      );
+      throw ErrorFactory.file("Data directory not found", dataDirectory, [
+        "Check that the directory exists",
+        "Verify the path is correct",
+        "Ensure you have access to the directory",
+      ]);
     }
   }
 
@@ -176,19 +184,19 @@ export class LyricUploadCommand extends Command {
     params: DataSubmissionParams,
     serviceUrl: string
   ): void {
-    Logger.info(`${chalk.bold.cyan("Starting Data Loading Process:")}`);
-    Logger.info(`Lyric URL: ${serviceUrl}`);
-    Logger.info(`Data Directory: ${params.dataDirectory}`);
-    Logger.info(`Category ID: ${params.categoryId}`);
-    Logger.info(`Organization: ${params.organization}`);
-    Logger.info(`Max Retries: ${params.maxRetries}`);
+    Logger.info`${chalk.bold.cyan("Starting Data Loading Process:")}`;
+    Logger.infoString(`Lyric URL: ${serviceUrl}`);
+    Logger.infoString(`Data Directory: ${params.dataDirectory}`);
+    Logger.infoString(`Category ID: ${params.categoryId}`);
+    Logger.infoString(`Organization: ${params.organization}`);
+    Logger.infoString(`Max Retries: ${params.maxRetries}`);
   }
 
   /**
    * Log successful submission
    */
   private logSuccess(result: DataSubmissionResult): void {
-    Logger.success("Data loading completed successfully");
+    Logger.successString("Data loading completed successfully");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Submission ID: ${result.submissionId}`));
     Logger.generic(chalk.gray(`    - Status: ${result.status}`));
@@ -202,44 +210,122 @@ export class LyricUploadCommand extends Command {
    * Handle execution errors with helpful user feedback
    */
   private handleExecutionError(error: unknown): CommandResult {
-    if (error instanceof ConductorError) {
-      // Add context-specific help
-      if (error.code === ErrorCodes.FILE_NOT_FOUND) {
-        Logger.info(
-          "\nFile or directory issue detected. Check paths and permissions."
-        );
-      } else if (error.code === ErrorCodes.VALIDATION_FAILED) {
-        Logger.info(
-          "\nSubmission validation failed. Check your data files for errors."
-        );
-        if (error.details?.submissionId) {
-          Logger.info(`Submission ID: ${error.details.submissionId}`);
-        }
-      } else if (error.code === ErrorCodes.CONNECTION_ERROR) {
-        Logger.info(
-          "\nConnection error. Check network and service availability."
-        );
-      }
-
-      if (error.details?.suggestion) {
-        Logger.tip(error.details.suggestion);
-      }
-
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
-        details: error.details,
+        errorMessage: conductorError.message,
+        errorCode: conductorError.code,
+        details: conductorError.details,
       };
     }
 
-    // Handle unexpected errors
+    // Handle unexpected errors with categorization
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Connection errors
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      const connectionError = ErrorFactory.connection(
+        "Failed to connect to Lyric service",
+        { originalError: error },
+        [
+          "Check that Lyric service is running",
+          "Verify the service URL and port",
+          "Check network connectivity",
+          "Review firewall settings",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: connectionError.message,
+        errorCode: connectionError.code,
+        details: connectionError.details,
+      };
+    }
+
+    // File/directory errors
+    if (errorMessage.includes("ENOENT") || errorMessage.includes("directory")) {
+      const fileError = ErrorFactory.file(
+        "Data directory or file issue",
+        undefined,
+        [
+          "Check that the data directory exists",
+          "Verify CSV files are present in the directory",
+          "Ensure you have read access to the files",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: fileError.message,
+        errorCode: fileError.code,
+        details: fileError.details,
+      };
+    }
+
+    // Validation errors
+    if (
+      errorMessage.includes("validation") ||
+      errorMessage.includes("invalid")
+    ) {
+      const validationError = ErrorFactory.validation(
+        "Data submission validation failed",
+        { originalError: error },
+        [
+          "Check your CSV file format and structure",
+          "Verify data meets Lyric service requirements",
+          "Review validation error details in debug mode",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: validationError.message,
+        errorCode: validationError.code,
+        details: validationError.details,
+      };
+    }
+
+    // Authentication errors
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      const authError = ErrorFactory.auth(
+        "Authentication failed with Lyric service",
+        { originalError: error },
+        [
+          "Check your authentication credentials",
+          "Verify you have permission to submit data",
+          "Contact administrator for access",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: authError.message,
+        errorCode: authError.code,
+        details: authError.details,
+      };
+    }
+
+    // Generic fallback
+    const genericError = ErrorFactory.connection(
+      "Data loading failed",
+      { originalError: error },
+      [
+        "Check the service logs for more details",
+        "Verify your data format and structure",
+        "Try the upload again after a few moments",
+      ]
+    );
+
     return {
       success: false,
-      errorMessage: `Data loading failed: ${errorMessage}`,
-      errorCode: ErrorCodes.CONNECTION_ERROR,
-      details: { originalError: error },
+      errorMessage: genericError.message,
+      errorCode: genericError.code,
+      details: genericError.details,
     };
   }
 }

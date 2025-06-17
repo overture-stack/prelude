@@ -3,13 +3,13 @@ import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { SongService } from "../services/song-score";
 import { SongStudyCreateParams } from "../services/song-score/types";
 
 /**
  * Command for creating studies in SONG service
- * Refactored to use the new SongService
+ * Refactored to use the new SongService with error factory pattern
  */
 export class SongCreateStudyCommand extends Command {
   constructor() {
@@ -33,12 +33,18 @@ export class SongCreateStudyCommand extends Command {
       // Check service health
       const healthResult = await songService.checkHealth();
       if (!healthResult.healthy) {
-        throw new ConductorError(
-          `SONG service is not healthy: ${
-            healthResult.message || "Unknown error"
-          }`,
-          ErrorCodes.CONNECTION_ERROR,
-          { healthResult }
+        throw ErrorFactory.connection(
+          "SONG service is not healthy",
+          {
+            healthResult,
+            serviceUrl: serviceConfig.url,
+          },
+          [
+            "Check that SONG service is running",
+            `Verify the service URL: ${serviceConfig.url}`,
+            "Check network connectivity",
+            "Review service logs for errors",
+          ]
         );
       }
 
@@ -77,12 +83,11 @@ export class SongCreateStudyCommand extends Command {
     for (const param of requiredParams) {
       const value = options[param.key] || process.env[param.envVar];
       if (!value) {
-        throw new ConductorError(
-          `${param.name} is required. Use --${param.key
-            .replace(/([A-Z])/g, "-$1")
-            .toLowerCase()} or set ${param.envVar} environment variable.`,
-          ErrorCodes.INVALID_ARGS
-        );
+        throw ErrorFactory.args(`${param.name} is required`, [
+          `Use --${param.key.replace(/([A-Z])/g, "-$1").toLowerCase()} option`,
+          `Set ${param.envVar} environment variable`,
+          "Example: --study-id my-study --study-name 'My Study'",
+        ]);
       }
     }
   }
@@ -117,18 +122,18 @@ export class SongCreateStudyCommand extends Command {
    * Log creation information
    */
   private logCreationInfo(params: SongStudyCreateParams, url: string): void {
-    Logger.info(`${chalk.bold.cyan("Creating Study in SONG:")}`);
-    Logger.info(`URL: ${url}/studies/${params.studyId}/`);
-    Logger.info(`Study ID: ${params.studyId}`);
-    Logger.info(`Study Name: ${params.name}`);
-    Logger.info(`Organization: ${params.organization}`);
+    Logger.info`${chalk.bold.cyan("Creating Study in SONG:")}`;
+    Logger.infoString(`URL: ${url}/studies/${params.studyId}/`);
+    Logger.infoString(`Study ID: ${params.studyId}`);
+    Logger.infoString(`Study Name: ${params.name}`);
+    Logger.infoString(`Organization: ${params.organization}`);
   }
 
   /**
    * Log successful creation
    */
   private logSuccess(result: any): void {
-    Logger.success("Study created successfully");
+    Logger.successString("Study created successfully");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Study ID: ${result.studyId}`));
     Logger.generic(chalk.gray(`    - Study Name: ${result.name}`));
@@ -141,31 +146,96 @@ export class SongCreateStudyCommand extends Command {
    * Handle execution errors with helpful user feedback
    */
   private handleExecutionError(error: unknown): CommandResult {
-    if (error instanceof ConductorError) {
-      // Add context-specific help for common errors
-      if (error.code === ErrorCodes.CONNECTION_ERROR) {
-        Logger.info("\nConnection error. Check SONG service availability.");
-      }
-
-      if (error.details?.suggestion) {
-        Logger.tip(error.details.suggestion);
-      }
-
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
-        details: error.details,
+        errorMessage: conductorError.message,
+        errorCode: conductorError.code,
+        details: conductorError.details,
       };
     }
 
-    // Handle unexpected errors
+    // Handle unexpected errors with categorization
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      const connectionError = ErrorFactory.connection(
+        "Failed to connect to SONG service",
+        { originalError: error },
+        [
+          "Check that SONG service is running",
+          "Verify the service URL and port",
+          "Check network connectivity",
+          "Review firewall settings",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: connectionError.message,
+        errorCode: connectionError.code,
+        details: connectionError.details,
+      };
+    }
+
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      const authError = ErrorFactory.auth(
+        "Authentication failed with SONG service",
+        { originalError: error },
+        [
+          "Check authentication credentials",
+          "Verify API token is valid",
+          "Contact administrator for access",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: authError.message,
+        errorCode: authError.code,
+        details: authError.details,
+      };
+    }
+
+    if (errorMessage.includes("409") || errorMessage.includes("conflict")) {
+      const conflictError = ErrorFactory.validation(
+        "Study already exists",
+        { originalError: error },
+        [
+          "Use --force flag to overwrite existing study",
+          "Choose a different study ID",
+          "Check if study creation is actually needed",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: conflictError.message,
+        errorCode: conflictError.code,
+        details: conflictError.details,
+      };
+    }
+
+    // Generic fallback
+    const genericError = ErrorFactory.connection(
+      "Study creation failed",
+      { originalError: error },
+      [
+        "Check SONG service availability",
+        "Verify study parameters are valid",
+        "Use --debug for detailed error information",
+      ]
+    );
+
     return {
       success: false,
-      errorMessage: `Study creation failed: ${errorMessage}`,
-      errorCode: ErrorCodes.CONNECTION_ERROR,
-      details: { originalError: error },
+      errorMessage: genericError.message,
+      errorCode: genericError.code,
+      details: genericError.details,
     };
   }
 }

@@ -1,11 +1,12 @@
 import { Client } from "@elastic/elasticsearch";
-import {
-  ConductorError,
-  ErrorCodes,
-  createValidationError,
-} from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import { ConnectionValidationResult, IndexValidationResult } from "../types";
+
+/**
+ * Elasticsearch validation utilities
+ * Updated to use error factory pattern for consistent error handling
+ */
 
 /**
  * Validates Elasticsearch connection by making a ping request
@@ -32,18 +33,27 @@ export async function validateElasticsearchConnection(
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     // Log the error message
-    Logger.error`Failed to connect to Elasticsearch: ${errorMessage}`;
+    Logger.errorString(`Failed to connect to Elasticsearch: ${errorMessage}`);
 
     // Add a warning with the override command info
-    Logger.commandValueTip(
-      "Check Elasticsearch is running and that the correct URL and auth params are in use",
-      "--url <elasticsearch-url> -u <username> -p <password>"
+    Logger.tipString(
+      "Check Elasticsearch is running and that the correct URL and auth params are in use"
     );
 
-    throw new ConductorError(
-      `Failed to connect to Elasticsearch at ${config.elasticsearch.url}`,
-      ErrorCodes.CONNECTION_ERROR,
-      error
+    throw ErrorFactory.connection(
+      `Failed to connect to Elasticsearch`,
+      {
+        elasticsearchUrl: config.elasticsearch.url,
+        originalError: error,
+        errorMessage,
+      },
+      [
+        "Check that Elasticsearch is running and accessible",
+        `Verify the URL: ${config.elasticsearch.url}`,
+        "Check authentication credentials if required",
+        "Review network connectivity and firewall settings",
+        "Use --url <elasticsearch-url> to specify a different URL",
+      ]
     );
   }
 }
@@ -56,7 +66,7 @@ export async function validateIndex(
   indexName: string
 ): Promise<IndexValidationResult> {
   try {
-    Logger.info`Checking if index ${indexName} exists`;
+    Logger.debug`Checking if index ${indexName} exists`;
 
     // Use the more reliable get method with a try/catch
     try {
@@ -64,14 +74,24 @@ export async function validateIndex(
 
       // Check if we actually got back information about the requested index
       if (!body || !body[indexName]) {
-        Logger.error`Index ${indexName} not found in response`;
-        throw new ConductorError(
+        Logger.errorString(`Index ${indexName} not found in response`);
+        throw ErrorFactory.validation(
           `Index ${indexName} not found`,
-          ErrorCodes.INDEX_NOT_FOUND
+          {
+            indexName,
+            responseBody: body,
+            availableIndices: body ? Object.keys(body) : [],
+          },
+          [
+            "Check that the index name is spelled correctly",
+            "Verify the index exists in Elasticsearch",
+            "Create the index first if it doesn't exist",
+            "Use -i <index-name> to specify a different index",
+          ]
         );
       }
 
-      Logger.info`Index ${indexName} exists`;
+      Logger.debug`Index ${indexName} exists`;
 
       return {
         valid: true,
@@ -86,30 +106,52 @@ export async function validateIndex(
         (indexError.meta.body.error.type === "index_not_found_exception" ||
           indexError.meta.body.status === 404)
       ) {
-        Logger.error`Index ${indexName} does not exist`;
-        Logger.commandValueTip(
-          "Create the index first or use a different index name",
-          "-i <index-name>"
+        Logger.errorString(`Index ${indexName} does not exist`);
+        Logger.tipString(
+          "Create the index first or use a different index name"
         );
 
-        throw new ConductorError(
-          `Index ${indexName} does not exist. Create the index first or use a different index name.`,
-          ErrorCodes.INDEX_NOT_FOUND,
-          indexError
+        throw ErrorFactory.validation(
+          `Index ${indexName} does not exist`,
+          {
+            indexName,
+            errorType: "index_not_found_exception",
+            originalError: indexError,
+          },
+          [
+            "Create the index in Elasticsearch first",
+            "Use a different existing index name",
+            "Check index name spelling and case sensitivity",
+            "Use -i <index-name> to specify a different index",
+          ]
         );
       } else {
-        // Some other error occurred
+        // Some other error occurred - rethrow it
         throw indexError;
       }
     }
   } catch (error: any) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    Logger.error`Index check failed: ${errorMessage}`;
+    // If it's already a ConductorError, rethrow it
+    if (error instanceof Error && error.name === "ConductorError") {
+      throw error;
+    }
 
-    throw new ConductorError(
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    Logger.errorString(`Index check failed: ${errorMessage}`);
+
+    throw ErrorFactory.connection(
       `Failed to check if index ${indexName} exists`,
-      ErrorCodes.INDEX_NOT_FOUND,
-      error
+      {
+        indexName,
+        originalError: error,
+        errorMessage,
+      },
+      [
+        "Check Elasticsearch connection and availability",
+        "Verify you have permissions to access the index",
+        "Ensure Elasticsearch service is running",
+        "Review Elasticsearch logs for errors",
+      ]
     );
   }
 }
@@ -119,13 +161,27 @@ export async function validateIndex(
  */
 export function validateBatchSize(batchSize: number): void {
   if (!batchSize || isNaN(batchSize) || batchSize <= 0) {
-    throw createValidationError("Batch size must be a positive number", {
-      provided: batchSize,
-    });
+    throw ErrorFactory.validation(
+      "Batch size must be a positive number",
+      {
+        provided: batchSize,
+        type: typeof batchSize,
+      },
+      [
+        "Provide a positive number for batch size",
+        "Recommended range: 100-5000",
+        "Example: --batch-size 1000",
+      ]
+    );
   }
 
   if (batchSize > 10000) {
-    Logger.warn`Batch size ${batchSize} is quite large and may cause performance issues`;
+    Logger.warnString(
+      `Batch size ${batchSize} is quite large and may cause performance issues`
+    );
+    Logger.tipString(
+      "Consider using a smaller batch size (1000-5000) for better performance"
+    );
   } else {
     Logger.debug`Batch size validated: ${batchSize}`;
   }

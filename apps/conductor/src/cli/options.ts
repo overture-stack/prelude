@@ -3,12 +3,14 @@
  *
  * This module configures the command-line options for the Conductor CLI.
  * Updated to reflect the refactored SONG/Score services and removed commands.
+ * Enhanced with error factory pattern for consistent error handling.
  */
 
 import { Command } from "commander";
 import { Profiles } from "../types/constants";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
+import { ErrorFactory } from "../utils/errors";
 
 /**
  * Configures the command-line options for the Conductor CLI
@@ -297,155 +299,207 @@ export function configureCommandOptions(program: Command): void {
 
 /**
  * Parses command-line arguments into a standardized CLIOutput object
- * Updated to handle the combined SONG/Score workflow
+ * Updated to handle the combined SONG/Score workflow with enhanced error handling
  *
  * @param options - Parsed command-line options
  * @returns A CLIOutput object for command execution
  */
 export function parseCommandLineArgs(options: any): CLIOutput {
-  // Log raw options for debugging
-  Logger.debug(`Raw options: ${JSON.stringify(options)}`);
-  Logger.debug(`Process argv: ${process.argv.join(" ")}`);
+  try {
+    // Log raw options for debugging
+    Logger.debug`Raw options: ${JSON.stringify(options)}`;
+    Logger.debug`Process argv: ${process.argv.join(" ")}`;
 
-  // Determine the profile from options
-  let profile = options.profile || Profiles.UPLOAD;
+    // Determine the profile from options
+    let profile = options.profile || Profiles.UPLOAD;
 
-  // Special handling for lyricData command to ensure data directory is captured
-  if (profile === Profiles.LYRIC_DATA) {
-    // Check for a positional argument that might be the data directory
-    const positionalArgs = process.argv
-      .slice(3)
-      .filter((arg) => !arg.startsWith("-"));
+    // Special handling for lyricData command to ensure data directory is captured
+    if (profile === Profiles.LYRIC_DATA) {
+      // Check for a positional argument that might be the data directory
+      const positionalArgs = process.argv
+        .slice(3)
+        .filter((arg) => !arg.startsWith("-"));
 
-    if (positionalArgs.length > 0 && !options.dataDirectory) {
-      options.dataDirectory = positionalArgs[0];
-      Logger.debug(
-        `Captured data directory from positional argument: ${options.dataDirectory}`
+      if (positionalArgs.length > 0 && !options.dataDirectory) {
+        options.dataDirectory = positionalArgs[0];
+        Logger.debug`Captured data directory from positional argument: ${options.dataDirectory}`;
+      }
+    }
+
+    // Parse file paths with better error handling
+    let filePaths: string[] = [];
+
+    if (Array.isArray(options.file)) {
+      filePaths = options.file;
+    } else if (options.file) {
+      filePaths = [options.file];
+    }
+
+    // Add template file to filePaths if present
+    if (options.templateFile && !filePaths.includes(options.templateFile)) {
+      filePaths.push(options.templateFile);
+    }
+
+    // Add schema file to filePaths if present for Lectern or SONG upload
+    if (options.schemaFile && !filePaths.includes(options.schemaFile)) {
+      filePaths.push(options.schemaFile);
+    }
+
+    // Add analysis file to filePaths if present for SONG analysis submission
+    if (options.analysisFile && !filePaths.includes(options.analysisFile)) {
+      filePaths.push(options.analysisFile);
+    }
+
+    Logger.debug`Parsed profile: ${profile}`;
+    Logger.debug`Parsed file paths: ${filePaths.join(", ")}`;
+
+    // Validate numeric options
+    const batchSize = options.batchSize
+      ? parseInt(options.batchSize, 10)
+      : 1000;
+    const maxRetries = options.maxRetries ? parseInt(options.maxRetries) : 10;
+    const retryDelay = options.retryDelay
+      ? parseInt(options.retryDelay)
+      : 20000;
+
+    if (isNaN(batchSize) || batchSize <= 0) {
+      throw ErrorFactory.validation(
+        "Invalid batch size",
+        { batchSize: options.batchSize },
+        ["Batch size must be a positive number", "Example: --batch-size 1000"]
       );
     }
+
+    if (isNaN(maxRetries) || maxRetries < 0) {
+      throw ErrorFactory.validation(
+        "Invalid max retries",
+        { maxRetries: options.maxRetries },
+        [
+          "Max retries must be a non-negative number",
+          "Example: --max-retries 3",
+        ]
+      );
+    }
+
+    if (isNaN(retryDelay) || retryDelay < 0) {
+      throw ErrorFactory.validation(
+        "Invalid retry delay",
+        { retryDelay: options.retryDelay },
+        [
+          "Retry delay must be a non-negative number in milliseconds",
+          "Example: --retry-delay 1000",
+        ]
+      );
+    }
+
+    // Create config object with support for all services
+    const config = {
+      elasticsearch: {
+        url:
+          options.url ||
+          process.env.ELASTICSEARCH_URL ||
+          "http://localhost:9200",
+        user: options.user || process.env.ELASTICSEARCH_USER,
+        password: options.password || process.env.ELASTICSEARCH_PASSWORD,
+        index: options.index || options.indexName || "conductor-data",
+        templateFile: options.templateFile,
+        templateName: options.templateName,
+        alias: options.aliasName,
+      },
+      lectern: {
+        url:
+          options.lecternUrl ||
+          process.env.LECTERN_URL ||
+          "http://localhost:3031",
+        authToken: options.authToken || process.env.LECTERN_AUTH_TOKEN || "",
+      },
+      lyric: {
+        url:
+          options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
+        categoryName: options.categoryName || process.env.CATEGORY_NAME,
+        dictionaryName: options.dictName || process.env.DICTIONARY_NAME,
+        dictionaryVersion:
+          options.dictionaryVersion || process.env.DICTIONARY_VERSION,
+        defaultCentricEntity:
+          options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY,
+        // Data loading specific options
+        dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
+        categoryId: options.categoryId || process.env.CATEGORY_ID,
+        organization: options.organization || process.env.ORGANIZATION,
+        maxRetries,
+        retryDelay,
+      },
+      song: {
+        url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
+        authToken: options.authToken || process.env.AUTH_TOKEN || "123",
+        schemaFile: options.schemaFile || process.env.SONG_SCHEMA,
+        studyId: options.studyId || process.env.STUDY_ID || "demo",
+        studyName: options.studyName || process.env.STUDY_NAME || "string",
+        organization:
+          options.organization || process.env.ORGANIZATION || "string",
+        description: options.description || process.env.DESCRIPTION || "string",
+        analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
+        allowDuplicates:
+          options.allowDuplicates ||
+          process.env.ALLOW_DUPLICATES === "true" ||
+          false,
+        ignoreUndefinedMd5:
+          options.ignoreUndefinedMd5 ||
+          process.env.IGNORE_UNDEFINED_MD5 === "true" ||
+          false,
+        // Combined Score functionality (now part of song config)
+        scoreUrl:
+          options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
+        dataDir: options.dataDir || process.env.DATA_DIR || "./data",
+        outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
+        manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
+      },
+      maestroIndex: {
+        url:
+          options.indexUrl || process.env.INDEX_URL || "http://localhost:11235",
+        repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
+        organization: options.organization || process.env.ORGANIZATION,
+        id: options.id || process.env.ID,
+      },
+      batchSize,
+      delimiter: options.delimiter || ",",
+    };
+
+    // Build the standardized CLI output
+    return {
+      profile,
+      filePaths,
+      outputPath: options.output,
+      config,
+      options,
+      envConfig: {
+        elasticsearchUrl: config.elasticsearch.url,
+        esUser: config.elasticsearch.user,
+        esPassword: config.elasticsearch.password,
+        indexName: config.elasticsearch.index,
+        lecternUrl: config.lectern.url,
+        lyricUrl: config.lyric.url,
+        songUrl: config.song.url,
+        lyricData: config.lyric.dataDirectory,
+        categoryId: config.lyric.categoryId,
+        organization: config.lyric.organization,
+      },
+    };
+  } catch (error) {
+    // If it's already a ConductorError, rethrow it
+    if (error instanceof Error && error.name === "ConductorError") {
+      throw error;
+    }
+
+    // Wrap unexpected parsing errors
+    throw ErrorFactory.parsing(
+      "Failed to parse command line arguments",
+      { options, originalError: error },
+      [
+        "Check command line argument syntax",
+        "Use --help for usage information",
+        "Verify all required parameters are provided",
+      ]
+    );
   }
-
-  // Parse file paths
-  const filePaths = Array.isArray(options.file)
-    ? options.file
-    : options.file
-    ? [options.file]
-    : [];
-
-  // Add template file to filePaths if present
-  if (options.templateFile && !filePaths.includes(options.templateFile)) {
-    filePaths.push(options.templateFile);
-  }
-
-  // Add schema file to filePaths if present for Lectern or SONG upload
-  if (options.schemaFile && !filePaths.includes(options.schemaFile)) {
-    filePaths.push(options.schemaFile);
-  }
-
-  // Add analysis file to filePaths if present for SONG analysis submission
-  if (options.analysisFile && !filePaths.includes(options.analysisFile)) {
-    filePaths.push(options.analysisFile);
-  }
-
-  Logger.debug(`Parsed profile: ${profile}`);
-  Logger.debug(`Parsed file paths: ${filePaths.join(", ")}`);
-
-  // Create config object with support for all services
-  const config = {
-    elasticsearch: {
-      url:
-        options.url || process.env.ELASTICSEARCH_URL || "http://localhost:9200",
-      user: options.user || process.env.ELASTICSEARCH_USER,
-      password: options.password || process.env.ELASTICSEARCH_PASSWORD,
-      index: options.index || options.indexName || "conductor-data",
-      templateFile: options.templateFile,
-      templateName: options.templateName,
-      alias: options.aliasName,
-    },
-    lectern: {
-      url:
-        options.lecternUrl ||
-        process.env.LECTERN_URL ||
-        "http://localhost:3031",
-      authToken: options.authToken || process.env.LECTERN_AUTH_TOKEN || "",
-    },
-    lyric: {
-      url: options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
-      categoryName: options.categoryName || process.env.CATEGORY_NAME,
-      dictionaryName: options.dictName || process.env.DICTIONARY_NAME,
-      dictionaryVersion:
-        options.dictionaryVersion || process.env.DICTIONARY_VERSION,
-      defaultCentricEntity:
-        options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY,
-      // Data loading specific options
-      dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
-      categoryId: options.categoryId || process.env.CATEGORY_ID,
-      organization: options.organization || process.env.ORGANIZATION,
-      maxRetries: options.maxRetries
-        ? parseInt(options.maxRetries)
-        : process.env.MAX_RETRIES
-        ? parseInt(process.env.MAX_RETRIES)
-        : 10,
-      retryDelay: options.retryDelay
-        ? parseInt(options.retryDelay)
-        : process.env.RETRY_DELAY
-        ? parseInt(process.env.RETRY_DELAY)
-        : 20000,
-    },
-    song: {
-      url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
-      authToken: options.authToken || process.env.AUTH_TOKEN || "123",
-      schemaFile: options.schemaFile || process.env.SONG_SCHEMA,
-      studyId: options.studyId || process.env.STUDY_ID || "demo",
-      studyName: options.studyName || process.env.STUDY_NAME || "string",
-      organization:
-        options.organization || process.env.ORGANIZATION || "string",
-      description: options.description || process.env.DESCRIPTION || "string",
-      analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
-      allowDuplicates:
-        options.allowDuplicates ||
-        process.env.ALLOW_DUPLICATES === "true" ||
-        false,
-      ignoreUndefinedMd5:
-        options.ignoreUndefinedMd5 ||
-        process.env.IGNORE_UNDEFINED_MD5 === "true" ||
-        false,
-      // Combined Score functionality (now part of song config)
-      scoreUrl:
-        options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
-      dataDir: options.dataDir || process.env.DATA_DIR || "./data",
-      outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
-      manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
-    },
-    maestroIndex: {
-      url:
-        options.indexUrl || process.env.INDEX_URL || "http://localhost:11235",
-      repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
-      organization: options.organization || process.env.ORGANIZATION,
-      id: options.id || process.env.ID,
-    },
-    batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
-    delimiter: options.delimiter || ",",
-  };
-
-  // Build the standardized CLI output
-  return {
-    profile,
-    filePaths,
-    outputPath: options.output,
-    config,
-    options,
-    envConfig: {
-      elasticsearchUrl: config.elasticsearch.url,
-      esUser: config.elasticsearch.user,
-      esPassword: config.elasticsearch.password,
-      indexName: config.elasticsearch.index,
-      lecternUrl: config.lectern.url,
-      lyricUrl: config.lyric.url,
-      songUrl: config.song.url,
-      lyricData: config.lyric.dataDirectory,
-      categoryId: config.lyric.categoryId,
-      organization: config.lyric.organization,
-    },
-  };
 }

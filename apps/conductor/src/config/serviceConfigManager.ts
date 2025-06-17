@@ -2,10 +2,12 @@
 /**
  * Unified service configuration management
  * Replaces scattered config objects throughout commands and services
+ * Updated to use error factory pattern for consistent error handling
  */
 
 import { Environment } from "./environment";
 import { ServiceConfig } from "../services/base/types";
+import { ErrorFactory } from "../utils/errors";
 
 interface StandardServiceConfig extends ServiceConfig {
   name: string;
@@ -178,17 +180,44 @@ export class ServiceConfigManager {
    */
   static validateConfig(config: StandardServiceConfig): void {
     if (!config.url) {
-      throw new Error(`Missing URL for ${config.name} service`);
+      throw ErrorFactory.args(`Missing URL for ${config.name} service`, [
+        "Provide service URL in configuration",
+        "Set appropriate environment variable",
+        "Use command line option to specify URL",
+      ]);
     }
 
-    if (config.timeout && config.timeout < 1000) {
-      throw new Error(
-        `Timeout too low for ${config.name} service (minimum 1000ms)`
+    try {
+      new URL(config.url);
+    } catch (error) {
+      throw ErrorFactory.validation(
+        `Invalid ${config.name} service URL`,
+        { url: config.url, originalError: error },
+        [
+          "Ensure URL includes protocol (http:// or https://)",
+          "Check URL format and spelling",
+          "Verify port number if specified",
+        ]
       );
     }
 
-    if (config.retries && config.retries < 0) {
-      throw new Error(`Invalid retries value for ${config.name} service`);
+    if (config.timeout && (config.timeout < 1000 || config.timeout > 300000)) {
+      throw ErrorFactory.validation(
+        `Invalid timeout for ${config.name} service`,
+        { timeout: config.timeout },
+        [
+          "Timeout must be between 1000ms and 300000ms",
+          "Recommended range: 5000-30000ms for most services",
+        ]
+      );
+    }
+
+    if (config.retries && (config.retries < 0 || config.retries > 10)) {
+      throw ErrorFactory.validation(
+        `Invalid retries value for ${config.name} service`,
+        { retries: config.retries },
+        ["Retries must be between 0 and 10", "Recommended range: 1-5 retries"]
+      );
     }
   }
 

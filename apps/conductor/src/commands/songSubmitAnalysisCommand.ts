@@ -1,9 +1,9 @@
-// src/commands/songSubmitAnalysisCommand.ts - Combined with scoreManifestUpload
+// src/commands/songSubmitAnalysisCommand.ts - Updated with error factory pattern
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { SongScoreService } from "../services/song-score";
 import { SongScoreWorkflowParams } from "../services/song-score/types";
 import * as fs from "fs";
@@ -12,6 +12,7 @@ import * as path from "path";
 /**
  * Combined command for SONG analysis submission and Score file upload
  * This replaces both songSubmitAnalysis and scoreManifestUpload commands
+ * Updated to use error factory pattern for consistent error handling
  */
 export class SongSubmitAnalysisCommand extends Command {
   constructor() {
@@ -43,12 +44,17 @@ export class SongSubmitAnalysisCommand extends Command {
         if (!healthStatus.song) issues.push("SONG");
         if (!healthStatus.score) issues.push("Score");
 
-        throw new ConductorError(
+        throw ErrorFactory.connection(
           `Service health check failed: ${issues.join(
             ", "
           )} service(s) not healthy`,
-          ErrorCodes.CONNECTION_ERROR,
-          { healthStatus }
+          { healthStatus },
+          [
+            "Check that SONG service is running and accessible",
+            "Check that Score service is running and accessible",
+            "Verify Docker containers are properly configured",
+            "Review service logs for errors",
+          ]
         );
       }
 
@@ -83,35 +89,51 @@ export class SongSubmitAnalysisCommand extends Command {
     // Validate analysis file
     const analysisFile = this.getAnalysisFile(options);
     if (!analysisFile) {
-      throw new ConductorError(
-        "Analysis file not specified. Use --analysis-file or set ANALYSIS_FILE environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("Analysis file not specified", [
+        "Use --analysis-file option to specify the analysis file",
+        "Set ANALYSIS_FILE environment variable",
+        "Example: --analysis-file ./analysis.json",
+      ]);
     }
 
     if (!fs.existsSync(analysisFile)) {
-      throw new ConductorError(
-        `Analysis file not found: ${analysisFile}`,
-        ErrorCodes.FILE_NOT_FOUND
+      throw ErrorFactory.file("Analysis file not found", analysisFile, [
+        "Check that the file exists",
+        "Verify the file path is correct",
+        "Ensure you have read access to the file",
+      ]);
+    }
+
+    // Validate it's a JSON file
+    if (!analysisFile.toLowerCase().endsWith(".json")) {
+      throw ErrorFactory.invalidFile(
+        "Analysis file must be a JSON file",
+        analysisFile,
+        [
+          "Ensure the file has a .json extension",
+          "Verify the file contains valid JSON content",
+        ]
       );
     }
 
     // Validate data directory
     const dataDir = this.getDataDir(options);
     if (!fs.existsSync(dataDir)) {
-      throw new ConductorError(
-        `Data directory not found: ${dataDir}`,
-        ErrorCodes.FILE_NOT_FOUND
-      );
+      throw ErrorFactory.file("Data directory not found", dataDir, [
+        "Check that the directory exists",
+        "Verify the directory path is correct",
+        "Ensure you have access to the directory",
+      ]);
     }
 
     // Validate SONG URL
     const songUrl = this.getSongUrl(options);
     if (!songUrl) {
-      throw new ConductorError(
-        "SONG URL not specified. Use --song-url or set SONG_URL environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("SONG URL not specified", [
+        "Use --song-url option to specify SONG server URL",
+        "Set SONG_URL environment variable",
+        "Example: --song-url http://localhost:8080",
+      ]);
     }
   }
 
@@ -120,19 +142,28 @@ export class SongSubmitAnalysisCommand extends Command {
    */
   private extractWorkflowParams(options: any): SongScoreWorkflowParams {
     const analysisFile = this.getAnalysisFile(options)!;
-    const analysisContent = fs.readFileSync(analysisFile, "utf-8");
 
-    return {
-      analysisContent,
-      studyId: options.studyId || process.env.STUDY_ID || "demo",
-      allowDuplicates: options.allowDuplicates || false,
-      dataDir: this.getDataDir(options),
-      manifestFile: this.getManifestFile(options),
-      ignoreUndefinedMd5: options.ignoreUndefinedMd5 || false,
-      songUrl: this.getSongUrl(options),
-      scoreUrl: this.getScoreUrl(options),
-      authToken: options.authToken || process.env.AUTH_TOKEN || "123",
-    };
+    try {
+      const analysisContent = fs.readFileSync(analysisFile, "utf-8");
+
+      return {
+        analysisContent,
+        studyId: options.studyId || process.env.STUDY_ID || "demo",
+        allowDuplicates: options.allowDuplicates || false,
+        dataDir: this.getDataDir(options),
+        manifestFile: this.getManifestFile(options),
+        ignoreUndefinedMd5: options.ignoreUndefinedMd5 || false,
+        songUrl: this.getSongUrl(options),
+        scoreUrl: this.getScoreUrl(options),
+        authToken: options.authToken || process.env.AUTH_TOKEN || "123",
+      };
+    } catch (error) {
+      throw ErrorFactory.file("Error reading analysis file", analysisFile, [
+        "Check file permissions",
+        "Verify the file is not corrupted",
+        "Ensure the file contains valid JSON",
+      ]);
+    }
   }
 
   /**
@@ -189,19 +220,19 @@ export class SongSubmitAnalysisCommand extends Command {
     songUrl: string,
     scoreUrl?: string
   ): void {
-    Logger.info(`${chalk.bold.cyan("SONG/Score Analysis Workflow:")}`);
-    Logger.info(`SONG URL: ${songUrl}`);
-    Logger.info(`Score URL: ${scoreUrl || "http://localhost:8087"}`);
-    Logger.info(`Study ID: ${params.studyId}`);
-    Logger.info(`Data Directory: ${params.dataDir}`);
-    Logger.info(`Manifest File: ${params.manifestFile}`);
+    Logger.info`${chalk.bold.cyan("SONG/Score Analysis Workflow:")}`;
+    Logger.infoString(`SONG URL: ${songUrl}`);
+    Logger.infoString(`Score URL: ${scoreUrl || "http://localhost:8087"}`);
+    Logger.infoString(`Study ID: ${params.studyId}`);
+    Logger.infoString(`Data Directory: ${params.dataDir}`);
+    Logger.infoString(`Manifest File: ${params.manifestFile}`);
   }
 
   /**
    * Log successful workflow completion
    */
   private logSuccess(result: any): void {
-    Logger.success("SONG/Score workflow completed successfully");
+    Logger.successString("SONG/Score workflow completed successfully");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Analysis ID: ${result.analysisId}`));
     Logger.generic(chalk.gray(`    - Study ID: ${result.studyId}`));
@@ -214,7 +245,7 @@ export class SongSubmitAnalysisCommand extends Command {
    * Log partial success
    */
   private logPartialSuccess(result: any): void {
-    Logger.warn("SONG/Score workflow completed with partial success");
+    Logger.warnString("SONG/Score workflow completed with partial success");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Analysis ID: ${result.analysisId}`));
     Logger.generic(chalk.gray(`    - Study ID: ${result.studyId}`));
@@ -233,35 +264,123 @@ export class SongSubmitAnalysisCommand extends Command {
   }
 
   /**
-   * Handle execution errors
+   * Handle execution errors with helpful user feedback
    */
   private handleExecutionError(error: unknown): CommandResult {
-    if (error instanceof ConductorError) {
-      // Add context-specific help
-      if (error.code === ErrorCodes.FILE_NOT_FOUND) {
-        Logger.info("\nFile or directory issue. Check paths and permissions.");
-      } else if (error.code === ErrorCodes.CONNECTION_ERROR) {
-        Logger.info("\nConnection error. Check service availability.");
-      }
-
-      if (error.details?.suggestion) {
-        Logger.tip(error.details.suggestion);
-      }
-
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
-        details: error.details,
+        errorMessage: conductorError.message,
+        errorCode: conductorError.code,
+        details: conductorError.details,
       };
     }
 
+    // Handle unexpected errors with categorization
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Connection errors
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      const connectionError = ErrorFactory.connection(
+        "Failed to connect to SONG/Score services",
+        { originalError: error },
+        [
+          "Check that SONG and Score services are running",
+          "Verify service URLs and ports",
+          "Check network connectivity",
+          "Review firewall settings",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: connectionError.message,
+        errorCode: connectionError.code,
+        details: connectionError.details,
+      };
+    }
+
+    // Docker errors
+    if (errorMessage.includes("docker") || errorMessage.includes("container")) {
+      const dockerError = ErrorFactory.args(
+        "Docker-related error in workflow",
+        [
+          "Ensure Docker is installed and running",
+          "Check that required containers are available",
+          "Verify Docker container configuration",
+          "Review Docker logs for more details",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: dockerError.message,
+        errorCode: dockerError.code,
+        details: dockerError.details,
+      };
+    }
+
+    // File/directory errors
+    if (errorMessage.includes("ENOENT") || errorMessage.includes("file")) {
+      const fileError = ErrorFactory.file(
+        "File or directory issue in workflow",
+        undefined,
+        [
+          "Check that all required files exist",
+          "Verify file and directory permissions",
+          "Ensure paths are correct",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: fileError.message,
+        errorCode: fileError.code,
+        details: fileError.details,
+      };
+    }
+
+    // Authentication errors
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      const authError = ErrorFactory.auth(
+        "Authentication failed in workflow",
+        { originalError: error },
+        [
+          "Check authentication tokens for SONG and Score",
+          "Verify you have permissions for the operations",
+          "Contact administrator for access",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: authError.message,
+        errorCode: authError.code,
+        details: authError.details,
+      };
+    }
+
+    // Generic fallback
+    const genericError = ErrorFactory.connection(
+      "SONG/Score workflow failed",
+      { originalError: error },
+      [
+        "Check service availability and configuration",
+        "Verify all required parameters are provided",
+        "Use --debug for detailed error information",
+        "Review service logs for more details",
+      ]
+    );
+
     return {
       success: false,
-      errorMessage: `SONG/Score workflow failed: ${errorMessage}`,
-      errorCode: ErrorCodes.CONNECTION_ERROR,
-      details: { originalError: error },
+      errorMessage: genericError.message,
+      errorCode: genericError.code,
+      details: genericError.details,
     };
   }
 }

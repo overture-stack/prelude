@@ -2,7 +2,7 @@
 import { BaseService } from "../base/baseService";
 import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import {
   SongSchemaUploadParams,
   SongSchemaUploadResponse,
@@ -43,12 +43,14 @@ export class SongService extends BaseService {
       try {
         schemaData = JSON.parse(params.schemaContent);
       } catch (error) {
-        throw new ConductorError(
-          `Invalid schema format: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          ErrorCodes.INVALID_FILE,
-          error
+        throw ErrorFactory.parsing(
+          "Invalid schema format",
+          { originalError: error },
+          [
+            "Ensure schema file contains valid JSON",
+            "Check for syntax errors",
+            "Validate JSON structure",
+          ]
         );
       }
 
@@ -57,13 +59,13 @@ export class SongService extends BaseService {
 
       // Log any warnings
       if (warnings.length > 0) {
-        Logger.warn("Schema validation warnings:");
+        Logger.warnString("Schema validation warnings:");
         warnings.forEach((warning) => {
-          Logger.warn(`  - ${warning}`);
+          Logger.warnString(`  - ${warning}`);
         });
       }
 
-      Logger.info(`Uploading schema: ${schemaData.name}`);
+      Logger.info`Uploading schema: ${schemaData.name}`;
 
       // Upload to SONG schemas endpoint
       const response = await this.http.post<SongSchemaUploadResponse>(
@@ -73,13 +75,17 @@ export class SongService extends BaseService {
 
       // Check for errors in response
       if (response.data?.error) {
-        throw new ConductorError(
-          `SONG API error: ${response.data.error}`,
-          ErrorCodes.CONNECTION_ERROR
+        throw ErrorFactory.validation(
+          "SONG API error",
+          { error: response.data.error },
+          [
+            `Server error: ${response.data.error}`,
+            "Check schema format and requirements",
+          ]
         );
       }
 
-      Logger.success(`Schema "${schemaData.name}" uploaded successfully`);
+      Logger.success`Schema "${schemaData.name}" uploaded successfully`;
 
       return response.data;
     } catch (error) {
@@ -94,12 +100,12 @@ export class SongService extends BaseService {
     try {
       this.validateRequired(params, ["studyId", "name", "organization"]);
 
-      Logger.info(`Creating study: ${params.studyId}`);
+      Logger.info`Creating study: ${params.studyId}`;
 
       // Check if study already exists
       const studyExists = await this.checkStudyExists(params.studyId);
       if (studyExists && !params.force) {
-        Logger.warn(`Study ID ${params.studyId} already exists`);
+        Logger.warnString(`Study ID ${params.studyId} already exists`);
         return {
           studyId: params.studyId,
           name: params.name,
@@ -124,7 +130,7 @@ export class SongService extends BaseService {
         studyPayload
       );
 
-      Logger.success(`Study created successfully`);
+      Logger.success`Study created successfully`;
 
       return {
         ...response.data,
@@ -163,20 +169,25 @@ export class SongService extends BaseService {
       try {
         analysisData = JSON.parse(params.analysisContent);
       } catch (error) {
-        throw new ConductorError(
-          `Invalid analysis format: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          ErrorCodes.INVALID_FILE,
-          error
+        throw ErrorFactory.parsing(
+          "Invalid analysis format",
+          { originalError: error },
+          [
+            "Ensure analysis file contains valid JSON",
+            "Check for syntax errors in the analysis",
+          ]
         );
       }
 
       // Basic validation of analysis structure
       if (!analysisData.analysisType || !analysisData.analysisType.name) {
-        throw new ConductorError(
+        throw ErrorFactory.validation(
           "Invalid analysis format: Missing required field 'analysisType.name'",
-          ErrorCodes.INVALID_FILE
+          { analysisData },
+          [
+            "Add analysisType.name field to analysis",
+            "Check analysis file structure",
+          ]
         );
       }
 
@@ -185,14 +196,15 @@ export class SongService extends BaseService {
         !Array.isArray(analysisData.files) ||
         analysisData.files.length === 0
       ) {
-        throw new ConductorError(
+        throw ErrorFactory.validation(
           "Invalid analysis format: 'files' must be a non-empty array",
-          ErrorCodes.INVALID_FILE
+          { analysisData },
+          ["Add files array to analysis", "Ensure files array is not empty"]
         );
       }
 
-      Logger.info(`Submitting analysis to study: ${params.studyId}`);
-      Logger.info(`Analysis type: ${analysisData.analysisType.name}`);
+      Logger.info`Submitting analysis to study: ${params.studyId}`;
+      Logger.infoString(`Analysis type: ${analysisData.analysisType.name}`);
 
       // Submit analysis
       const submitUrl = `/submit/${params.studyId}?allowDuplicates=${
@@ -220,13 +232,17 @@ export class SongService extends BaseService {
       }
 
       if (!analysisId) {
-        throw new ConductorError(
+        throw ErrorFactory.connection(
           "No analysis ID returned from SONG API",
-          ErrorCodes.CONNECTION_ERROR
+          { response: response.data },
+          [
+            "Check SONG service response format",
+            "Verify analysis submission was processed",
+          ]
         );
       }
 
-      Logger.success(`Analysis submitted successfully with ID: ${analysisId}`);
+      Logger.success`Analysis submitted successfully with ID: ${analysisId}`;
 
       return {
         analysisId,
@@ -248,7 +264,7 @@ export class SongService extends BaseService {
     try {
       this.validateRequired(params, ["analysisId", "studyId"]);
 
-      Logger.info(`Publishing analysis: ${params.analysisId}`);
+      Logger.info`Publishing analysis: ${params.analysisId}`;
 
       // Construct the publish endpoint URL
       const publishUrl = `/studies/${params.studyId}/analysis/publish/${params.analysisId}`;
@@ -264,7 +280,7 @@ export class SongService extends BaseService {
         params: queryParams,
       });
 
-      Logger.success(`Analysis published successfully`);
+      Logger.success`Analysis published successfully`;
 
       return {
         analysisId: params.analysisId,
@@ -283,82 +299,41 @@ export class SongService extends BaseService {
   }
 
   /**
-   * Get all studies from SONG server
-   */
-  async getAllStudies(): Promise<string[]> {
-    try {
-      const response = await this.http.get<string[]>("/studies/all");
-      return Array.isArray(response.data)
-        ? response.data
-        : [response.data as string];
-    } catch (error) {
-      this.handleServiceError(error, "get all studies");
-    }
-  }
-
-  /**
-   * Get analysis details from SONG
-   */
-  async getAnalysis(studyId: string, analysisId: string): Promise<any> {
-    try {
-      const response = await this.http.get(
-        `/studies/${studyId}/analysis/${analysisId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.handleServiceError(error, "get analysis");
-    }
-  }
-
-  /**
-   * Find which study contains a specific analysis
-   */
-  async findAnalysisInStudies(
-    analysisId: string
-  ): Promise<{ studyId: string; analysis: any } | null> {
-    try {
-      const studies = await this.getAllStudies();
-
-      for (const studyId of studies) {
-        try {
-          const analysis = await this.getAnalysis(studyId, analysisId);
-          if (analysis) {
-            return { studyId, analysis };
-          }
-        } catch (error) {
-          // Continue to next study if analysis not found
-          continue;
-        }
-      }
-
-      return null;
-    } catch (error) {
-      Logger.warn(`Could not find analysis ${analysisId}: ${error}`);
-      return null;
-    }
-  }
-
-  /**
    * Check if a study exists
    */
   private async checkStudyExists(studyId: string): Promise<boolean> {
     try {
-      const response = await this.http.get(`/studies/${studyId}`);
-      return response.status === 200;
-    } catch (error: any) {
-      // If we get a 404, study doesn't exist
-      if (error.response && error.response.status === 404) {
+      await this.http.get(`/studies/${studyId}`);
+      return true;
+    } catch (error) {
+      // 404 means study doesn't exist
+      if (this.isNotFoundError(error)) {
         return false;
       }
-      // For other errors, assume study doesn't exist
-      return false;
+      // Other errors should be thrown
+      throw error;
     }
   }
 
   /**
-   * Check if error is a conflict (409) error
+   * Check if error is a 409 conflict
    */
-  private isConflictError(error: any): boolean {
-    return error.response && error.response.status === 409;
+  private isConflictError(error: unknown): boolean {
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const response = (error as any).response;
+      return response?.status === 409;
+    }
+    return false;
+  }
+
+  /**
+   * Check if error is a 404 not found
+   */
+  private isNotFoundError(error: unknown): boolean {
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const response = (error as any).response;
+      return response?.status === 404;
+    }
+    return false;
   }
 }

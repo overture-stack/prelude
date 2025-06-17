@@ -1,9 +1,9 @@
-// src/commands/lecternUploadCommand.ts - Updated to use new configuration system
+// src/commands/lecternUploadCommand.ts - Updated with error factory pattern
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { LecternService } from "../services/lectern";
 import { LecternSchemaUploadParams } from "../services/lectern/types";
 import { ServiceConfigManager } from "../config/serviceConfigManager";
@@ -11,7 +11,7 @@ import * as fs from "fs";
 
 /**
  * Command for uploading schemas to the Lectern service
- * Now uses the simplified configuration system!
+ * Updated to use error factory pattern for consistent error handling
  */
 export class LecternUploadCommand extends Command {
   constructor() {
@@ -28,24 +28,53 @@ export class LecternUploadCommand extends Command {
     const schemaFile = this.getSchemaFile(options);
 
     if (!schemaFile) {
-      throw new ConductorError(
-        "Schema file not specified. Use --schema-file or set LECTERN_SCHEMA environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("Schema file not specified", [
+        "Use --schema-file option to specify the schema file",
+        "Set LECTERN_SCHEMA environment variable",
+        "Example: --schema-file ./my-schema.json",
+      ]);
     }
 
     // Validate file exists and is readable
     if (!fs.existsSync(schemaFile)) {
-      throw new ConductorError(
-        `Schema file not found: ${schemaFile}`,
-        ErrorCodes.FILE_NOT_FOUND
+      throw ErrorFactory.file("Schema file not found", schemaFile, [
+        "Check the file path spelling",
+        "Ensure the file exists and is accessible",
+        "Verify file permissions",
+      ]);
+    }
+
+    // Validate it's a JSON file
+    if (!schemaFile.toLowerCase().endsWith(".json")) {
+      throw ErrorFactory.invalidFile(
+        "Schema file must be a JSON file",
+        schemaFile,
+        [
+          "Ensure the file has a .json extension",
+          "Verify the file contains valid JSON content",
+        ]
+      );
+    }
+
+    // Try to parse the JSON to validate format
+    try {
+      const content = fs.readFileSync(schemaFile, "utf-8");
+      JSON.parse(content);
+    } catch (error) {
+      throw ErrorFactory.parsing(
+        "Invalid JSON in schema file",
+        { filePath: schemaFile, originalError: error },
+        [
+          "Validate JSON syntax using a JSON validator",
+          "Check for trailing commas or syntax errors",
+          "Ensure the file is properly formatted JSON",
+        ]
       );
     }
   }
 
   /**
    * Executes the Lectern schema upload process
-   * Much simpler now with the new configuration system!
    */
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { options } = cliOutput;
@@ -54,7 +83,7 @@ export class LecternUploadCommand extends Command {
       // Extract configuration using the new simplified system
       const schemaFile = this.getSchemaFile(options)!;
 
-      // Use the new ServiceConfigManager - much cleaner!
+      // Use the new ServiceConfigManager
       const serviceConfig = ServiceConfigManager.createLecternConfig({
         url: options.lecternUrl,
         authToken: options.authToken,
@@ -71,12 +100,18 @@ export class LecternUploadCommand extends Command {
       // Check service health
       const healthResult = await lecternService.checkHealth();
       if (!healthResult.healthy) {
-        throw new ConductorError(
-          `Lectern service is not healthy: ${
-            healthResult.message || "Unknown error"
-          }`,
-          ErrorCodes.CONNECTION_ERROR,
-          { healthResult }
+        throw ErrorFactory.connection(
+          "Lectern service is not healthy",
+          {
+            healthResult,
+            serviceUrl: serviceConfig.url,
+          },
+          [
+            "Check that Lectern service is running",
+            `Verify the service URL: ${serviceConfig.url}`,
+            "Check network connectivity",
+            "Review service logs for errors",
+          ]
         );
       }
 
@@ -110,20 +145,18 @@ export class LecternUploadCommand extends Command {
    */
   private extractUploadParams(schemaFile: string): LecternSchemaUploadParams {
     try {
-      Logger.info(`Reading schema file: ${schemaFile}`);
+      Logger.info`Reading schema file: ${schemaFile}`;
       const schemaContent = fs.readFileSync(schemaFile, "utf-8");
 
       return {
         schemaContent,
       };
     } catch (error) {
-      throw new ConductorError(
-        `Error reading schema file: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-        ErrorCodes.FILE_ERROR,
-        error
-      );
+      throw ErrorFactory.file("Error reading schema file", schemaFile, [
+        "Check file permissions",
+        "Verify the file is not corrupted",
+        "Ensure sufficient disk space",
+      ]);
     }
   }
 
@@ -131,16 +164,16 @@ export class LecternUploadCommand extends Command {
    * Log upload information
    */
   private logUploadInfo(schemaFile: string, serviceUrl: string): void {
-    Logger.info(`${chalk.bold.cyan("Uploading Schema to Lectern:")}`);
-    Logger.info(`URL: ${serviceUrl}/dictionaries`);
-    Logger.info(`Schema File: ${schemaFile}`);
+    Logger.info`${chalk.bold.cyan("Uploading Schema to Lectern:")}`;
+    Logger.infoString(`URL: ${serviceUrl}/dictionaries`);
+    Logger.infoString(`Schema File: ${schemaFile}`);
   }
 
   /**
    * Log successful upload
    */
   private logSuccess(result: any): void {
-    Logger.success("Schema uploaded successfully");
+    Logger.successString("Schema uploaded successfully");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Schema ID: ${result.id || "N/A"}`));
     Logger.generic(
@@ -153,41 +186,82 @@ export class LecternUploadCommand extends Command {
   }
 
   /**
-   * Handle execution errors with helpful user feedback
+   * Handle execution errors with the error factory pattern
    */
   private handleExecutionError(error: unknown): CommandResult {
-    if (error instanceof ConductorError) {
-      // Add context-specific help for common Lectern errors
-      if (error.code === ErrorCodes.VALIDATION_FAILED) {
-        Logger.info("\nSchema validation failed. Check your schema structure.");
-        Logger.tip(
-          'Ensure your schema has required fields: "name" and "schema"'
-        );
-      } else if (error.code === ErrorCodes.FILE_NOT_FOUND) {
-        Logger.info("\nSchema file not found. Check the file path.");
-      } else if (error.code === ErrorCodes.CONNECTION_ERROR) {
-        Logger.info("\nConnection error. Check Lectern service availability.");
-      }
-
-      if (error.details?.suggestion) {
-        Logger.tip(error.details.suggestion);
-      }
-
+    // If it's already a ConductorError from the error factory, just return it
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
-        details: error.details,
+        errorMessage: conductorError.message,
+        errorCode: conductorError.code,
+        details: conductorError.details,
       };
     }
 
-    // Handle unexpected errors
+    // For unexpected errors, wrap them appropriately
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Try to categorize the error based on the message
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      const connectionError = ErrorFactory.connection(
+        "Failed to connect to Lectern service",
+        { originalError: error },
+        [
+          "Check that Lectern service is running",
+          "Verify the service URL and port",
+          "Check network connectivity",
+          "Review firewall settings",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: connectionError.message,
+        errorCode: connectionError.code,
+        details: connectionError.details,
+      };
+    }
+
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      const authError = ErrorFactory.auth(
+        "Authentication failed",
+        { originalError: error },
+        [
+          "Check your authentication token",
+          "Verify you have permission to upload schemas",
+          "Contact your administrator for access",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: authError.message,
+        errorCode: authError.code,
+        details: authError.details,
+      };
+    }
+
+    // Generic fallback for other errors
+    const genericError = ErrorFactory.connection(
+      "Schema upload failed",
+      { originalError: error },
+      [
+        "Check the service logs for more details",
+        "Verify your schema file format",
+        "Try the upload again after a few moments",
+      ]
+    );
+
     return {
       success: false,
-      errorMessage: `Schema upload failed: ${errorMessage}`,
-      errorCode: ErrorCodes.CONNECTION_ERROR,
-      details: { originalError: error },
+      errorMessage: genericError.message,
+      errorCode: genericError.code,
+      details: genericError.details,
     };
   }
 }

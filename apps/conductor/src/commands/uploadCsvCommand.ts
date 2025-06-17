@@ -2,6 +2,7 @@
  * Upload Command
  *
  * Command implementation for uploading CSV data to Elasticsearch.
+ * Updated to use error factory pattern for consistent error handling.
  */
 
 import { validateBatchSize } from "../validations/elasticsearchValidator";
@@ -9,7 +10,7 @@ import { validateDelimiter } from "../validations/utils";
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import {
   createClientFromConfig,
   validateConnection,
@@ -42,7 +43,8 @@ export class UploadCommand extends Command {
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config, filePaths } = cliOutput;
 
-    Logger.info(`Input files specified: ${filePaths.length}`, filePaths);
+    Logger.debug`Input files specified: ${filePaths.length}`;
+    Logger.debug`Files: ${filePaths.join(", ")}`;
 
     // Process each file
     let successCount = 0;
@@ -50,34 +52,39 @@ export class UploadCommand extends Command {
     const failureDetails: Record<string, any> = {};
 
     for (const filePath of filePaths) {
-      Logger.debug(`Processing File: ${filePath}`);
+      Logger.generic("");
+      Logger.info`Processing File: ${filePath}\n`;
 
       try {
         await this.processFile(filePath, config);
-        Logger.debug(`Successfully processed ${filePath}`);
+        Logger.debug`Successfully processed ${filePath}`;
         successCount++;
       } catch (error) {
         failureCount++;
+
         // Log the error but continue to the next file
-        if (error instanceof ConductorError) {
-          Logger.debug(
-            `Skipping file '${filePath}': [${error.code}] ${error.message}`
-          );
-          if (error.details) {
-            Logger.debug(`Error details: ${JSON.stringify(error.details)}`);
+        if (error instanceof Error && error.name === "ConductorError") {
+          const conductorError = error as any;
+          Logger.debug`Skipping file '${filePath}': [${conductorError.code}] ${conductorError.message}`;
+
+          if (conductorError.details) {
+            Logger.debugString(
+              `Error details: ${JSON.stringify(conductorError.details)}`
+            );
           }
+
           failureDetails[filePath] = {
-            code: error.code,
-            message: error.message,
-            details: error.details,
+            code: conductorError.code,
+            message: conductorError.message,
+            details: conductorError.details,
           };
         } else if (error instanceof Error) {
-          Logger.debug(`Skipping file '${filePath}': ${error.message}`);
+          Logger.debug`Skipping file '${filePath}': ${error.message}`;
           failureDetails[filePath] = {
             message: error.message,
           };
         } else {
-          Logger.debug(`Skipping file '${filePath}' due to an error`);
+          Logger.debug`Skipping file '${filePath}' due to an error`;
           failureDetails[filePath] = {
             message: "Unknown error",
           };
@@ -87,6 +94,7 @@ export class UploadCommand extends Command {
 
     // Return the CommandResult
     if (failureCount === 0) {
+      Logger.debug`Successfully processed all ${successCount} files`;
       return {
         success: true,
         details: {
@@ -94,14 +102,28 @@ export class UploadCommand extends Command {
         },
       };
     } else if (successCount === 0) {
+      const error = ErrorFactory.validation(
+        `Failed to process all ${failureCount} files`,
+        failureDetails,
+        [
+          "Check file formats and permissions",
+          "Verify CSV structure and headers",
+          "Ensure Elasticsearch is accessible",
+          "Use --debug for detailed error information",
+        ]
+      );
+
       return {
         success: false,
-        errorMessage: `Failed to process all ${failureCount} files`,
-        errorCode: ErrorCodes.VALIDATION_FAILED,
+        errorMessage: error.message,
+        errorCode: error.code,
         details: failureDetails,
       };
     } else {
       // Partial success
+      Logger.warnString(
+        `Processed ${successCount} files successfully, ${failureCount} failed`
+      );
       return {
         success: true,
         details: {
@@ -124,19 +146,29 @@ export class UploadCommand extends Command {
     // Validate files first
     const fileValidationResult = await validateFiles(filePaths);
     if (!fileValidationResult.valid) {
-      throw new ConductorError("Invalid input files", ErrorCodes.INVALID_FILE, {
-        errors: fileValidationResult.errors,
-      });
+      throw ErrorFactory.invalidFile(
+        "Invalid input files detected",
+        undefined,
+        [
+          "Check file extensions (.csv, .tsv allowed)",
+          "Verify files exist and are accessible",
+          "Ensure files are not empty",
+        ].concat(fileValidationResult.errors)
+      );
     }
 
     // Validate delimiter
     try {
       validateDelimiter(config.delimiter);
     } catch (error) {
-      throw new ConductorError(
-        "Invalid delimiter",
-        ErrorCodes.VALIDATION_FAILED,
-        error
+      throw ErrorFactory.validation(
+        "Invalid delimiter specified",
+        { delimiter: config.delimiter, error },
+        [
+          "Delimiter must be a single character",
+          "Common delimiters: , (comma), ; (semicolon), \\t (tab)",
+          "Use --delimiter option to specify delimiter",
+        ]
       );
     }
 
@@ -144,10 +176,14 @@ export class UploadCommand extends Command {
     try {
       validateBatchSize(config.batchSize);
     } catch (error) {
-      throw new ConductorError(
-        "Invalid batch size",
-        ErrorCodes.VALIDATION_FAILED,
-        error
+      throw ErrorFactory.validation(
+        "Invalid batch size specified",
+        { batchSize: config.batchSize, error },
+        [
+          "Batch size must be a positive number",
+          "Recommended range: 100-5000",
+          "Use --batch-size option to specify batch size",
+        ]
       );
     }
 
@@ -169,17 +205,27 @@ export class UploadCommand extends Command {
       const [headerLine] = fileContent.split("\n");
 
       if (!headerLine) {
-        throw new ConductorError(
-          `CSV file is empty or has no headers: ${filePath}`,
-          ErrorCodes.INVALID_FILE
+        throw ErrorFactory.invalidFile(
+          "CSV file is empty or has no headers",
+          filePath,
+          [
+            "Ensure the file contains data",
+            "Check if the first line contains column headers",
+            "Verify the file was not corrupted during transfer",
+          ]
         );
       }
 
       const parseResult = parseCSVLine(headerLine, delimiter, true);
       if (!parseResult || !parseResult[0]) {
-        throw new ConductorError(
-          `Failed to parse CSV headers: ${filePath}`,
-          ErrorCodes.PARSING_ERROR
+        throw ErrorFactory.parsing(
+          "Failed to parse CSV headers",
+          { filePath, delimiter, headerLine: headerLine.substring(0, 100) },
+          [
+            `Check if '${delimiter}' is the correct delimiter`,
+            "Verify CSV format is valid",
+            "Ensure headers don't contain special characters",
+          ]
         );
       }
 
@@ -188,14 +234,20 @@ export class UploadCommand extends Command {
       // Validate CSV structure using our validation function
       await validateCSVStructure(headers);
     } catch (error) {
-      if (error instanceof ConductorError) {
-        // Rethrow ConductorErrors
+      // If it's already a ConductorError, rethrow it
+      if (error instanceof Error && error.name === "ConductorError") {
         throw error;
       }
-      throw new ConductorError(
-        `Error validating CSV headers: ${filePath}`,
-        ErrorCodes.VALIDATION_FAILED,
-        error
+
+      // Wrap other errors
+      throw ErrorFactory.validation(
+        "Error validating CSV headers",
+        { filePath, originalError: error },
+        [
+          "Check CSV file format and structure",
+          "Ensure headers follow naming conventions",
+          "Verify file encoding is UTF-8",
+        ]
       );
     }
   }
@@ -204,14 +256,86 @@ export class UploadCommand extends Command {
    * Processes a single file
    */
   private async processFile(filePath: string, config: any): Promise<void> {
-    // Set up Elasticsearch client
-    const client = createClientFromConfig(config);
+    try {
+      // Set up Elasticsearch client
+      const client = createClientFromConfig(config);
 
-    // Validate Elasticsearch connection and index
-    await validateConnection(client);
-    await validateIndex(client, config.elasticsearch.index);
+      // Validate Elasticsearch connection and index
+      await validateConnection(client);
+      await validateIndex(client, config.elasticsearch.index);
 
-    // Process the file
-    await processCSVFile(filePath, config, client);
+      // Process the file
+      await processCSVFile(filePath, config, client);
+    } catch (error) {
+      // Categorize and enhance the error based on its type
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (
+        errorMessage.includes("ECONNREFUSED") ||
+        errorMessage.includes("ENOTFOUND")
+      ) {
+        throw ErrorFactory.connection(
+          "Failed to connect to Elasticsearch",
+          {
+            filePath,
+            elasticsearchUrl: config.elasticsearch.url,
+            originalError: error,
+          },
+          [
+            "Check that Elasticsearch is running",
+            `Verify the URL: ${config.elasticsearch.url}`,
+            "Check network connectivity",
+            "Review firewall and security settings",
+          ]
+        );
+      }
+
+      if (errorMessage.includes("index_not_found")) {
+        throw ErrorFactory.validation(
+          `Elasticsearch index not found: ${config.elasticsearch.index}`,
+          {
+            filePath,
+            index: config.elasticsearch.index,
+            originalError: error,
+          },
+          [
+            "Create the index first or use a different index name",
+            `Use --index option to specify a different index`,
+            "Check index name spelling",
+          ]
+        );
+      }
+
+      if (errorMessage.includes("401") || errorMessage.includes("403")) {
+        throw ErrorFactory.auth(
+          "Elasticsearch authentication failed",
+          {
+            filePath,
+            originalError: error,
+          },
+          [
+            "Check your Elasticsearch credentials",
+            "Verify username and password",
+            "Ensure you have write permissions to the index",
+          ]
+        );
+      }
+
+      // Generic processing error
+      throw ErrorFactory.csv(
+        "Failed to process CSV file",
+        {
+          filePath,
+          originalError: error,
+        },
+        [
+          "Check CSV file format and structure",
+          "Verify file is not corrupted",
+          "Ensure sufficient memory and disk space",
+          "Use --debug for detailed error information",
+        ]
+      );
+    }
   }
 }

@@ -2,7 +2,7 @@
 import { BaseService } from "../base/baseService";
 import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -70,10 +70,19 @@ export class LyricSubmissionService extends BaseService {
         };
       }
 
-      throw new ConductorError(
-        `Submission validation failed with status: ${finalStatus}`,
-        ErrorCodes.VALIDATION_FAILED,
-        { submissionId: submission.submissionId, status: finalStatus }
+      throw ErrorFactory.validation(
+        "Submission validation failed",
+        {
+          submissionId: submission.submissionId,
+          status: finalStatus,
+          categoryId: params.categoryId,
+        },
+        [
+          `Submission status: ${finalStatus}`,
+          `Check validation details at ${this.config.url}/submission/${submission.submissionId}`,
+          "Review data format and required fields",
+          "Verify data meets service requirements",
+        ]
       );
     } catch (error) {
       this.handleServiceError(error, "data submission workflow");
@@ -85,17 +94,18 @@ export class LyricSubmissionService extends BaseService {
    */
   private async findValidFiles(dataDirectory: string): Promise<string[]> {
     if (!fs.existsSync(dataDirectory)) {
-      throw new ConductorError(
-        `Data directory not found: ${dataDirectory}`,
-        ErrorCodes.FILE_NOT_FOUND
-      );
+      throw ErrorFactory.file("Data directory not found", dataDirectory, [
+        "Check that the directory exists",
+        "Verify the path is correct",
+        "Ensure you have access to the directory",
+      ]);
     }
 
     if (!fs.statSync(dataDirectory).isDirectory()) {
-      throw new ConductorError(
-        `Path is not a directory: ${dataDirectory}`,
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.file("Path is not a directory", dataDirectory, [
+        "Provide a directory path, not a file path",
+        "Check that the path points to a directory",
+      ]);
     }
 
     // Find all CSV files
@@ -113,15 +123,17 @@ export class LyricSubmissionService extends BaseService {
       });
 
     if (allFiles.length === 0) {
-      throw new ConductorError(
-        `No valid CSV files found in ${dataDirectory}`,
-        ErrorCodes.FILE_NOT_FOUND,
-        { directory: dataDirectory }
-      );
+      throw ErrorFactory.file("No valid CSV files found", dataDirectory, [
+        "Ensure the directory contains CSV files",
+        "Check that files have .csv extension",
+        "Verify files are not empty",
+      ]);
     }
 
-    Logger.info(`Found ${allFiles.length} valid CSV files`);
-    allFiles.forEach((file) => Logger.info(`  - ${path.basename(file)}`));
+    Logger.info`Found ${allFiles.length} valid CSV files`;
+    allFiles.forEach((file) =>
+      Logger.debugString(`  - ${path.basename(file)}`)
+    );
 
     return allFiles;
   }
@@ -134,7 +146,7 @@ export class LyricSubmissionService extends BaseService {
     organization: string;
     files: string[];
   }): Promise<{ submissionId: string }> {
-    Logger.info(`Submitting ${params.files.length} files to Lyric...`);
+    Logger.info`Submitting ${params.files.length} files to Lyric...`;
 
     // Create FormData for file upload
     const formData = new FormData();
@@ -161,14 +173,21 @@ export class LyricSubmissionService extends BaseService {
 
     const submissionId = response.data?.submissionId;
     if (!submissionId) {
-      throw new ConductorError(
+      throw ErrorFactory.connection(
         "Could not extract submission ID from response",
-        ErrorCodes.CONNECTION_ERROR,
-        { response: response.data }
+        {
+          response: response.data,
+          categoryId: params.categoryId,
+        },
+        [
+          "Check Lyric service response format",
+          "Verify the submission was processed",
+          "Review service logs for errors",
+        ]
       );
     }
 
-    Logger.success(`Submission created with ID: ${submissionId}`);
+    Logger.success`Submission created with ID: ${submissionId}`;
     return { submissionId: submissionId.toString() };
   }
 
@@ -180,8 +199,8 @@ export class LyricSubmissionService extends BaseService {
     maxRetries: number,
     retryDelay: number
   ): Promise<string> {
-    Logger.info(`Waiting for submission ${submissionId} validation...`);
-    Logger.info(
+    Logger.info`Waiting for submission ${submissionId} validation...`;
+    Logger.infoString(
       "This may take a few minutes depending on file size and complexity."
     );
 
@@ -193,39 +212,49 @@ export class LyricSubmissionService extends BaseService {
 
         const status = response.data?.status;
         if (!status) {
-          throw new ConductorError(
+          throw ErrorFactory.connection(
             "Could not extract status from response",
-            ErrorCodes.CONNECTION_ERROR,
-            { response: response.data }
+            {
+              response: response.data,
+              submissionId,
+            },
+            [
+              "Check Lyric service response format",
+              "Verify submission ID is valid",
+              "Review service logs for errors",
+            ]
           );
         }
 
-        Logger.info(`Validation check ${attempt}/${maxRetries}: ${status}`);
+        Logger.info`Validation check ${attempt}/${maxRetries}: ${status}`;
 
         if (status === "VALID") {
-          Logger.success("Submission validation passed");
+          Logger.successString("Submission validation passed");
           return status;
         } else if (status === "INVALID") {
-          throw new ConductorError(
+          throw ErrorFactory.validation(
             "Submission validation failed",
-            ErrorCodes.VALIDATION_FAILED,
             {
               submissionId,
               status,
-              suggestion: `Check validation details at ${this.config.url}/submission/${submissionId}`,
-            }
+            },
+            [
+              "Review data format and structure",
+              "Check validation error details",
+              `Visit ${this.config.url}/submission/${submissionId} for details`,
+            ]
           );
         }
 
         // Still processing, wait before next check
         if (attempt < maxRetries) {
-          Logger.info(
-            `Waiting ${retryDelay / 1000} seconds before next check...`
-          );
+          Logger.info`Waiting ${
+            retryDelay / 1000
+          } seconds before next check...`;
           await this.delay(retryDelay);
         }
       } catch (error) {
-        if (error instanceof ConductorError) {
+        if (error instanceof Error && error.name === "ConductorError") {
           throw error;
         }
 
@@ -233,21 +262,24 @@ export class LyricSubmissionService extends BaseService {
           this.handleServiceError(error, "validation status check");
         }
 
-        Logger.warn(
+        Logger.warnString(
           `Status check failed, retrying... (${attempt}/${maxRetries})`
         );
         await this.delay(retryDelay);
       }
     }
 
-    throw new ConductorError(
-      `Validation timed out after ${maxRetries} attempts`,
-      ErrorCodes.CONNECTION_ERROR,
+    throw ErrorFactory.connection(
+      "Validation timed out",
       {
         submissionId,
         attempts: maxRetries,
-        suggestion: `Check status manually at ${this.config.url}/submission/${submissionId}`,
-      }
+      },
+      [
+        `Validation did not complete after ${maxRetries} attempts`,
+        `Check status manually at ${this.config.url}/submission/${submissionId}`,
+        "Consider increasing max retries or retry delay",
+      ]
     );
   }
 
@@ -258,7 +290,7 @@ export class LyricSubmissionService extends BaseService {
     categoryId: string,
     submissionId: string
   ): Promise<void> {
-    Logger.info(`Committing submission: ${submissionId}`);
+    Logger.info`Committing submission: ${submissionId}`;
 
     // Send empty object instead of null
     await this.http.post(
@@ -266,7 +298,7 @@ export class LyricSubmissionService extends BaseService {
       {}
     );
 
-    Logger.success("Submission committed successfully");
+    Logger.successString("Submission committed successfully");
   }
 
   private delay(ms: number): Promise<void> {

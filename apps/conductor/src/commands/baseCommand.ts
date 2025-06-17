@@ -3,6 +3,7 @@
  *
  * Provides the base abstract class and interfaces for all command implementations.
  * Commands follow the Command Pattern for encapsulating operations.
+ * Updated to use error factory pattern for consistent error handling.
  */
 
 import { CLIOutput } from "../types/cli";
@@ -10,7 +11,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 import { Logger } from "../utils/logger";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 
 /**
  * Command execution result
@@ -40,6 +41,9 @@ export abstract class Command {
   /** Default filename for output files */
   protected defaultOutputFileName: string = "output.json";
 
+  /** Commands that don't need output file handling */
+  protected readonly noOutputCommands = ["upload", "maestroIndex"];
+
   /**
    * Creates a new Command instance.
    *
@@ -64,66 +68,71 @@ export abstract class Command {
       // Enable debug logging if requested
       if (cliOutput.debug) {
         Logger.enableDebug();
-        Logger.debug(`Running ${this.name} command with debug enabled`);
+        Logger.debug`Running ${this.name} command with debug enabled`;
       }
 
       // Validate input arguments - directly throws errors
       try {
         await this.validate(cliOutput);
       } catch (validationError) {
-        Logger.debug(`Validation error: ${validationError}`);
+        Logger.debug`Validation error: ${validationError}`;
         if (validationError instanceof Error) {
           throw validationError;
         }
-        throw new ConductorError(
-          String(validationError),
-          ErrorCodes.VALIDATION_FAILED
-        );
+        throw ErrorFactory.validation(String(validationError), undefined, [
+          "Check your command line arguments",
+          "Use --help for usage information",
+        ]);
       }
 
-      Logger.debug(`Output path before check: ${cliOutput.outputPath}`);
+      // Only handle output path for commands that need it
+      if (!this.noOutputCommands.includes(cliOutput.profile)) {
+        Logger.debug`Output path before check: ${cliOutput.outputPath}`;
 
-      let usingDefaultPath = false;
+        let usingDefaultPath = false;
 
-      // If no output path specified, use the default
-      if (!cliOutput.outputPath?.trim()) {
-        Logger.debug("No output directory specified.");
-        usingDefaultPath = true;
-        cliOutput.outputPath = path.join(this.defaultOutputPath);
-      }
-
-      const isDefaultPath = this.isUsingDefaultPath(cliOutput);
-
-      // Inform user about output path
-      if (isDefaultPath || usingDefaultPath) {
-        Logger.info(
-          `Using default output path: ${cliOutput.outputPath}`,
-          "Use -o or --output <path> to specify a different location"
-        );
-      } else {
-        Logger.info(`Output directory set to: ${cliOutput.outputPath}`);
-      }
-
-      // Check for existing files and confirm overwrite if needed
-      // Skip confirmation if force flag is set in options
-      const forceFlag = cliOutput.options?.force === true;
-      if (cliOutput.outputPath && !forceFlag) {
-        const shouldContinue = await this.checkForExistingFiles(
-          cliOutput.outputPath
-        );
-        if (!shouldContinue) {
-          Logger.info("Operation cancelled by user.");
-          return {
-            success: false,
-            errorMessage: "Operation cancelled by user",
-            errorCode: "USER_CANCELLED",
-          };
+        // If no output path specified, use the default
+        if (!cliOutput.outputPath?.trim()) {
+          Logger.debug`No output directory specified.`;
+          usingDefaultPath = true;
+          cliOutput.outputPath = path.join(this.defaultOutputPath);
         }
-      } else if (forceFlag) {
-        Logger.debug("Force flag enabled, skipping overwrite confirmation");
+
+        const isDefaultPath = this.isUsingDefaultPath(cliOutput);
+
+        // Inform user about output path
+        if (isDefaultPath || usingDefaultPath) {
+          Logger.infoString(
+            `Using default output path: ${cliOutput.outputPath}`
+          );
+          Logger.tipString(
+            "Use -o or --output <path> to specify a different location"
+          );
+        } else {
+          Logger.infoString(`Output directory set to: ${cliOutput.outputPath}`);
+        }
+
+        // Check for existing files and confirm overwrite if needed
+        // Skip confirmation if force flag is set in options
+        const forceFlag = cliOutput.options?.force === true;
+        if (cliOutput.outputPath && !forceFlag) {
+          const shouldContinue = await this.checkForExistingFiles(
+            cliOutput.outputPath
+          );
+          if (!shouldContinue) {
+            Logger.infoString("Operation cancelled by user.");
+            return {
+              success: false,
+              errorMessage: "Operation cancelled by user",
+              errorCode: "USER_CANCELLED",
+            };
+          }
+        } else if (forceFlag) {
+          Logger.debug`Force flag enabled, skipping overwrite confirmation`;
+        }
       }
 
-      Logger.info(`Starting execution of ${this.name} command`);
+      Logger.debug`Starting execution of ${this.name} command`;
 
       // Execute the specific command implementation
       const result = await this.execute(cliOutput);
@@ -133,37 +142,51 @@ export abstract class Command {
       const executionTime = (endTime - startTime) / 1000;
 
       if (result.success) {
-        Logger.info(
-          `${
-            this.name
-          } command completed successfully in ${executionTime.toFixed(2)}s`
-        );
+        Logger.debug`${
+          this.name
+        } command completed successfully in ${executionTime.toFixed(2)}s`;
       } else {
-        Logger.debug(
-          `${this.name} command failed after ${executionTime.toFixed(2)}s: ${
-            result.errorMessage
-          }`
-        );
+        Logger.debug`${this.name} command failed after ${executionTime.toFixed(
+          2
+        )}s: ${result.errorMessage}`;
       }
 
       return result;
     } catch (error: unknown) {
-      // Use Logger instead of console.error
-      Logger.debug(`ERROR IN ${this.name} COMMAND:`, error);
+      // Use Logger for debug output
+      Logger.debug`ERROR IN ${this.name} COMMAND: ${error}`;
 
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      Logger.debug(`Unexpected error in ${this.name} command: ${errorMessage}`);
+      Logger.debug`Unexpected error in ${this.name} command: ${errorMessage}`;
+
+      // Check if it's already a properly formatted ConductorError
+      if (error instanceof Error && error.name === "ConductorError") {
+        const conductorError = error as any;
+        return {
+          success: false,
+          errorMessage: conductorError.message,
+          errorCode: conductorError.code,
+          details: conductorError.details,
+        };
+      }
+
+      // For unexpected errors, wrap them in a generic error
+      const wrappedError = ErrorFactory.args(
+        `Command execution failed: ${errorMessage}`,
+        [
+          "Check the command arguments",
+          "Use --debug for more detailed error information",
+          "Verify input files and permissions",
+        ]
+      );
 
       return {
         success: false,
-        errorMessage,
-        errorCode:
-          error instanceof ConductorError
-            ? error.code
-            : ErrorCodes.UNKNOWN_ERROR,
+        errorMessage: wrappedError.message,
+        errorCode: wrappedError.code,
         details: {
-          error,
+          originalError: error,
           stack: error instanceof Error ? error.stack : undefined,
         },
       };
@@ -189,39 +212,42 @@ export abstract class Command {
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     if (!cliOutput.filePaths?.length) {
-      throw new ConductorError(
-        "No input files provided",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("No input files provided", [
+        "Use -f or --file to specify input files",
+        "Example: -f data.csv metadata.csv",
+        "Check that file paths are correct",
+      ]);
     }
 
     // Validate each input file exists
     for (const filePath of cliOutput.filePaths) {
       if (!fs.existsSync(filePath)) {
-        throw new ConductorError(
-          `Input file not found: ${filePath}`,
-          ErrorCodes.FILE_NOT_FOUND
-        );
+        throw ErrorFactory.file("Input file not found", filePath, [
+          "Check the file path spelling",
+          "Ensure the file exists in the specified location",
+          "Verify you have access to the file",
+        ]);
       }
 
       // Check if file is readable
       try {
         fs.accessSync(filePath, fs.constants.R_OK);
       } catch (error) {
-        throw new ConductorError(
-          `File '${filePath}' is not readable`,
-          ErrorCodes.INVALID_FILE,
-          error
-        );
+        throw ErrorFactory.file("File is not readable", filePath, [
+          "Check file permissions",
+          "Ensure you have read access to the file",
+          "Try running with appropriate privileges",
+        ]);
       }
 
       // Check if file has content
       const stats = fs.statSync(filePath);
       if (stats.size === 0) {
-        throw new ConductorError(
-          `File '${filePath}' is empty`,
-          ErrorCodes.INVALID_FILE
-        );
+        throw ErrorFactory.invalidFile("File is empty", filePath, [
+          "Ensure the file contains data",
+          "Check if the file was created properly",
+          "Verify the file wasn't truncated during transfer",
+        ]);
       }
     }
   }
@@ -247,8 +273,16 @@ export abstract class Command {
    */
   protected createDirectoryIfNotExists(dirPath: string): void {
     if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
-      Logger.info(`Created directory: ${dirPath}`);
+      try {
+        fs.mkdirSync(dirPath, { recursive: true });
+        Logger.info`Created directory: ${dirPath}`;
+      } catch (error) {
+        throw ErrorFactory.file("Failed to create directory", dirPath, [
+          "Check directory permissions",
+          "Ensure parent directories exist",
+          "Verify sufficient disk space",
+        ]);
+      }
     }
   }
 
@@ -265,12 +299,10 @@ export abstract class Command {
 
     // Determine if outputPath is a file or directory
     if (path.extname(outputPath)) {
-      Logger.debug(`Output path appears to be a file: ${outputPath}`);
+      Logger.debug`Output path appears to be a file: ${outputPath}`;
       directoryPath = path.dirname(outputPath);
       outputFileName = path.basename(outputPath);
-      Logger.debug(
-        `Using directory: ${directoryPath}, fileName: ${outputFileName}`
-      );
+      Logger.debug`Using directory: ${directoryPath}, fileName: ${outputFileName}`;
     }
 
     // Create the output directory if it doesn't exist
@@ -304,10 +336,10 @@ export abstract class Command {
     }
 
     // Display list of files that would be overwritten
-    Logger.info(
+    Logger.warnString(
       "The following file(s) in the output directory will be overwritten:"
     );
-    filesToOverwrite.forEach((file) => Logger.info(`- ${file}`));
+    filesToOverwrite.forEach((file) => Logger.generic(`- ${file}`));
 
     // Create readline interface for user input
     const rl = readline.createInterface({
@@ -330,6 +362,6 @@ export abstract class Command {
    * @param filePath - Path to the generated file
    */
   protected logGeneratedFile(filePath: string): void {
-    Logger.info(`Generated file: ${filePath}`);
+    Logger.success`Generated file: ${filePath}`;
   }
 }

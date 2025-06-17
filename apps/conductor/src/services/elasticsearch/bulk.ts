@@ -5,7 +5,7 @@
  */
 
 import { Client } from "@elastic/elasticsearch";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import { Logger } from "../../utils/logger";
 
 /**
@@ -59,7 +59,7 @@ export async function sendBulkWriteRequest(
         result.items.forEach((item: any, index: number) => {
           if (item.index?.error) {
             failureCount++;
-            Logger.error(
+            Logger.errorString(
               `Bulk indexing error for record ${index}: status=${
                 item.index.status
               }, error=${JSON.stringify(item.index.error)}, document=${
@@ -81,7 +81,7 @@ export async function sendBulkWriteRequest(
         success = true;
       }
     } catch (error) {
-      Logger.error(
+      Logger.errorString(
         `Error sending to Elasticsearch (Attempt ${attempt + 1}): ${
           error instanceof Error ? error.message : String(error)
         }`
@@ -90,7 +90,7 @@ export async function sendBulkWriteRequest(
       attempt++;
 
       if (attempt < maxRetries) {
-        Logger.info(`Retrying... (${attempt}/${maxRetries})`);
+        Logger.infoString(`Retrying... (${attempt}/${maxRetries})`);
         // Add backoff delay between retries
         await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       }
@@ -98,10 +98,22 @@ export async function sendBulkWriteRequest(
   }
 
   if (!success) {
-    Logger.error(`Failed to send bulk request after ${maxRetries} attempts.`);
-    throw new ConductorError(
+    Logger.errorString(
+      `Failed to send bulk request after ${maxRetries} attempts.`
+    );
+    throw ErrorFactory.elasticsearch(
       "Failed to send bulk request after retries",
-      ErrorCodes.ES_ERROR
+      {
+        maxRetries,
+        recordCount: records.length,
+        indexName,
+      },
+      [
+        "Check Elasticsearch connection and health",
+        "Verify index exists and is writable",
+        "Check for mapping conflicts",
+        "Review Elasticsearch logs for details",
+      ]
     );
   }
 }

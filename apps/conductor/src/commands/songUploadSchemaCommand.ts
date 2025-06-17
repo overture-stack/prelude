@@ -3,14 +3,14 @@ import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { SongService } from "../services/song-score";
 import { SongSchemaUploadParams } from "../services/song-score/types";
 import * as fs from "fs";
 
 /**
  * Command for uploading schemas to the SONG service
- * Refactored to use the new SongService
+ * Refactored to use the new SongService with error factory pattern
  */
 export class SongUploadSchemaCommand extends Command {
   constructor() {
@@ -27,27 +27,58 @@ export class SongUploadSchemaCommand extends Command {
     const schemaFile = this.getSchemaFile(options);
 
     if (!schemaFile) {
-      throw new ConductorError(
-        "Schema file not specified. Use --schema-file or set SONG_SCHEMA environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("Schema file not specified", [
+        "Use --schema-file option to specify the schema file",
+        "Set SONG_SCHEMA environment variable",
+        "Example: --schema-file ./my-schema.json",
+      ]);
     }
 
     // Validate file exists and is readable
     if (!fs.existsSync(schemaFile)) {
-      throw new ConductorError(
-        `Schema file not found: ${schemaFile}`,
-        ErrorCodes.FILE_NOT_FOUND
+      throw ErrorFactory.file("Schema file not found", schemaFile, [
+        "Check the file path spelling",
+        "Ensure the file exists and is accessible",
+        "Verify file permissions",
+      ]);
+    }
+
+    // Validate it's a JSON file
+    if (!schemaFile.toLowerCase().endsWith(".json")) {
+      throw ErrorFactory.invalidFile(
+        "Schema file must be a JSON file",
+        schemaFile,
+        [
+          "Ensure the file has a .json extension",
+          "Verify the file contains valid JSON content",
+        ]
+      );
+    }
+
+    // Try to parse the JSON to validate format
+    try {
+      const content = fs.readFileSync(schemaFile, "utf-8");
+      JSON.parse(content);
+    } catch (error) {
+      throw ErrorFactory.parsing(
+        "Invalid JSON in schema file",
+        { filePath: schemaFile, originalError: error },
+        [
+          "Validate JSON syntax using a JSON validator",
+          "Check for trailing commas or syntax errors",
+          "Ensure the file is properly formatted JSON",
+        ]
       );
     }
 
     // Validate SONG URL
     const songUrl = this.getSongUrl(options);
     if (!songUrl) {
-      throw new ConductorError(
-        "SONG URL not specified. Use --song-url or set SONG_URL environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("SONG URL not specified", [
+        "Use --song-url option to specify SONG server URL",
+        "Set SONG_URL environment variable",
+        "Example: --song-url http://localhost:8080",
+      ]);
     }
   }
 
@@ -69,19 +100,25 @@ export class SongUploadSchemaCommand extends Command {
       // Check service health
       const healthResult = await songService.checkHealth();
       if (!healthResult.healthy) {
-        throw new ConductorError(
-          `SONG service is not healthy: ${
-            healthResult.message || "Unknown error"
-          }`,
-          ErrorCodes.CONNECTION_ERROR,
-          { healthResult }
+        throw ErrorFactory.connection(
+          "SONG service is not healthy",
+          {
+            healthResult,
+            serviceUrl: serviceConfig.url,
+          },
+          [
+            "Check that SONG service is running",
+            `Verify the service URL: ${serviceConfig.url}`,
+            "Check network connectivity",
+            "Review service logs for errors",
+          ]
         );
       }
 
       // Log upload info
       this.logUploadInfo(schemaFile, serviceConfig.url);
 
-      // Upload schema - much simpler now!
+      // Upload schema
       const result = await songService.uploadSchema(uploadParams);
 
       // Log success
@@ -127,20 +164,18 @@ export class SongUploadSchemaCommand extends Command {
    */
   private extractUploadParams(schemaFile: string): SongSchemaUploadParams {
     try {
-      Logger.info(`Reading schema file: ${schemaFile}`);
+      Logger.info`Reading schema file: ${schemaFile}`;
       const schemaContent = fs.readFileSync(schemaFile, "utf-8");
 
       return {
         schemaContent,
       };
     } catch (error) {
-      throw new ConductorError(
-        `Error reading schema file: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-        ErrorCodes.FILE_ERROR,
-        error
-      );
+      throw ErrorFactory.file("Error reading schema file", schemaFile, [
+        "Check file permissions",
+        "Verify the file is not corrupted",
+        "Ensure sufficient disk space",
+      ]);
     }
   }
 
@@ -148,16 +183,16 @@ export class SongUploadSchemaCommand extends Command {
    * Log upload information
    */
   private logUploadInfo(schemaFile: string, serviceUrl: string): void {
-    Logger.info(`${chalk.bold.cyan("Uploading Schema to SONG:")}`);
-    Logger.info(`URL: ${serviceUrl}/schemas`);
-    Logger.info(`Schema File: ${schemaFile}`);
+    Logger.info`${chalk.bold.cyan("Uploading Schema to SONG:")}`;
+    Logger.infoString(`URL: ${serviceUrl}/schemas`);
+    Logger.infoString(`Schema File: ${schemaFile}`);
   }
 
   /**
    * Log successful upload
    */
   private logSuccess(result: any): void {
-    Logger.success("Schema uploaded successfully");
+    Logger.successString("Schema uploaded successfully");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Schema ID: ${result.id || "N/A"}`));
     Logger.generic(
@@ -173,38 +208,115 @@ export class SongUploadSchemaCommand extends Command {
    * Handle execution errors with helpful user feedback
    */
   private handleExecutionError(error: unknown): CommandResult {
-    if (error instanceof ConductorError) {
-      // Add context-specific help for common SONG errors
-      if (error.code === ErrorCodes.VALIDATION_FAILED) {
-        Logger.info("\nSchema validation failed. Check your schema structure.");
-        Logger.tip(
-          'Ensure your schema has required fields: "name" and "schema"'
-        );
-      } else if (error.code === ErrorCodes.FILE_NOT_FOUND) {
-        Logger.info("\nSchema file not found. Check the file path.");
-      } else if (error.code === ErrorCodes.CONNECTION_ERROR) {
-        Logger.info("\nConnection error. Check SONG service availability.");
-      }
-
-      if (error.details?.suggestion) {
-        Logger.tip(error.details.suggestion);
-      }
-
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
-        details: error.details,
+        errorMessage: conductorError.message,
+        errorCode: conductorError.code,
+        details: conductorError.details,
       };
     }
 
-    // Handle unexpected errors
+    // Handle unexpected errors with categorization
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      const connectionError = ErrorFactory.connection(
+        "Failed to connect to SONG service",
+        { originalError: error },
+        [
+          "Check that SONG service is running",
+          "Verify the service URL and port",
+          "Check network connectivity",
+          "Review firewall settings",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: connectionError.message,
+        errorCode: connectionError.code,
+        details: connectionError.details,
+      };
+    }
+
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      const authError = ErrorFactory.auth(
+        "Authentication failed with SONG service",
+        { originalError: error },
+        [
+          "Check authentication credentials",
+          "Verify API token is valid",
+          "Contact administrator for access",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: authError.message,
+        errorCode: authError.code,
+        details: authError.details,
+      };
+    }
+
+    if (errorMessage.includes("400") || errorMessage.includes("validation")) {
+      const validationError = ErrorFactory.validation(
+        "Schema validation failed",
+        { originalError: error },
+        [
+          "Check schema format and structure",
+          "Ensure required fields are present",
+          "Verify schema follows SONG requirements",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: validationError.message,
+        errorCode: validationError.code,
+        details: validationError.details,
+      };
+    }
+
+    if (errorMessage.includes("409") || errorMessage.includes("conflict")) {
+      const conflictError = ErrorFactory.validation(
+        "Schema already exists",
+        { originalError: error },
+        [
+          "Schema with this name may already exist",
+          "Update the schema version or name",
+          "Use force flag if available to overwrite",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: conflictError.message,
+        errorCode: conflictError.code,
+        details: conflictError.details,
+      };
+    }
+
+    // Generic fallback
+    const genericError = ErrorFactory.connection(
+      "Schema upload failed",
+      { originalError: error },
+      [
+        "Check SONG service availability",
+        "Verify schema file format and content",
+        "Use --debug for detailed error information",
+      ]
+    );
+
     return {
       success: false,
-      errorMessage: `Schema upload failed: ${errorMessage}`,
-      errorCode: ErrorCodes.CONNECTION_ERROR,
-      details: { originalError: error },
+      errorMessage: genericError.message,
+      errorCode: genericError.code,
+      details: genericError.details,
     };
   }
 }

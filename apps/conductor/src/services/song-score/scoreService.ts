@@ -2,7 +2,7 @@
 import { BaseService } from "../base/baseService";
 import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import {
   ScoreManifestUploadParams,
   ScoreManifestUploadResponse,
@@ -42,22 +42,21 @@ export class ScoreService extends BaseService {
 
       // Validate data directory exists
       if (!fs.existsSync(params.dataDir)) {
-        throw new ConductorError(
-          `Data directory not found: ${params.dataDir}`,
-          ErrorCodes.FILE_NOT_FOUND
-        );
+        throw ErrorFactory.file("Data directory not found", params.dataDir, [
+          "Check that the directory exists",
+          "Verify the path is correct",
+          "Ensure you have access to the directory",
+        ]);
       }
 
       // Create output directory if needed
       const manifestDir = path.dirname(params.manifestFile);
       if (!fs.existsSync(manifestDir)) {
         fs.mkdirSync(manifestDir, { recursive: true });
-        Logger.info(`Created directory: ${manifestDir}`);
+        Logger.info`Created directory: ${manifestDir}`;
       }
 
-      Logger.info(
-        `Starting Score manifest upload for analysis: ${params.analysisId}`
-      );
+      Logger.info`Starting Score manifest upload for analysis: ${params.analysisId}`;
 
       // Step 1: Generate manifest
       await this.generateManifest({
@@ -79,10 +78,10 @@ export class ScoreService extends BaseService {
       try {
         manifestContent = fs.readFileSync(params.manifestFile, "utf8");
       } catch (error) {
-        Logger.warn(`Could not read manifest file: ${error}`);
+        Logger.warnString(`Could not read manifest file: ${error}`);
       }
 
-      Logger.success(`Successfully uploaded files with Score`);
+      Logger.success`Successfully uploaded files with Score`;
 
       return {
         success: true,
@@ -102,7 +101,7 @@ export class ScoreService extends BaseService {
   private async generateManifest(
     params: ManifestGenerationParams
   ): Promise<void> {
-    Logger.info(`Generating manifest for analysis: ${params.analysisId}`);
+    Logger.info`Generating manifest for analysis: ${params.analysisId}`;
 
     // Check if Docker song-client is available
     const useSongDocker = await this.checkIfDockerContainerRunning(
@@ -110,24 +109,29 @@ export class ScoreService extends BaseService {
     );
 
     if (useSongDocker) {
-      Logger.info(`Using Song Docker client to generate manifest`);
+      Logger.infoString(`Using Song Docker client to generate manifest`);
       await this.generateManifestWithSongClient(params);
     } else {
-      Logger.info(`Using direct API approach to generate manifest`);
+      Logger.infoString(`Using direct API approach to generate manifest`);
       await this.generateManifestDirect(params);
     }
 
     // Verify manifest was created
     if (!fs.existsSync(params.manifestFile)) {
-      throw new ConductorError(
-        `Manifest file not generated at expected path: ${params.manifestFile}`,
-        ErrorCodes.FILE_NOT_FOUND
+      throw ErrorFactory.file(
+        "Manifest file not generated",
+        params.manifestFile,
+        [
+          "Check SONG client configuration",
+          "Verify analysis ID exists",
+          "Review command execution logs",
+        ]
       );
     }
 
     const manifestContent = fs.readFileSync(params.manifestFile, "utf8");
-    Logger.debug(`Generated manifest content:\n${manifestContent}`);
-    Logger.success(`Successfully generated manifest at ${params.manifestFile}`);
+    Logger.debugString(`Generated manifest content:\n${manifestContent}`);
+    Logger.success`Successfully generated manifest at ${params.manifestFile}`;
   }
 
   /**
@@ -148,7 +152,7 @@ export class ScoreService extends BaseService {
         `sh -c "sing manifest -a ${params.analysisId} -f ${containerManifestPath} -d ${containerDataDir}"`,
       ].join(" ");
 
-      Logger.debug(`Executing: ${command}`);
+      Logger.debugString(`Executing: ${command}`);
 
       // Execute the command
       const { stdout, stderr } = await execPromise(command, {
@@ -156,18 +160,23 @@ export class ScoreService extends BaseService {
       });
 
       // Log output
-      if (stdout) Logger.debug(`SONG manifest stdout: ${stdout}`);
-      if (stderr) Logger.warn(`SONG manifest stderr: ${stderr}`);
+      if (stdout) Logger.debugString(`SONG manifest stdout: ${stdout}`);
+      if (stderr) Logger.warnString(`SONG manifest stderr: ${stderr}`);
     } catch (error: any) {
-      Logger.error(`SONG client manifest generation failed`);
+      Logger.errorString(`SONG client manifest generation failed`);
 
-      if (error.stdout) Logger.debug(`Stdout: ${error.stdout}`);
-      if (error.stderr) Logger.debug(`Stderr: ${error.stderr}`);
+      if (error.stdout) Logger.debugString(`Stdout: ${error.stdout}`);
+      if (error.stderr) Logger.debugString(`Stderr: ${error.stderr}`);
 
-      throw new ConductorError(
-        `Failed to generate manifest: ${error.message || "Unknown error"}`,
-        ErrorCodes.CONNECTION_ERROR,
-        error
+      throw ErrorFactory.connection(
+        "Failed to generate manifest using SONG client",
+        { originalError: error },
+        [
+          "Check that song-client Docker container is running",
+          "Verify analysis ID exists in SONG",
+          "Review Docker container logs",
+          "Ensure proper volume mounts are configured",
+        ]
       );
     }
   }
@@ -179,12 +188,7 @@ export class ScoreService extends BaseService {
     params: ManifestGenerationParams
   ): Promise<void> {
     try {
-      // We need to find the analysis in SONG first
-      // This requires importing SongService - for now we'll make direct HTTP calls
-
-      Logger.info(
-        `Fetching analysis ${params.analysisId} details from SONG API`
-      );
+      Logger.info`Fetching analysis ${params.analysisId} details from SONG API`;
 
       // Create a temporary HTTP client for SONG
       const songConfig = {
@@ -193,8 +197,6 @@ export class ScoreService extends BaseService {
         authToken: params.authToken,
       };
 
-      // This is a simplified approach - in practice, you'd want to use SongService
-      // But to avoid circular dependencies, we'll make direct HTTP calls here
       const axios = require("axios");
       const baseUrl = songConfig.url.endsWith("/")
         ? songConfig.url.slice(0, -1)
@@ -235,9 +237,7 @@ export class ScoreService extends BaseService {
           if (analysisResponse.status === 200) {
             analysis = analysisResponse.data;
             studyId = study;
-            Logger.info(
-              `Found analysis ${params.analysisId} in study ${studyId}`
-            );
+            Logger.info`Found analysis ${params.analysisId} in study ${studyId}`;
             break;
           }
         } catch (error) {
@@ -247,9 +247,14 @@ export class ScoreService extends BaseService {
       }
 
       if (!analysis || !studyId) {
-        throw new ConductorError(
+        throw ErrorFactory.validation(
           `Analysis ${params.analysisId} not found in any study`,
-          ErrorCodes.CONNECTION_ERROR
+          { analysisId: params.analysisId },
+          [
+            "Verify the analysis ID is correct",
+            "Check that the analysis exists in SONG",
+            "Ensure you have access to the study",
+          ]
         );
       }
 
@@ -257,18 +262,19 @@ export class ScoreService extends BaseService {
       const files = analysis.files || [];
 
       if (files.length === 0) {
-        throw new ConductorError(
+        throw ErrorFactory.validation(
           `No files found in analysis ${params.analysisId}`,
-          ErrorCodes.VALIDATION_FAILED
+          { analysisId: params.analysisId },
+          [
+            "Check that the analysis contains files",
+            "Verify the analysis was submitted correctly",
+          ]
         );
       }
 
-      Logger.info(
-        `Found ${files.length} files in analysis ${params.analysisId}`
-      );
+      Logger.info`Found ${files.length} files in analysis ${params.analysisId}`;
 
       // Generate manifest content
-      // First line: analysis ID followed by two tabs
       let manifestContent = `${params.analysisId}\t\t\n`;
 
       for (const file of files) {
@@ -277,31 +283,36 @@ export class ScoreService extends BaseService {
         const fileMd5sum = file.fileMd5sum;
 
         if (!objectId || !fileName || !fileMd5sum) {
-          Logger.warn(
+          Logger.warnString(
             `Missing required fields for file: ${JSON.stringify(file)}`
           );
           continue;
         }
 
-        // Use container path for Docker compatibility
         const containerFilePath = `/data/fileData/${fileName}`;
         manifestContent += `${objectId}\t${containerFilePath}\t${fileMd5sum}\n`;
       }
 
       // Write the manifest to file
-      Logger.debug(
+      Logger.debugString(
         `Writing manifest content to ${params.manifestFile}:\n${manifestContent}`
       );
       fs.writeFileSync(params.manifestFile, manifestContent);
 
-      Logger.info(`Successfully generated manifest at ${params.manifestFile}`);
+      Logger.success`Successfully generated manifest at ${params.manifestFile}`;
     } catch (error: any) {
-      Logger.error(`Direct manifest generation failed`);
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error;
+      }
 
-      throw new ConductorError(
-        `Failed to generate manifest: ${error.message || "Unknown error"}`,
-        ErrorCodes.CONNECTION_ERROR,
-        error
+      throw ErrorFactory.connection(
+        "Failed to generate manifest using SONG API",
+        { originalError: error },
+        [
+          "Check SONG service availability",
+          "Verify authentication credentials",
+          "Ensure analysis ID exists",
+        ]
       );
     }
   }
@@ -313,7 +324,7 @@ export class ScoreService extends BaseService {
     manifestFile: string;
     authToken?: string;
   }): Promise<void> {
-    Logger.info(`Uploading files with Score client`);
+    Logger.infoString(`Uploading files with Score client`);
 
     // Check if Docker score-client is available
     const useScoreDocker = await this.checkIfDockerContainerRunning(
@@ -321,14 +332,11 @@ export class ScoreService extends BaseService {
     );
 
     if (!useScoreDocker) {
-      throw new ConductorError(
-        "Score client Docker container not available. Please ensure score-client container is running.",
-        ErrorCodes.INVALID_ARGS,
-        {
-          suggestion:
-            "Install Docker and ensure score-client container is running",
-        }
-      );
+      throw ErrorFactory.args("Score client Docker container not available", [
+        "Install Docker and ensure score-client container is running",
+        "Check Docker container status",
+        "Verify container configuration",
+      ]);
     }
 
     try {
@@ -342,7 +350,7 @@ export class ScoreService extends BaseService {
         `sh -c "score-client upload --manifest ${containerManifestPath}"`,
       ].join(" ");
 
-      Logger.debug(`Executing: ${command}`);
+      Logger.debugString(`Executing: ${command}`);
 
       // Execute the command
       const { stdout, stderr } = await execPromise(command, {
@@ -350,20 +358,25 @@ export class ScoreService extends BaseService {
       });
 
       // Log output
-      if (stdout) Logger.debug(`SCORE upload stdout: ${stdout}`);
-      if (stderr) Logger.warn(`SCORE upload stderr: ${stderr}`);
+      if (stdout) Logger.debugString(`SCORE upload stdout: ${stdout}`);
+      if (stderr) Logger.warnString(`SCORE upload stderr: ${stderr}`);
 
-      Logger.success(`Files uploaded successfully with Score client`);
+      Logger.success`Files uploaded successfully with Score client`;
     } catch (error: any) {
-      Logger.error(`Score client upload failed`);
+      Logger.errorString(`Score client upload failed`);
 
-      if (error.stdout) Logger.debug(`Stdout: ${error.stdout}`);
-      if (error.stderr) Logger.debug(`Stderr: ${error.stderr}`);
+      if (error.stdout) Logger.debugString(`Stdout: ${error.stdout}`);
+      if (error.stderr) Logger.debugString(`Stderr: ${error.stderr}`);
 
-      throw new ConductorError(
-        `Failed to upload with Score: ${error.message || "Unknown error"}`,
-        ErrorCodes.CONNECTION_ERROR,
-        error
+      throw ErrorFactory.connection(
+        "Failed to upload with Score",
+        { originalError: error },
+        [
+          "Check score-client Docker container status",
+          "Verify manifest file format",
+          "Review container logs for errors",
+          "Ensure proper network connectivity",
+        ]
       );
     }
   }
@@ -376,12 +389,12 @@ export class ScoreService extends BaseService {
   ): Promise<boolean> {
     try {
       const command = `docker ps -q -f name=${containerName}`;
-      Logger.debug(`Checking if container is running: ${command}`);
+      Logger.debugString(`Checking if container is running: ${command}`);
 
       const { stdout } = await execPromise(command);
       return stdout.trim().length > 0;
     } catch (error) {
-      Logger.debug(
+      Logger.debugString(
         `Docker container check failed: ${
           error instanceof Error ? error.message : String(error)
         }`
@@ -397,13 +410,13 @@ export class ScoreService extends BaseService {
     try {
       await execPromise("docker --version");
     } catch (error) {
-      throw new ConductorError(
+      throw ErrorFactory.args(
         "Docker is required for Score operations but is not available",
-        ErrorCodes.INVALID_ARGS,
-        {
-          suggestion:
-            "Install Docker and ensure it's running before using Score services",
-        }
+        [
+          "Install Docker and ensure it's running",
+          "Add Docker to your system PATH",
+          "Verify Docker daemon is started",
+        ]
       );
     }
   }

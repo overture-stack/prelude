@@ -6,7 +6,7 @@
 
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 import { Config } from "../../types/cli";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import { Logger } from "../../utils/logger";
 
 /**
@@ -29,7 +29,7 @@ export function createClientFromConfig(config: Config): Client {
   // Use a default localhost URL if no URL is provided
   const url = config.elasticsearch.url || "http://localhost:9200";
 
-  Logger.info(`Connecting to Elasticsearch at: ${url}`);
+  Logger.debug`Connecting to Elasticsearch at: ${url}`;
 
   return createClient({
     url,
@@ -48,16 +48,19 @@ export function createClientFromConfig(config: Config): Client {
 export async function validateConnection(client: Client): Promise<boolean> {
   try {
     const result = await client.info();
-    Logger.debug(
-      `Connected to Elasticsearch cluster: ${result.body.cluster_name}`
-    );
+    Logger.debug`Connected to Elasticsearch cluster: ${result.body.cluster_name}`;
     return true;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new ConductorError(
-      `Failed to connect to Elasticsearch: ${errorMessage}`,
-      ErrorCodes.CONNECTION_ERROR,
-      error
+    throw ErrorFactory.connection(
+      "Failed to connect to Elasticsearch",
+      { originalError: error },
+      [
+        "Check that Elasticsearch is running",
+        "Verify the URL and credentials",
+        "Check network connectivity",
+        "Review firewall and security settings",
+      ]
     );
   }
 }
@@ -87,10 +90,14 @@ function createClient(options: ESClientOptions): Client {
     return new Client(clientOptions);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new ConductorError(
-      `Failed to create Elasticsearch client: ${errorMessage}`,
-      ErrorCodes.CONNECTION_ERROR,
-      error
+    throw ErrorFactory.connection(
+      "Failed to create Elasticsearch client",
+      { originalError: error },
+      [
+        "Check Elasticsearch configuration",
+        "Verify URL format and credentials",
+        "Ensure network connectivity",
+      ]
     );
   }
 }

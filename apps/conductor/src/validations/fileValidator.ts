@@ -9,10 +9,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { ValidationResult } from "../types/validations";
 import { Logger } from "../utils/logger";
+import { ErrorFactory } from "../utils/errors";
 import { ALLOWED_EXTENSIONS } from "./constants";
 
 /**
- * Validates that files exist, have an extension, and that the extension is allowed.
+ * Validates that files exist, have proper extensions, and are accessible.
  * Returns a structured result with a validity flag and error messages.
  */
 export async function validateFiles(
@@ -28,19 +29,17 @@ export async function validateFiles(
 
   for (const filePath of filePaths) {
     const extension = path.extname(filePath).toLowerCase();
+
     if (!extension) {
-      // File extension is missing, so record that as a warning.
       missingExtensions.push(filePath);
       continue;
     }
 
-    // Check if the extension is allowed.
     if (!ALLOWED_EXTENSIONS.includes(extension)) {
       invalidExtensions.push(`${filePath} (${extension})`);
       continue;
     }
 
-    // Check file existence.
     if (!fs.existsSync(filePath)) {
       notFoundFiles.push(filePath);
       continue;
@@ -49,17 +48,14 @@ export async function validateFiles(
 
   const errors: string[] = [];
 
-  // Log missing extension files as warnings
   if (missingExtensions.length > 0) {
-    Logger.warn(
+    Logger.warnString(
       `Missing file extension for: ${missingExtensions.join(
         ", "
       )}. Allowed extensions: ${ALLOWED_EXTENSIONS.join(", ")}`
     );
   }
 
-  // Only generate the error messages but don't log them directly
-  // Let the error handling system do the logging
   if (invalidExtensions.length > 0) {
     errors.push(
       `Invalid file extensions: ${invalidExtensions.join(
@@ -73,4 +69,54 @@ export async function validateFiles(
   }
 
   return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Validates a single file with comprehensive checks
+ */
+export async function validateFile(filePath: string): Promise<boolean> {
+  try {
+    Logger.debug`Validating file: ${filePath}`;
+
+    // Check file exists
+    if (!fs.existsSync(filePath)) {
+      throw ErrorFactory.file(`File '${filePath}' does not exist`, filePath, [
+        "Check the file path for typos",
+        "Ensure the file hasn't been moved or deleted",
+        "Use absolute paths if relative paths are problematic",
+      ]);
+    }
+
+    // Check file permissions
+    try {
+      fs.accessSync(filePath, fs.constants.R_OK);
+    } catch (error) {
+      throw ErrorFactory.file(`File '${filePath}' is not readable`, filePath, [
+        "Check file permissions",
+        "Ensure the file is not locked by another application",
+        "Try running with elevated permissions if necessary",
+      ]);
+    }
+
+    // Check file has content
+    const stats = fs.statSync(filePath);
+    if (stats.size === 0) {
+      throw ErrorFactory.file(`File '${filePath}' is empty`, filePath, [
+        "Ensure the file contains data",
+        "Verify the file was saved properly",
+      ]);
+    }
+
+    Logger.debug`File '${filePath}' is valid and readable`;
+    return true;
+  } catch (error) {
+    if (error instanceof Error && error.name === "ConductorError") {
+      throw error;
+    }
+
+    throw ErrorFactory.file("Error validating file", filePath, [
+      "Check that the file exists and is accessible",
+      "Verify file permissions and format",
+    ]);
+  }
 }
