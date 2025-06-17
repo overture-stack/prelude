@@ -2,11 +2,19 @@
  * Upload Command
  *
  * Command implementation for uploading CSV data to Elasticsearch.
- * Updated to use error factory pattern for consistent error handling.
+ * Updated to completely eliminate duplicate error logs and fix imports.
  */
 
-import { validateBatchSize } from "../validations/elasticsearchValidator";
+import {
+  validateBatchSize,
+  validateIndex,
+} from "../validations/elasticsearchValidator";
 import { validateDelimiter } from "../validations/utils";
+import {
+  validateCSVStructure,
+  validateHeadersMatchMappings,
+} from "../validations/csvValidator";
+import { validateFiles } from "../validations/fileValidator";
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -16,11 +24,6 @@ import {
   validateConnection,
 } from "../services/elasticsearch";
 import { processCSVFile } from "../services/csvProcessor";
-import {
-  validateCSVStructure,
-  validateIndex,
-  validateFiles,
-} from "../validations";
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import * as fs from "fs";
 
@@ -60,11 +63,11 @@ export class UploadCommand extends Command {
       } catch (error) {
         failureCount++;
 
-        // Log the error with better formatting for user visibility
+        // Handle ConductorErrors - log them with suggestions here
         if (error instanceof Error && error.name === "ConductorError") {
           const conductorError = error as any;
 
-          // Display the main error message prominently
+          // Log the error and suggestions at the file processing level
           Logger.errorString(`${conductorError.message}`);
 
           // Show suggestions if available
@@ -72,7 +75,6 @@ export class UploadCommand extends Command {
             conductorError.suggestions &&
             conductorError.suggestions.length > 0
           ) {
-            Logger.generic("");
             Logger.section("Suggestions");
             conductorError.suggestions.forEach((suggestion: string) => {
               Logger.tipString(suggestion);
@@ -82,18 +84,13 @@ export class UploadCommand extends Command {
 
           Logger.debug`Skipping file '${filePath}': [${conductorError.code}] ${conductorError.message}`;
 
-          if (conductorError.details) {
-            Logger.debugString(
-              `Error details: ${JSON.stringify(conductorError.details)}`
-            );
-          }
-
           failureDetails[filePath] = {
             code: conductorError.code,
             message: conductorError.message,
             details: conductorError.details,
           };
         } else if (error instanceof Error) {
+          // Only log non-ConductorError errors
           Logger.errorString(`${error.message}`);
           Logger.debug`Skipping file '${filePath}': ${error.message}`;
           failureDetails[filePath] = {
@@ -119,21 +116,12 @@ export class UploadCommand extends Command {
         },
       };
     } else if (successCount === 0) {
-      const error = ErrorFactory.validation(
-        `Failed to process all ${failureCount} files`,
-        failureDetails,
-        [
-          "Check file formats and permissions",
-          "Verify CSV structure and headers",
-          "Ensure Elasticsearch is accessible",
-          "Use --debug for detailed error information",
-        ]
-      );
-
+      // Don't create a new error, just return the failure result
+      // The original error with suggestions has already been logged
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
+        errorMessage: `Failed to process all ${failureCount} files`,
+        errorCode: "PROCESSING_FAILED",
         details: failureDetails,
       };
     } else {
@@ -154,6 +142,7 @@ export class UploadCommand extends Command {
 
   /**
    * Validates command line arguments and configuration
+   * Updated to remove index validation (moved to processFile)
    * @param cliOutput The CLI configuration and inputs
    * @throws ConductorError if validation fails
    */
@@ -205,14 +194,14 @@ export class UploadCommand extends Command {
       );
     }
 
-    // Validate each file's CSV headers
+    // Validate each file's CSV headers (without index validation)
     for (const filePath of filePaths) {
       await this.validateFileHeaders(filePath, config.delimiter);
     }
   }
 
   /**
-   * Validates headers for a single file
+   * Validates headers for a single file (without index validation)
    */
   private async validateFileHeaders(
     filePath: string,
@@ -249,7 +238,7 @@ export class UploadCommand extends Command {
 
       const headers = parseResult[0];
 
-      // Validate CSV structure using our validation function
+      // Validate CSV structure using our validation function (without index mapping)
       await validateCSVStructure(headers);
     } catch (error) {
       // If it's already a ConductorError, rethrow it
@@ -271,21 +260,43 @@ export class UploadCommand extends Command {
   }
 
   /**
-   * Processes a single file
+   * Processes a single file with consolidated validation
+   * Index validation now happens here, creating single point of validation
    */
   private async processFile(filePath: string, config: any): Promise<void> {
     try {
       // Set up Elasticsearch client
       const client = createClientFromConfig(config);
 
-      // Validate Elasticsearch connection and index
+      // Validate Elasticsearch connection first
       await validateConnection(client);
+
+      // Validate index exists (SINGLE POINT OF INDEX VALIDATION)
       await validateIndex(client, config.elasticsearch.index);
+
+      // NOW validate headers against mapping (only after we know index exists)
+      const fileContent = fs.readFileSync(filePath, "utf-8");
+      const [headerLine] = fileContent.split("\n");
+      const parseResult = parseCSVLine(headerLine, config.delimiter, true);
+      const headers = parseResult[0];
+
+      Logger.debug`Validating headers against the ${config.elasticsearch.index} mapping`;
+      await validateHeadersMatchMappings(
+        client,
+        headers,
+        config.elasticsearch.index
+      );
 
       // Process the file
       await processCSVFile(filePath, config, client);
     } catch (error) {
-      // Categorize and enhance the error based on its type
+      // If it's already a ConductorError, just rethrow it without additional wrapping
+      // This prevents duplicate error creation and logging
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error;
+      }
+
+      // Only wrap and categorize non-ConductorError exceptions
       const errorMessage =
         error instanceof Error ? error.message : String(error);
 
@@ -309,22 +320,6 @@ export class UploadCommand extends Command {
         );
       }
 
-      if (errorMessage.includes("index_not_found")) {
-        throw ErrorFactory.validation(
-          `Elasticsearch index not found: ${config.elasticsearch.index}`,
-          {
-            filePath,
-            index: config.elasticsearch.index,
-            originalError: error,
-          },
-          [
-            "Create the index first or use a different index name",
-            `Use --index option to specify a different index`,
-            "Check index name spelling",
-          ]
-        );
-      }
-
       if (errorMessage.includes("401") || errorMessage.includes("403")) {
         throw ErrorFactory.auth(
           "Elasticsearch authentication failed",
@@ -340,12 +335,7 @@ export class UploadCommand extends Command {
         );
       }
 
-      // If it's already a ConductorError, just rethrow it (including index validation errors)
-      if (error instanceof Error && error.name === "ConductorError") {
-        throw error;
-      }
-
-      // Generic processing error
+      // Generic processing error for unknown exceptions
       throw ErrorFactory.csv(
         "Failed to process CSV file",
         {

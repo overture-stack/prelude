@@ -8,7 +8,7 @@ import { Logger } from "../utils/logger";
 /**
  * Module for validating CSV files against structural and naming rules.
  * Includes validation for headers, content structure, and naming conventions.
- * Updated to use error factory pattern for consistent error handling.
+ * Updated to remove index existence validation from validateHeadersMatchMappings.
  */
 
 /**
@@ -176,7 +176,8 @@ export async function validateCSVStructure(
 
 /**
  * Validates CSV headers against Elasticsearch index mappings.
- * Ensures CSV structure matches expected index fields.
+ * ASSUMES index already exists and has been validated elsewhere.
+ * Updated to remove index existence validation.
  *
  * @param client - Elasticsearch client instance
  * @param headers - Array of CSV headers to validate
@@ -192,7 +193,7 @@ export async function validateHeadersMatchMappings(
   Logger.debug`Validating headers against index ${indexName} mappings`;
 
   try {
-    // Try to get mappings from the existing index
+    // Get mappings from the existing index (assume it exists)
     const { body } = await client.indices.getMapping({
       index: indexName,
     });
@@ -200,14 +201,12 @@ export async function validateHeadersMatchMappings(
     // Type-safe navigation
     const mappings = body[indexName]?.mappings;
     if (!mappings) {
-      Logger.errorString(`No mappings found for index ${indexName}`);
       throw ErrorFactory.validation(
         "No mappings found for the specified index",
         { indexName, availableIndices: Object.keys(body) },
         [
-          "Check that the index name is correct",
-          "Verify the index exists in Elasticsearch",
-          "Create the index with proper mappings first",
+          "Index may not have proper mappings defined",
+          "Check index configuration in Elasticsearch",
         ]
       );
     }
@@ -225,7 +224,6 @@ export async function validateHeadersMatchMappings(
       .filter((header: string) => header !== "");
 
     if (cleanedHeaders.length === 0) {
-      Logger.errorString("No valid headers found");
       throw ErrorFactory.validation(
         "No valid headers found",
         { originalHeaders: headers },
@@ -248,7 +246,7 @@ export async function validateHeadersMatchMappings(
         field !== "submission_metadata" && !cleanedHeaders.includes(field)
     );
 
-    // Log appropriate warnings
+    // Log appropriate warnings (not errors)
     if (extraHeaders.length > 0) {
       Logger.warnString(
         `Extra headers not in index mapping: ${extraHeaders.join(", ")}`
@@ -297,25 +295,7 @@ export async function validateHeadersMatchMappings(
     Logger.debug`Headers validated against index mapping`;
     return true;
   } catch (error: any) {
-    // If the index doesn't exist, provide a clear error
-    if (
-      error.meta &&
-      error.meta.body &&
-      error.meta.body.error.type === "index_not_found_exception"
-    ) {
-      Logger.errorString(`Index ${indexName} does not exist`);
-      throw ErrorFactory.validation(
-        `Index ${indexName} does not exist`,
-        { indexName, errorType: "index_not_found_exception" },
-        [
-          "Create the index first using Elasticsearch",
-          "Use a different existing index name",
-          "Check index name spelling and case sensitivity",
-        ]
-      );
-    }
-
-    // Type-safe error handling for other errors
+    // Remove the index_not_found_exception handling since we assume index exists
     if (error instanceof Error && error.name === "ConductorError") {
       throw error;
     }
@@ -333,7 +313,7 @@ export async function validateHeadersMatchMappings(
     );
 
     throw ErrorFactory.connection(
-      "Error validating headers against index",
+      "Error validating headers against index mapping",
       {
         indexName,
         originalError: error instanceof Error ? error.message : String(error),

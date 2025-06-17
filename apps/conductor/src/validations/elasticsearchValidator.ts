@@ -28,7 +28,7 @@ export async function validateElasticsearchConnection(
   } catch (error: any) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    Logger.errorString(`Failed to connect to Elasticsearch: ${errorMessage}`);
+    // Don't log error here - let calling code handle it
     Logger.tipString(
       "Check Elasticsearch is running and that the correct URL and auth params are in use"
     );
@@ -88,8 +88,7 @@ export async function validateIndex(
     const { body } = await client.indices.get({ index: indexName });
 
     if (!body || !body[indexName]) {
-      Logger.errorString(`Index ${indexName} not found in response`);
-
+      // Don't log error here - let calling code handle it
       const availableIndices = await getAvailableIndices(client);
 
       const suggestions = [
@@ -108,7 +107,7 @@ export async function validateIndex(
       }
 
       throw ErrorFactory.validation(
-        `Index ${indexName} not found`,
+        `Index ${indexName} does not exist`,
         { indexName, responseBody: body, availableIndices },
         suggestions
       );
@@ -125,8 +124,7 @@ export async function validateIndex(
       indexError.meta?.body?.error?.type === "index_not_found_exception" ||
       indexError.meta?.body?.status === 404
     ) {
-      Logger.errorString(`Index ${indexName} does not exist`);
-
+      // Don't log error here - let calling code handle it
       const availableIndices = await getAvailableIndices(client);
 
       const suggestions = [
@@ -160,7 +158,7 @@ export async function validateIndex(
 
     const errorMessage =
       indexError instanceof Error ? indexError.message : String(indexError);
-    Logger.errorString(`Index check failed: ${errorMessage}`);
+    // Don't log error here - let calling code handle it
 
     throw ErrorFactory.connection(
       `Failed to check if index ${indexName} exists`,

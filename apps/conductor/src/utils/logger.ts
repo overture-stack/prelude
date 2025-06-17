@@ -1,6 +1,5 @@
 // src/utils/logger.ts - Enhanced logger with standardized template literal usage
 import chalk from "chalk";
-import { ConductorError } from "./errors";
 
 // Make LogLevel public for use in other modules
 export enum LogLevel {
@@ -24,12 +23,12 @@ interface LoggerConfig {
 const LOG_CONFIG = {
   icons: {
     [LogLevel.DEBUG]: "🔍",
-    [LogLevel.INFO]: "",
-    [LogLevel.SUCCESS]: "",
+    [LogLevel.INFO]: "❯",
+    [LogLevel.SUCCESS]: "✔",
     [LogLevel.WARN]: "⚠",
-    [LogLevel.ERROR]: "",
-    [LogLevel.TIP]: " ",
-    [LogLevel.GENERIC]: "",
+    [LogLevel.ERROR]: "✖",
+    [LogLevel.TIP]: "▸",
+    [LogLevel.GENERIC]: "▸",
     [LogLevel.SECTION]: "🔍",
     [LogLevel.INPUT]: "❔",
   } as const,
@@ -87,7 +86,7 @@ export class Logger {
 
     if (level === LogLevel.TIP) {
       return `${prefix}${colors[level](
-        `${icons[level]} ${labels[level]} `
+        ` ${icons[level]} ${labels[level]} `
       )}${message}`;
     }
 

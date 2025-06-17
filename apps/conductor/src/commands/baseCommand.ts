@@ -3,7 +3,7 @@
  *
  * Provides the base abstract class and interfaces for all command implementations.
  * Commands follow the Command Pattern for encapsulating operations.
- * Updated to use error factory pattern for consistent error handling.
+ * Updated to handle ConductorErrors properly and avoid duplicate logging.
  */
 
 import { CLIOutput } from "../types/cli";
@@ -163,6 +163,9 @@ export abstract class Command {
       // Check if it's already a properly formatted ConductorError
       if (error instanceof Error && error.name === "ConductorError") {
         const conductorError = error as any;
+
+        // Don't log here - let individual commands handle their own error logging
+        // This prevents duplicate logging when commands handle errors internally
         return {
           success: false,
           errorMessage: conductorError.message,
@@ -180,6 +183,17 @@ export abstract class Command {
           "Verify input files and permissions",
         ]
       );
+
+      // Log the wrapped error
+      Logger.errorString(`${wrappedError.message}`);
+      if (wrappedError.suggestions && wrappedError.suggestions.length > 0) {
+        Logger.generic("");
+        Logger.section("Suggestions");
+        wrappedError.suggestions.forEach((suggestion: string) => {
+          Logger.tipString(suggestion);
+        });
+        Logger.generic("");
+      }
 
       return {
         success: false,
