@@ -118,7 +118,6 @@ export class UploadCommand extends Command {
       // The original error with suggestions has already been logged
       return {
         success: false,
-        errorMessage: `Failed to process all ${failureCount} files`,
         errorCode: "PROCESSING_FAILED",
         details: failureDetails,
       };

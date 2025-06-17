@@ -1,0 +1,630 @@
+Elasticsearch Bulk Operation Error Log
+Index: datatable1-index
+Timestamp: 2025-06-17T20:37:40.142Z
+Total Errors: 51
+
+ERROR PATTERNS:
+================
+
+1. mapper_parsing_exception in field "data.age_at_diagnosis"
+   Reason: Expected integer, but got string values
+   Count: 51 records
+   Sample values: PD059901, PD059902, PD059903
+   Sample documents: Ufycf5cB34jpPefgnj2l, Uvycf5cB34jpPefgnj2l, U_ycf5cB34jpPefgnj2l
+
+
+DETAILED ERRORS:
+=================
+
+Record 0:
+  Document ID: Ufycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Ufycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059901'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059901\""
+  }
+}
+
+Record 1:
+  Document ID: Uvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Uvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059902'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059902\""
+  }
+}
+
+Record 2:
+  Document ID: U_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'U_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059903'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059903\""
+  }
+}
+
+Record 3:
+  Document ID: VPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'VPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059904'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059904\""
+  }
+}
+
+Record 4:
+  Document ID: Vfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Vfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059905'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059905\""
+  }
+}
+
+Record 5:
+  Document ID: Vvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Vvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059906'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059906\""
+  }
+}
+
+Record 6:
+  Document ID: V_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'V_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059907'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059907\""
+  }
+}
+
+Record 7:
+  Document ID: WPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'WPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059908'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059908\""
+  }
+}
+
+Record 8:
+  Document ID: Wfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Wfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059909'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059909\""
+  }
+}
+
+Record 9:
+  Document ID: Wvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Wvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059910'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059910\""
+  }
+}
+
+Record 10:
+  Document ID: W_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'W_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059911'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059911\""
+  }
+}
+
+Record 11:
+  Document ID: XPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'XPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059912'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059912\""
+  }
+}
+
+Record 12:
+  Document ID: Xfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Xfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059913'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059913\""
+  }
+}
+
+Record 13:
+  Document ID: Xvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Xvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059914'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059914\""
+  }
+}
+
+Record 14:
+  Document ID: X_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'X_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059915'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059915\""
+  }
+}
+
+Record 15:
+  Document ID: YPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'YPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059916'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059916\""
+  }
+}
+
+Record 16:
+  Document ID: Yfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Yfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059917'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059917\""
+  }
+}
+
+Record 17:
+  Document ID: Yvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Yvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059918'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059918\""
+  }
+}
+
+Record 18:
+  Document ID: Y_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Y_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059919'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059919\""
+  }
+}
+
+Record 19:
+  Document ID: ZPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'ZPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059920'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059920\""
+  }
+}
+
+Record 20:
+  Document ID: Zfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Zfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059921'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059921\""
+  }
+}
+
+Record 21:
+  Document ID: Zvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Zvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059922'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059922\""
+  }
+}
+
+Record 22:
+  Document ID: Z_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'Z_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059923'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059923\""
+  }
+}
+
+Record 23:
+  Document ID: aPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'aPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059924'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059924\""
+  }
+}
+
+Record 24:
+  Document ID: afycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'afycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059925'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059925\""
+  }
+}
+
+Record 25:
+  Document ID: avycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'avycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059926'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059926\""
+  }
+}
+
+Record 26:
+  Document ID: a_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'a_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059927'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059927\""
+  }
+}
+
+Record 27:
+  Document ID: bPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'bPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059928'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059928\""
+  }
+}
+
+Record 28:
+  Document ID: bfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'bfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059929'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059929\""
+  }
+}
+
+Record 29:
+  Document ID: bvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'bvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059930'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059930\""
+  }
+}
+
+Record 30:
+  Document ID: b_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'b_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059931'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059931\""
+  }
+}
+
+Record 31:
+  Document ID: cPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'cPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059932'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059932\""
+  }
+}
+
+Record 32:
+  Document ID: cfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'cfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059933'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059933\""
+  }
+}
+
+Record 33:
+  Document ID: cvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'cvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059934'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059934\""
+  }
+}
+
+Record 34:
+  Document ID: c_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'c_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059935'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059935\""
+  }
+}
+
+Record 35:
+  Document ID: dPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'dPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059936'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059936\""
+  }
+}
+
+Record 36:
+  Document ID: dfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'dfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059937'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059937\""
+  }
+}
+
+Record 37:
+  Document ID: dvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'dvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059938'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059938\""
+  }
+}
+
+Record 38:
+  Document ID: d_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'd_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059939'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059939\""
+  }
+}
+
+Record 39:
+  Document ID: ePycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'ePycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059940'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059940\""
+  }
+}
+
+Record 40:
+  Document ID: efycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'efycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059941'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059941\""
+  }
+}
+
+Record 41:
+  Document ID: evycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'evycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059942'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059942\""
+  }
+}
+
+Record 42:
+  Document ID: e_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'e_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059943'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059943\""
+  }
+}
+
+Record 43:
+  Document ID: fPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'fPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059944'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059944\""
+  }
+}
+
+Record 44:
+  Document ID: ffycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'ffycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059945'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059945\""
+  }
+}
+
+Record 45:
+  Document ID: fvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'fvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059946'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059946\""
+  }
+}
+
+Record 46:
+  Document ID: f_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'f_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059947'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059947\""
+  }
+}
+
+Record 47:
+  Document ID: gPycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'gPycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059948'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059948\""
+  }
+}
+
+Record 48:
+  Document ID: gfycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'gfycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059949'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059949\""
+  }
+}
+
+Record 49:
+  Document ID: gvycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'gvycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059950'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059950\""
+  }
+}
+
+Record 50:
+  Document ID: g_ycf5cB34jpPefgnj2l
+  Status: 400
+  Error: {
+  "type": "mapper_parsing_exception",
+  "reason": "failed to parse field [data.age_at_diagnosis] of type [integer] in document with id 'g_ycf5cB34jpPefgnj2l'. Preview of field's value: 'PD059951'",
+  "caused_by": {
+    "type": "number_format_exception",
+    "reason": "For input string: \"PD059951\""
+  }
+}
+

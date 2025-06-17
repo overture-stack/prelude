@@ -335,19 +335,54 @@ async function sendBatchToElasticsearch(
     // Call with 4 parameters as expected by the function
     await sendBulkWriteRequest(client, records, indexName, onFailure);
   } catch (error) {
-    throw ErrorFactory.elasticsearch(
-      "Failed to send batch to Elasticsearch",
+    // If it's already a specific data validation error, just rethrow it without adding generic suggestions
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
+
+      // Check if this is a data validation error (from our bulk handler)
+      if (
+        conductorError.message.includes("Data type validation failed") ||
+        conductorError.message.includes("Bulk indexing failed")
+      ) {
+        // Rethrow without additional wrapping - the user already has specific info
+        throw error;
+      }
+    }
+
+    // For other unexpected errors, provide more appropriate suggestions
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      throw ErrorFactory.connection(
+        "Failed to connect to Elasticsearch",
+        {
+          filePath,
+          indexName,
+          originalError: error,
+        },
+        [
+          "Check that Elasticsearch is running",
+          "Verify the service URL and port",
+          "Check network connectivity",
+        ]
+      );
+    }
+
+    // For data validation errors, don't provide generic connection suggestions
+    throw ErrorFactory.validation(
+      "Data validation failed during upload",
       {
         filePath,
         indexName,
-        recordCount: records.length,
         originalError: error,
       },
       [
-        "Check Elasticsearch connection and health",
-        "Verify index exists and is writable",
-        "Check for resource constraints (memory, disk)",
-        "Review Elasticsearch logs for details",
+        "Check the data type issues shown above",
+        "Fix your CSV data to match the expected types",
+        "Review the error log for detailed information",
       ]
     );
   }
