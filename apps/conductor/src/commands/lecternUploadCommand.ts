@@ -1,4 +1,4 @@
-// src/commands/lecternUploadCommand.ts - Simple version without over-engineering
+// src/commands/lecternUploadCommand.ts - Complete fix with direct connection testing
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -96,20 +96,115 @@ export class LecternUploadCommand extends Command {
       // Create service instance
       const lecternService = new LecternService(serviceConfig);
 
-      // Check service health
-      const healthResult = await lecternService.checkHealth();
-      if (!healthResult.healthy) {
+      // DIRECT CONNECTION TEST - bypass the generic checkHealth() method
+      // This way we can catch and handle the specific connection error
+      try {
+        Logger.debug`Testing connection to Lectern service`;
+
+        // Try to make a direct HTTP request to test connectivity
+        const testResponse = await lecternService["http"].get("/health", {
+          timeout: 5000,
+          retries: 1,
+        });
+
+        Logger.debug`Lectern service is healthy`;
+      } catch (healthError) {
+        // Handle the specific connection error with detailed suggestions
+        const errorMessage =
+          healthError instanceof Error
+            ? healthError.message
+            : String(healthError);
+
+        Logger.debug`Lectern health check failed`;
+
+        if (
+          errorMessage.includes("ECONNREFUSED") ||
+          errorMessage.includes("connect ECONNREFUSED")
+        ) {
+          throw ErrorFactory.connection(
+            "Cannot connect to Lectern service",
+            {
+              serviceUrl: serviceConfig.url,
+              endpoint: serviceConfig.url + "/health",
+              originalError: healthError,
+            },
+            [
+              `Check that Lectern service is running on ${serviceConfig.url}`,
+              "Verify the service URL and port number are correct",
+              "Ensure the service is accessible from your network",
+              "Test manually with: curl " + serviceConfig.url + "/health",
+              "Check firewall settings and network connectivity",
+            ]
+          );
+        }
+
+        if (
+          errorMessage.includes("ENOTFOUND") ||
+          errorMessage.includes("getaddrinfo ENOTFOUND")
+        ) {
+          throw ErrorFactory.connection(
+            "Lectern service host not found",
+            {
+              serviceUrl: serviceConfig.url,
+              originalError: healthError,
+            },
+            [
+              "Check the hostname in the service URL",
+              "Verify DNS resolution for the hostname",
+              "Ensure the service URL is spelled correctly",
+              "Try using an IP address instead of hostname",
+              "Check your network connection",
+            ]
+          );
+        }
+
+        if (errorMessage.includes("ETIMEDOUT")) {
+          throw ErrorFactory.connection(
+            "Timeout connecting to Lectern service",
+            {
+              serviceUrl: serviceConfig.url,
+              timeout: 5000,
+              originalError: healthError,
+            },
+            [
+              "Check network connectivity to the service",
+              "Verify the service is responding (may be overloaded)",
+              "Consider increasing timeout value",
+              "Check for network proxy or firewall blocking",
+              "Verify the service port is accessible",
+            ]
+          );
+        }
+
+        if (errorMessage.includes("401") || errorMessage.includes("403")) {
+          throw ErrorFactory.auth(
+            "Authentication failed with Lectern service",
+            {
+              serviceUrl: serviceConfig.url,
+              originalError: healthError,
+            },
+            [
+              "Check your authentication token",
+              "Verify you have permission to access the service",
+              "Contact your administrator for proper credentials",
+              "Ensure the auth token is not expired",
+            ]
+          );
+        }
+
+        // Generic health check failure with helpful suggestions
         throw ErrorFactory.connection(
-          "Lectern service is not healthy",
+          "Failed to connect to Lectern service",
           {
-            healthResult,
             serviceUrl: serviceConfig.url,
+            originalError: healthError,
           },
           [
-            "Check that Lectern service is running",
-            `Verify the service URL: ${serviceConfig.url}`,
-            "Check network connectivity",
-            "Review service logs for errors",
+            `Verify Lectern service is running and accessible at ${serviceConfig.url}`,
+            "Check the service URL spelling and port number",
+            "Test connectivity manually: curl " + serviceConfig.url + "/health",
+            "Review service logs for error details",
+            "Check network connectivity and firewall settings",
           ]
         );
       }
@@ -163,7 +258,7 @@ export class LecternUploadCommand extends Command {
    * Log upload information
    */
   private logUploadInfo(schemaFile: string, serviceUrl: string): void {
-    Logger.debug`Uploading Schema to Lectern:`;
+    Logger.debug`${chalk.bold.cyan("Uploading Schema to Lectern:")}`;
     Logger.debug`URL: ${serviceUrl}/dictionaries`;
     Logger.debug`Schema File: ${schemaFile}`;
   }
@@ -180,15 +275,29 @@ export class LecternUploadCommand extends Command {
     Logger.generic(
       chalk.gray(`    - Schema Version: ${result.version || "N/A"}`)
     );
+    Logger.generic(" ");
   }
 
   /**
-   * Handle execution errors - simple approach
+   * Handle execution errors - should preserve ConductorError suggestions
    */
   private handleExecutionError(error: unknown): CommandResult {
-    // If it's already a ConductorError, just return it
+    // If it's already a ConductorError, preserve it completely
+    // The base Command.run() method will handle displaying the suggestions
     if (error instanceof Error && error.name === "ConductorError") {
       const conductorError = error as any;
+
+      // Log the error here to ensure it gets displayed
+      Logger.errorString(conductorError.message);
+
+      // Display suggestions immediately since they might not make it through the chain
+      if (conductorError.suggestions && conductorError.suggestions.length > 0) {
+        Logger.suggestion("Suggestions");
+        conductorError.suggestions.forEach((suggestion: string) => {
+          Logger.tipString(suggestion);
+        });
+      }
+
       return {
         success: false,
         errorMessage: conductorError.message,
@@ -197,61 +306,28 @@ export class LecternUploadCommand extends Command {
       };
     }
 
-    // For unexpected errors, wrap them appropriately
+    // For any other unexpected errors, wrap them with helpful suggestions
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    // Simple categorization
-    if (
-      errorMessage.includes("ECONNREFUSED") ||
-      errorMessage.includes("ETIMEDOUT")
-    ) {
-      const connectionError = ErrorFactory.connection(
-        "Failed to connect to Lectern service",
-        { originalError: error },
-        [
-          "Check that Lectern service is running",
-          "Verify the service URL and port",
-          "Check network connectivity",
-          "Review firewall settings",
-        ]
-      );
+    Logger.errorString(`Unexpected error: ${errorMessage}`);
 
-      return {
-        success: false,
-        errorMessage: connectionError.message,
-        errorCode: connectionError.code,
-        details: connectionError.details,
-      };
-    }
+    const suggestions = [
+      "Check that Lectern service is running and accessible",
+      "Verify your schema file format and content",
+      "Use --debug for detailed error information",
+      "Try the upload again after a few moments",
+    ];
 
-    if (errorMessage.includes("401") || errorMessage.includes("403")) {
-      const authError = ErrorFactory.auth(
-        "Authentication failed",
-        { originalError: error },
-        [
-          "Check your authentication token",
-          "Verify you have permission to upload schemas",
-          "Contact your administrator for access",
-        ]
-      );
+    // Display suggestions immediately
+    Logger.suggestion("Suggestions");
+    suggestions.forEach((suggestion: string) => {
+      Logger.tipString(suggestion);
+    });
 
-      return {
-        success: false,
-        errorMessage: authError.message,
-        errorCode: authError.code,
-        details: authError.details,
-      };
-    }
-
-    // Generic fallback for other errors
     const genericError = ErrorFactory.connection(
       "Schema upload failed",
       { originalError: error },
-      [
-        "Check the service logs for more details",
-        "Verify your schema file format",
-        "Try the upload again after a few moments",
-      ]
+      suggestions
     );
 
     return {

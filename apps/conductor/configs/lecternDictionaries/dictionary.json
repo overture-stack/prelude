@@ -1,7 +1,7 @@
 {
   "name": "example-dictionary",
   "description": "A Lectern dictionary for Overture's Phase Two Prelude guide focused on clinical cancer data",
-  "version": "7.0",
+  "version": "9.0",
   "meta": {
     "createdAt": "2025-03-20T10:30:00.000Z",
     "createdBy": "Mitchell Shiell",

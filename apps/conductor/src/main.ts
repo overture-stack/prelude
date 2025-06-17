@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-// src/main.ts - Simplified main entry point with centralized error handling
 import { setupCLI } from "./cli";
 import { CommandRegistry } from "./commands/commandRegistry";
 import { Environment } from "./config/environment";
@@ -30,23 +29,26 @@ async function main() {
     Logger.debug`Running command`;
 
     // Execute the command
+    // FIXED: baseCommand.run() handles ALL error logging
+    // Don't add additional error handling here
     const result = await command.run(cliOutput);
 
-    // Check command result and handle errors
+    // Check command result - if failed, just exit
+    // baseCommand.run() already logged the error
     if (!result.success) {
-      throw new Error(result.errorMessage || "Command execution failed");
+      process.exit(1);
     }
 
     Logger.debug`Command '${cliOutput.profile}' completed successfully`;
   } catch (error) {
-    // Special handling for unknown commands to show help
+    // Special handling ONLY for unknown commands and CLI setup errors
     if (error instanceof Error && error.message.includes("Unknown command")) {
       handleError(error, () => {
         Logger.generic("");
         CommandRegistry.displayHelp();
       });
     } else {
-      // Let the centralized error handler take care of everything else
+      // Let the centralized error handler take care of CLI setup errors
       handleError(error);
     }
   }

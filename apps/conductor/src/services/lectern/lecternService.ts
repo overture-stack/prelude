@@ -70,7 +70,7 @@ export class LecternService extends BaseService {
           ]
         );
       }
-
+      Logger.generic("");
       Logger.info`Uploading schema: ${schemaData.name}`;
 
       // Upload to Lectern - let HttpService handle HTTP errors

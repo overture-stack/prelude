@@ -3,7 +3,7 @@
  *
  * Provides the base abstract class and interfaces for all command implementations.
  * Commands follow the Command Pattern for encapsulating operations.
- * Simplified without complex output path handling.
+ * FIXED: Centralized error logging - only log here, nowhere else
  */
 
 import { CLIOutput } from "../types/cli";
@@ -42,7 +42,7 @@ export abstract class Command {
 
   /**
    * Main method to run the command with the provided CLI arguments.
-   * Handles validation and error handling.
+   * FIXED: Single point of error logging - only log errors here
    *
    * @param cliOutput - The parsed command line arguments
    * @returns A promise that resolves to a CommandResult object
@@ -94,13 +94,23 @@ export abstract class Command {
     } catch (error: unknown) {
       Logger.debug`ERROR IN ${this.name} COMMAND: ${error}`;
 
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      Logger.debug`Unexpected error in ${this.name} command: ${errorMessage}`;
-
-      // Check if it's already a properly formatted ConductorError
+      // SINGLE POINT OF ERROR LOGGING - Only log here!
       if (error instanceof Error && error.name === "ConductorError") {
         const conductorError = error as any;
+
+        // Log the error message once
+        Logger.errorString(conductorError.message);
+
+        // Display suggestions if available
+        if (
+          conductorError.suggestions &&
+          conductorError.suggestions.length > 0
+        ) {
+          Logger.suggestion("Suggestions");
+          conductorError.suggestions.forEach((suggestion: string) => {
+            Logger.tipString(suggestion);
+          });
+        }
 
         return {
           success: false,
@@ -111,6 +121,8 @@ export abstract class Command {
       }
 
       // For unexpected errors, wrap them in a generic error
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       const wrappedError = ErrorFactory.args(
         `Command execution failed: ${errorMessage}`,
         [
@@ -120,15 +132,13 @@ export abstract class Command {
         ]
       );
 
-      // Log the wrapped error
-      Logger.errorString(`${wrappedError.message}`);
+      // Log the wrapped error once
+      Logger.errorString(wrappedError.message);
       if (wrappedError.suggestions && wrappedError.suggestions.length > 0) {
-        Logger.generic("");
         Logger.suggestion("Suggestions");
         wrappedError.suggestions.forEach((suggestion: string) => {
           Logger.tipString(suggestion);
         });
-        Logger.generic("");
       }
 
       return {

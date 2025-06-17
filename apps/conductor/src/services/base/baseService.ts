@@ -46,9 +46,7 @@ export abstract class BaseService {
       };
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      Logger.errorString(
-        `✗ ${this.serviceName} health check failed (${responseTime}ms)`
-      );
+      Logger.info`${this.serviceName} health check failed`;
 
       return {
         healthy: false,
@@ -171,12 +169,7 @@ export abstract class BaseService {
           service: this.serviceName,
           operation,
           originalError: error,
-        },
-        [
-          "Check request parameters and format",
-          "Verify required fields are provided",
-          "Ensure data types are correct",
-        ]
+        }
       );
     }
 

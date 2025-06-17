@@ -1,5 +1,3 @@
-// src/services/base/HttpService.ts
-// Updated to use error factory pattern for consistent error handling
 import axios from "axios";
 import { Logger } from "../../utils/logger";
 import { ErrorFactory } from "../../utils/errors";
@@ -124,6 +122,10 @@ export class HttpService {
     return token.startsWith("Bearer ") ? token : `Bearer ${token}`;
   }
 
+  /**
+   * FIXED: Handle Axios errors without logging
+   * Only create and throw structured ConductorErrors - let command layer log
+   */
   private handleAxiosError(error: any): never {
     if (error.response) {
       // Server responded with error status
@@ -138,7 +140,7 @@ export class HttpService {
         errorMessage += `: ${data.error}`;
       }
 
-      // Categorize errors based on status code
+      // NO LOGGING - just throw structured errors
       if (status === 401 || status === 403) {
         throw ErrorFactory.auth(
           "Authentication failed",
@@ -180,20 +182,11 @@ export class HttpService {
           data?.error ||
           "Bad request - invalid data or format";
 
-        throw ErrorFactory.validation(
-          serverMessage,
-          {
-            status,
-            responseData: data,
-            url,
-          },
-          [
-            "Check request parameters and format",
-            "Verify required fields are provided",
-            "Ensure data types and values are correct",
-            data?.message ? `Server message: ${data.message}` : null,
-          ].filter(Boolean) as string[]
-        );
+        throw ErrorFactory.validation(serverMessage, {
+          status,
+          responseData: data,
+          url,
+        });
       }
 
       if (status === 409) {
