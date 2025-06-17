@@ -234,9 +234,7 @@ export function handleError(error: unknown, showHelp?: () => void): never {
     }
   } else {
     Logger.errorString(
-      `Unexpected error: ${
-        error instanceof Error ? error.message : String(error)
-      }`
+      `${error instanceof Error ? error.message : String(error)}`
     );
 
     if (process.argv.includes("--debug") && error instanceof Error) {

@@ -59,6 +59,30 @@ export async function validateElasticsearchConnection(
 }
 
 /**
+ * Get list of available indices from Elasticsearch
+ */
+async function getAvailableIndices(client: Client): Promise<string[]> {
+  try {
+    const response = await client.cat.indices({
+      format: "json",
+      h: "index", // Only get index names
+    });
+
+    if (Array.isArray(response.body)) {
+      return response.body
+        .map((idx: any) => idx.index)
+        .filter((index: string) => index && !index.startsWith(".")) // Filter out system indices
+        .sort();
+    }
+
+    return [];
+  } catch (error) {
+    Logger.debugString(`Could not fetch available indices: ${error}`);
+    return [];
+  }
+}
+
+/**
  * Validates that an index exists
  */
 export async function validateIndex(
@@ -75,18 +99,25 @@ export async function validateIndex(
       // Check if we actually got back information about the requested index
       if (!body || !body[indexName]) {
         Logger.errorString(`Index ${indexName} not found in response`);
+
+        // Get available indices for better error message
+        const availableIndices = await getAvailableIndices(client);
+
         throw ErrorFactory.validation(
           `Index ${indexName} not found`,
           {
             indexName,
             responseBody: body,
-            availableIndices: body ? Object.keys(body) : [],
+            availableIndices,
           },
           [
             "Check that the index name is spelled correctly",
             "Verify the index exists in Elasticsearch",
             "Create the index first if it doesn't exist",
             "Use -i <index-name> to specify a different index",
+            ...(availableIndices.length > 0
+              ? [`Available indices: ${availableIndices.join(", ")}`]
+              : ["No user indices found in Elasticsearch"]),
           ]
         );
       }
@@ -107,23 +138,34 @@ export async function validateIndex(
           indexError.meta.body.status === 404)
       ) {
         Logger.errorString(`Index ${indexName} does not exist`);
-        Logger.tipString(
-          "Create the index first or use a different index name"
-        );
+
+        // Get list of available indices
+        const availableIndices = await getAvailableIndices(client);
+
+        const suggestions = [
+          "Create the index in Elasticsearch first",
+          "Use a different existing index name",
+          "Check index name spelling and case sensitivity",
+          "Use -i <index-name> to specify a different index",
+        ];
+
+        if (availableIndices.length > 0) {
+          suggestions.push(`Available indices: ${availableIndices.join(", ")}`);
+        } else {
+          suggestions.push(
+            "No user indices found in Elasticsearch - you may need to create your first index"
+          );
+        }
 
         throw ErrorFactory.validation(
           `Index ${indexName} does not exist`,
           {
             indexName,
             errorType: "index_not_found_exception",
+            availableIndices,
             originalError: indexError,
           },
-          [
-            "Create the index in Elasticsearch first",
-            "Use a different existing index name",
-            "Check index name spelling and case sensitivity",
-            "Use -i <index-name> to specify a different index",
-          ]
+          suggestions
         );
       } else {
         // Some other error occurred - rethrow it

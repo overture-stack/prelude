@@ -49,7 +49,7 @@ export async function validateFiles(
   const errors: string[] = [];
 
   if (missingExtensions.length > 0) {
-    Logger.warnString(
+    errors.push(
       `Missing file extension for: ${missingExtensions.join(
         ", "
       )}. Allowed extensions: ${ALLOWED_EXTENSIONS.join(", ")}`
@@ -65,7 +65,9 @@ export async function validateFiles(
   }
 
   if (notFoundFiles.length > 0) {
-    errors.push(`Files not found: ${notFoundFiles.join(", ")}`);
+    errors.push(
+      `the following files were not found: ${notFoundFiles.join(", ")}`
+    );
   }
 
   return { valid: errors.length === 0, errors };

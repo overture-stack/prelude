@@ -62,9 +62,26 @@ export class UploadCommand extends Command {
       } catch (error) {
         failureCount++;
 
-        // Log the error but continue to the next file
+        // Log the error with better formatting for user visibility
         if (error instanceof Error && error.name === "ConductorError") {
           const conductorError = error as any;
+
+          // Display the main error message prominently
+          Logger.errorString(`${conductorError.message}`);
+
+          // Show suggestions if available
+          if (
+            conductorError.suggestions &&
+            conductorError.suggestions.length > 0
+          ) {
+            Logger.generic("");
+            Logger.section("Suggestions");
+            conductorError.suggestions.forEach((suggestion: string) => {
+              Logger.tipString(suggestion);
+            });
+            Logger.generic("");
+          }
+
           Logger.debug`Skipping file '${filePath}': [${conductorError.code}] ${conductorError.message}`;
 
           if (conductorError.details) {
@@ -79,11 +96,13 @@ export class UploadCommand extends Command {
             details: conductorError.details,
           };
         } else if (error instanceof Error) {
+          Logger.errorString(`${error.message}`);
           Logger.debug`Skipping file '${filePath}': ${error.message}`;
           failureDetails[filePath] = {
             message: error.message,
           };
         } else {
+          Logger.errorString("An unknown error occurred");
           Logger.debug`Skipping file '${filePath}' due to an error`;
           failureDetails[filePath] = {
             message: "Unknown error",
@@ -146,17 +165,18 @@ export class UploadCommand extends Command {
     // Validate files first
     const fileValidationResult = await validateFiles(filePaths);
     if (!fileValidationResult.valid) {
+      // Create a more detailed error message
+      const errorDetails = fileValidationResult.errors.join("; ");
       throw ErrorFactory.invalidFile(
-        "Invalid input files detected",
+        `File validation failed ${errorDetails}`,
         undefined,
-        [
+        fileValidationResult.errors.concat([
           "Check file extensions (.csv, .tsv allowed)",
           "Verify files exist and are accessible",
           "Ensure files are not empty",
-        ].concat(fileValidationResult.errors)
+        ])
       );
     }
-
     // Validate delimiter
     try {
       validateDelimiter(config.delimiter);
@@ -320,6 +340,11 @@ export class UploadCommand extends Command {
             "Ensure you have write permissions to the index",
           ]
         );
+      }
+
+      // If it's already a ConductorError, just rethrow it (including index validation errors)
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error;
       }
 
       // Generic processing error

@@ -210,18 +210,18 @@ export class CSVProcessingErrorHandler {
       }
 
       // Print detailed summary
-      Logger.generic(` ▸ Total Records processed: ${processed}`);
+      Logger.generic(`  ▸ Total Records processed: ${processed}`);
       Logger.generic(
-        ` ▸ Records Successfully transferred: ${successfulRecords}`
+        `  ▸ Records Successfully transferred: ${successfulRecords}`
       );
 
       if (failed > 0) {
-        Logger.generic(` ▸ Records Failed to transfer: ${failed}`);
-        Logger.generic(` ▸ Error logs available in debug output`);
+        Logger.generic(`  ▸ Records Failed to transfer: ${failed}`);
+        Logger.generic(`  ▸ Error logs available in debug output`);
 
         // Calculate failure rate
         const failureRate = ((failed / processed) * 100).toFixed(1);
-        Logger.generic(` ▸ Failure rate: ${failureRate}%`);
+        Logger.generic(`  ▸ Failure rate: ${failureRate}%`);
 
         if (parseFloat(failureRate) > 10) {
           Logger.tipString(
@@ -231,7 +231,7 @@ export class CSVProcessingErrorHandler {
       }
 
       Logger.generic(
-        ` ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec`
+        `  ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec`
       );
       Logger.debug` ⏱ Total processing time: ${formatDuration(elapsedMs)}`;
 
