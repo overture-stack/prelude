@@ -162,7 +162,6 @@ export class LyricSubmissionService extends BaseService {
       params.files.forEach((file) => {
         Logger.generic(`  ▸ ${path.basename(file)}`);
       });
-      Logger.generic("");
 
       // Create FormData for file upload - use Node.js FormData implementation
       const formData = new FormData();
@@ -196,6 +195,9 @@ export class LyricSubmissionService extends BaseService {
 
       const submissionId = response.data?.submissionId;
       if (!submissionId) {
+        // Check if this is a file validation error (invalid schema names)
+        await this.handleFileValidationError(response.data, params);
+
         throw ErrorFactory.connection(
           "Could not extract submission ID from response",
           {
@@ -218,6 +220,23 @@ export class LyricSubmissionService extends BaseService {
         error instanceof Error ? error.message : String(error);
 
       Logger.debug`Submission error: ${errorMessage}`;
+
+      // IMPORTANT: If this is already a properly formatted schema validation error,
+      // just rethrow it without adding generic suggestions
+      if (error instanceof Error && error.name === "ConductorError") {
+        const conductorError = error as any;
+
+        // Check if this is a schema validation error that was already properly handled
+        if (
+          conductorError.message === "File names do not match schema names" ||
+          conductorError.message ===
+            "File names do not match schema names in dictionary" ||
+          conductorError.alreadyLogged
+        ) {
+          // This error already has proper context and suggestions, just rethrow it
+          throw error;
+        }
+      }
 
       // Special handling for category not found errors
       if (
@@ -257,13 +276,7 @@ export class LyricSubmissionService extends BaseService {
                   availableCategories,
                   alreadyLogged: true, // Add marker
                 },
-                [
-                  `Use a valid category ID: ${availableCategories
-                    .map((c) => c.id)
-                    .join(", ")}`,
-                  "Check the category name and ID match",
-                  "Ensure you have access to this category",
-                ]
+                [] // Empty suggestions since we showed the fix above
               );
 
               // Add a property to indicate this error was already logged
@@ -278,11 +291,7 @@ export class LyricSubmissionService extends BaseService {
                   categoryId: params.categoryId,
                   alreadyLogged: true,
                 },
-                [
-                  "Verify Lyric service is properly configured",
-                  "Categories may need to be created first",
-                  "Contact the service administrator",
-                ]
+                [] // Empty suggestions
               );
 
               // Mark as already logged
@@ -317,6 +326,7 @@ export class LyricSubmissionService extends BaseService {
         );
       }
 
+      // Handle other specific error types with relevant suggestions
       if (errorMessage.includes("413")) {
         throw ErrorFactory.validation(
           "Files are too large for submission",
@@ -357,22 +367,446 @@ export class LyricSubmissionService extends BaseService {
         );
       }
 
-      // For other errors, create a generic connection error
+      // For other unknown errors, provide generic but relevant suggestions
       throw ErrorFactory.connection(
         `File submission failed: ${errorMessage}`,
         { originalError: error },
         [
           "Check Lyric service status and connectivity",
-          "Verify file formats and permissions",
+          "Verify your authentication and permissions",
           "Review service logs for more details",
-          "Try again with --debug for detailed error information",
         ]
+      );
+    }
+  }
+  /**
+   * Handle file validation errors (invalid schema names) with helpful suggestions
+   */
+  private async handleFileValidationError(
+    responseData: any,
+    params: { files: string[]; categoryId: string }
+  ): Promise<void> {
+    // Check if the response indicates file validation errors
+    // Since Lyric doesn't return a submissionId when files are invalid, we should assume this is a file validation error
+    // Look for common indicators or just proceed with file validation logic
+
+    Logger.debug`Checking for file validation errors. Response: ${JSON.stringify(
+      responseData
+    )}`;
+
+    try {
+      // Extract invalid filenames from the response or derive from file list
+      const invalidFiles = params.files.map((f) => path.basename(f));
+
+      Logger.errorString(
+        `Invalid file names detected - files must match schema names`
+      );
+      Logger.suggestion("Invalid Files");
+      invalidFiles.forEach((filename) => {
+        const schemaName = path.basename(filename, ".csv");
+        Logger.generic(`   ▸ ${filename}`);
+      });
+
+      // Try to get available schema names from the dictionary
+      const availableSchemas = await this.getAvailableSchemaNames(
+        params.categoryId
+      );
+
+      if (availableSchemas.length > 0) {
+        Logger.suggestion("Available Schema Names");
+        availableSchemas.forEach((schemaName) => {
+          Logger.generic(`   ▸ ${schemaName}.csv`);
+        });
+      } else {
+        Logger.suggestion("Could not fetch available schema names");
+        Logger.generic("   ▸ Check your dictionary configuration in Lyric");
+        Logger.generic("   ▸ Verify category has a dictionary assigned");
+        Logger.generic(
+          "   ▸ Common schema names might include: donor, diagnosis, treatment, followup"
+        );
+      }
+
+      Logger.suggestion("Suggestions");
+      Logger.generic(
+        "   ▸ Rename your CSV files to match the relevant schema name(s)"
+      );
+      Logger.generic("   ▸ Schema names are case-sensitive");
+      Logger.generic("   ▸ Use --debug flag to see detailed error information");
+
+      // Throw a specific error for this case
+      throw ErrorFactory.validation(
+        "File names do not match schema names",
+        {
+          invalidFiles,
+          availableSchemas,
+          categoryId: params.categoryId,
+          alreadyLogged: true, // Mark as already logged to prevent duplicate messages
+        },
+        [] // Empty suggestions since we already displayed them above
+      );
+    } catch (schemaError) {
+      // If this is our validation error, rethrow it
+      if (
+        schemaError instanceof Error &&
+        schemaError.name === "ConductorError"
+      ) {
+        throw schemaError;
+      }
+
+      // If we couldn't get schema info, provide basic guidance
+      Logger.errorString(`Invalid file names - files must match schema names`);
+      Logger.suggestion("Invalid Files");
+      params.files.forEach((file) => {
+        Logger.generic(`   ▸ ${path.basename(file)}`);
+      });
+      Logger.suggestion("Solutions");
+      Logger.generic(
+        "   ▸ Rename your CSV files to match the exact schema names from your dictionary"
+      );
+      Logger.generic(
+        "   ▸ File names must be: [schema_name].csv (case-sensitive)"
+      );
+      Logger.generic(
+        "   ▸ Check your dictionary definition for the correct schema names"
+      );
+      Logger.generic("   ▸ Use --debug flag to see detailed error information");
+
+      throw ErrorFactory.validation(
+        "File names do not match schema names in dictionary",
+        {
+          invalidFiles: params.files.map((f) => path.basename(f)),
+          categoryId: params.categoryId,
+          alreadyLogged: true,
+        },
+        []
       );
     }
   }
 
   /**
-   * Wait for submission validation with progress updates
+   * Get available schema names from the dictionary for the given category
+   */
+  /**
+   * Get available schema names from the dictionary for the given category
+   */
+  private async getAvailableSchemaNames(categoryId: string): Promise<string[]> {
+    try {
+      Logger.debug`Fetching schema names for category ${categoryId}`;
+
+      // First, get the category information to find the dictionary
+      const categoryResponse = await this.http.get(`/category/${categoryId}`);
+      const category: any = categoryResponse.data;
+
+      Logger.debug`Category response: ${JSON.stringify(category)}`;
+
+      // Check for dictionary information in the category response
+      // The structure appears to be category.dictionary with name and version
+      if (!category?.dictionary?.name || !category?.dictionary?.version) {
+        Logger.debug`No dictionary information found for category ${categoryId}`;
+        Logger.debug`Expected category.dictionary.name and category.dictionary.version`;
+        return [];
+      }
+
+      const dictionaryName = category.dictionary.name;
+      const dictionaryVersion = category.dictionary.version;
+
+      Logger.debug`Found dictionary: ${dictionaryName} v${dictionaryVersion}`;
+
+      // Now we need to get the dictionary details from Lectern
+      // Since we have the name and version, we can query Lectern directly
+      const lecternUrl = process.env.LECTERN_URL || "http://localhost:3031";
+
+      try {
+        // Create a simple HTTP client for Lectern
+        const axios = require("axios");
+
+        // Get all dictionaries from Lectern
+        const dictionariesResponse = await axios.get(
+          `${lecternUrl}/dictionaries`
+        );
+        const dictionaries = Array.isArray(dictionariesResponse.data)
+          ? dictionariesResponse.data
+          : [];
+
+        Logger.debug`Found ${dictionaries.length} dictionaries in Lectern`;
+
+        // Find the specific dictionary by name and version
+        const targetDictionary = dictionaries.find(
+          (dict: any) =>
+            dict.name === dictionaryName && dict.version === dictionaryVersion
+        );
+
+        if (!targetDictionary) {
+          Logger.debug`Dictionary ${dictionaryName} v${dictionaryVersion} not found in Lectern`;
+          return [];
+        }
+
+        Logger.debug`Found target dictionary: ${JSON.stringify(
+          targetDictionary
+        )}`;
+
+        // Get detailed dictionary information
+        const detailedDictResponse = await axios.get(
+          `${lecternUrl}/dictionaries/${targetDictionary._id}`
+        );
+        const detailedDict = detailedDictResponse.data;
+
+        Logger.debug`Detailed dictionary response: ${JSON.stringify(
+          detailedDict
+        )}`;
+
+        if (!detailedDict?.schemas || !Array.isArray(detailedDict.schemas)) {
+          Logger.debug`No schemas found in dictionary ${dictionaryName} v${dictionaryVersion}`;
+          return [];
+        }
+
+        Logger.debug`Found ${detailedDict.schemas.length} schemas`;
+
+        // Extract schema names (these are the entity names)
+        const schemaNames = detailedDict.schemas
+          .map((schema: any) => schema?.name)
+          .filter((name: any) => typeof name === "string" && name.length > 0);
+
+        Logger.debug`Found ${
+          schemaNames.length
+        } schema names: ${schemaNames.join(", ")}`;
+        return schemaNames;
+      } catch (lecternError) {
+        Logger.debug`Error connecting to Lectern: ${lecternError}`;
+
+        // If we can't connect to Lectern, we can't get the schema names
+        // This is expected if Lectern is not running or not accessible
+        Logger.debug`Could not fetch schema names from Lectern service`;
+        return [];
+      }
+    } catch (error) {
+      Logger.debug`Could not fetch schema names: ${error}`;
+
+      // Enhanced error logging for troubleshooting
+      if (error instanceof Error) {
+        Logger.debug`Error name: ${error.name}`;
+        Logger.debug`Error message: ${error.message}`;
+        if ((error as any).response) {
+          Logger.debug`Error response status: ${
+            (error as any).response.status
+          }`;
+          Logger.debug`Error response data: ${JSON.stringify(
+            (error as any).response.data
+          )}`;
+        }
+      }
+
+      return [];
+    }
+  }
+
+  /**
+   * Parse and display Lyric validation errors in a user-friendly way
+   * Focuses on common scenarios like duplicate submissions
+   */
+  private parseAndDisplayLyricErrors(
+    submissionId: string,
+    responseData: any
+  ): void {
+    try {
+      if (!responseData?.errors?.inserts) {
+        Logger.errorString(
+          "Data validation failed - see submission details for more information"
+        );
+        return;
+      }
+
+      const errorsByTable: Record<string, any[]> = responseData.errors.inserts;
+      const totalErrors = Object.values(errorsByTable).reduce(
+        (sum: number, errors: any[]) =>
+          sum + (Array.isArray(errors) ? errors.length : 0),
+        0
+      );
+
+      // Quick analysis to detect common patterns
+      const isDuplicateSubmission =
+        this.isDuplicateSubmissionError(errorsByTable);
+
+      if (isDuplicateSubmission) {
+        this.displayDuplicateSubmissionError(errorsByTable, totalErrors);
+      } else {
+        this.displayGenericValidationErrors(errorsByTable, totalErrors);
+      }
+    } catch (parseError) {
+      Logger.warnString("Could not parse detailed error information");
+      Logger.debugString(`Parse error: ${parseError}`);
+    }
+  }
+
+  /**
+   * Detect if this is a duplicate submission (all errors are INVALID_BY_UNIQUE)
+   */
+  private isDuplicateSubmissionError(
+    errorsByTable: Record<string, any[]>
+  ): boolean {
+    const allErrors = Object.values(errorsByTable).flat();
+    return (
+      allErrors.length > 0 &&
+      allErrors.every((error: any) => error.reason === "INVALID_BY_UNIQUE")
+    );
+  }
+
+  /**
+   * Display error message specifically for duplicate submissions
+   */
+  private displayDuplicateSubmissionError(
+    errorsByTable: Record<string, any[]>,
+    totalErrors: number
+  ): void {
+    const tableCount = Object.keys(errorsByTable).length;
+
+    Logger.errorString(
+      `Duplicate submission detected - ${totalErrors} duplicate records across ${tableCount} tables`
+    );
+    Logger.generic("");
+
+    Logger.suggestion("This appears to be a resubmission of existing data");
+
+    // Show which tables have duplicates
+    Object.entries(errorsByTable).forEach(([tableName, errors]) => {
+      if (Array.isArray(errors) && errors.length > 0) {
+        Logger.generic(
+          `   ▸ ${tableName.toUpperCase()}: ${errors.length} duplicate records`
+        );
+      }
+    });
+
+    Logger.generic("");
+    Logger.suggestion("Solutions");
+    Logger.generic(
+      "   ▸ If this is intentional, you may need to clear existing data first"
+    );
+    Logger.generic(
+      "   ▸ If this is accidental, check that you haven't already submitted this data"
+    );
+    Logger.generic(
+      "   ▸ Use different/incremented ID values if submitting new data"
+    );
+    Logger.generic(
+      "   ▸ Consider using a different category or organization if appropriate"
+    );
+  }
+
+  /**
+   * Display error message for other validation issues
+   */
+  private displayGenericValidationErrors(
+    errorsByTable: Record<string, any[]>,
+    totalErrors: number
+  ): void {
+    const tableCount = Object.keys(errorsByTable).length;
+
+    Logger.errorString(
+      `Data validation failed with ${totalErrors} errors across ${tableCount} tables`
+    );
+    Logger.generic("");
+
+    // Group errors by type across all tables
+    const errorSummary = this.summarizeErrorTypes(errorsByTable);
+
+    Logger.suggestion("Error Summary");
+    Object.entries(errorSummary).forEach(([reason, count]) => {
+      const description = this.getErrorDescription(reason);
+      Logger.generic(`   ▸ ${description}: ${count} errors`);
+    });
+
+    Logger.generic("");
+
+    // Show affected tables
+    Logger.suggestion("Affected Tables");
+    Object.entries(errorsByTable).forEach(([tableName, errors]) => {
+      if (Array.isArray(errors) && errors.length > 0) {
+        Logger.generic(
+          `   ▸ ${tableName.toUpperCase()}: ${errors.length} errors`
+        );
+      }
+    });
+
+    Logger.generic("");
+    this.displayGenericSolutions(errorSummary);
+  }
+
+  /**
+   * Summarize error types across all tables
+   */
+  private summarizeErrorTypes(
+    errorsByTable: Record<string, any[]>
+  ): Record<string, number> {
+    const summary: Record<string, number> = {};
+
+    Object.values(errorsByTable)
+      .flat()
+      .forEach((error: any) => {
+        const reason = error?.reason || "UNKNOWN";
+        summary[reason] = (summary[reason] || 0) + 1;
+      });
+
+    return summary;
+  }
+
+  /**
+   * Get user-friendly description for error codes
+   */
+  private getErrorDescription(reason: string): string {
+    switch (reason) {
+      case "INVALID_BY_UNIQUE":
+        return "Duplicate values in unique fields";
+      case "INVALID_BY_MISSING_RELATION":
+        return "Missing references to related records";
+      case "INVALID_BY_REGEX":
+        return "Invalid format or pattern";
+      case "INVALID_BY_SCRIPT":
+        return "Custom validation failures";
+      default:
+        return reason;
+    }
+  }
+
+  /**
+   * Display solutions based on error types
+   */
+  private displayGenericSolutions(errorSummary: Record<string, number>): void {
+    Logger.suggestion("How to Fix");
+
+    Object.keys(errorSummary).forEach((reason) => {
+      switch (reason) {
+        case "INVALID_BY_UNIQUE":
+          Logger.generic("   ▸ Remove duplicate ID values from your CSV files");
+          Logger.generic("   ▸ Ensure each record has a unique identifier");
+          break;
+        case "INVALID_BY_MISSING_RELATION":
+          Logger.generic(
+            "   ▸ Verify foreign key values exist in referenced tables"
+          );
+          Logger.generic(
+            "   ▸ Check the order of file uploads (dependencies first)"
+          );
+          break;
+        case "INVALID_BY_REGEX":
+          Logger.generic(
+            "   ▸ Check data format requirements in the dictionary schema"
+          );
+          Logger.generic("   ▸ Fix values that don't match expected patterns");
+          break;
+        case "INVALID_BY_SCRIPT":
+          Logger.generic(
+            "   ▸ Review custom validation rules in the dictionary"
+          );
+          Logger.generic("   ▸ Ensure data meets business logic constraints");
+          break;
+      }
+    });
+
+    Logger.generic("   ▸ Fix the issues in your CSV files and resubmit");
+  }
+
+  /**
+   * Wait for submission validation with progress updates and enhanced error parsing
    */
   private async waitForValidation(
     submissionId: string,
@@ -383,7 +817,7 @@ export class LyricSubmissionService extends BaseService {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const response = await this.http.get<{ status?: string }>(
+        const response = await this.http.get<any>(
           `/submission/${submissionId}`
         );
 
@@ -391,10 +825,7 @@ export class LyricSubmissionService extends BaseService {
         if (!status) {
           throw ErrorFactory.connection(
             "Could not extract status from response",
-            {
-              response: response.data,
-              submissionId,
-            },
+            { response: response.data, submissionId },
             [
               "Check Lyric service response format",
               "Verify submission ID is valid",
@@ -409,15 +840,26 @@ export class LyricSubmissionService extends BaseService {
           Logger.success`Submission validation passed`;
           return status;
         } else if (status === "INVALID") {
+          // Parse and display detailed errors based on the response
+          this.parseAndDisplayLyricErrors(submissionId, response.data);
+
           throw ErrorFactory.validation(
-            "Submission validation failed",
+            "Data validation failed - see detailed errors above",
             {
               submissionId,
               status,
+              errorCount: response.data?.errors
+                ? Object.values(response.data.errors.inserts || {}).reduce(
+                    (sum: number, errors: any) =>
+                      sum + (Array.isArray(errors) ? errors.length : 0),
+                    0
+                  )
+                : 0,
             },
             [
-              `Errors detected in data submission`,
-              `See ${this.config.url}/submission/${submissionId} for details`,
+              "Fix the validation errors identified above",
+              `Complete error details: ${this.config.url}/submission/${submissionId}`,
+              "Correct your CSV data and resubmit",
             ]
           );
         }
@@ -435,7 +877,6 @@ export class LyricSubmissionService extends BaseService {
         }
 
         if (attempt === maxRetries) {
-          // If we're out of retries, rethrow with better error info
           const errorMessage =
             error instanceof Error ? error.message : String(error);
           throw ErrorFactory.connection(
