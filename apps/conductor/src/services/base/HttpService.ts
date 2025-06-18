@@ -75,7 +75,7 @@ export class HttpService {
     };
 
     const maxRetries = options.retries ?? this.config.retries ?? 3;
-    const retryDelay = this.config.retryDelay ?? 1000;
+    const retryDelay = this.config.retryDelay ?? 5000;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
