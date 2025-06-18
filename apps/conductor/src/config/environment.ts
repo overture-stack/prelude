@@ -156,7 +156,7 @@ export class Environment {
     return {
       ...baseConfig,
       timeout: this.defaults.timeouts.default,
-      retries: 3,
+      retries: 1,
       ...overrides,
     };
   }

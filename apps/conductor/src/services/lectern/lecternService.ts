@@ -1,8 +1,8 @@
-// src/services/lectern/LecternService.ts
+// src/services/lectern/LecternService.ts - Keep it simple, let HttpService handle errors
 import { BaseService } from "../base/baseService";
 import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import {
   LecternSchemaUploadParams,
   LecternUploadResponse,
@@ -37,33 +37,43 @@ export class LecternService extends BaseService {
       try {
         schemaData = JSON.parse(params.schemaContent);
       } catch (error) {
-        throw new ConductorError(
-          `Invalid schema format: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          ErrorCodes.INVALID_FILE,
-          error
+        throw ErrorFactory.parsing(
+          "Invalid schema format",
+          { originalError: error },
+          [
+            "Ensure schema file contains valid JSON",
+            "Check for syntax errors in the schema",
+            "Validate JSON structure",
+          ]
         );
       }
 
       // Basic schema validation
       if (!schemaData.name) {
-        throw new ConductorError(
+        throw ErrorFactory.validation(
           'Schema must have a "name" field',
-          ErrorCodes.VALIDATION_FAILED
+          { schemaData },
+          [
+            'Add a "name" field to your schema',
+            "Ensure the name is a non-empty string",
+          ]
         );
       }
 
       if (!schemaData.schemas || typeof schemaData.schemas !== "object") {
-        throw new ConductorError(
-          'Schema must have a "schema" field containing the JSON schema definition',
-          ErrorCodes.VALIDATION_FAILED
+        throw ErrorFactory.validation(
+          'Schema must have a "schemas" field',
+          { schemaData },
+          [
+            'Add a "schemas" field containing the schema definition',
+            "Ensure schemas field is an object",
+          ]
         );
       }
+      Logger.generic("");
+      Logger.info`Uploading schema: ${schemaData.name}`;
 
-      Logger.info(`Uploading schema: ${schemaData.name}`);
-
-      // Upload to Lectern
+      // Upload to Lectern - let HttpService handle HTTP errors
       const response = await this.http.post<LecternUploadResponse>(
         "/dictionaries",
         schemaData
@@ -71,13 +81,18 @@ export class LecternService extends BaseService {
 
       // Check for errors in response
       if (response.data?.error) {
-        throw new ConductorError(
-          `Lectern API error: ${response.data.error}`,
-          ErrorCodes.CONNECTION_ERROR
+        throw ErrorFactory.validation(
+          "Lectern API error",
+          { error: response.data.error },
+          [
+            `Server error: ${response.data.error}`,
+            "Check schema format and requirements",
+            "Verify Lectern service configuration",
+          ]
         );
       }
 
-      Logger.success(`Schema "${schemaData.name}" uploaded successfully`);
+      Logger.debug`Schema "${schemaData.name}" uploaded`;
 
       return response.data;
     } catch (error) {
@@ -129,7 +144,9 @@ export class LecternService extends BaseService {
 
       return dictionary || null;
     } catch (error) {
-      Logger.warn(`Could not find dictionary ${name} v${version}: ${error}`);
+      Logger.warnString(
+        `Could not find dictionary ${name} v${version}: ${error}`
+      );
       return null;
     }
   }
@@ -143,9 +160,7 @@ export class LecternService extends BaseService {
     centricEntity: string
   ): Promise<DictionaryValidationResult> {
     try {
-      Logger.info(
-        `Validating entity '${centricEntity}' in dictionary '${dictionaryName}' v${dictionaryVersion}`
-      );
+      Logger.info`Registering entity '${centricEntity}' in dictionary '${dictionaryName}' v${dictionaryVersion}`;
 
       // Find the dictionary
       const dictionary = await this.findDictionary(
@@ -170,9 +185,9 @@ export class LecternService extends BaseService {
       const entityExists = entities.includes(centricEntity);
 
       if (entityExists) {
-        Logger.info(`✓ Entity '${centricEntity}' found in dictionary`);
+        Logger.debug`Entity '${centricEntity}' found in dictionary`;
       } else {
-        Logger.warn(`⚠ Entity '${centricEntity}' not found in dictionary`);
+        Logger.debug`Entity '${centricEntity}' not found in dictionary`;
       }
 
       return {
@@ -216,7 +231,7 @@ export class LecternService extends BaseService {
       const dictionaries = await this.getDictionaries();
       return dictionaries.length > 0;
     } catch (error) {
-      Logger.warn(`Could not check for dictionaries: ${error}`);
+      Logger.warnString(`Could not check for dictionaries: ${error}`);
       return false;
     }
   }

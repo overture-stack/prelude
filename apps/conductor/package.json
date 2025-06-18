@@ -26,6 +26,7 @@
     "chalk": "^4.1.2",
     "commander": "^9.4.1",
     "csv-parse": "^5.3.3",
+    "form-data": "^4.0.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

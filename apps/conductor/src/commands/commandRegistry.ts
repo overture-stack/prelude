@@ -1,11 +1,12 @@
 // src/commands/CommandRegistry.ts
 /**
  * Simplified command registry to replace the complex factory pattern
- * Much cleaner than the current commandFactory.ts approach
+ * Updated to use error factory pattern for consistent error handling
  */
 
 import { Command } from "./baseCommand";
 import { Logger } from "../utils/logger";
+import { ErrorFactory } from "../utils/errors";
 
 // Import all command classes
 import { UploadCommand } from "./uploadCsvCommand";
@@ -124,13 +125,24 @@ export class CommandRegistry {
 
     if (!commandInfo) {
       const availableCommands = Array.from(this.commands.keys()).join(", ");
-      throw new Error(
-        `Unknown command: ${commandName}. Available commands: ${availableCommands}`
-      );
+      throw ErrorFactory.args(`Unknown command: ${commandName}`, [
+        `Available commands: ${availableCommands}`,
+        "Use 'conductor --help' to see all available commands",
+        "Check the command spelling and try again",
+      ]);
     }
 
-    Logger.debug(`Creating command: ${commandInfo.name}`);
-    return new commandInfo.constructor();
+    Logger.debug`Creating command: ${commandInfo.name}`;
+
+    try {
+      return new commandInfo.constructor();
+    } catch (error) {
+      throw ErrorFactory.args(`Failed to create command: ${commandName}`, [
+        "This appears to be an internal error",
+        "Try running with --debug for more information",
+        "Contact support if the issue persists",
+      ]);
+    }
   }
 
   /**
@@ -178,7 +190,7 @@ export class CommandRegistry {
     const categories = this.getCommandsByCategory();
 
     for (const [category, commands] of categories) {
-      Logger.section(category);
+      Logger.suggestion(category);
       for (const command of commands) {
         Logger.commandInfo(command.name, command.description);
       }
@@ -193,17 +205,17 @@ export class CommandRegistry {
     const commandInfo = this.getCommandInfo(commandName);
 
     if (!commandInfo) {
-      Logger.error(`Unknown command: ${commandName}`);
+      Logger.errorString(`Unknown command: ${commandName}`);
       this.displayHelp();
       return;
     }
 
     Logger.header(`Command: ${commandInfo.name}`);
-    Logger.info(commandInfo.description);
-    Logger.info(`Category: ${commandInfo.category}`);
+    Logger.infoString(commandInfo.description);
+    Logger.infoString(`Category: ${commandInfo.category}`);
 
     // You could extend this to show command-specific options
-    Logger.tip(
+    Logger.tipString(
       `Use 'conductor ${commandName} --help' for command-specific options`
     );
   }
@@ -218,7 +230,9 @@ export class CommandRegistry {
     constructor: CommandConstructor
   ): void {
     if (this.commands.has(name)) {
-      Logger.warn(`Command '${name}' is already registered. Overwriting.`);
+      Logger.warnString(
+        `Command '${name}' is already registered. Overwriting.`
+      );
     }
 
     this.commands.set(name, {
@@ -228,7 +242,7 @@ export class CommandRegistry {
       constructor,
     });
 
-    Logger.debug(`Registered command: ${name}`);
+    Logger.debug`Registered command: ${name}`;
   }
 
   /**
@@ -236,5 +250,66 @@ export class CommandRegistry {
    */
   static unregisterCommand(name: string): boolean {
     return this.commands.delete(name);
+  }
+
+  /**
+   * Validate that all registered commands are properly configured
+   */
+  static validateRegistry(): void {
+    const issues: string[] = [];
+
+    for (const [name, info] of this.commands) {
+      if (!info.name || info.name !== name) {
+        issues.push(`Command '${name}' has mismatched name property`);
+      }
+
+      if (!info.description) {
+        issues.push(`Command '${name}' is missing description`);
+      }
+
+      if (!info.category) {
+        issues.push(`Command '${name}' is missing category`);
+      }
+
+      if (!info.constructor) {
+        issues.push(`Command '${name}' is missing constructor`);
+      }
+    }
+
+    if (issues.length > 0) {
+      throw ErrorFactory.validation(
+        "Command registry validation failed",
+        { issues },
+        [
+          "Check command definitions in CommandRegistry",
+          "Ensure all commands have required properties",
+          "Fix the validation issues and try again",
+        ]
+      );
+    }
+
+    Logger.debug`Command registry validation passed (${this.commands.size} commands)`;
+  }
+
+  /**
+   * Get registry statistics
+   */
+  static getStats(): {
+    totalCommands: number;
+    categoryCounts: Record<string, number>;
+    categories: string[];
+  } {
+    const categories = this.getCommandsByCategory();
+    const categoryCounts: Record<string, number> = {};
+
+    for (const [category, commands] of categories) {
+      categoryCounts[category] = commands.length;
+    }
+
+    return {
+      totalCommands: this.commands.size,
+      categoryCounts,
+      categories: Array.from(categories.keys()),
+    };
   }
 }

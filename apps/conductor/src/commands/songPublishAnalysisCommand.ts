@@ -3,13 +3,13 @@ import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import chalk from "chalk";
-import { ConductorError, ErrorCodes } from "../utils/errors";
+import { ErrorFactory } from "../utils/errors";
 import { SongService } from "../services/song-score";
 import { SongPublishParams } from "../services/song-score/types";
 
 /**
  * Command for publishing analyses in SONG service
- * Refactored to use the new SongService
+ * Refactored to use the new SongService with error factory pattern
  */
 export class SongPublishAnalysisCommand extends Command {
   constructor() {
@@ -33,12 +33,18 @@ export class SongPublishAnalysisCommand extends Command {
       // Check service health
       const healthResult = await songService.checkHealth();
       if (!healthResult.healthy) {
-        throw new ConductorError(
-          `SONG service is not healthy: ${
-            healthResult.message || "Unknown error"
-          }`,
-          ErrorCodes.CONNECTION_ERROR,
-          { healthResult }
+        throw ErrorFactory.connection(
+          "SONG service is not healthy",
+          {
+            healthResult,
+            serviceUrl: serviceConfig.url,
+          },
+          [
+            "Check that SONG service is running",
+            `Verify the service URL: ${serviceConfig.url}`,
+            "Check network connectivity",
+            "Review service logs for errors",
+          ]
         );
       }
 
@@ -69,19 +75,21 @@ export class SongPublishAnalysisCommand extends Command {
     // Validate analysis ID
     const analysisId = this.getAnalysisId(options);
     if (!analysisId) {
-      throw new ConductorError(
-        "Analysis ID not specified. Use --analysis-id or set ANALYSIS_ID environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("Analysis ID not specified", [
+        "Use --analysis-id option to specify analysis ID",
+        "Set ANALYSIS_ID environment variable",
+        "Example: --analysis-id AN123456",
+      ]);
     }
 
     // Validate SONG URL
     const songUrl = this.getSongUrl(options);
     if (!songUrl) {
-      throw new ConductorError(
-        "SONG URL not specified. Use --song-url or set SONG_URL environment variable.",
-        ErrorCodes.INVALID_ARGS
-      );
+      throw ErrorFactory.args("SONG URL not specified", [
+        "Use --song-url option to specify SONG server URL",
+        "Set SONG_URL environment variable",
+        "Example: --song-url http://localhost:8080",
+      ]);
     }
   }
 
@@ -103,7 +111,7 @@ export class SongPublishAnalysisCommand extends Command {
     return {
       url: this.getSongUrl(options)!,
       timeout: 10000,
-      retries: 3,
+      retries: 1,
       authToken: options.authToken || process.env.AUTH_TOKEN || "123",
     };
   }
@@ -120,19 +128,19 @@ export class SongPublishAnalysisCommand extends Command {
    * Log publication information
    */
   private logPublicationInfo(params: SongPublishParams, url: string): void {
-    Logger.info(`${chalk.bold.cyan("Publishing Analysis in SONG:")}`);
-    Logger.info(
+    Logger.info`Publishing Analysis in Song`;
+    Logger.infoString(
       `URL: ${url}/studies/${params.studyId}/analysis/publish/${params.analysisId}`
     );
-    Logger.info(`Analysis ID: ${params.analysisId}`);
-    Logger.info(`Study ID: ${params.studyId}`);
+    Logger.infoString(`Analysis ID: ${params.analysisId}`);
+    Logger.infoString(`Study ID: ${params.studyId}`);
   }
 
   /**
    * Log successful publication
    */
   private logSuccess(result: any): void {
-    Logger.success("Analysis published successfully");
+    Logger.successString("Analysis published successfully");
     Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Analysis ID: ${result.analysisId}`));
     Logger.generic(chalk.gray(`    - Study ID: ${result.studyId}`));
@@ -144,35 +152,115 @@ export class SongPublishAnalysisCommand extends Command {
    * Handle execution errors with helpful user feedback
    */
   private handleExecutionError(error: unknown): CommandResult {
-    if (error instanceof ConductorError) {
-      // Add context-specific help for common errors
-      if (error.code === ErrorCodes.FILE_NOT_FOUND) {
-        Logger.tip(
-          "Make sure the analysis ID exists and belongs to the specified study"
-        );
-      } else if (error.code === ErrorCodes.CONNECTION_ERROR) {
-        Logger.info("\nConnection error. Check SONG service availability.");
-      }
-
-      if (error.details?.suggestion) {
-        Logger.tip(error.details.suggestion);
-      }
-
+    if (error instanceof Error && error.name === "ConductorError") {
+      const conductorError = error as any;
       return {
         success: false,
-        errorMessage: error.message,
-        errorCode: error.code,
-        details: error.details,
+        errorMessage: conductorError.message,
+        errorCode: conductorError.code,
+        details: conductorError.details,
       };
     }
 
-    // Handle unexpected errors
+    // Handle unexpected errors with categorization
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (
+      errorMessage.includes("ECONNREFUSED") ||
+      errorMessage.includes("ETIMEDOUT")
+    ) {
+      const connectionError = ErrorFactory.connection(
+        "Failed to connect to SONG service",
+        { originalError: error },
+        [
+          "Check that SONG service is running",
+          "Verify the service URL and port",
+          "Check network connectivity",
+          "Review firewall settings",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: connectionError.message,
+        errorCode: connectionError.code,
+        details: connectionError.details,
+      };
+    }
+
+    if (errorMessage.includes("401") || errorMessage.includes("403")) {
+      const authError = ErrorFactory.auth(
+        "Authentication failed with SONG service",
+        { originalError: error },
+        [
+          "Check authentication credentials",
+          "Verify API token is valid",
+          "Contact administrator for access",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: authError.message,
+        errorCode: authError.code,
+        details: authError.details,
+      };
+    }
+
+    if (errorMessage.includes("404") || errorMessage.includes("not found")) {
+      const notFoundError = ErrorFactory.validation(
+        "Analysis not found",
+        { originalError: error },
+        [
+          "Verify the analysis ID is correct",
+          "Check that the analysis exists in the specified study",
+          "Ensure the analysis was submitted successfully",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: notFoundError.message,
+        errorCode: notFoundError.code,
+        details: notFoundError.details,
+      };
+    }
+
+    if (errorMessage.includes("400") || errorMessage.includes("validation")) {
+      const validationError = ErrorFactory.validation(
+        "Analysis publication validation failed",
+        { originalError: error },
+        [
+          "Check that all files were uploaded successfully",
+          "Verify the analysis is in a publishable state",
+          "Review analysis validation requirements",
+        ]
+      );
+
+      return {
+        success: false,
+        errorMessage: validationError.message,
+        errorCode: validationError.code,
+        details: validationError.details,
+      };
+    }
+
+    // Generic fallback
+    const genericError = ErrorFactory.connection(
+      "Analysis publication failed",
+      { originalError: error },
+      [
+        "Check SONG service availability",
+        "Verify analysis and study parameters",
+        "Use --debug for detailed error information",
+      ]
+    );
+
     return {
       success: false,
-      errorMessage: `Analysis publication failed: ${errorMessage}`,
-      errorCode: ErrorCodes.CONNECTION_ERROR,
-      details: { originalError: error },
+      errorMessage: genericError.message,
+      errorCode: genericError.code,
+      details: genericError.details,
     };
   }
 }

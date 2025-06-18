@@ -2,7 +2,7 @@
 import { BaseService } from "../base/baseService";
 import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
-import { ConductorError, ErrorCodes } from "../../utils/errors";
+import { ErrorFactory } from "../../utils/errors";
 import {
   DictionaryRegistrationParams,
   LyricRegistrationResponse,
@@ -36,9 +36,7 @@ export class LyricRegistrationService extends BaseService {
         "defaultCentricEntity",
       ]);
 
-      Logger.info(
-        `Registering dictionary: ${params.dictionaryName} v${params.dictionaryVersion}`
-      );
+      Logger.debug`Registering dictionary ${params.dictionaryName} version ${params.dictionaryVersion}`;
 
       // Prepare form data
       const formData = new URLSearchParams();
@@ -59,13 +57,22 @@ export class LyricRegistrationService extends BaseService {
 
       // Check for API-level errors in response
       if (response.data?.error) {
-        throw new ConductorError(
-          `Lyric API error: ${response.data.error}`,
-          ErrorCodes.CONNECTION_ERROR
+        throw ErrorFactory.validation(
+          "Dictionary registration failed",
+          {
+            error: response.data.error,
+            params,
+            response: response.data,
+          },
+          [
+            `Server error: ${response.data.error}`,
+            "Check dictionary parameters and format",
+            "Verify the category exists in Lyric",
+          ]
         );
       }
 
-      Logger.success("Dictionary registered successfully");
+      Logger.debug`Dictionary registered successfully`;
 
       return {
         success: true,
@@ -88,12 +95,10 @@ export class LyricRegistrationService extends BaseService {
     try {
       // This would need to be implemented based on Lyric's API
       // For now, returning false as a placeholder
-      Logger.debug(
-        `Checking if dictionary exists: ${params.dictionaryName} v${params.dictionaryVersion}`
-      );
+      Logger.debug`Checking if dictionary exists: ${params.dictionaryName} v${params.dictionaryVersion}`;
       return false;
     } catch (error) {
-      Logger.warn(`Could not check dictionary existence: ${error}`);
+      Logger.warnString(`Could not check dictionary existence: ${error}`);
       return false;
     }
   }

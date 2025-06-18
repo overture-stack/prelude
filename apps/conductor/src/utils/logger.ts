@@ -1,7 +1,8 @@
-// src/utils/logger.ts - Remove unused exports
+// src/utils/logger.ts - Enhanced logger with standardized template literal usage
 import chalk from "chalk";
 
-enum LogLevel {
+// Make LogLevel public for use in other modules
+export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   SUCCESS = 2,
@@ -9,7 +10,7 @@ enum LogLevel {
   ERROR = 4,
   TIP = 5,
   GENERIC = 6,
-  SECTION = 7,
+  SUGGESTION = 7,
   INPUT = 8,
 }
 
@@ -18,6 +19,52 @@ interface LoggerConfig {
   debug: boolean;
 }
 
+// Centralized configuration for icons and colors
+const LOG_CONFIG = {
+  icons: {
+    [LogLevel.DEBUG]: "🔍",
+    [LogLevel.INFO]: "❯",
+    [LogLevel.SUCCESS]: "✔",
+    [LogLevel.WARN]: "⚠",
+    [LogLevel.ERROR]: "✖",
+    [LogLevel.TIP]: "▸",
+    [LogLevel.GENERIC]: "▸",
+    [LogLevel.SUGGESTION]: "🔍",
+    [LogLevel.INPUT]: "❔",
+  } as const,
+
+  colors: {
+    [LogLevel.DEBUG]: chalk.bold.green,
+    [LogLevel.INFO]: chalk.bold.cyan,
+    [LogLevel.SUCCESS]: chalk.bold.green,
+    [LogLevel.WARN]: chalk.bold.yellow,
+    [LogLevel.ERROR]: chalk.bold.red,
+    [LogLevel.TIP]: chalk.bold.white,
+    [LogLevel.GENERIC]: chalk.white,
+    [LogLevel.SUGGESTION]: chalk.bold.cyan,
+    [LogLevel.INPUT]: chalk.bold.yellow,
+  } as const,
+
+  labels: {
+    [LogLevel.DEBUG]: "Debug",
+    [LogLevel.INFO]: "Info",
+    [LogLevel.SUCCESS]: "Success",
+    [LogLevel.WARN]: "Warn",
+    [LogLevel.ERROR]: "Error",
+    [LogLevel.TIP]: "",
+    [LogLevel.GENERIC]: "",
+    [LogLevel.SUGGESTION]: "",
+    [LogLevel.INPUT]: "User Input",
+  } as const,
+
+  needsNewLine: new Set([
+    LogLevel.ERROR,
+    LogLevel.INPUT,
+    LogLevel.WARN,
+    LogLevel.SUCCESS,
+  ]),
+} as const;
+
 export class Logger {
   private static config: LoggerConfig = {
     level: LogLevel.INFO,
@@ -25,61 +72,26 @@ export class Logger {
   };
 
   private static formatMessage(message: string, level: LogLevel): string {
-    const icons = {
-      [LogLevel.DEBUG]: "🔍",
-      [LogLevel.INFO]: "▸",
-      [LogLevel.SUCCESS]: "✓",
-      [LogLevel.WARN]: "⚠",
-      [LogLevel.ERROR]: "✗",
-      [LogLevel.TIP]: "\n💡",
-      [LogLevel.GENERIC]: "",
-      [LogLevel.SECTION]: "",
-      [LogLevel.INPUT]: "❔",
-    };
+    const { icons, colors, labels, needsNewLine } = LOG_CONFIG;
 
-    const colors: Record<LogLevel, (text: string) => string> = {
-      [LogLevel.DEBUG]: chalk.bold.gray,
-      [LogLevel.INFO]: chalk.bold.cyan,
-      [LogLevel.SUCCESS]: chalk.bold.green,
-      [LogLevel.WARN]: chalk.bold.yellow,
-      [LogLevel.ERROR]: chalk.bold.red,
-      [LogLevel.TIP]: chalk.bold.yellow,
-      [LogLevel.GENERIC]: chalk.white,
-      [LogLevel.SECTION]: chalk.bold.green,
-      [LogLevel.INPUT]: chalk.bold.yellow,
-    };
-
-    const levelLabels = {
-      [LogLevel.DEBUG]: "Debug",
-      [LogLevel.INFO]: "Info",
-      [LogLevel.SUCCESS]: "Success",
-      [LogLevel.WARN]: "Warn",
-      [LogLevel.ERROR]: "Error",
-      [LogLevel.TIP]: "Tip",
-      [LogLevel.GENERIC]: "",
-      [LogLevel.SECTION]: "",
-      [LogLevel.INPUT]: "User Input",
-    };
-
-    const needsNewLine = [
-      LogLevel.ERROR,
-      LogLevel.INPUT,
-      LogLevel.WARN,
-      LogLevel.SUCCESS,
-    ].includes(level);
-
-    const prefix = needsNewLine ? "\n" : "";
+    const prefix = needsNewLine.has(level) ? "\n" : "";
 
     if (level === LogLevel.GENERIC) {
       return colors[level](message);
     }
 
-    if (level === LogLevel.SECTION) {
-      return `${prefix}\n${colors[level](`\n${icons[level]} ${message}\n`)}`;
+    if (level === LogLevel.SUGGESTION) {
+      return `${prefix}\n${colors[level](`${icons[level]} ${message}`)}`;
+    }
+
+    if (level === LogLevel.TIP) {
+      return `${prefix}${colors[level](
+        ` ${icons[level]} ${labels[level]} `
+      )}${message}`;
     }
 
     return `${prefix}${colors[level](
-      `${icons[level]} ${levelLabels[level]} `
+      `${icons[level]} ${labels[level]} `
     )}${message}`;
   }
 
@@ -90,11 +102,12 @@ export class Logger {
   static enableDebug(): void {
     this.config.debug = true;
     this.config.level = LogLevel.DEBUG;
-    console.log(chalk.gray("🔍 **Debug profile enabled**"));
+    console.log(chalk.bold.green("\n🔍 Debug mode enabled\n"));
   }
 
   /**
-   * Tagged template helper that automatically bolds interpolated values.
+   * Formats template literal strings with highlighted variables
+   * Standardized approach for all logging methods
    */
   static formatVariables(
     strings: TemplateStringsArray,
@@ -108,20 +121,34 @@ export class Logger {
   }
 
   /**
-   * Core log function that accepts either a tagged template literal or a plain string.
+   * Internal logging method with standardized template literal support
    */
   private static log(
     level: LogLevel,
-    strings: TemplateStringsArray | string,
+    strings: TemplateStringsArray,
     ...values: any[]
   ): void {
     if (this.config.level > level && level !== LogLevel.DEBUG) return;
     if (!this.config.debug && level === LogLevel.DEBUG) return;
 
-    const message =
-      typeof strings === "string"
-        ? strings
-        : this.formatVariables(strings, ...values);
+    const message = this.formatVariables(strings, ...values);
+    const formattedMessage = this.formatMessage(message, level);
+
+    if (level === LogLevel.WARN) {
+      console.warn(formattedMessage);
+    } else if (level === LogLevel.ERROR) {
+      console.error(formattedMessage);
+    } else {
+      console.log(formattedMessage);
+    }
+  }
+
+  /**
+   * Internal logging method for string arguments (backward compatibility)
+   */
+  private static logString(level: LogLevel, message: string): void {
+    if (this.config.level > level && level !== LogLevel.DEBUG) return;
+    if (!this.config.debug && level === LogLevel.DEBUG) return;
 
     const formattedMessage = this.formatMessage(message, level);
 
@@ -134,33 +161,57 @@ export class Logger {
     }
   }
 
-  static debug(strings: TemplateStringsArray | string, ...values: any[]): void {
+  // Template literal methods (preferred)
+  static debug(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.DEBUG, strings, ...values);
   }
 
-  static info(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static info(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.INFO, strings, ...values);
   }
 
-  static success(
-    strings: TemplateStringsArray | string,
-    ...values: any[]
-  ): void {
+  static success(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.SUCCESS, strings, ...values);
   }
 
-  static warn(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static warn(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.WARN, strings, ...values);
   }
 
-  static error(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static error(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.ERROR, strings, ...values);
   }
 
-  static tip(strings: TemplateStringsArray | string, ...values: any[]): void {
+  static tip(strings: TemplateStringsArray, ...values: any[]): void {
     this.log(LogLevel.TIP, strings, ...values);
   }
 
+  // String-based methods (for error factory and backward compatibility)
+  static debugString(message: string): void {
+    this.logString(LogLevel.DEBUG, message);
+  }
+
+  static infoString(message: string): void {
+    this.logString(LogLevel.INFO, message);
+  }
+
+  static successString(message: string): void {
+    this.logString(LogLevel.SUCCESS, message);
+  }
+
+  static warnString(message: string): void {
+    this.logString(LogLevel.WARN, message);
+  }
+
+  static errorString(message: string): void {
+    this.logString(LogLevel.ERROR, message);
+  }
+
+  static tipString(message: string): void {
+    this.logString(LogLevel.TIP, message);
+  }
+
+  // Special purpose methods
   static generic(message: string): void {
     console.log(this.formatMessage(message, LogLevel.GENERIC));
   }
@@ -169,8 +220,8 @@ export class Logger {
     return this.formatMessage(message, LogLevel.INPUT);
   }
 
-  static section(text: string): void {
-    console.log(this.formatMessage(text, LogLevel.SECTION));
+  static suggestion(text: string): void {
+    console.log(this.formatMessage(text, LogLevel.SUGGESTION));
   }
 
   static header(text: string): void {
@@ -184,6 +235,7 @@ export class Logger {
     console.log`${chalk.bold.blue(command)}: ${description}`;
   }
 
+  // Enhanced default value methods
   static defaultValueInfo(message: string, overrideCommand: string): void {
     if (this.config.level <= LogLevel.INFO) {
       console.log(this.formatMessage(message, LogLevel.INFO));
@@ -198,6 +250,7 @@ export class Logger {
     }
   }
 
+  // Debug object logging
   static debugObject(label: string, obj: any): void {
     if (this.config.debug) {
       console.log(chalk.gray`🔍 ${label}:`);
@@ -213,6 +266,7 @@ export class Logger {
     }
   }
 
+  // Timing utility
   static timing(label: string, timeMs: number): void {
     const formattedTime =
       timeMs < 1000
@@ -222,6 +276,7 @@ export class Logger {
     console.log(chalk.gray`⏱ ${label}: ${formattedTime}`);
   }
 
+  // File list utilities (updated names for consistency)
   static warnfileList(title: string, files: string[]): void {
     if (files.length === 0) return;
     Logger.warn`${title}:`;
@@ -238,8 +293,16 @@ export class Logger {
     });
   }
 
+  static errorFileList(title: string, files: string[]): void {
+    if (files.length === 0) return;
+    Logger.errorString(`${title}:`);
+    files.forEach((file) => {
+      console.log(chalk.gray`  - ${file}`);
+    });
+  }
+
   static showReferenceCommands(): void {
-    this.header("Command Examples");
+    this.header("Available Commands");
 
     // Common options displayed at the top
     this.generic(chalk.bold.yellow("Common Options (all commands):"));
@@ -402,8 +465,8 @@ export class Logger {
     );
     this.generic("");
 
-    // SONG Upload commands
-    this.generic(chalk.bold.magenta("SONG Schema Upload Commands:"));
+    // Song Upload commands
+    this.generic(chalk.bold.magenta("Song Schema Upload Commands:"));
     this.generic(chalk.white("conductor songUploadSchema -s schema.json"));
     this.generic(chalk.gray("Options:"));
     this.generic(
@@ -413,7 +476,7 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
       )
     );
     this.generic(
@@ -432,15 +495,15 @@ export class Logger {
     );
     this.generic("");
 
-    // SONG Create Study commands
-    this.generic(chalk.bold.magenta("SONG Create Study Commands:"));
+    // Song Create Study commands
+    this.generic(chalk.bold.magenta("Song Create Study Commands:"));
     this.generic(
       chalk.white("conductor songCreateStudy -i study-id -n study-name")
     );
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
       )
     );
     this.generic(
