@@ -162,7 +162,7 @@ export class LyricSubmissionService extends BaseService {
       params.files.forEach((file) => {
         Logger.generic(`  ▸ ${path.basename(file)}`);
       });
-
+      Logger.generic("");
       // Create FormData for file upload - use Node.js FormData implementation
       const formData = new FormData();
 
@@ -663,8 +663,6 @@ export class LyricSubmissionService extends BaseService {
     Logger.errorString(
       `Duplicate submission detected - ${totalErrors} duplicate records across ${tableCount} tables`
     );
-    Logger.generic("");
-
     Logger.suggestion("This appears to be a resubmission of existing data");
 
     // Show which tables have duplicates
@@ -675,21 +673,6 @@ export class LyricSubmissionService extends BaseService {
         );
       }
     });
-
-    Logger.generic("");
-    Logger.suggestion("Solutions");
-    Logger.generic(
-      "   ▸ If this is intentional, you may need to clear existing data first"
-    );
-    Logger.generic(
-      "   ▸ If this is accidental, check that you haven't already submitted this data"
-    );
-    Logger.generic(
-      "   ▸ Use different/incremented ID values if submitting new data"
-    );
-    Logger.generic(
-      "   ▸ Consider using a different category or organization if appropriate"
-    );
   }
 
   /**
@@ -813,7 +796,7 @@ export class LyricSubmissionService extends BaseService {
     maxRetries: number,
     retryDelay: number
   ): Promise<string> {
-    Logger.info`Waiting for submission Id ${submissionId} validation`;
+    Logger.debug`Waiting for submission Id ${submissionId} validation`;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
@@ -837,7 +820,7 @@ export class LyricSubmissionService extends BaseService {
         Logger.info`Validation check ${attempt}/${maxRetries}: ${status}`;
 
         if (status === "VALID") {
-          Logger.success`Submission validation passed`;
+          Logger.debug`Submission validation passed`;
           return status;
         } else if (status === "INVALID") {
           // Parse and display detailed errors based on the response
@@ -866,9 +849,7 @@ export class LyricSubmissionService extends BaseService {
 
         // Still processing, wait before next check
         if (attempt < maxRetries) {
-          Logger.info`Waiting ${
-            retryDelay / 1000
-          } seconds before next check...`;
+          Logger.info`Waiting ${retryDelay / 1000} seconds before next check`;
           await this.delay(retryDelay);
         }
       } catch (error) {
@@ -922,7 +903,7 @@ export class LyricSubmissionService extends BaseService {
     categoryId: string,
     submissionId: string
   ): Promise<void> {
-    Logger.info`Committing submission: ${submissionId}`;
+    Logger.debug`Committing submission: ${submissionId}`;
 
     try {
       // Send empty object instead of null
@@ -931,7 +912,7 @@ export class LyricSubmissionService extends BaseService {
         {}
       );
 
-      Logger.success`Submission committed successfully`;
+      Logger.debug`Submission committed successfully`;
     } catch (error) {
       // Enhanced error handling for commit failures
       const errorMessage =

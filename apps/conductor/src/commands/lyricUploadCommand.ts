@@ -301,13 +301,11 @@ export class LyricUploadCommand extends Command {
    */
   private logSuccess(result: any): void {
     Logger.successString("Data upload complete");
-    Logger.generic("");
     Logger.generic(chalk.gray(`    - Submission ID: ${result.submissionId}`));
     Logger.generic(chalk.gray(`    - Status: ${result.status}`));
     Logger.generic(
       chalk.gray(`    - Files Submitted: ${result.filesSubmitted.join(", ")}`)
     );
-    Logger.generic("");
   }
 
   /**
