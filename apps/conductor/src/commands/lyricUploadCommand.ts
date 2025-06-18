@@ -287,7 +287,7 @@ export class LyricUploadCommand extends Command {
     params: DataSubmissionParams,
     serviceUrl: string
   ): void {
-    Logger.info`Uploading ${params.dataDirectory}`;
+    Logger.debug`Uploading ${params.dataDirectory}`;
     Logger.debug`Lyric URL: ${serviceUrl}`;
     Logger.debug`Data Directory: ${params.dataDirectory}`;
     Logger.debug`Category ID: ${params.categoryId}`;

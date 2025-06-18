@@ -135,10 +135,14 @@ export class LyricSubmissionService extends BaseService {
       ]);
     }
 
+    // Log the files found in a nice format
     Logger.debug`Found ${allFiles.length} valid CSV files`;
-    allFiles.forEach((file) =>
-      Logger.debugString(`  - ${path.basename(file)}`)
-    );
+    Logger.debug`Files found in ${dataDirectory}:`;
+    allFiles.forEach((file) => {
+      const stats = fs.statSync(file);
+      const sizeKB = Math.round((stats.size / 1024) * 10) / 10;
+      Logger.debug`  - ${path.basename(file)} (${sizeKB} KB)`;
+    });
 
     return allFiles;
   }
@@ -152,7 +156,13 @@ export class LyricSubmissionService extends BaseService {
     files: string[];
   }): Promise<{ submissionId: string }> {
     try {
-      Logger.info`Submitting ${params.files.length} files to Lyric...`;
+      Logger.info`Submitting ${params.files.length} files to Lyric:`;
+
+      // List the files being submitted
+      params.files.forEach((file) => {
+        Logger.generic(`  ▸ ${path.basename(file)}`);
+      });
+      Logger.generic("");
 
       // Create FormData for file upload - use Node.js FormData implementation
       const formData = new FormData();
@@ -200,7 +210,7 @@ export class LyricSubmissionService extends BaseService {
         );
       }
 
-      Logger.success`Submission created with ID: ${submissionId}`;
+      Logger.debug`Submission created with ID: ${submissionId}`;
       return { submissionId: submissionId.toString() };
     } catch (error) {
       // Enhanced error handling for submission failures
@@ -237,6 +247,7 @@ export class LyricSubmissionService extends BaseService {
                   `   ▸ ID: ${cat.id} - Name: ${cat.name || "Unnamed"}`
                 );
               });
+              Logger.generic("");
 
               // Create error but mark it as already logged to prevent duplicate messages
               const error = ErrorFactory.validation(
@@ -368,10 +379,7 @@ export class LyricSubmissionService extends BaseService {
     maxRetries: number,
     retryDelay: number
   ): Promise<string> {
-    Logger.info`Waiting for submission ${submissionId} validation...`;
-    Logger.infoString(
-      "This may take a few minutes depending on file size and complexity."
-    );
+    Logger.info`Waiting for submission Id ${submissionId} validation`;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
@@ -408,10 +416,8 @@ export class LyricSubmissionService extends BaseService {
               status,
             },
             [
-              "Review data format and structure",
-              "Check validation error details",
-              `Visit ${this.config.url}/submission/${submissionId} for details`,
-              "Verify CSV files meet schema requirements",
+              `Errors detected in data submission`,
+              `See ${this.config.url}/submission/${submissionId} for details`,
             ]
           );
         }
