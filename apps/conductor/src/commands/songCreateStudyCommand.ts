@@ -98,9 +98,8 @@ export class SongCreateStudyCommand extends Command {
   private extractStudyParams(options: any): SongStudyCreateParams {
     return {
       studyId: options.studyId || process.env.STUDY_ID || "demo",
-      name: options.studyName || process.env.STUDY_NAME || "string",
-      organization:
-        options.organization || process.env.ORGANIZATION || "string",
+      name: options.studyName || process.env.STUDY_NAME || "demo",
+      organization: options.organization || process.env.ORGANIZATION || "OICR",
       description: options.description || process.env.DESCRIPTION || "string",
       force: options.force || false,
     };
@@ -122,24 +121,21 @@ export class SongCreateStudyCommand extends Command {
    * Log creation information
    */
   private logCreationInfo(params: SongStudyCreateParams, url: string): void {
-    Logger.info`${chalk.bold.cyan("Creating Study in SONG:")}`;
-    Logger.infoString(`URL: ${url}/studies/${params.studyId}/`);
-    Logger.infoString(`Study ID: ${params.studyId}`);
-    Logger.infoString(`Study Name: ${params.name}`);
-    Logger.infoString(`Organization: ${params.organization}`);
+    Logger.generic("");
+    Logger.info`Creating Study: ${params.name}`;
+    Logger.debug`URL: ${url}/studies/${params.studyId}/`;
+    Logger.debug`Study ID: ${params.studyId}`;
+    Logger.debug`Study Name: ${params.name}`;
+    Logger.debug`Organization: ${params.organization}`;
   }
 
   /**
    * Log successful creation
    */
   private logSuccess(result: any): void {
-    Logger.successString("Study created successfully");
-    Logger.generic(" ");
+    Logger.successString(`"${result.name} study created successfully"`);
     Logger.generic(chalk.gray(`    - Study ID: ${result.studyId}`));
-    Logger.generic(chalk.gray(`    - Study Name: ${result.name}`));
     Logger.generic(chalk.gray(`    - Organization: ${result.organization}`));
-    Logger.generic(chalk.gray(`    - Status: ${result.status}`));
-    Logger.generic(" ");
   }
 
   /**

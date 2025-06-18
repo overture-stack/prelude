@@ -258,7 +258,7 @@ export class LecternUploadCommand extends Command {
    * Log upload information
    */
   private logUploadInfo(schemaFile: string, serviceUrl: string): void {
-    Logger.debug`${chalk.bold.cyan("Uploading Schema to Lectern:")}`;
+    Logger.debug`Uploading Schema to Lectern:`;
     Logger.debug`URL: ${serviceUrl}/dictionaries`;
     Logger.debug`Schema File: ${schemaFile}`;
   }

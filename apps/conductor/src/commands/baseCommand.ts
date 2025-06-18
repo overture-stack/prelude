@@ -87,29 +87,61 @@ export abstract class Command {
       } else {
         Logger.debug`${this.name} command failed after ${executionTime.toFixed(
           2
-        )}s: ${result.errorMessage}`;
+        )}s: ${result.errorMessage || "Unknown error"}`;
+
+        // If the command returned an error but didn't log it, log it here
+        if (
+          result.errorMessage &&
+          !result.errorMessage.includes("already logged")
+        ) {
+          Logger.errorString(result.errorMessage);
+
+          // Check for suggestions in the result details
+          if (result.details?.suggestions) {
+            Logger.suggestion("Suggestions");
+            result.details.suggestions.forEach((suggestion: string) => {
+              Logger.tipString(suggestion);
+            });
+          }
+        }
       }
 
       return result;
     } catch (error: unknown) {
       Logger.debug`ERROR IN ${this.name} COMMAND: ${error}`;
 
-      // SINGLE POINT OF ERROR LOGGING - Only log here!
+      // IMPROVED ERROR LOGGING: More detailed handling with better visibility
       if (error instanceof Error && error.name === "ConductorError") {
         const conductorError = error as any;
 
-        // Log the error message once
-        Logger.errorString(conductorError.message);
+        // Check if this error was already logged
+        const alreadyLogged =
+          conductorError.alreadyLogged ||
+          (conductorError.details && conductorError.details.alreadyLogged);
 
-        // Display suggestions if available
-        if (
-          conductorError.suggestions &&
-          conductorError.suggestions.length > 0
-        ) {
-          Logger.suggestion("Suggestions");
-          conductorError.suggestions.forEach((suggestion: string) => {
-            Logger.tipString(suggestion);
-          });
+        if (!alreadyLogged) {
+          // Log the error message once with proper formatting
+          Logger.errorString(conductorError.message);
+
+          // Display suggestions if available
+          if (
+            conductorError.suggestions &&
+            conductorError.suggestions.length > 0
+          ) {
+            Logger.suggestion("Suggestions");
+            conductorError.suggestions.forEach((suggestion: string) => {
+              Logger.tipString(suggestion);
+            });
+          }
+        }
+
+        // Display additional details in debug mode
+        if (cliOutput.debug && conductorError.details) {
+          Logger.debug`Error details: ${JSON.stringify(
+            conductorError.details,
+            null,
+            2
+          )}`;
         }
 
         return {
@@ -120,9 +152,13 @@ export abstract class Command {
         };
       }
 
-      // For unexpected errors, wrap them in a generic error
+      // For unexpected errors, improve error details and visibility
       const errorMessage =
         error instanceof Error ? error.message : String(error);
+
+      // ALWAYS ensure the error is visible to the user
+      Logger.errorString(`Command execution failed: ${errorMessage}`);
+
       const wrappedError = ErrorFactory.args(
         `Command execution failed: ${errorMessage}`,
         [
@@ -132,13 +168,15 @@ export abstract class Command {
         ]
       );
 
-      // Log the wrapped error once
-      Logger.errorString(wrappedError.message);
-      if (wrappedError.suggestions && wrappedError.suggestions.length > 0) {
-        Logger.suggestion("Suggestions");
-        wrappedError.suggestions.forEach((suggestion: string) => {
-          Logger.tipString(suggestion);
-        });
+      // Log the suggestions once - don't duplicate
+      Logger.suggestion("Suggestions");
+      wrappedError.suggestions?.forEach((suggestion: string) => {
+        Logger.tipString(suggestion);
+      });
+
+      // In debug mode, show stack trace
+      if (cliOutput.debug && error instanceof Error && error.stack) {
+        Logger.debug`Stack trace: ${error.stack}`;
       }
 
       return {
@@ -146,7 +184,7 @@ export abstract class Command {
         errorMessage: wrappedError.message,
         errorCode: wrappedError.code,
         details: {
-          originalError: error,
+          originalError: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,
         },
       };
@@ -171,7 +209,9 @@ export abstract class Command {
    * @throws ConductorError if validation fails
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
-    if (!cliOutput.filePaths?.length) {
+    // Only validate file paths if the command requires them
+    // This allows commands to operate without files if needed
+    if (!cliOutput.filePaths?.length && this.requiresInputFiles()) {
       throw ErrorFactory.args("No input files provided", [
         "Use -f or --file to specify input files",
         "Example: -f data.csv metadata.csv",
@@ -179,37 +219,47 @@ export abstract class Command {
       ]);
     }
 
-    // Validate each input file exists
-    for (const filePath of cliOutput.filePaths) {
-      if (!fs.existsSync(filePath)) {
-        throw ErrorFactory.file("Input file not found", filePath, [
-          "Check the file path spelling",
-          "Ensure the file exists in the specified location",
-          "Verify you have access to the file",
-        ]);
-      }
+    // Validate each input file exists if file paths are provided
+    if (cliOutput.filePaths?.length) {
+      for (const filePath of cliOutput.filePaths) {
+        if (!fs.existsSync(filePath)) {
+          throw ErrorFactory.file("Input file not found", filePath, [
+            "Check the file path spelling",
+            "Ensure the file exists in the specified location",
+            "Verify you have access to the file",
+          ]);
+        }
 
-      // Check if file is readable
-      try {
-        fs.accessSync(filePath, fs.constants.R_OK);
-      } catch (error) {
-        throw ErrorFactory.file("File is not readable", filePath, [
-          "Check file permissions",
-          "Ensure you have read access to the file",
-          "Try running with appropriate privileges",
-        ]);
-      }
+        // Check if file is readable
+        try {
+          fs.accessSync(filePath, fs.constants.R_OK);
+        } catch (error) {
+          throw ErrorFactory.file("File is not readable", filePath, [
+            "Check file permissions",
+            "Ensure you have read access to the file",
+            "Try running with appropriate privileges",
+          ]);
+        }
 
-      // Check if file has content
-      const stats = fs.statSync(filePath);
-      if (stats.size === 0) {
-        throw ErrorFactory.invalidFile("File is empty", filePath, [
-          "Ensure the file contains data",
-          "Check if the file was created properly",
-          "Verify the file wasn't truncated during transfer",
-        ]);
+        // Check if file has content
+        const stats = fs.statSync(filePath);
+        if (stats.size === 0) {
+          throw ErrorFactory.invalidFile("File is empty", filePath, [
+            "Ensure the file contains data",
+            "Check if the file was created properly",
+            "Verify the file wasn't truncated during transfer",
+          ]);
+        }
       }
     }
+  }
+
+  /**
+   * Override this method in derived classes that don't require input files
+   * Default is true for backward compatibility
+   */
+  protected requiresInputFiles(): boolean {
+    return true;
   }
 
   /**

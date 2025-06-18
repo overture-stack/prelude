@@ -465,8 +465,8 @@ export class Logger {
     );
     this.generic("");
 
-    // SONG Upload commands
-    this.generic(chalk.bold.magenta("SONG Schema Upload Commands:"));
+    // Song Upload commands
+    this.generic(chalk.bold.magenta("Song Schema Upload Commands:"));
     this.generic(chalk.white("conductor songUploadSchema -s schema.json"));
     this.generic(chalk.gray("Options:"));
     this.generic(
@@ -476,7 +476,7 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
       )
     );
     this.generic(
@@ -495,15 +495,15 @@ export class Logger {
     );
     this.generic("");
 
-    // SONG Create Study commands
-    this.generic(chalk.bold.magenta("SONG Create Study Commands:"));
+    // Song Create Study commands
+    this.generic(chalk.bold.magenta("Song Create Study Commands:"));
     this.generic(
       chalk.white("conductor songCreateStudy -i study-id -n study-name")
     );
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray(
-        "-u, --song-url <url>      SONG server URL (default: http://localhost:8080)"
+        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
       )
     );
     this.generic(

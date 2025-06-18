@@ -67,7 +67,7 @@ export class SongScoreService extends BaseService {
       Logger.info`Starting SONG/Score workflow for study: ${params.studyId}`;
 
       // Step 1: Submit analysis to SONG
-      Logger.infoString(`Step 1: Submitting analysis to SONG`);
+      Logger.infoString(`Submitting analysis to SONG`);
       const analysisResponse = await this.songService.submitAnalysis({
         analysisContent: params.analysisContent,
         studyId: params.studyId,
@@ -79,9 +79,7 @@ export class SongScoreService extends BaseService {
       Logger.success`Analysis submitted with ID: ${analysisId}`;
 
       // Step 2: Generate manifest and upload files to Score
-      Logger.infoString(
-        `Step 2: Generating manifest and uploading files to Score`
-      );
+      Logger.infoString(`Generating manifest and uploading files to Score`);
       await this.scoreService.uploadWithManifest({
         analysisId,
         dataDir: params.dataDir,
@@ -94,7 +92,7 @@ export class SongScoreService extends BaseService {
       Logger.success`Files uploaded successfully to Score`;
 
       // Step 3: Publish analysis in SONG
-      Logger.infoString(`Step 3: Publishing analysis in SONG`);
+      Logger.infoString(`Publishing analysis in Song`);
       await this.songService.publishAnalysis({
         analysisId,
         studyId: params.studyId,

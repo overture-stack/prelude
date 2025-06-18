@@ -220,12 +220,12 @@ export class SongSubmitAnalysisCommand extends Command {
     songUrl: string,
     scoreUrl?: string
   ): void {
-    Logger.info`${chalk.bold.cyan("SONG/Score Analysis Workflow:")}`;
-    Logger.infoString(`SONG URL: ${songUrl}`);
-    Logger.infoString(`Score URL: ${scoreUrl || "http://localhost:8087"}`);
-    Logger.infoString(`Study ID: ${params.studyId}`);
-    Logger.infoString(`Data Directory: ${params.dataDir}`);
-    Logger.infoString(`Manifest File: ${params.manifestFile}`);
+    Logger.debug`SONG/Score Analysis Workflow:`;
+    Logger.debug`SONG URL: ${songUrl}`;
+    Logger.debug`Score URL: ${scoreUrl || "http://localhost:8087"}`;
+    Logger.debug`Study ID: ${params.studyId}`;
+    Logger.debug`Data Directory: ${params.dataDir}`;
+    Logger.debug`Manifest File: ${params.manifestFile}`;
   }
 
   /**

@@ -5,6 +5,9 @@ import { Logger } from "../../utils/logger";
 import { ErrorFactory } from "../../utils/errors";
 import * as fs from "fs";
 import * as path from "path";
+// Use require for FormData to avoid TypeScript import issues
+const FormData = require("form-data");
+import chalk from "chalk";
 
 export interface DataSubmissionParams {
   categoryId: string;
@@ -85,7 +88,9 @@ export class LyricSubmissionService extends BaseService {
         ]
       );
     } catch (error) {
-      this.handleServiceError(error, "data submission workflow");
+      // Don't call handleServiceError here - let errors propagate to command layer
+      // This ensures the command's error handling gets the original error
+      throw error;
     }
   }
 
@@ -146,49 +151,213 @@ export class LyricSubmissionService extends BaseService {
     organization: string;
     files: string[];
   }): Promise<{ submissionId: string }> {
-    Logger.info`Submitting ${params.files.length} files to Lyric...`;
+    try {
+      Logger.info`Submitting ${params.files.length} files to Lyric...`;
 
-    // Create FormData for file upload
-    const formData = new FormData();
+      // Create FormData for file upload - use Node.js FormData implementation
+      const formData = new FormData();
 
-    // Add files
-    for (const filePath of params.files) {
-      const fileData = fs.readFileSync(filePath);
-      const blob = new Blob([fileData], { type: "text/csv" });
-      formData.append("files", blob, path.basename(filePath));
-    }
-
-    // Add organization
-    formData.append("organization", params.organization);
-
-    const response = await this.http.post<{ submissionId?: string }>(
-      `/submission/category/${params.categoryId}/data`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      // Add files
+      for (const filePath of params.files) {
+        Logger.debug`Adding file: ${path.basename(filePath)}`;
+        const fileStream = fs.createReadStream(filePath);
+        formData.append("files", fileStream, {
+          filename: path.basename(filePath),
+          contentType: "text/csv",
+        });
       }
-    );
 
-    const submissionId = response.data?.submissionId;
-    if (!submissionId) {
-      throw ErrorFactory.connection(
-        "Could not extract submission ID from response",
+      // Add organization
+      formData.append("organization", params.organization);
+
+      // Log headers for debugging
+      Logger.debug`Form headers: ${JSON.stringify(formData.getHeaders())}`;
+
+      // Make the request with proper FormData headers
+      const response = await this.http.post<{ submissionId?: string }>(
+        `/submission/category/${params.categoryId}/data`,
+        formData,
         {
-          response: response.data,
-          categoryId: params.categoryId,
-        },
+          headers: {
+            ...formData.getHeaders(), // This ensures content-type and boundaries are set correctly
+          },
+        }
+      );
+
+      const submissionId = response.data?.submissionId;
+      if (!submissionId) {
+        throw ErrorFactory.connection(
+          "Could not extract submission ID from response",
+          {
+            response: response.data,
+            categoryId: params.categoryId,
+          },
+          [
+            "Check Lyric service response format",
+            "Verify the submission was processed",
+            "Review service logs for errors",
+          ]
+        );
+      }
+
+      Logger.success`Submission created with ID: ${submissionId}`;
+      return { submissionId: submissionId.toString() };
+    } catch (error) {
+      // Enhanced error handling for submission failures
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      Logger.debug`Submission error: ${errorMessage}`;
+
+      // Special handling for category not found errors
+      if (
+        errorMessage.includes("Dictionary in category") ||
+        (errorMessage.includes("400") && errorMessage.includes("category"))
+      ) {
+        // Try to fetch available categories to help the user
+        try {
+          Logger.debug`Fetching available categories to help with suggestions`;
+          const categoriesResponse = await this.http.get("/category");
+
+          // Check if we got a valid response with categories
+          if (
+            categoriesResponse.data &&
+            Array.isArray(categoriesResponse.data)
+          ) {
+            const availableCategories = categoriesResponse.data;
+
+            // Display the list of available categories ONLY ONCE
+            Logger.errorString(`Category ID '${params.categoryId}' not found`);
+
+            if (availableCategories.length > 0) {
+              Logger.generic("");
+              Logger.generic(chalk.bold.cyan("🔍 Available categories:"));
+              availableCategories.forEach((cat) => {
+                Logger.generic(
+                  `   ▸ ID: ${cat.id} - Name: ${cat.name || "Unnamed"}`
+                );
+              });
+
+              // Create error but mark it as already logged to prevent duplicate messages
+              const error = ErrorFactory.validation(
+                "Category not found",
+                {
+                  requestedCategoryId: params.categoryId,
+                  availableCategories,
+                  alreadyLogged: true, // Add marker
+                },
+                [
+                  `Use a valid category ID: ${availableCategories
+                    .map((c) => c.id)
+                    .join(", ")}`,
+                  "Check the category name and ID match",
+                  "Ensure you have access to this category",
+                ]
+              );
+
+              // Add a property to indicate this error was already logged
+              (error as any).alreadyLogged = true;
+
+              throw error;
+            } else {
+              Logger.warnString("No categories found in Lyric service");
+              const error = ErrorFactory.validation(
+                "No categories available in the Lyric service",
+                {
+                  categoryId: params.categoryId,
+                  alreadyLogged: true,
+                },
+                [
+                  "Verify Lyric service is properly configured",
+                  "Categories may need to be created first",
+                  "Contact the service administrator",
+                ]
+              );
+
+              // Mark as already logged
+              (error as any).alreadyLogged = true;
+
+              throw error;
+            }
+          }
+        } catch (catError) {
+          // If this is already a properly formatted error with a marker, just rethrow it
+          if (
+            catError instanceof Error &&
+            catError.name === "ConductorError" &&
+            (catError as any).alreadyLogged
+          ) {
+            throw catError;
+          }
+
+          // If we couldn't fetch categories, log and continue with generic error
+          Logger.debug`Failed to fetch categories: ${catError}`;
+        }
+
+        // Fallback error if we couldn't fetch categories
+        throw ErrorFactory.validation(
+          "Category not found or bad request during file submission",
+          { originalError: error, categoryId: params.categoryId },
+          [
+            "Check that category ID is valid",
+            "Verify the Lyric service configuration",
+            "Ensure you have permission to access categories",
+          ]
+        );
+      }
+
+      if (errorMessage.includes("413")) {
+        throw ErrorFactory.validation(
+          "Files are too large for submission",
+          { originalError: error, fileCount: params.files.length },
+          [
+            "Reduce file sizes or split large files",
+            "Check service upload limits",
+            "Try submitting fewer files at once",
+          ]
+        );
+      }
+
+      if (errorMessage.includes("422")) {
+        throw ErrorFactory.validation(
+          "File validation failed during submission",
+          { originalError: error },
+          [
+            "Check CSV file format and structure",
+            "Verify data meets service requirements",
+            "Review column names and data types",
+          ]
+        );
+      }
+
+      if (
+        errorMessage.includes("ECONNREFUSED") ||
+        errorMessage.includes("ENOTFOUND")
+      ) {
+        throw ErrorFactory.connection(
+          "Failed to connect to Lyric service",
+          { originalError: error, serviceUrl: this.config.url },
+          [
+            "Check that Lyric service is running",
+            `Verify the service URL: ${this.config.url}`,
+            "Check network connectivity",
+            "Review firewall settings",
+          ]
+        );
+      }
+
+      // For other errors, create a generic connection error
+      throw ErrorFactory.connection(
+        `File submission failed: ${errorMessage}`,
+        { originalError: error },
         [
-          "Check Lyric service response format",
-          "Verify the submission was processed",
-          "Review service logs for errors",
+          "Check Lyric service status and connectivity",
+          "Verify file formats and permissions",
+          "Review service logs for more details",
+          "Try again with --debug for detailed error information",
         ]
       );
     }
-
-    Logger.success`Submission created with ID: ${submissionId}`;
-    return { submissionId: submissionId.toString() };
   }
 
   /**
@@ -229,7 +398,7 @@ export class LyricSubmissionService extends BaseService {
         Logger.info`Validation check ${attempt}/${maxRetries}: ${status}`;
 
         if (status === "VALID") {
-          Logger.successString("Submission validation passed");
+          Logger.success`Submission validation passed`;
           return status;
         } else if (status === "INVALID") {
           throw ErrorFactory.validation(
@@ -242,6 +411,7 @@ export class LyricSubmissionService extends BaseService {
               "Review data format and structure",
               "Check validation error details",
               `Visit ${this.config.url}/submission/${submissionId} for details`,
+              "Verify CSV files meet schema requirements",
             ]
           );
         }
@@ -259,7 +429,18 @@ export class LyricSubmissionService extends BaseService {
         }
 
         if (attempt === maxRetries) {
-          this.handleServiceError(error, "validation status check");
+          // If we're out of retries, rethrow with better error info
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          throw ErrorFactory.connection(
+            `Status check failed after ${maxRetries} attempts: ${errorMessage}`,
+            { submissionId, originalError: error },
+            [
+              "Check Lyric service connectivity",
+              "Verify submission ID is valid",
+              "Review service logs for details",
+            ]
+          );
         }
 
         Logger.warnString(
@@ -274,11 +455,15 @@ export class LyricSubmissionService extends BaseService {
       {
         submissionId,
         attempts: maxRetries,
+        totalWaitTime: (maxRetries * retryDelay) / 1000,
       },
       [
-        `Validation did not complete after ${maxRetries} attempts`,
+        `Validation did not complete after ${maxRetries} attempts (${
+          (maxRetries * retryDelay) / 1000
+        } seconds)`,
         `Check status manually at ${this.config.url}/submission/${submissionId}`,
         "Consider increasing max retries or retry delay",
+        "Review service logs for processing issues",
       ]
     );
   }
@@ -292,13 +477,53 @@ export class LyricSubmissionService extends BaseService {
   ): Promise<void> {
     Logger.info`Committing submission: ${submissionId}`;
 
-    // Send empty object instead of null
-    await this.http.post(
-      `/submission/category/${categoryId}/commit/${submissionId}`,
-      {}
-    );
+    try {
+      // Send empty object instead of null
+      await this.http.post(
+        `/submission/category/${categoryId}/commit/${submissionId}`,
+        {}
+      );
 
-    Logger.debug`Submission committed successfully`;
+      Logger.success`Submission committed successfully`;
+    } catch (error) {
+      // Enhanced error handling for commit failures
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (errorMessage.includes("404")) {
+        throw ErrorFactory.validation(
+          "Submission not found for commit",
+          { submissionId, categoryId },
+          [
+            "Verify submission ID is correct",
+            "Check that submission exists and is in VALID status",
+            "Ensure category ID matches the original submission",
+          ]
+        );
+      }
+
+      if (errorMessage.includes("409")) {
+        throw ErrorFactory.validation(
+          "Submission cannot be committed in current state",
+          { submissionId, categoryId },
+          [
+            "Submission may already be committed",
+            "Check submission status before committing",
+            "Verify submission passed validation",
+          ]
+        );
+      }
+
+      throw ErrorFactory.connection(
+        `Failed to commit submission: ${errorMessage}`,
+        { submissionId, categoryId, originalError: error },
+        [
+          "Check Lyric service connectivity",
+          "Verify submission is in valid state",
+          "Review service logs for details",
+        ]
+      );
+    }
   }
 
   private delay(ms: number): Promise<void> {

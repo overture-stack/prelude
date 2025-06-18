@@ -85,7 +85,7 @@ export class SongService extends BaseService {
         );
       }
 
-      Logger.success`Schema "${schemaData.name}" uploaded successfully`;
+      Logger.debug`Schema "${schemaData.name}" uploaded successfully`;
 
       return response.data;
     } catch (error) {
@@ -100,7 +100,7 @@ export class SongService extends BaseService {
     try {
       this.validateRequired(params, ["studyId", "name", "organization"]);
 
-      Logger.info`Creating study: ${params.studyId}`;
+      Logger.debug`Creating study: ${params.name}`;
 
       // Check if study already exists
       const studyExists = await this.checkStudyExists(params.studyId);
