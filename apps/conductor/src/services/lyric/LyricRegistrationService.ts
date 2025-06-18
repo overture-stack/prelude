@@ -36,7 +36,7 @@ export class LyricRegistrationService extends BaseService {
         "defaultCentricEntity",
       ]);
 
-      Logger.info`Registering dictionary ${params.dictionaryName} version ${params.dictionaryVersion}`;
+      Logger.debug`Registering dictionary ${params.dictionaryName} version ${params.dictionaryVersion}`;
 
       // Prepare form data
       const formData = new URLSearchParams();

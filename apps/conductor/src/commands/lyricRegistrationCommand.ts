@@ -341,7 +341,7 @@ export class LyricRegistrationCommand extends Command {
         );
       }
 
-      Logger.success`Entity '${params.defaultCentricEntity}' validated in dictionary`;
+      Logger.debug`Entity '${params.defaultCentricEntity}' validated in dictionary`;
     } catch (error) {
       if (error instanceof Error && error.name === "ConductorError") {
         throw error;
@@ -372,7 +372,7 @@ export class LyricRegistrationCommand extends Command {
     params: DictionaryRegistrationParams,
     url: string
   ): void {
-    Logger.info`${chalk.bold.cyan("Registering Dictionary with Lyric:")}`;
+    Logger.debug`${chalk.bold.cyan("Registering Dictionary with Lyric:")}`;
     Logger.debug`URL: ${url}/dictionary/register`;
     Logger.debug`Category: ${params.categoryName}`;
     Logger.debug`Dictionary: ${params.dictionaryName}`;
@@ -385,14 +385,12 @@ export class LyricRegistrationCommand extends Command {
    */
   private logSuccess(params: DictionaryRegistrationParams): void {
     Logger.successString("Dictionary registered successfully with Lyric");
-    Logger.generic(" ");
     Logger.generic(chalk.gray(`    - Category: ${params.categoryName}`));
     Logger.generic(chalk.gray(`    - Dictionary: ${params.dictionaryName}`));
     Logger.generic(chalk.gray(`    - Version: ${params.dictionaryVersion}`));
     Logger.generic(
       chalk.gray(`    - Centric Entity: ${params.defaultCentricEntity}`)
     );
-    Logger.generic(" ");
   }
 
   /**

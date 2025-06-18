@@ -185,7 +185,7 @@ export class LecternService extends BaseService {
       const entityExists = entities.includes(centricEntity);
 
       if (entityExists) {
-        Logger.success`Entity '${centricEntity}' found in dictionary`;
+        Logger.debug`Entity '${centricEntity}' found in dictionary`;
       } else {
         Logger.debug`Entity '${centricEntity}' not found in dictionary`;
       }

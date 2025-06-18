@@ -46,7 +46,7 @@ export abstract class BaseService {
       };
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      Logger.info`${this.serviceName} health check failed`;
+      Logger.error`${this.serviceName} health check failed`;
 
       return {
         healthy: false,
