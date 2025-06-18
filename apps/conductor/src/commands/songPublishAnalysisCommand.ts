@@ -111,7 +111,7 @@ export class SongPublishAnalysisCommand extends Command {
     return {
       url: this.getSongUrl(options)!,
       timeout: 10000,
-      retries: 3,
+      retries: 1,
       authToken: options.authToken || process.env.AUTH_TOKEN || "123",
     };
   }

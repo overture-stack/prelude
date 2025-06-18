@@ -173,7 +173,7 @@ export class SongSubmitAnalysisCommand extends Command {
     return {
       url: this.getSongUrl(options)!,
       timeout: 20000,
-      retries: 3,
+      retries: 1,
       authToken: options.authToken || process.env.AUTH_TOKEN || "123",
     };
   }
@@ -185,7 +185,7 @@ export class SongSubmitAnalysisCommand extends Command {
     return {
       url: this.getScoreUrl(options),
       timeout: 30000,
-      retries: 2,
+      retries: 1,
       authToken: options.authToken || process.env.AUTH_TOKEN || "123",
     };
   }

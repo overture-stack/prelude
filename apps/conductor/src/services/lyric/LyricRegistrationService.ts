@@ -36,7 +36,7 @@ export class LyricRegistrationService extends BaseService {
         "defaultCentricEntity",
       ]);
 
-      Logger.info`Registering dictionary: ${params.dictionaryName} v${params.dictionaryVersion}`;
+      Logger.info`Registering dictionary ${params.dictionaryName} version ${params.dictionaryVersion}`;
 
       // Prepare form data
       const formData = new URLSearchParams();
@@ -72,7 +72,7 @@ export class LyricRegistrationService extends BaseService {
         );
       }
 
-      Logger.successString("Dictionary registered successfully");
+      Logger.debug`Dictionary registered successfully`;
 
       return {
         success: true,

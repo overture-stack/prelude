@@ -151,7 +151,7 @@ export class LyricUploadCommand extends Command {
     return {
       url: this.getLyricUrl(cliOutput)!,
       timeout: 30000, // Longer timeout for file uploads
-      retries: 3,
+      retries: 1,
     };
   }
 

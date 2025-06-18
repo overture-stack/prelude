@@ -113,7 +113,7 @@ export class SongCreateStudyCommand extends Command {
     return {
       url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
       timeout: 10000,
-      retries: 3,
+      retries: 1,
       authToken: options.authToken || process.env.AUTH_TOKEN || "123",
     };
   }

@@ -51,7 +51,7 @@ export class ServiceConfigManager {
       url: env.url,
       authToken: undefined, // ES uses user/password
       timeout: Environment.defaults.timeouts.default,
-      retries: 3,
+      retries: 1,
       retryDelay: 1000,
       user: env.user,
       password: env.password,
@@ -93,7 +93,7 @@ export class ServiceConfigManager {
       url: env.url,
       authToken: undefined,
       timeout: Environment.defaults.timeouts.upload, // Longer timeout for uploads
-      retries: 3,
+      retries: 1,
       retryDelay: defaults.retryDelay, // Use the environment default
       categoryId: env.categoryId,
       organization: env.organization,
@@ -115,7 +115,7 @@ export class ServiceConfigManager {
       url: env.url,
       authToken: env.authToken,
       timeout: Environment.defaults.timeouts.upload,
-      retries: 3,
+      retries: 1,
       retryDelay: 1000,
       ...overrides,
     };
@@ -153,7 +153,7 @@ export class ServiceConfigManager {
       url: env.url,
       authToken: undefined,
       timeout: Environment.defaults.timeouts.default,
-      retries: 3,
+      retries: 1,
       retryDelay: 1000,
       ...overrides,
     };

@@ -160,7 +160,7 @@ export class LecternService extends BaseService {
     centricEntity: string
   ): Promise<DictionaryValidationResult> {
     try {
-      Logger.info`Validating entity '${centricEntity}' in dictionary '${dictionaryName}' v${dictionaryVersion}`;
+      Logger.info`Registering entity '${centricEntity}' in dictionary '${dictionaryName}' v${dictionaryVersion}`;
 
       // Find the dictionary
       const dictionary = await this.findDictionary(
@@ -187,7 +187,7 @@ export class LecternService extends BaseService {
       if (entityExists) {
         Logger.success`Entity '${centricEntity}' found in dictionary`;
       } else {
-        Logger.warnString(`Entity '${centricEntity}' not found in dictionary`);
+        Logger.debug`Entity '${centricEntity}' not found in dictionary`;
       }
 
       return {
