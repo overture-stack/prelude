@@ -223,8 +223,8 @@ export class SongService extends BaseService {
         );
       }
 
-      Logger.info`Submitting analysis to study: ${params.studyId}`;
-      Logger.infoString(`Analysis type: ${analysisData.analysisType.name}`);
+      Logger.debug`Submitting analysis to study: ${params.studyId}`;
+      Logger.debug`Analysis type: ${analysisData.analysisType.name}`;
 
       // Submit analysis
       const submitUrl = `/submit/${params.studyId}?allowDuplicates=${
@@ -262,7 +262,7 @@ export class SongService extends BaseService {
         );
       }
 
-      Logger.success`Analysis submitted successfully with ID: ${analysisId}`;
+      Logger.debug`Analysis submitted successfully with ID: ${analysisId}`;
 
       return {
         analysisId,
@@ -300,7 +300,7 @@ export class SongService extends BaseService {
         params: queryParams,
       });
 
-      Logger.success`Analysis published successfully`;
+      Logger.debug`Analysis published successfully`;
 
       return {
         analysisId: params.analysisId,

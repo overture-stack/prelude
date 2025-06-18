@@ -128,7 +128,7 @@ export class SongPublishAnalysisCommand extends Command {
    * Log publication information
    */
   private logPublicationInfo(params: SongPublishParams, url: string): void {
-    Logger.info`${chalk.bold.cyan("Publishing Analysis in SONG:")}`;
+    Logger.info`Publishing Analysis in Song`;
     Logger.infoString(
       `URL: ${url}/studies/${params.studyId}/analysis/publish/${params.analysisId}`
     );

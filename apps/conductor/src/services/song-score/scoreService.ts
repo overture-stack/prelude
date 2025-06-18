@@ -56,7 +56,7 @@ export class ScoreService extends BaseService {
         Logger.info`Created directory: ${manifestDir}`;
       }
 
-      Logger.info`Starting Score manifest upload for analysis: ${params.analysisId}`;
+      Logger.debug`Starting Score manifest upload for analysis: ${params.analysisId}`;
 
       // Step 1: Generate manifest
       await this.generateManifest({
@@ -81,7 +81,7 @@ export class ScoreService extends BaseService {
         Logger.warnString(`Could not read manifest file: ${error}`);
       }
 
-      Logger.success`Successfully uploaded files with Score`;
+      Logger.debug`Successfully uploaded files with Score`;
 
       return {
         success: true,
@@ -131,7 +131,7 @@ export class ScoreService extends BaseService {
 
     const manifestContent = fs.readFileSync(params.manifestFile, "utf8");
     Logger.debugString(`Generated manifest content:\n${manifestContent}`);
-    Logger.success`Successfully generated manifest at ${params.manifestFile}`;
+    Logger.info`Successfully generated manifest at ${params.manifestFile}`;
   }
 
   /**
@@ -361,7 +361,7 @@ export class ScoreService extends BaseService {
       if (stdout) Logger.debugString(`SCORE upload stdout: ${stdout}`);
       if (stderr) Logger.warnString(`SCORE upload stderr: ${stderr}`);
 
-      Logger.success`Files uploaded successfully with Score client`;
+      Logger.info`Files uploaded successfully with Score client`;
     } catch (error: any) {
       Logger.errorString(`Score client upload failed`);
 

@@ -64,10 +64,10 @@ export class SongScoreService extends BaseService {
         "manifestFile",
       ]);
 
-      Logger.info`Starting SONG/Score workflow for study: ${params.studyId}`;
+      Logger.debug`Starting SONG/Score workflow for study: ${params.studyId}`;
 
       // Step 1: Submit analysis to SONG
-      Logger.infoString(`Submitting analysis to SONG`);
+      Logger.debug`Submitting analysis to SONG`;
       const analysisResponse = await this.songService.submitAnalysis({
         analysisContent: params.analysisContent,
         studyId: params.studyId,
@@ -76,10 +76,10 @@ export class SongScoreService extends BaseService {
 
       analysisId = analysisResponse.analysisId;
       steps.submitted = true;
-      Logger.success`Analysis submitted with ID: ${analysisId}`;
+      Logger.info`Analysis submitted with ID: ${analysisId}`;
 
       // Step 2: Generate manifest and upload files to Score
-      Logger.infoString(`Generating manifest and uploading files to Score`);
+      Logger.debug`Generating manifest and uploading files to Score`;
       await this.scoreService.uploadWithManifest({
         analysisId,
         dataDir: params.dataDir,
@@ -89,7 +89,7 @@ export class SongScoreService extends BaseService {
       });
 
       steps.uploaded = true;
-      Logger.success`Files uploaded successfully to Score`;
+      Logger.info`Files uploaded successfully to Score`;
 
       // Step 3: Publish analysis in SONG
       Logger.infoString(`Publishing analysis in Song`);
@@ -100,9 +100,9 @@ export class SongScoreService extends BaseService {
       });
 
       steps.published = true;
-      Logger.success`Analysis published successfully`;
+      Logger.info`Analysis published successfully`;
 
-      Logger.success`SONG/Score workflow completed successfully`;
+      Logger.debug`Song/Score workflow completed successfully`;
 
       return {
         success: true,
@@ -126,17 +126,13 @@ export class SongScoreService extends BaseService {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
 
-      Logger.errorString(`SONG/Score workflow failed: ${errorMessage}`);
+      Logger.errorString(`Song/Score workflow failed: ${errorMessage}`);
 
       // Log which steps completed
-      Logger.infoString(`Workflow status:`);
-      Logger.infoString(
-        `  - Analysis submitted: ${steps.submitted ? "✓" : "✗"}`
-      );
-      Logger.infoString(`  - Files uploaded: ${steps.uploaded ? "✓" : "✗"}`);
-      Logger.infoString(
-        `  - Analysis published: ${steps.published ? "✓" : "✗"}`
-      );
+      Logger.debug`Workflow status:`;
+      Logger.debug`  - Analysis submitted: ${steps.submitted ? "✓" : "✗"}`;
+      Logger.debug`  - Files uploaded: ${steps.uploaded ? "✓" : "✗"}`;
+      Logger.debug`  - Analysis published: ${steps.published ? "✓" : "✗"}`;
 
       // If it's already a ConductorError, preserve it
       if (error instanceof Error && error.name === "ConductorError") {

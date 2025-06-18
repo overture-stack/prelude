@@ -1,4 +1,4 @@
-// src/commands/songSubmitAnalysisCommand.ts - Updated with error factory pattern
+// src/commands/songSubmitAnalysisCommand.ts - Updated with beta warning
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -81,9 +81,12 @@ export class SongSubmitAnalysisCommand extends Command {
   }
 
   /**
-   * Validates command line arguments
+   * Validates command line arguments and shows beta warning
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
+    // Show beta warning for SONG/Score workflow
+    this.showBetaWarning();
+
     const { options } = cliOutput;
 
     // Validate analysis file
@@ -135,6 +138,24 @@ export class SongSubmitAnalysisCommand extends Command {
         "Example: --song-url http://localhost:8080",
       ]);
     }
+  }
+
+  /**
+   * Display beta warning for SONG/Score workflow
+   */
+  private showBetaWarning(): void {
+    Logger.generic("");
+    Logger.generic(chalk.bold.yellow("⚠️  EXPERIMENTAL FEATURE"));
+    Logger.generic(
+      chalk.yellow(
+        "   This SONG/Score integration is experimental and in beta."
+      )
+    );
+    Logger.generic(
+      chalk.yellow("   Usage of standard client tools can be found at: ") +
+        chalk.cyan.underline("https://docs.overture.bio/guides/user-guides/")
+    );
+    Logger.generic("");
   }
 
   /**

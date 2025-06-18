@@ -1,5 +1,4 @@
 import { Client } from "@elastic/elasticsearch";
-import chalk from "chalk";
 import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import { ConnectionValidationResult, IndexValidationResult } from "../types";
@@ -88,29 +87,37 @@ export async function validateIndex(
     const { body } = await client.indices.get({ index: indexName });
 
     if (!body || !body[indexName]) {
-      // Don't log error here - let calling code handle it
+      // Get available indices for helpful display
       const availableIndices = await getAvailableIndices(client);
 
-      const suggestions = [
-        "Check that the index name is spelled correctly",
-        "Verify the index exists in Elasticsearch",
-        "Create the index first if it doesn't exist",
-      ];
+      // Log the main error message
+      Logger.errorString(`Index '${indexName}' not found`);
 
+      // Display available indices if they exist
       if (availableIndices.length > 0) {
-        suggestions.push("");
-        suggestions.push(chalk.bold("Available indices:"));
-        suggestions.push("");
-        suggestions.push(...availableIndices.map((i) => `    ${i}`));
+        Logger.suggestion("Available indices in Elasticsearch");
+        availableIndices.forEach((index: string) => {
+          Logger.generic(`   ▸ ${index}`);
+        });
       } else {
-        suggestions.push("No user indices found in Elasticsearch");
+        Logger.suggestion("No user indices found in Elasticsearch");
+        Logger.generic("   ▸ You may need to create your first index");
       }
 
-      throw ErrorFactory.validation(
-        `Index ${indexName} does not exist`,
-        { indexName, responseBody: body, availableIndices },
-        suggestions
+      // Create error but mark as already logged to prevent duplicate display
+      const error = ErrorFactory.validation(
+        `Index '${indexName}' not found`,
+        {
+          indexName,
+          responseBody: body,
+          availableIndices,
+          alreadyLogged: true,
+        },
+        [] // Empty suggestions since we already displayed them above
       );
+
+      (error as any).isLogged = true;
+      throw error;
     }
 
     Logger.debug`Index ${indexName} exists`;
@@ -120,45 +127,59 @@ export async function validateIndex(
       exists: true,
     };
   } catch (indexError: any) {
+    // If it's already our formatted error, rethrow it
+    if (
+      indexError instanceof Error &&
+      indexError.name === "ConductorError" &&
+      (indexError as any).isLogged
+    ) {
+      throw indexError;
+    }
+
     if (
       indexError.meta?.body?.error?.type === "index_not_found_exception" ||
       indexError.meta?.body?.status === 404
     ) {
-      // Don't log error here - let calling code handle it
+      // Get available indices for helpful display
       const availableIndices = await getAvailableIndices(client);
 
-      const suggestions = [
-        "Check the index name spelling and case sensitivity",
-        "Use -i <index-name> to specify a different index",
-        "Create the index in Elasticsearch first",
-      ];
+      // Log the main error message
+      Logger.debug`Index '${indexName}' does not exist`;
 
+      // Display available indices if they exist
       if (availableIndices.length > 0) {
-        suggestions.push("");
-        suggestions.push(chalk.bold("Available indices:"));
-        suggestions.push("");
-        suggestions.push(...availableIndices.map((i) => `    ${i}`));
+        Logger.suggestion("Available indices in Elasticsearch");
+        availableIndices.forEach((index: string) => {
+          Logger.generic(`   ▸ ${index}`);
+        });
       } else {
-        suggestions.push(
-          "No user indices found in Elasticsearch – you may need to create your first index"
-        );
+        Logger.suggestion("No user indices found in Elasticsearch");
+        Logger.generic("   ▸ You may need to create your first index");
       }
 
-      throw ErrorFactory.validation(
-        `Index ${indexName} does not exist`,
+      // Create error but mark as already logged
+      const error = ErrorFactory.validation(
+        `Index '${indexName}' does not exist`,
         {
           indexName,
           errorType: "index_not_found_exception",
           availableIndices,
           originalError: indexError,
+          alreadyLogged: true,
         },
-        suggestions
+        [
+          "Check the index name spelling and case sensitivity",
+          "Use -i <index-name> to specify a different index",
+          "Create the index in Elasticsearch first",
+        ]
       );
+
+      (error as any).isLogged = true;
+      throw error;
     }
 
     const errorMessage =
       indexError instanceof Error ? indexError.message : String(indexError);
-    // Don't log error here - let calling code handle it
 
     throw ErrorFactory.connection(
       `Failed to check if index ${indexName} exists`,
