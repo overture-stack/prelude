@@ -95,25 +95,16 @@ export class SongService extends BaseService {
 
   /**
    * Create a new study in SONG
+   * FIXED: Skip existence check and handle 409 directly during creation
    */
   async createStudy(params: SongStudyCreateParams): Promise<SongStudyResponse> {
     try {
       this.validateRequired(params, ["studyId", "name", "organization"]);
 
-      Logger.debug`Creating study: ${params.name}`;
+      Logger.debug`Creating study: ${params.name} with ID: ${params.studyId}`;
 
-      // Check if study already exists
-      const studyExists = await this.checkStudyExists(params.studyId);
-      if (studyExists && !params.force) {
-        Logger.warnString(`Study ID ${params.studyId} already exists`);
-        return {
-          studyId: params.studyId,
-          name: params.name,
-          organization: params.organization,
-          status: "EXISTING",
-          message: `Study ID ${params.studyId} already exists`,
-        };
-      }
+      // FIXED: Skip the checkStudyExists call and handle conflicts during creation
+      // The existence check was causing "Resource not found" errors
 
       // Prepare study payload
       const studyPayload = {
@@ -124,13 +115,16 @@ export class SongService extends BaseService {
         studyId: params.studyId,
       };
 
-      // Create study
+      Logger.debug`Study payload: ${JSON.stringify(studyPayload)}`;
+
+      // Create study - let SONG service handle existence checking
       const response = await this.http.post<SongStudyResponse>(
         `/studies/${params.studyId}/`,
         studyPayload
       );
 
-      Logger.success`Study created successfully`;
+      Logger.debug`Study creation response: ${JSON.stringify(response.data)}`;
+      Logger.debug`Study created successfully`;
 
       return {
         ...response.data,
@@ -140,15 +134,41 @@ export class SongService extends BaseService {
         status: "CREATED",
       };
     } catch (error) {
+      Logger.debug`Study creation error: ${error}`;
+
       // Handle 409 conflict for existing studies
       if (this.isConflictError(error)) {
-        return {
-          studyId: params.studyId,
-          name: params.name,
-          organization: params.organization,
-          status: "EXISTING",
-          message: `Study ID ${params.studyId} already exists`,
-        };
+        Logger.debug`409 conflict detected - study already exists`;
+
+        // If force flag is set, treat as success
+        if (params.force) {
+          Logger.warnString(`Study exists but continuing due to --force flag`);
+          return {
+            studyId: params.studyId,
+            name: params.name,
+            organization: params.organization,
+            status: "EXISTING",
+            message: `Study ID ${params.studyId} already exists (forced)`,
+          };
+        }
+
+        // Otherwise, throw a proper error
+        throw ErrorFactory.validation(
+          `Study '${params.studyId}' already exists`,
+          {
+            studyId: params.studyId,
+            studyName: params.name,
+            organization: params.organization,
+            httpStatus: 409,
+            errorType: "study_already_exists",
+          },
+          [
+            "Use --force flag to acknowledge existing study",
+            "Choose a different study ID",
+            "Check if study creation is actually needed",
+            `Existing study ID: '${params.studyId}'`,
+          ]
+        );
       }
 
       this.handleServiceError(error, "study creation");

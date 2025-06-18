@@ -180,6 +180,7 @@ export function configureCommandOptions(program: Command): void {
     });
 
   // SONG study creation command
+  // Song Create Study commands - SIMPLIFIED: Only study ID required
   program
     .command("songCreateStudy")
     .description("Create study in SONG server")
@@ -188,16 +189,16 @@ export function configureCommandOptions(program: Command): void {
       "SONG server URL",
       process.env.SONG_URL || "http://localhost:8080"
     )
-    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
+    .option("-i, --study-id <id>", "Study ID (required)", process.env.STUDY_ID)
     .option(
-      "-n, --study-name <name>",
-      "Study name",
-      process.env.STUDY_NAME || "string"
+      "--name <name>",
+      "Study display name (defaults to study ID)",
+      process.env.STUDY_NAME
     )
     .option(
       "-g, --organization <name>",
       "Organization name",
-      process.env.ORGANIZATION || "string"
+      process.env.ORGANIZATION || "OICR"
     )
     .option(
       "--description <text>",

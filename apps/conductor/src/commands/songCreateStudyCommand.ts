@@ -1,4 +1,4 @@
-// src/commands/songCreateStudyCommand.ts
+// src/commands/songCreateStudyCommand.ts - FIXED: Proper error handling for study creation
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -9,7 +9,7 @@ import { SongStudyCreateParams } from "../services/song-score/types";
 
 /**
  * Command for creating studies in SONG service
- * Refactored to use the new SongService with error factory pattern
+ * FIXED: Enhanced error handling for study conflicts and validation
  */
 export class SongCreateStudyCommand extends Command {
   constructor() {
@@ -18,6 +18,7 @@ export class SongCreateStudyCommand extends Command {
 
   /**
    * Executes the SONG study creation process
+   * FIXED: Better error detection and logging
    */
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { options } = cliOutput;
@@ -31,6 +32,7 @@ export class SongCreateStudyCommand extends Command {
       const songService = new SongService(serviceConfig);
 
       // Check service health
+      Logger.debug`Checking SONG service health at ${serviceConfig.url}`;
       const healthResult = await songService.checkHealth();
       if (!healthResult.healthy) {
         throw ErrorFactory.connection(
@@ -47,6 +49,8 @@ export class SongCreateStudyCommand extends Command {
           ]
         );
       }
+
+      Logger.debug`SONG service health check passed`;
 
       // Log creation info
       this.logCreationInfo(studyParams, serviceConfig.url);
@@ -68,15 +72,15 @@ export class SongCreateStudyCommand extends Command {
 
   /**
    * Validates command line arguments
+   * SIMPLIFIED: Only study ID is required, name is optional
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     const { options } = cliOutput;
 
-    // Validate required parameters
+    // Validate required parameters - only study ID and basic service info
     const requiredParams = [
       { key: "songUrl", name: "SONG URL", envVar: "SONG_URL" },
       { key: "studyId", name: "Study ID", envVar: "STUDY_ID" },
-      { key: "studyName", name: "Study name", envVar: "STUDY_NAME" },
       { key: "organization", name: "Organization", envVar: "ORGANIZATION" },
     ];
 
@@ -86,7 +90,7 @@ export class SongCreateStudyCommand extends Command {
         throw ErrorFactory.args(`${param.name} is required`, [
           `Use --${param.key.replace(/([A-Z])/g, "-$1").toLowerCase()} option`,
           `Set ${param.envVar} environment variable`,
-          "Example: --study-id my-study --study-name 'My Study'",
+          "Example: --study-id my-study --organization MyOrg",
         ]);
       }
     }
@@ -94,11 +98,25 @@ export class SongCreateStudyCommand extends Command {
 
   /**
    * Extract study parameters from options
+   * SIMPLIFIED: Study ID is required with no defaults, name defaults to study ID if not provided
    */
   private extractStudyParams(options: any): SongStudyCreateParams {
+    const studyId = options.studyId || process.env.STUDY_ID;
+
+    // Study ID is required - no default value
+    if (!studyId) {
+      throw ErrorFactory.args("Study ID is required", [
+        "Use -i or --study-id to specify the study identifier",
+        "Set STUDY_ID environment variable",
+        "Example: -i my-study",
+      ]);
+    }
+
+    const studyName = options.name || studyId; // Use study ID as default name
+
     return {
-      studyId: options.studyId || process.env.STUDY_ID || "demo",
-      name: options.studyName || process.env.STUDY_NAME || "demo",
+      studyId: studyId,
+      name: studyName,
       organization: options.organization || process.env.ORGANIZATION || "OICR",
       description: options.description || process.env.DESCRIPTION || "string",
       force: options.force || false,
@@ -119,31 +137,56 @@ export class SongCreateStudyCommand extends Command {
 
   /**
    * Log creation information
+   * SIMPLIFIED: Show study ID as primary identifier
    */
   private logCreationInfo(params: SongStudyCreateParams, url: string): void {
     Logger.generic("");
-    Logger.info`Creating Study: ${params.name}`;
+    Logger.info`Creating Study: ${params.studyId}`;
     Logger.debug`URL: ${url}/studies/${params.studyId}/`;
     Logger.debug`Study ID: ${params.studyId}`;
-    Logger.debug`Study Name: ${params.name}`;
+    Logger.debug`Display Name: ${params.name}`;
     Logger.debug`Organization: ${params.organization}`;
+
+    // Only log if custom name was provided
+    if (params.studyId !== params.name) {
+      Logger.debug`Custom display name provided: ${params.name}`;
+    }
   }
 
   /**
    * Log successful creation
+   * SIMPLIFIED: Focus on study ID as primary identifier
    */
   private logSuccess(result: any): void {
-    Logger.successString(`"${result.name} study created successfully"`);
+    Logger.successString(`Study "${result.studyId}" created successfully`);
     Logger.generic(chalk.gray(`    - Study ID: ${result.studyId}`));
+    Logger.generic(chalk.gray(`    - Display Name: ${result.name}`));
     Logger.generic(chalk.gray(`    - Organization: ${result.organization}`));
   }
 
   /**
    * Handle execution errors with helpful user feedback
+   * FIXED: Enhanced error detection and logging
    */
   private handleExecutionError(error: unknown): CommandResult {
+    // If it's already a ConductorError, preserve it and ensure it gets logged
     if (error instanceof Error && error.name === "ConductorError") {
       const conductorError = error as any;
+
+      Logger.debug`ConductorError detected - Message: ${conductorError.message}`;
+      Logger.debug`ConductorError code: ${conductorError.code}`;
+
+      // Log the error using Logger
+      Logger.errorString(conductorError.message);
+
+      // Display suggestions if available
+      if (conductorError.suggestions && conductorError.suggestions.length > 0) {
+        Logger.suggestion("Suggestions");
+        conductorError.suggestions.forEach((suggestion: string) => {
+          Logger.tipString(suggestion);
+        });
+      }
+
       return {
         success: false,
         errorMessage: conductorError.message,
@@ -154,6 +197,8 @@ export class SongCreateStudyCommand extends Command {
 
     // Handle unexpected errors with categorization
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    Logger.debug`Handling unexpected error: ${errorMessage}`;
 
     if (
       errorMessage.includes("ECONNREFUSED") ||
@@ -169,6 +214,15 @@ export class SongCreateStudyCommand extends Command {
           "Review firewall settings",
         ]
       );
+
+      // Log the error
+      Logger.errorString(connectionError.message);
+      if (connectionError.suggestions) {
+        Logger.suggestion("Suggestions");
+        connectionError.suggestions.forEach((suggestion: string) => {
+          Logger.tipString(suggestion);
+        });
+      }
 
       return {
         success: false,
@@ -189,6 +243,15 @@ export class SongCreateStudyCommand extends Command {
         ]
       );
 
+      // Log the error
+      Logger.errorString(authError.message);
+      if (authError.suggestions) {
+        Logger.suggestion("Suggestions");
+        authError.suggestions.forEach((suggestion: string) => {
+          Logger.tipString(suggestion);
+        });
+      }
+
       return {
         success: false,
         errorMessage: authError.message,
@@ -197,7 +260,11 @@ export class SongCreateStudyCommand extends Command {
       };
     }
 
-    if (errorMessage.includes("409") || errorMessage.includes("conflict")) {
+    if (
+      errorMessage.includes("409") ||
+      errorMessage.includes("conflict") ||
+      errorMessage.includes("already.exists")
+    ) {
       const conflictError = ErrorFactory.validation(
         "Study already exists",
         { originalError: error },
@@ -207,6 +274,15 @@ export class SongCreateStudyCommand extends Command {
           "Check if study creation is actually needed",
         ]
       );
+
+      // Log the error
+      Logger.errorString(conflictError.message);
+      if (conflictError.suggestions) {
+        Logger.suggestion("Suggestions");
+        conflictError.suggestions.forEach((suggestion: string) => {
+          Logger.tipString(suggestion);
+        });
+      }
 
       return {
         success: false,
@@ -226,6 +302,15 @@ export class SongCreateStudyCommand extends Command {
         "Use --debug for detailed error information",
       ]
     );
+
+    // Log the error
+    Logger.errorString(genericError.message);
+    if (genericError.suggestions) {
+      Logger.suggestion("Suggestions");
+      genericError.suggestions.forEach((suggestion: string) => {
+        Logger.tipString(suggestion);
+      });
+    }
 
     return {
       success: false,
