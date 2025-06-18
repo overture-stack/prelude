@@ -1,4 +1,4 @@
-// src/commands/lyricRegistrationCommand.ts
+// src/commands/lyricRegistrationCommand.ts - FIXED: Available dictionaries/entities display
 
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
@@ -80,20 +80,19 @@ export class LyricRegistrationCommand extends Command {
           lecternService
         );
       } catch (validationError) {
-        // EXPLICIT ERROR LOGGING: Ensure validation errors are properly logged
+        // FIXED: Better error handling with available options display
         if (
           validationError instanceof Error &&
           validationError.name === "ConductorError"
         ) {
           const conductorError = validationError as any;
 
-          // Log the error immediately
+          // Log the main error message
           Logger.errorString(conductorError.message);
 
-          // Use Logger.generic for clean formatting of available options OUTSIDE suggestions
+          // Display available dictionaries if they exist
           if (conductorError.details?.availableDictionaries?.length > 0) {
-            Logger.generic("");
-            Logger.generic(chalk.bold.cyan("🔍 Available dictionaries:"));
+            Logger.suggestion("Available dictionaries in Lectern");
             conductorError.details.availableDictionaries.forEach(
               (dict: string) => {
                 Logger.generic(`   ▸ ${dict}`);
@@ -101,9 +100,9 @@ export class LyricRegistrationCommand extends Command {
             );
           }
 
+          // Display available entities if they exist
           if (conductorError.details?.availableEntities?.length > 0) {
-            Logger.generic("");
-            Logger.generic(chalk.bold.cyan("🔍 Available entities:"));
+            Logger.suggestion("Available entities in this dictionary");
             conductorError.details.availableEntities.forEach(
               (entity: string) => {
                 Logger.generic(`   ▸ ${entity}`);
@@ -111,7 +110,7 @@ export class LyricRegistrationCommand extends Command {
             );
           }
 
-          // Display filtered suggestions (excluding the available lists)
+          // Display filtered suggestions (exclude the lists we already showed)
           if (
             conductorError.suggestions &&
             conductorError.suggestions.length > 0
@@ -131,9 +130,17 @@ export class LyricRegistrationCommand extends Command {
               });
             }
           }
+
+          // Return error result instead of re-throwing
+          return {
+            success: false,
+            errorMessage: conductorError.message,
+            errorCode: conductorError.code,
+            details: conductorError.details,
+          };
         }
 
-        // Re-throw to be handled by the base command error flow
+        // Re-throw unexpected errors
         throw validationError;
       }
 
@@ -256,7 +263,7 @@ export class LyricRegistrationCommand extends Command {
   }
 
   /**
-   * Mandatory validation that dictionary exists in Lectern and entity is valid
+   * FIXED: Mandatory validation that dictionary exists in Lectern and entity is valid
    */
   private async validateDictionaryAndEntity(
     params: DictionaryRegistrationParams,
@@ -286,25 +293,20 @@ export class LyricRegistrationCommand extends Command {
           // Continue with validation error even if we can't get the list
         }
 
-        // Only include actionable suggestions, NOT the available lists
-        const suggestions = [
-          "Check dictionary name spelling and version",
-          "Upload the dictionary to Lectern first using: conductor lecternUpload",
-          "Verify Lectern service contains the required dictionary",
-        ];
-
-        if (dictNames.length === 0) {
-          suggestions.push("No dictionaries found in Lectern");
-        }
-
+        // Create error with available dictionaries in details
         throw ErrorFactory.validation(
           `Dictionary '${params.dictionaryName}' version '${params.dictionaryVersion}' not found in Lectern`,
           {
             requestedDictionary: params.dictionaryName,
             requestedVersion: params.dictionaryVersion,
-            availableDictionaries: dictNames,
+            availableDictionaries: dictNames, // This will be displayed
           },
-          suggestions
+          [
+            "Check dictionary name spelling and version",
+            "Upload the dictionary to Lectern first using: conductor lecternUpload",
+            "Verify Lectern service contains the required dictionary",
+            dictNames.length === 0 ? "No dictionaries found in Lectern" : null,
+          ].filter(Boolean) as string[]
         );
       }
 
@@ -318,26 +320,23 @@ export class LyricRegistrationCommand extends Command {
       );
 
       if (!validationResult.exists) {
-        // Only include actionable suggestions, NOT the available lists
-        const suggestions = [
-          "Check entity name spelling",
-          "Choose a valid entity from the dictionary schema",
-          "Verify the entity exists in the dictionary definition",
-        ];
-
-        if (validationResult.entities.length === 0) {
-          suggestions.push("No entities found in dictionary");
-        }
-
+        // Create error with available entities in details
         throw ErrorFactory.validation(
           `Entity '${params.defaultCentricEntity}' does not exist in dictionary '${params.dictionaryName}' v${params.dictionaryVersion}`,
           {
             requestedEntity: params.defaultCentricEntity,
             dictionaryName: params.dictionaryName,
             dictionaryVersion: params.dictionaryVersion,
-            availableEntities: validationResult.entities,
+            availableEntities: validationResult.entities, // This will be displayed
           },
-          suggestions
+          [
+            "Check entity name spelling",
+            "Choose a valid entity from the dictionary schema",
+            "Verify the entity exists in the dictionary definition",
+            validationResult.entities.length === 0
+              ? "No entities found in dictionary"
+              : null,
+          ].filter(Boolean) as string[]
         );
       }
 

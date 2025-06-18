@@ -130,7 +130,7 @@ export class LyricSubmissionService extends BaseService {
       ]);
     }
 
-    Logger.info`Found ${allFiles.length} valid CSV files`;
+    Logger.debug`Found ${allFiles.length} valid CSV files`;
     allFiles.forEach((file) =>
       Logger.debugString(`  - ${path.basename(file)}`)
     );
@@ -298,7 +298,7 @@ export class LyricSubmissionService extends BaseService {
       {}
     );
 
-    Logger.successString("Submission committed successfully");
+    Logger.debug`Submission committed successfully`;
   }
 
   private delay(ms: number): Promise<void> {

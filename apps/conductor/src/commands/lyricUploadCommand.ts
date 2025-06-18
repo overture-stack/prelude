@@ -184,26 +184,24 @@ export class LyricUploadCommand extends Command {
     params: DataSubmissionParams,
     serviceUrl: string
   ): void {
-    Logger.info`${chalk.bold.cyan("Starting Data Loading Process:")}`;
-    Logger.infoString(`Lyric URL: ${serviceUrl}`);
-    Logger.infoString(`Data Directory: ${params.dataDirectory}`);
-    Logger.infoString(`Category ID: ${params.categoryId}`);
-    Logger.infoString(`Organization: ${params.organization}`);
-    Logger.infoString(`Max Retries: ${params.maxRetries}`);
+    Logger.info`Uploading ${params.dataDirectory}`;
+    Logger.debug`Lyric URL: ${serviceUrl}`;
+    Logger.debug`Data Directory: ${params.dataDirectory}`;
+    Logger.debug`Category ID: ${params.categoryId}`;
+    Logger.debug`Organization: ${params.organization}`;
+    Logger.debug`Max Retries: ${params.maxRetries}`;
   }
 
   /**
    * Log successful submission
    */
   private logSuccess(result: DataSubmissionResult): void {
-    Logger.successString("Data loading completed successfully");
-    Logger.generic(" ");
+    Logger.successString("Data upload complete");
     Logger.generic(chalk.gray(`    - Submission ID: ${result.submissionId}`));
     Logger.generic(chalk.gray(`    - Status: ${result.status}`));
     Logger.generic(
       chalk.gray(`    - Files Submitted: ${result.filesSubmitted.join(", ")}`)
     );
-    Logger.generic(" ");
   }
 
   /**

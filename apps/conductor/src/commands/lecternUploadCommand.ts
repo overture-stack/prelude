@@ -275,7 +275,6 @@ export class LecternUploadCommand extends Command {
     Logger.generic(
       chalk.gray(`    - Schema Version: ${result.version || "N/A"}`)
     );
-    Logger.generic(" ");
   }
 
   /**
