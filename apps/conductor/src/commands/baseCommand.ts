@@ -9,7 +9,7 @@
 import { CLIOutput } from "../types/cli";
 import * as fs from "fs";
 import { Logger } from "../utils/logger";
-import { ErrorFactory } from "../utils/errors";
+import { ErrorFactory, ConductorError } from "../utils/errors";
 
 /**
  * Command execution result
@@ -88,57 +88,33 @@ export abstract class Command {
         Logger.debug`${this.name} command failed after ${executionTime.toFixed(
           2
         )}s: ${result.errorMessage || "Unknown error"}`;
-
-        // If the command returned an error but didn't log it, log it here
-        if (
-          result.errorMessage &&
-          !result.errorMessage.includes("already logged")
-        ) {
-          Logger.errorString(result.errorMessage);
-
-          // Check for suggestions in the result details
-          if (result.details?.suggestions) {
-            Logger.suggestion("Suggestions");
-            result.details.suggestions.forEach((suggestion: string) => {
-              Logger.tipString(suggestion);
-            });
-          }
-        }
       }
 
       return result;
     } catch (error: unknown) {
       Logger.debug`ERROR IN ${this.name} COMMAND: ${error}`;
 
-      // IMPROVED ERROR LOGGING: More detailed handling with better visibility
-      if (error instanceof Error && error.name === "ConductorError") {
-        const conductorError = error as any;
-
-        // Check if this error was already logged
-        const alreadyLogged =
-          conductorError.alreadyLogged ||
-          (conductorError.details && conductorError.details.alreadyLogged);
-
-        if (!alreadyLogged) {
-          // Log the error message once with proper formatting
-          Logger.errorString(conductorError.message);
+      // CENTRALIZED ERROR LOGGING - SINGLE POINT OF CONTROL
+      if (error instanceof ConductorError) {
+        // Only log if not already logged
+        if (!error.isLogged) {
+          Logger.errorString(error.message);
 
           // Display suggestions if available
-          if (
-            conductorError.suggestions &&
-            conductorError.suggestions.length > 0
-          ) {
+          if (error.suggestions && error.suggestions.length > 0) {
             Logger.suggestion("Suggestions");
-            conductorError.suggestions.forEach((suggestion: string) => {
+            error.suggestions.forEach((suggestion: string) => {
               Logger.tipString(suggestion);
             });
           }
+
+          error.isLogged = true; // Mark as logged
         }
 
         // Display additional details in debug mode
-        if (cliOutput.debug && conductorError.details) {
+        if (cliOutput.debug && error.details) {
           Logger.debug`Error details: ${JSON.stringify(
-            conductorError.details,
+            error.details,
             null,
             2
           )}`;
@@ -146,9 +122,9 @@ export abstract class Command {
 
         return {
           success: false,
-          errorMessage: conductorError.message,
-          errorCode: conductorError.code,
-          details: conductorError.details,
+          errorMessage: error.message,
+          errorCode: error.code,
+          details: error.details,
         };
       }
 

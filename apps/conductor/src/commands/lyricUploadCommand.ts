@@ -1,4 +1,4 @@
-// src/commands/lyricUploadCommand.ts
+// src/commands/lyricUploadCommand.ts - Updated with single file support
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
@@ -7,10 +7,11 @@ import { ErrorFactory } from "../utils/errors";
 import { LyricSubmissionService } from "../services/lyric/LyricSubmissionService";
 import { DataSubmissionParams } from "../services/lyric/LyricSubmissionService";
 import * as fs from "fs";
+import * as path from "path";
 
 /**
  * Command for loading data into Lyric
- * Updated to use error factory pattern for consistent error handling
+ * Enhanced to support both single files and directories
  */
 export class LyricUploadCommand extends Command {
   constructor() {
@@ -19,7 +20,7 @@ export class LyricUploadCommand extends Command {
 
   /**
    * Override to indicate this command doesn't require input files from -f/--file
-   * It uses data directories instead.
+   * It uses data directories or files instead.
    */
   protected requiresInputFiles(): boolean {
     return false;
@@ -37,13 +38,12 @@ export class LyricUploadCommand extends Command {
       // Create service
       const lyricSubmissionService = new LyricSubmissionService(serviceConfig);
 
-      // EXPLICIT ERROR HANDLING: Check service health with direct error logging
+      // Check service health with direct error handling
       try {
         Logger.debug`Checking Lyric service health at ${serviceConfig.url}`;
         const healthResult = await lyricSubmissionService.checkHealth();
 
         if (!healthResult.healthy) {
-          Logger.errorString("Lyric service is not healthy");
           throw ErrorFactory.connection(
             "Lyric service is not healthy",
             {
@@ -61,17 +61,12 @@ export class LyricUploadCommand extends Command {
 
         Logger.debug`Lyric service health check passed`;
       } catch (healthError) {
-        // Direct error logging here to ensure it's visible
+        // Enhanced error handling for health check failures
         const errorMessage =
           healthError instanceof Error
             ? healthError.message
             : String(healthError);
 
-        Logger.errorString(
-          `Lyric service health check failed: ${errorMessage}`
-        );
-
-        // Provide more specific suggestions based on error
         if (
           errorMessage.includes("ECONNREFUSED") ||
           errorMessage.includes("ENOTFOUND")
@@ -116,21 +111,13 @@ export class LyricUploadCommand extends Command {
         details: result,
       };
     } catch (error) {
-      // IMPORTANT: Direct explicit error logging here
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-
-      // Ensure the error is visibly logged
-      if (!(error instanceof Error && error.name === "ConductorError")) {
-        Logger.errorString(`Lyric data upload failed: ${errorMessage}`);
-      }
-
+      // Let baseCommand handle all error logging
       return this.handleExecutionError(error);
     }
   }
 
   /**
-   * Validates command line arguments
+   * ENHANCED: Validates command line arguments - now supports both files and directories
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     // First call the parent validate method with our override
@@ -154,10 +141,10 @@ export class LyricUploadCommand extends Command {
           "Use --lyric-url option or set LYRIC_URL environment variable",
       },
       {
-        value: this.getDataDirectory(cliOutput),
-        name: "Data directory",
+        value: this.getDataInput(cliOutput),
+        name: "Data input (file or directory)",
         suggestion:
-          "Use --data-directory (-d) option or set LYRIC_DATA environment variable",
+          "Use --data-directory (-d) option to specify a CSV file or directory containing CSV files",
       },
     ];
 
@@ -165,31 +152,93 @@ export class LyricUploadCommand extends Command {
       if (!param.value) {
         throw ErrorFactory.args(`${param.name} is required`, [
           param.suggestion,
-          "Example: --data-directory ./csv-files",
+          "Example: -d ./data/diagnosis.csv or -d ./data/csv-files/",
         ]);
       }
     }
 
-    // Validate data directory exists
-    const dataDirectory = this.getDataDirectory(cliOutput)!;
-    if (!fs.existsSync(dataDirectory)) {
-      throw ErrorFactory.file("Data directory not found", dataDirectory, [
-        "Check that the directory exists",
+    // ENHANCED: Validate data input (file or directory) exists
+    const dataInput = this.getDataInput(cliOutput)!;
+    if (!fs.existsSync(dataInput)) {
+      throw ErrorFactory.file("Data input not found", dataInput, [
+        "Check that the file or directory exists",
         "Verify the path is correct",
-        "Ensure you have access to the directory",
+        "Ensure you have access to the path",
       ]);
     }
 
-    // Validate data directory contains CSV files
+    const stats = fs.statSync(dataInput);
+
+    if (stats.isFile()) {
+      // Single file validation
+      await this.validateSingleFile(dataInput);
+    } else if (stats.isDirectory()) {
+      // Directory validation
+      await this.validateDirectory(dataInput);
+    } else {
+      throw ErrorFactory.file("Input is not a file or directory", dataInput, [
+        "Provide a valid CSV file path or directory containing CSV files",
+        "Check that the path points to an existing file or directory",
+      ]);
+    }
+  }
+
+  /**
+   * NEW: Validate a single CSV file
+   */
+  private async validateSingleFile(filePath: string): Promise<void> {
+    // Check file extension
+    if (!filePath.toLowerCase().endsWith(".csv")) {
+      throw ErrorFactory.invalidFile(
+        "File must have .csv extension",
+        filePath,
+        [
+          "Ensure the file has a .csv extension",
+          "Only CSV files are supported for Lyric uploads",
+          "Example: diagnosis.csv, donor.csv, etc.",
+        ]
+      );
+    }
+
+    // Check file has content
+    const stats = fs.statSync(filePath);
+    if (stats.size === 0) {
+      throw ErrorFactory.invalidFile("File is empty", filePath, [
+        "Ensure the file contains data",
+        "Check if the file was created properly",
+        "Verify the file wasn't truncated during transfer",
+      ]);
+    }
+
+    // Check read permissions
+    try {
+      fs.accessSync(filePath, fs.constants.R_OK);
+    } catch (error) {
+      throw ErrorFactory.file("Cannot read file", filePath, [
+        "Check file permissions",
+        "Ensure you have read access to the file",
+        "Try running with appropriate privileges",
+      ]);
+    }
+
+    Logger.debug`Single file validation passed: ${path.basename(filePath)} (${
+      Math.round((stats.size / 1024) * 10) / 10
+    } KB)`;
+  }
+
+  /**
+   * EXISTING: Validate directory contains CSV files
+   */
+  private async validateDirectory(directoryPath: string): Promise<void> {
     try {
       const files = fs
-        .readdirSync(dataDirectory)
+        .readdirSync(directoryPath)
         .filter((file) => file.toLowerCase().endsWith(".csv"));
 
       if (files.length === 0) {
         throw ErrorFactory.validation(
-          "No CSV files found in data directory",
-          { dataDirectory },
+          "No CSV files found in directory",
+          { directoryPath },
           [
             "Ensure the directory contains CSV files",
             "Check that files have .csv extension",
@@ -198,13 +247,13 @@ export class LyricUploadCommand extends Command {
         );
       }
 
-      Logger.debug`Found ${files.length} CSV files in ${dataDirectory}`;
+      Logger.debug`Found ${files.length} CSV files in ${directoryPath}`;
     } catch (error) {
       if (error instanceof Error && error.name === "ConductorError") {
         throw error;
       }
 
-      throw ErrorFactory.file("Failed to read data directory", dataDirectory, [
+      throw ErrorFactory.file("Failed to read directory", directoryPath, [
         "Check directory permissions",
         "Verify you have access to read the directory",
         "Ensure the directory path is correct",
@@ -227,7 +276,7 @@ export class LyricUploadCommand extends Command {
         cliOutput.options.organization ||
         process.env.ORGANIZATION ||
         "OICR",
-      dataDirectory: this.getDataDirectory(cliOutput)!,
+      dataDirectory: this.getDataInput(cliOutput)!, // Now supports both files and directories
       maxRetries: parseInt(
         String(
           cliOutput.options.maxRetries ||
@@ -270,9 +319,9 @@ export class LyricUploadCommand extends Command {
   }
 
   /**
-   * Get data directory from various sources
+   * ENHANCED: Get data input (file or directory) from various sources
    */
-  private getDataDirectory(cliOutput: CLIOutput): string | undefined {
+  private getDataInput(cliOutput: CLIOutput): string | undefined {
     return (
       cliOutput.options.dataDirectory ||
       cliOutput.config.lyric?.dataDirectory ||
@@ -281,15 +330,18 @@ export class LyricUploadCommand extends Command {
   }
 
   /**
-   * Log submission information
+   * ENHANCED: Log submission information with better file/directory detection
    */
   private logSubmissionInfo(
     params: DataSubmissionParams,
     serviceUrl: string
   ): void {
-    Logger.debug`Uploading ${params.dataDirectory}`;
+    const inputType = fs.statSync(params.dataDirectory).isFile()
+      ? "file"
+      : "directory";
+
+    Logger.debug`Uploading from ${inputType}: ${params.dataDirectory}`;
     Logger.debug`Lyric URL: ${serviceUrl}`;
-    Logger.debug`Data Directory: ${params.dataDirectory}`;
     Logger.debug`Category ID: ${params.categoryId}`;
     Logger.debug`Organization: ${params.organization}`;
     Logger.debug`Max Retries: ${params.maxRetries}`;
@@ -309,38 +361,18 @@ export class LyricUploadCommand extends Command {
   }
 
   /**
-   * Handle execution errors with helpful user feedback
-   * IMPORTANT: Ensure errors are explicitly displayed
+   * Handle execution errors - DON'T LOG HERE, let baseCommand handle it
    */
   private handleExecutionError(error: unknown): CommandResult {
+    // Don't log here - let baseCommand handle all logging
     if (error instanceof Error && error.name === "ConductorError") {
       const conductorError = error as any;
-
-      // Skip logging if the error was already logged
-      if (!conductorError.alreadyLogged) {
-        // This is crucial: Always log the error message
-        Logger.errorString(conductorError.message);
-
-        // Display suggestions
-        if (
-          conductorError.suggestions &&
-          conductorError.suggestions.length > 0
-        ) {
-          Logger.suggestion("Suggestions");
-          conductorError.suggestions.forEach((suggestion: string) => {
-            Logger.tipString(suggestion);
-          });
-        }
-      }
 
       return {
         success: false,
         errorMessage: conductorError.message,
         errorCode: conductorError.code,
-        details: {
-          ...conductorError.details,
-          alreadyLogged: true, // Mark as logged for the base command
-        },
+        details: conductorError.details,
       };
     }
 
@@ -364,11 +396,6 @@ export class LyricUploadCommand extends Command {
         ]
       );
 
-      // Log these suggestions explicitly
-      connectionError.suggestions?.forEach((suggestion) => {
-        Logger.tipString(suggestion);
-      });
-
       return {
         success: false,
         errorMessage: connectionError.message,
@@ -380,19 +407,14 @@ export class LyricUploadCommand extends Command {
     // File/directory errors
     if (errorMessage.includes("ENOENT") || errorMessage.includes("directory")) {
       const fileError = ErrorFactory.file(
-        "Data directory or file issue",
+        "Data input or file issue",
         undefined,
         [
-          "Check that the data directory exists",
-          "Verify CSV files are present in the directory",
+          "Check that the data file or directory exists",
+          "Verify CSV files are present and accessible",
           "Ensure you have read access to the files",
         ]
       );
-
-      // Log these suggestions explicitly
-      fileError.suggestions?.forEach((suggestion) => {
-        Logger.tipString(suggestion);
-      });
 
       return {
         success: false,
@@ -414,11 +436,6 @@ export class LyricUploadCommand extends Command {
         ]
       );
 
-      // Log these suggestions explicitly
-      authError.suggestions?.forEach((suggestion) => {
-        Logger.tipString(suggestion);
-      });
-
       return {
         success: false,
         errorMessage: authError.message,
@@ -438,11 +455,6 @@ export class LyricUploadCommand extends Command {
         "Use --debug for detailed error information",
       ]
     );
-
-    // Log these suggestions explicitly
-    genericError.suggestions?.forEach((suggestion) => {
-      Logger.tipString(suggestion);
-    });
 
     return {
       success: false,

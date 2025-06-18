@@ -2,6 +2,8 @@
 import { Logger } from "./logger";
 
 export class ConductorError extends Error {
+  public isLogged: boolean = false; // Add this property to track if error was already logged
+
   constructor(
     message: string,
     public code: string,

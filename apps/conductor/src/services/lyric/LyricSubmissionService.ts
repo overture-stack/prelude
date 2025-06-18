@@ -1,4 +1,4 @@
-// src/services/lyric/LyricSubmissionService.ts
+// src/services/lyric/LyricSubmissionService.ts - Enhanced with single file support
 import { BaseService } from "../base/baseService";
 import { ServiceConfig } from "../base/types";
 import { Logger } from "../../utils/logger";
@@ -12,7 +12,7 @@ import chalk from "chalk";
 export interface DataSubmissionParams {
   categoryId: string;
   organization: string;
-  dataDirectory: string;
+  dataDirectory: string; // Can now be a file or directory
   maxRetries?: number;
   retryDelay?: number;
 }
@@ -44,24 +44,27 @@ export class LyricSubmissionService extends BaseService {
     params: DataSubmissionParams
   ): Promise<DataSubmissionResult> {
     try {
-      // Step 1: Find and validate files
+      // Step 1: Find and validate files (now supports both files and directories)
       const validFiles = await this.findValidFiles(params.dataDirectory);
 
-      // Step 2: Submit files
+      // Step 2: Validate filenames against schema names BEFORE submission
+      await this.validateFilenamesAgainstSchemas(validFiles, params.categoryId);
+
+      // Step 3: Submit files
       const submission = await this.submitFiles({
         categoryId: params.categoryId,
         organization: params.organization,
         files: validFiles,
       });
 
-      // Step 3: Wait for validation
+      // Step 4: Wait for validation
       const finalStatus = await this.waitForValidation(
         submission.submissionId,
         params.maxRetries || 10,
         params.retryDelay || 20000
       );
 
-      // Step 4: Commit if valid
+      // Step 5: Commit if valid
       if (finalStatus === "VALID") {
         await this.commitSubmission(params.categoryId, submission.submissionId);
 
@@ -88,63 +91,220 @@ export class LyricSubmissionService extends BaseService {
         ]
       );
     } catch (error) {
-      // Don't call handleServiceError here - let errors propagate to command layer
-      // This ensures the command's error handling gets the original error
       throw error;
     }
   }
 
   /**
-   * Find valid CSV files that match the schema requirements
+   * Validate filenames against available schema names BEFORE submission
    */
-  private async findValidFiles(dataDirectory: string): Promise<string[]> {
-    if (!fs.existsSync(dataDirectory)) {
-      throw ErrorFactory.file("Data directory not found", dataDirectory, [
-        "Check that the directory exists",
-        "Verify the path is correct",
-        "Ensure you have access to the directory",
-      ]);
-    }
+  private async validateFilenamesAgainstSchemas(
+    filePaths: string[],
+    categoryId: string
+  ): Promise<void> {
+    Logger.debug`Validating filenames against schema names for category ${categoryId}`;
 
-    if (!fs.statSync(dataDirectory).isDirectory()) {
-      throw ErrorFactory.file("Path is not a directory", dataDirectory, [
-        "Provide a directory path, not a file path",
-        "Check that the path points to a directory",
-      ]);
-    }
+    try {
+      // Get available schema names from the dictionary
+      const availableSchemas = await this.getAvailableSchemaNames(categoryId);
 
-    // Find all CSV files
-    const allFiles = fs
-      .readdirSync(dataDirectory)
-      .filter((file) => file.endsWith(".csv"))
-      .map((file) => path.join(dataDirectory, file))
-      .filter((filePath) => {
-        try {
-          const stats = fs.statSync(filePath);
-          return stats.isFile() && stats.size > 0;
-        } catch {
-          return false;
+      if (availableSchemas.length === 0) {
+        Logger.warnString(
+          `Could not fetch schema names for category ${categoryId}`
+        );
+        Logger.warnString("Proceeding without filename validation");
+        return;
+      }
+
+      Logger.debug`Available schemas: ${availableSchemas.join(", ")}`;
+
+      // Check each file
+      const invalidFiles: string[] = [];
+      const validFiles: string[] = [];
+
+      for (const filePath of filePaths) {
+        const filename = path.basename(filePath);
+        const schemaName = path.basename(filename, ".csv");
+
+        if (availableSchemas.includes(schemaName)) {
+          validFiles.push(filename);
+          Logger.debug`✓ ${filename} matches schema '${schemaName}'`;
+        } else {
+          invalidFiles.push(filename);
+          Logger.debug`✗ ${filename} does not match any schema (extracted: '${schemaName}')`;
         }
+      }
+
+      // If there are invalid files, display error and stop
+      if (invalidFiles.length > 0) {
+        Logger.errorString(
+          `Invalid file names detected - files must match schema names exactly`
+        );
+
+        Logger.suggestion("Invalid Files (do not match any schema)");
+        invalidFiles.forEach((filename) => {
+          const extractedName = path.basename(filename, ".csv");
+          Logger.generic(
+            `   ▸ ${filename} (extracted schema name: '${extractedName}')`
+          );
+        });
+
+        if (validFiles.length > 0) {
+          Logger.suggestion("Valid Files (match schemas)");
+          validFiles.forEach((filename) => {
+            const extractedName = path.basename(filename, ".csv");
+            Logger.generic(
+              `   ▸ ${filename} (matches schema: '${extractedName}')`
+            );
+          });
+        }
+
+        Logger.suggestion("Available Schema Names");
+        availableSchemas.forEach((schemaName) => {
+          Logger.generic(`   ▸ ${schemaName}.csv`);
+        });
+
+        Logger.suggestion("How to Fix");
+        Logger.generic(
+          "   ▸ Rename your CSV files to match the exact schema names"
+        );
+        Logger.generic("   ▸ Schema names are case-sensitive");
+        Logger.generic("   ▸ File format must be: [schema_name].csv");
+        Logger.generic(
+          "   ▸ Example: if you have a 'diagnosis' schema, file should be 'diagnosis.csv'"
+        );
+
+        // Create error but mark as already logged
+        const error = ErrorFactory.validation(
+          "File names do not match schema names",
+          {
+            invalidFiles,
+            validFiles,
+            availableSchemas,
+            categoryId,
+            alreadyLogged: true,
+          },
+          [] // Empty suggestions since we already displayed them above
+        );
+
+        error.isLogged = true;
+        throw error;
+      }
+
+      Logger.debug`All ${filePaths.length} files have valid schema names`;
+    } catch (error) {
+      // If it's our validation error, rethrow it
+      if (error instanceof Error && error.name === "ConductorError") {
+        throw error;
+      }
+
+      // If we couldn't validate schemas, warn but continue
+      Logger.warnString(
+        `Could not validate filenames against schemas: ${error}`
+      );
+      Logger.warnString(
+        "Proceeding without filename validation - errors may occur during submission"
+      );
+    }
+  }
+
+  /**
+   * ENHANCED: Find valid CSV files - now supports both files and directories
+   */
+  private async findValidFiles(inputPath: string): Promise<string[]> {
+    if (!fs.existsSync(inputPath)) {
+      throw ErrorFactory.file("Input path not found", inputPath, [
+        "Check that the file or directory exists",
+        "Verify the path is correct",
+        "Ensure you have access to the path",
+      ]);
+    }
+
+    const stats = fs.statSync(inputPath);
+
+    // Handle single file input
+    if (stats.isFile()) {
+      Logger.debug`Input is a single file: ${inputPath}`;
+
+      // Validate it's a CSV file
+      if (!inputPath.toLowerCase().endsWith(".csv")) {
+        throw ErrorFactory.invalidFile(
+          "File must have .csv extension",
+          inputPath,
+          [
+            "Ensure the file has a .csv extension",
+            "Only CSV files are supported for Lyric uploads",
+          ]
+        );
+      }
+
+      // Check file has content
+      if (stats.size === 0) {
+        throw ErrorFactory.invalidFile("File is empty", inputPath, [
+          "Ensure the file contains data",
+          "Check if the file was created properly",
+        ]);
+      }
+
+      Logger.debug`Single file validation passed`;
+      Logger.debug`File: ${path.basename(inputPath)} (${
+        Math.round((stats.size / 1024) * 10) / 10
+      } KB)`;
+
+      return [inputPath];
+    }
+
+    // Handle directory input (existing logic)
+    if (stats.isDirectory()) {
+      Logger.debug`Input is a directory: ${inputPath}`;
+
+      // Find all CSV files
+      const allFiles = fs
+        .readdirSync(inputPath)
+        .filter((file) => file.endsWith(".csv"))
+        .map((file) => path.join(inputPath, file))
+        .filter((filePath) => {
+          try {
+            const fileStats = fs.statSync(filePath);
+            return fileStats.isFile() && fileStats.size > 0;
+          } catch {
+            return false;
+          }
+        });
+
+      if (allFiles.length === 0) {
+        throw ErrorFactory.file(
+          "No valid CSV files found in directory",
+          inputPath,
+          [
+            "Ensure the directory contains CSV files",
+            "Check that files have .csv extension",
+            "Verify files are not empty",
+          ]
+        );
+      }
+
+      // Log the files found in a nice format
+      Logger.debug`Found ${allFiles.length} valid CSV files in directory`;
+      Logger.debug`Files found in ${inputPath}:`;
+      allFiles.forEach((file) => {
+        const fileStats = fs.statSync(file);
+        const sizeKB = Math.round((fileStats.size / 1024) * 10) / 10;
+        Logger.debug`  - ${path.basename(file)} (${sizeKB} KB)`;
       });
 
-    if (allFiles.length === 0) {
-      throw ErrorFactory.file("No valid CSV files found", dataDirectory, [
-        "Ensure the directory contains CSV files",
-        "Check that files have .csv extension",
-        "Verify files are not empty",
-      ]);
+      return allFiles;
     }
 
-    // Log the files found in a nice format
-    Logger.debug`Found ${allFiles.length} valid CSV files`;
-    Logger.debug`Files found in ${dataDirectory}:`;
-    allFiles.forEach((file) => {
-      const stats = fs.statSync(file);
-      const sizeKB = Math.round((stats.size / 1024) * 10) / 10;
-      Logger.debug`  - ${path.basename(file)} (${sizeKB} KB)`;
-    });
-
-    return allFiles;
+    // Not a file or directory
+    throw ErrorFactory.file(
+      "Input path is not a file or directory",
+      inputPath,
+      [
+        "Provide a valid file path (ending in .csv) or directory path",
+        "Check that the path points to an existing file or directory",
+      ]
+    );
   }
 
   /**
@@ -156,13 +316,17 @@ export class LyricSubmissionService extends BaseService {
     files: string[];
   }): Promise<{ submissionId: string }> {
     try {
-      Logger.info`Submitting ${params.files.length} files to Lyric:`;
+      const fileCount = params.files.length;
+      const fileWord = fileCount === 1 ? "file" : "files";
+
+      Logger.info`Submitting ${fileCount} ${fileWord} to Lyric:`;
 
       // List the files being submitted
       params.files.forEach((file) => {
         Logger.generic(`  ▸ ${path.basename(file)}`);
       });
       Logger.generic("");
+
       // Create FormData for file upload - use Node.js FormData implementation
       const formData = new FormData();
 
@@ -195,9 +359,7 @@ export class LyricSubmissionService extends BaseService {
 
       const submissionId = response.data?.submissionId;
       if (!submissionId) {
-        // Check if this is a file validation error (invalid schema names)
-        await this.handleFileValidationError(response.data, params);
-
+        // This should not happen now since we validate filenames beforehand
         throw ErrorFactory.connection(
           "Could not extract submission ID from response",
           {
@@ -221,21 +383,9 @@ export class LyricSubmissionService extends BaseService {
 
       Logger.debug`Submission error: ${errorMessage}`;
 
-      // IMPORTANT: If this is already a properly formatted schema validation error,
-      // just rethrow it without adding generic suggestions
+      // If it's already a ConductorError, just rethrow it
       if (error instanceof Error && error.name === "ConductorError") {
-        const conductorError = error as any;
-
-        // Check if this is a schema validation error that was already properly handled
-        if (
-          conductorError.message === "File names do not match schema names" ||
-          conductorError.message ===
-            "File names do not match schema names in dictionary" ||
-          conductorError.alreadyLogged
-        ) {
-          // This error already has proper context and suggestions, just rethrow it
-          throw error;
-        }
+        throw error;
       }
 
       // Special handling for category not found errors
@@ -379,113 +529,7 @@ export class LyricSubmissionService extends BaseService {
       );
     }
   }
-  /**
-   * Handle file validation errors (invalid schema names) with helpful suggestions
-   */
-  private async handleFileValidationError(
-    responseData: any,
-    params: { files: string[]; categoryId: string }
-  ): Promise<void> {
-    // Check if the response indicates file validation errors
-    // Since Lyric doesn't return a submissionId when files are invalid, we should assume this is a file validation error
-    // Look for common indicators or just proceed with file validation logic
 
-    Logger.debug`Checking for file validation errors. Response: ${JSON.stringify(
-      responseData
-    )}`;
-
-    try {
-      // Extract invalid filenames from the response or derive from file list
-      const invalidFiles = params.files.map((f) => path.basename(f));
-
-      Logger.errorString(
-        `Invalid file names detected - files must match schema names`
-      );
-      Logger.suggestion("Invalid Files");
-      invalidFiles.forEach((filename) => {
-        const schemaName = path.basename(filename, ".csv");
-        Logger.generic(`   ▸ ${filename}`);
-      });
-
-      // Try to get available schema names from the dictionary
-      const availableSchemas = await this.getAvailableSchemaNames(
-        params.categoryId
-      );
-
-      if (availableSchemas.length > 0) {
-        Logger.suggestion("Available Schema Names");
-        availableSchemas.forEach((schemaName) => {
-          Logger.generic(`   ▸ ${schemaName}.csv`);
-        });
-      } else {
-        Logger.suggestion("Could not fetch available schema names");
-        Logger.generic("   ▸ Check your dictionary configuration in Lyric");
-        Logger.generic("   ▸ Verify category has a dictionary assigned");
-        Logger.generic(
-          "   ▸ Common schema names might include: donor, diagnosis, treatment, followup"
-        );
-      }
-
-      Logger.suggestion("Suggestions");
-      Logger.generic(
-        "   ▸ Rename your CSV files to match the relevant schema name(s)"
-      );
-      Logger.generic("   ▸ Schema names are case-sensitive");
-      Logger.generic("   ▸ Use --debug flag to see detailed error information");
-
-      // Throw a specific error for this case
-      throw ErrorFactory.validation(
-        "File names do not match schema names",
-        {
-          invalidFiles,
-          availableSchemas,
-          categoryId: params.categoryId,
-          alreadyLogged: true, // Mark as already logged to prevent duplicate messages
-        },
-        [] // Empty suggestions since we already displayed them above
-      );
-    } catch (schemaError) {
-      // If this is our validation error, rethrow it
-      if (
-        schemaError instanceof Error &&
-        schemaError.name === "ConductorError"
-      ) {
-        throw schemaError;
-      }
-
-      // If we couldn't get schema info, provide basic guidance
-      Logger.errorString(`Invalid file names - files must match schema names`);
-      Logger.suggestion("Invalid Files");
-      params.files.forEach((file) => {
-        Logger.generic(`   ▸ ${path.basename(file)}`);
-      });
-      Logger.suggestion("Solutions");
-      Logger.generic(
-        "   ▸ Rename your CSV files to match the exact schema names from your dictionary"
-      );
-      Logger.generic(
-        "   ▸ File names must be: [schema_name].csv (case-sensitive)"
-      );
-      Logger.generic(
-        "   ▸ Check your dictionary definition for the correct schema names"
-      );
-      Logger.generic("   ▸ Use --debug flag to see detailed error information");
-
-      throw ErrorFactory.validation(
-        "File names do not match schema names in dictionary",
-        {
-          invalidFiles: params.files.map((f) => path.basename(f)),
-          categoryId: params.categoryId,
-          alreadyLogged: true,
-        },
-        []
-      );
-    }
-  }
-
-  /**
-   * Get available schema names from the dictionary for the given category
-   */
   /**
    * Get available schema names from the dictionary for the given category
    */
@@ -613,6 +657,9 @@ export class LyricSubmissionService extends BaseService {
         Logger.errorString(
           "Data validation failed - see submission details for more information"
         );
+        Logger.generic(
+          `   ▸ View detailed errors: ${this.config.url}/submission/${submissionId}`
+        );
         return;
       }
 
@@ -623,18 +670,28 @@ export class LyricSubmissionService extends BaseService {
         0
       );
 
-      // Quick analysis to detect common patterns
       const isDuplicateSubmission =
         this.isDuplicateSubmissionError(errorsByTable);
 
       if (isDuplicateSubmission) {
-        this.displayDuplicateSubmissionError(errorsByTable, totalErrors);
+        this.displayDuplicateSubmissionError(
+          errorsByTable,
+          totalErrors,
+          submissionId
+        );
       } else {
-        this.displayGenericValidationErrors(errorsByTable, totalErrors);
+        this.displayGenericValidationErrors(
+          errorsByTable,
+          totalErrors,
+          submissionId
+        );
       }
     } catch (parseError) {
       Logger.warnString("Could not parse detailed error information");
       Logger.debugString(`Parse error: ${parseError}`);
+      Logger.generic(
+        `   ▸ View detailed errors: ${this.config.url}/submission/${submissionId}`
+      );
     }
   }
 
@@ -656,7 +713,8 @@ export class LyricSubmissionService extends BaseService {
    */
   private displayDuplicateSubmissionError(
     errorsByTable: Record<string, any[]>,
-    totalErrors: number
+    totalErrors: number,
+    submissionId?: string
   ): void {
     const tableCount = Object.keys(errorsByTable).length;
 
@@ -665,7 +723,6 @@ export class LyricSubmissionService extends BaseService {
     );
     Logger.suggestion("This appears to be a resubmission of existing data");
 
-    // Show which tables have duplicates
     Object.entries(errorsByTable).forEach(([tableName, errors]) => {
       if (Array.isArray(errors) && errors.length > 0) {
         Logger.generic(
@@ -673,6 +730,13 @@ export class LyricSubmissionService extends BaseService {
         );
       }
     });
+
+    // Simple submission link
+    if (submissionId) {
+      Logger.generic(
+        `   ▸ View detailed errors: ${this.config.url}/submission/${submissionId}`
+      );
+    }
   }
 
   /**
@@ -680,7 +744,8 @@ export class LyricSubmissionService extends BaseService {
    */
   private displayGenericValidationErrors(
     errorsByTable: Record<string, any[]>,
-    totalErrors: number
+    totalErrors: number,
+    submissionId?: string
   ): void {
     const tableCount = Object.keys(errorsByTable).length;
 
@@ -689,7 +754,6 @@ export class LyricSubmissionService extends BaseService {
     );
     Logger.generic("");
 
-    // Group errors by type across all tables
     const errorSummary = this.summarizeErrorTypes(errorsByTable);
 
     Logger.suggestion("Error Summary");
@@ -700,7 +764,6 @@ export class LyricSubmissionService extends BaseService {
 
     Logger.generic("");
 
-    // Show affected tables
     Logger.suggestion("Affected Tables");
     Object.entries(errorsByTable).forEach(([tableName, errors]) => {
       if (Array.isArray(errors) && errors.length > 0) {
@@ -712,6 +775,13 @@ export class LyricSubmissionService extends BaseService {
 
     Logger.generic("");
     this.displayGenericSolutions(errorSummary);
+
+    // Simple submission link
+    if (submissionId) {
+      Logger.generic(
+        `   ▸ View detailed errors: ${this.config.url}/submission/${submissionId}`
+      );
+    }
   }
 
   /**
@@ -740,7 +810,8 @@ export class LyricSubmissionService extends BaseService {
       case "INVALID_BY_UNIQUE":
         return "Duplicate values in unique fields";
       case "INVALID_BY_MISSING_RELATION":
-        return "Missing references to related records";
+      case "INVALID_BY_FOREIGNKEY":
+        return "Foreign key constraint violations";
       case "INVALID_BY_REGEX":
         return "Invalid format or pattern";
       case "INVALID_BY_SCRIPT":
@@ -763,6 +834,7 @@ export class LyricSubmissionService extends BaseService {
           Logger.generic("   ▸ Ensure each record has a unique identifier");
           break;
         case "INVALID_BY_MISSING_RELATION":
+        case "INVALID_BY_FOREIGNKEY":
           Logger.generic(
             "   ▸ Verify foreign key values exist in referenced tables"
           );
@@ -823,10 +895,9 @@ export class LyricSubmissionService extends BaseService {
           Logger.debug`Submission validation passed`;
           return status;
         } else if (status === "INVALID") {
-          // Parse and display detailed errors based on the response
           this.parseAndDisplayLyricErrors(submissionId, response.data);
 
-          throw ErrorFactory.validation(
+          const error = ErrorFactory.validation(
             "Data validation failed - see detailed errors above",
             {
               submissionId,
@@ -839,15 +910,13 @@ export class LyricSubmissionService extends BaseService {
                   )
                 : 0,
             },
-            [
-              "Fix the validation errors identified above",
-              `Complete error details: ${this.config.url}/submission/${submissionId}`,
-              "Correct your CSV data and resubmit",
-            ]
+            []
           );
+
+          error.isLogged = true;
+          throw error;
         }
 
-        // Still processing, wait before next check
         if (attempt < maxRetries) {
           Logger.info`Waiting ${retryDelay / 1000} seconds before next check`;
           await this.delay(retryDelay);
@@ -906,7 +975,6 @@ export class LyricSubmissionService extends BaseService {
     Logger.debug`Committing submission: ${submissionId}`;
 
     try {
-      // Send empty object instead of null
       await this.http.post(
         `/submission/category/${categoryId}/commit/${submissionId}`,
         {}
@@ -914,7 +982,6 @@ export class LyricSubmissionService extends BaseService {
 
       Logger.debug`Submission committed successfully`;
     } catch (error) {
-      // Enhanced error handling for commit failures
       const errorMessage =
         error instanceof Error ? error.message : String(error);
 
