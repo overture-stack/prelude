@@ -13,6 +13,9 @@ export const Profiles = {
   /** Upload data to Elasticsearch */
   UPLOAD: "upload",
 
+  /** Upload data to PostgreSQL */
+  POSTGRES_UPLOAD: "postgresUpload",
+
   /** Upload schema to Lectern server */
   LECTERN_UPLOAD: "lecternUpload",
 

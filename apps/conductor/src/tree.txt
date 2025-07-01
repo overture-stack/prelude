@@ -1,0 +1,77 @@
+.
+├── cli
+│   ├── index.ts
+│   └── options.ts
+├── commands
+│   ├── baseCommand.ts
+│   ├── commandRegistry.ts
+│   ├── lecternUploadCommand.ts
+│   ├── lyricRegistrationCommand.ts
+│   ├── lyricUploadCommand.ts
+│   ├── maestroIndexCommand.ts
+│   ├── postgresUploadCommand.ts
+│   ├── songCreateStudyCommand.ts
+│   ├── songPublishAnalysisCommand.ts
+│   ├── songSubmitAnalysisCommand.ts
+│   ├── songUploadSchemaCommand.ts
+│   └── uploadCsvCommand.ts
+├── config
+│   ├── environment.ts
+│   └── serviceConfigManager.ts
+├── main.ts
+├── services
+│   ├── base
+│   │   ├── baseService.ts
+│   │   ├── HttpService.ts
+│   │   └── types.ts
+│   ├── csvProcessor
+│   │   ├── csvParser.ts
+│   │   ├── index.ts
+│   │   ├── logHandler.ts
+│   │   ├── metadata.ts
+│   │   ├── postgresProcessor.ts
+│   │   └── progressBar.ts
+│   ├── elasticsearch
+│   │   ├── bulk.ts
+│   │   ├── client.ts
+│   │   └── index.ts
+│   ├── lectern
+│   │   ├── index.ts
+│   │   ├── lecternService.ts
+│   │   └── types.ts
+│   ├── lyric
+│   │   ├── index.ts
+│   │   ├── LyricRegistrationService.ts
+│   │   ├── LyricSubmissionService.ts
+│   │   └── types.ts
+│   ├── postgresql
+│   │   ├── bulk.ts
+│   │   ├── client.ts
+│   │   └── index.ts
+│   └── song-score
+│       ├── index.ts
+│       ├── scoreService.ts
+│       ├── songSchemaValidator.ts
+│       ├── songScoreService.ts
+│       ├── songService.ts
+│       └── types.ts
+├── tree.txt
+├── types
+│   ├── cli.ts
+│   ├── constants.ts
+│   ├── elasticsearch.ts
+│   ├── index.ts
+│   └── validations.ts
+├── utils
+│   ├── errors.ts
+│   └── logger.ts
+└── validations
+    ├── constants.ts
+    ├── csvValidator.ts
+    ├── elasticsearchValidator.ts
+    ├── environment.ts
+    ├── fileValidator.ts
+    ├── index.ts
+    └── utils.ts
+
+15 directories, 60 files

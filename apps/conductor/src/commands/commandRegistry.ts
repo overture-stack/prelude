@@ -10,6 +10,8 @@ import { ErrorFactory } from "../utils/errors";
 
 // Import all command classes
 import { UploadCommand } from "./uploadCsvCommand";
+import { PostgresUploadCommand } from "./postgresUploadCommand";
+import { PostgresIndexCommand } from "./postgresIndexCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
 import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
 import { LyricUploadCommand } from "./lyricUploadCommand";
@@ -41,6 +43,24 @@ export class CommandRegistry {
         description: "Upload CSV data to Elasticsearch",
         category: "Data Upload",
         constructor: UploadCommand,
+      },
+    ],
+    [
+      "postgresUpload",
+      {
+        name: "postgresUpload",
+        description: "Upload CSV data to PostgreSQL database",
+        category: "Data Upload",
+        constructor: PostgresUploadCommand,
+      },
+    ],
+    [
+      "postgresIndex",
+      {
+        name: "postgresIndex",
+        description: "Index data from PostgreSQL table to Elasticsearch",
+        category: "Data Integration",
+        constructor: PostgresIndexCommand,
       },
     ],
     [

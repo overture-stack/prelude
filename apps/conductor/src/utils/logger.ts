@@ -1,4 +1,4 @@
-// src/utils/logger.ts - Enhanced logger with standardized template literal usage
+// src/utils/logger.ts - Enhanced logger with PostgreSQL upload commands
 import chalk from "chalk";
 
 // Make LogLevel public for use in other modules
@@ -312,6 +312,8 @@ export class Logger {
 
     // Upload commands
     this.generic(chalk.bold.magenta("CSV Upload Commands:"));
+
+    // Elasticsearch Upload
     this.generic(chalk.white("conductor upload -f data.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
@@ -332,6 +334,106 @@ export class Logger {
       chalk.gray("Example: conductor upload -f data.csv -i my-index -b 2000")
     );
     this.generic("");
+
+    // PostgreSQL Upload
+    this.generic(chalk.white("conductor postgresUpload -f data.csv -t users"));
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-f, --file <paths...>     CSV files to upload (required)")
+    );
+    this.generic(
+      chalk.gray("-t, --table <name>        Target PostgreSQL table (required)")
+    );
+    this.generic(
+      chalk.gray("-b, --batch-size <n>      Batch size (default: 1000)")
+    );
+    this.generic(
+      chalk.gray("--delimiter <char>        CSV delimiter (default: ,)")
+    );
+    this.generic(
+      chalk.gray(
+        "--host <host>             PostgreSQL host (default: localhost)"
+      )
+    );
+    this.generic(
+      chalk.gray("--port <port>             PostgreSQL port (default: 5432)")
+    );
+    this.generic(
+      chalk.gray("--database <name>         Database name (default: postgres)")
+    );
+    this.generic(
+      chalk.gray(
+        "--user <username>         PostgreSQL username (default: postgres)"
+      )
+    );
+    this.generic(chalk.gray("--password <password>     PostgreSQL password"));
+    this.generic(
+      chalk.gray("--connection-string <url> PostgreSQL connection string")
+    );
+    this.generic(chalk.gray("--ssl                     Use SSL connection"));
+    this.generic(
+      chalk.gray("--add-metadata            Add submission metadata to records")
+    );
+    this.generic(chalk.gray("-o, --output <path>       Output path for logs"));
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor postgresUpload -f users.csv -t users --host localhost --database myapp"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "Example: conductor postgresUpload -f orders.csv -t orders --connection-string postgresql://user:pass@localhost:5432/mydb"
+      )
+    );
+    this.generic("");
+
+    // PostgreSQL to Elasticsearch Index
+    this.generic(
+      chalk.white("conductor postgresIndex -t demo_data -i demo_index")
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-t, --table <name>        Source PostgreSQL table (required)")
+    );
+    this.generic(
+      chalk.gray(
+        "-i, --index <name>        Target Elasticsearch index (required)"
+      )
+    );
+    this.generic(
+      chalk.gray("-b, --batch-size <n>      Batch size (default: 1000)")
+    );
+    this.generic(
+      chalk.gray(
+        "--host <host>             PostgreSQL host (default: localhost)"
+      )
+    );
+    this.generic(
+      chalk.gray("--port <port>             PostgreSQL port (default: 5432)")
+    );
+    this.generic(chalk.gray("--database <n>         PostgreSQL database name"));
+    this.generic(chalk.gray("--user <username>         PostgreSQL username"));
+    this.generic(chalk.gray("--password <password>     PostgreSQL password"));
+    this.generic(
+      chalk.gray(
+        "--url <url>               Elasticsearch URL (default: http://localhost:9200)"
+      )
+    );
+    this.generic(
+      chalk.gray(
+        "--es-user <username>      Elasticsearch username (default: elastic)"
+      )
+    );
+    this.generic(
+      chalk.gray("--es-password <password>  Elasticsearch password")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: conductor postgresIndex -t demo_data -i demo_index --database phase1_data --host localhost --port 5435 --user admin --password admin123"
+      )
+    );
 
     // Repository Indexing commands
     this.generic(chalk.bold.magenta("Repository Indexing Commands:"));

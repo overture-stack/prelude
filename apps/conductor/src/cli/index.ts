@@ -16,6 +16,8 @@ import { ErrorFactory } from "../utils/errors";
  */
 type CLIprofile =
   | "upload"
+  | "postgresUpload"
+  | "postgresIndex"
   | "lecternUpload"
   | "lyricRegister"
   | "lyricUpload"
@@ -98,6 +100,12 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "upload":
         profile = "upload";
         break;
+      case "postgresUpload":
+        profile = "postgresUpload";
+        break;
+      case "postgresIndex":
+        profile = "postgresIndex";
+        break;
       case "lecternUpload":
         profile = "lecternUpload";
         break;
@@ -133,6 +141,7 @@ export async function setupCLI(): Promise<CLIOutput> {
     // Validate environment for services that need it
     // Skip validation for services that don't use Elasticsearch
     const skipElasticsearchValidation: CLIprofile[] = [
+      "postgresUpload",
       "lecternUpload",
       "lyricRegister",
       "lyricUpload",
@@ -238,17 +247,37 @@ function createSimplifiedConfig(options: any): Config {
       url: options.indexUrl || undefined,
     });
 
+    // Create PostgreSQL configuration
+    const postgresConfig = {
+      host: options.host || "localhost",
+      port: parseInt(options.port) || 5432,
+      database: options.database || "postgres",
+      user: options.user || "postgres",
+      password: options.password,
+      table: options.table,
+      connectionString: options.connectionString,
+      ssl: options.ssl || false,
+      maxConnections: parseInt(options.maxConnections) || 20,
+      addMetadata: options.addMetadata || false,
+    };
+
+    // Handle Elasticsearch credentials separately for postgresIndex command
+    const esUser = options.esUser || options.user || "elastic";
+    const esPassword =
+      options.esPassword || options.password || "myelasticpassword";
+
     // Build the simplified config object
     return {
       elasticsearch: {
-        url: esConfig.url,
-        user: esConfig.user,
-        password: esConfig.password,
-        index: esConfig.index,
+        url: options.url || "http://localhost:9200",
+        user: esUser,
+        password: esPassword,
+        index: options.index || options.indexName || undefined,
         templateFile: options.templateFile,
         templateName: options.templateName,
         alias: options.aliasName,
       },
+      postgresql: postgresConfig,
       lectern: {
         url: lecternConfig.url,
         authToken: lecternConfig.authToken,

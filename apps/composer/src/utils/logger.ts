@@ -288,6 +288,37 @@ export class Logger {
   static showReferenceCommands(): void {
     this.header("Command Examples");
 
+    this.generic(chalk.bold.magenta("Generate PostgreSQL Table:"));
+    this.generic(chalk.white("composer -p PostgresTable -f patient_data.csv"));
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+    );
+    this.generic(
+      chalk.gray("-f, --files <paths...>  Input file paths (CSV) (required)")
+    );
+    this.generic(
+      chalk.gray("-o, --output <path>     Output file path for generated SQL")
+    );
+    this.generic(chalk.gray("--table-name <n>        PostgreSQL table name"));
+    this.generic(chalk.gray("--schema <n>            PostgreSQL schema name"));
+    this.generic(
+      chalk.gray("--include-constraints   Include primary key constraints")
+    );
+    this.generic(
+      chalk.gray("--include-indexes       Include database indexes")
+    );
+    this.generic(
+      chalk.gray("--delimiter <char>      CSV delimiter (default: ,)")
+    );
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: composer -p PostgresTable -f patient_data.csv -o create_patients.sql --table-name patients --schema clinical --include-constraints --include-indexes"
+      )
+    );
+    this.generic("");
+
     this.generic(chalk.bold.magenta("Generate Lectern Dictionary:"));
     this.generic(
       chalk.white(

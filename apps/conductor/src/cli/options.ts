@@ -50,6 +50,55 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
+  // PostgreSQL upload command (add this after the upload command)
+  program
+    .command("postgresUpload")
+    .description("Upload data to PostgreSQL database")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-t, --table <name>", "PostgreSQL table name")
+    .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for generated files")
+    .option("--force", "Force overwrite of existing files")
+    .option("--host <host>", "PostgreSQL host", "localhost")
+    .option("--port <port>", "PostgreSQL port", "5432")
+    .option("--database <database>", "PostgreSQL database name", "postgres")
+    .option("--user <username>", "PostgreSQL username", "postgres")
+    .option("--password <password>", "PostgreSQL password")
+    .option("--connection-string <url>", "PostgreSQL connection string")
+    .option("--ssl", "Use SSL connection")
+    .option("--max-connections <number>", "Maximum pool connections", "20")
+    .option("--add-metadata", "Add submission metadata to records")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // PostgreSQL to Elasticsearch index command
+  program
+    .command("postgresIndex")
+    .description("Index data from PostgreSQL table to Elasticsearch")
+    .option("-t, --table <name>", "Source PostgreSQL table name")
+    .option("-i, --index <name>", "Target Elasticsearch index name")
+    .option("-b, --batch-size <size>", "Batch size for indexing", "1000")
+    .option("--host <host>", "PostgreSQL host", "localhost")
+    .option("--port <port>", "PostgreSQL port", "5432")
+    .option("--database <database>", "PostgreSQL database name", "postgres")
+    .option("--user <username>", "PostgreSQL username", "postgres")
+    .option("--password <password>", "PostgreSQL password")
+    .option("--connection-string <url>", "PostgreSQL connection string")
+    .option("--ssl", "Use SSL connection")
+    .option("--url <url>", "Elasticsearch URL", "http://localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option(
+      "--es-password <password>",
+      "Elasticsearch password",
+      "myelasticpassword"
+    )
+    .option("-o, --output <path>", "Output directory for logs")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
   // Lectern schema upload command
   program
     .command("lecternUpload")
@@ -406,6 +455,20 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         templateFile: options.templateFile,
         templateName: options.templateName,
         alias: options.aliasName,
+      },
+      postgresql: {
+        connectionString: options.connectionString || process.env.DATABASE_URL,
+        host: options.host || process.env.PGHOST || "localhost",
+        port: parseInt(options.port || process.env.PGPORT || "5432"),
+        database: options.database || process.env.PGDATABASE || "postgres",
+        user: options.user || process.env.PGUSER || "postgres",
+        password: options.password || process.env.PGPASSWORD,
+        ssl: options.ssl || process.env.PGSSLMODE === "require",
+        table: options.table || "data",
+        maxConnections: parseInt(options.maxConnections || "20"),
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+        addMetadata: options.addMetadata || false,
       },
       lectern: {
         url:
