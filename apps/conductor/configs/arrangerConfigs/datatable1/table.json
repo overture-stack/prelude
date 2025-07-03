@@ -3,243 +3,243 @@
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "donor_id",
+        "fieldName": "data.donor_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.donor_id",
-        "query": "donor_id"
+        "jsonPath": "$.data.donor_id",
+        "query": "data { donor_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "gender",
+        "fieldName": "data.gender",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.gender",
-        "query": "gender"
+        "jsonPath": "$.data.gender",
+        "query": "data { gender }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "primary_site",
+        "fieldName": "data.primary_site",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.primary_site",
-        "query": "primary_site"
+        "jsonPath": "$.data.primary_site",
+        "query": "data { primary_site }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "vital_status",
+        "fieldName": "data.vital_status",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.vital_status",
-        "query": "vital_status"
+        "jsonPath": "$.data.vital_status",
+        "query": "data { vital_status }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "diagnosis_id",
+        "fieldName": "data.diagnosis_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.diagnosis_id",
-        "query": "diagnosis_id"
+        "jsonPath": "$.data.diagnosis_id",
+        "query": "data { diagnosis_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "age_at_diagnosis",
+        "fieldName": "data.age_at_diagnosis",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.age_at_diagnosis",
-        "query": "age_at_diagnosis"
+        "jsonPath": "$.data.age_at_diagnosis",
+        "query": "data { age_at_diagnosis }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "cancer_type",
+        "fieldName": "data.cancer_type",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.cancer_type",
-        "query": "cancer_type"
+        "jsonPath": "$.data.cancer_type",
+        "query": "data { cancer_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "staging_system",
+        "fieldName": "data.staging_system",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.staging_system",
-        "query": "staging_system"
+        "jsonPath": "$.data.staging_system",
+        "query": "data { staging_system }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "stage",
+        "fieldName": "data.stage",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.stage",
-        "query": "stage"
+        "jsonPath": "$.data.stage",
+        "query": "data { stage }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "specimen_id",
+        "fieldName": "data.specimen_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.specimen_id",
-        "query": "specimen_id"
+        "jsonPath": "$.data.specimen_id",
+        "query": "data { specimen_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "specimen_type",
+        "fieldName": "data.specimen_type",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.specimen_type",
-        "query": "specimen_type"
+        "jsonPath": "$.data.specimen_type",
+        "query": "data { specimen_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "tissue_source",
+        "fieldName": "data.tissue_source",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.tissue_source",
-        "query": "tissue_source"
+        "jsonPath": "$.data.tissue_source",
+        "query": "data { tissue_source }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "sample_id",
+        "fieldName": "data.sample_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.sample_id",
-        "query": "sample_id"
+        "jsonPath": "$.data.sample_id",
+        "query": "data { sample_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "sample_type",
+        "fieldName": "data.sample_type",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.sample_type",
-        "query": "sample_type"
+        "jsonPath": "$.data.sample_type",
+        "query": "data { sample_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "treatment_id",
+        "fieldName": "data.treatment_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.treatment_id",
-        "query": "treatment_id"
+        "jsonPath": "$.data.treatment_id",
+        "query": "data { treatment_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "treatment_type",
+        "fieldName": "data.treatment_type",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.treatment_type",
-        "query": "treatment_type"
+        "jsonPath": "$.data.treatment_type",
+        "query": "data { treatment_type }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "treatment_start",
+        "fieldName": "data.treatment_start",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.treatment_start",
-        "query": "treatment_start"
+        "jsonPath": "$.data.treatment_start",
+        "query": "data { treatment_start }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "treatment_duration",
+        "fieldName": "data.treatment_duration",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.treatment_duration",
-        "query": "treatment_duration"
+        "jsonPath": "$.data.treatment_duration",
+        "query": "data { treatment_duration }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "treatment_response",
+        "fieldName": "data.treatment_response",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.treatment_response",
-        "query": "treatment_response"
+        "jsonPath": "$.data.treatment_response",
+        "query": "data { treatment_response }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "drug_name",
+        "fieldName": "data.drug_name",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.drug_name",
-        "query": "drug_name"
+        "jsonPath": "$.data.drug_name",
+        "query": "data { drug_name }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "followup_id",
+        "fieldName": "data.followup_id",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.followup_id",
-        "query": "followup_id"
+        "jsonPath": "$.data.followup_id",
+        "query": "data { followup_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "followup_interval",
+        "fieldName": "data.followup_interval",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.followup_interval",
-        "query": "followup_interval"
+        "jsonPath": "$.data.followup_interval",
+        "query": "data { followup_interval }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "disease_status",
+        "fieldName": "data.disease_status",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.disease_status",
-        "query": "disease_status"
+        "jsonPath": "$.data.disease_status",
+        "query": "data { disease_status }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metasubmitter_id",
+        "fieldName": "data.submission_metadata.submitter_id",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metasubmitter_id",
-        "query": "submission_metasubmitter_id"
+        "jsonPath": "$.data.submission_metadata.submitter_id",
+        "query": "data { submission_metadata { submitter_id } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metaprocessing_started",
+        "fieldName": "data.submission_metadata.processing_started",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metaprocessing_started",
-        "query": "submission_metaprocessing_started"
+        "jsonPath": "$.data.submission_metadata.processing_started",
+        "query": "data { submission_metadata { processing_started } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metaprocessed_at",
+        "fieldName": "data.submission_metadata.processed_at",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metaprocessed_at",
-        "query": "submission_metaprocessed_at"
+        "jsonPath": "$.data.submission_metadata.processed_at",
+        "query": "data { submission_metadata { processed_at } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metasource_file",
+        "fieldName": "data.submission_metadata.source_file",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metasource_file",
-        "query": "submission_metasource_file"
+        "jsonPath": "$.data.submission_metadata.source_file",
+        "query": "data { submission_metadata { source_file } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metarecord_number",
+        "fieldName": "data.submission_metadata.record_number",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metarecord_number",
-        "query": "submission_metarecord_number"
+        "jsonPath": "$.data.submission_metadata.record_number",
+        "query": "data { submission_metadata { record_number } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metahostname",
+        "fieldName": "data.submission_metadata.hostname",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metahostname",
-        "query": "submission_metahostname"
+        "jsonPath": "$.data.submission_metadata.hostname",
+        "query": "data { submission_metadata { hostname } }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metausername",
+        "fieldName": "data.submission_metadata.username",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metausername",
-        "query": "submission_metausername"
+        "jsonPath": "$.data.submission_metadata.username",
+        "query": "data { submission_metadata { username } }"
       }
     ]
   }

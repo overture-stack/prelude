@@ -1,5 +1,6 @@
 // src/cli/index.ts - Simplified CLI setup using new configuration system
 // Updated to use error factory pattern for consistent error handling
+// Updated with esUpload rename and case-insensitive command handling
 
 import { Command } from "commander";
 import { Config, CLIOutput } from "../types/cli";
@@ -13,9 +14,10 @@ import { ErrorFactory } from "../utils/errors";
 /**
  * Type definition for supported CLI profiles.
  * This should match the CommandRegistry command names exactly.
+ * Updated with esUpload rename
  */
 type CLIprofile =
-  | "upload"
+  | "esUpload" // Changed from "upload" to "esUpload"
   | "postgresUpload"
   | "postgresIndex"
   | "lecternUpload"
@@ -53,6 +55,7 @@ interface CLIOutputInternal {
 /**
  * Sets up the CLI environment and parses command-line arguments.
  * Now uses the simplified configuration system with enhanced error handling.
+ * Updated with case-insensitive command handling and esUpload rename.
  */
 export async function setupCLI(): Promise<CLIOutput> {
   const program = new Command();
@@ -66,25 +69,31 @@ export async function setupCLI(): Promise<CLIOutput> {
     Logger.debug`Raw arguments: ${process.argv.join(" ")}`;
     program.parse(process.argv);
 
-    // Get the command
-    const commandName = program.args[0];
+    // Get the command (case-insensitive)
+    const rawCommandName = program.args[0];
 
-    if (!commandName) {
+    if (!rawCommandName) {
       throw ErrorFactory.args("No command specified", [
         "Specify a command to run",
         "Use 'conductor --help' to see available commands",
-        "Example: conductor upload -f data.csv",
+        "Example: conductor esUpload -f data.csv", // Updated example
       ]);
     }
 
-    // Get the specific command
-    const command = program.commands.find((cmd) => cmd.name() === commandName);
+    // Normalize command name for case-insensitive lookup
+    const commandName = rawCommandName.toLowerCase();
+
+    // Get the specific command (case-insensitive)
+    const command = program.commands.find(
+      (cmd) => cmd.name().toLowerCase() === commandName
+    );
 
     if (!command) {
-      throw ErrorFactory.args(`Unknown command: ${commandName}`, [
+      throw ErrorFactory.args(`Unknown command: ${rawCommandName}`, [
         "Use 'conductor --help' to see available commands",
         "Check the command spelling",
         "Ensure you're using the correct command name",
+        "Commands are case-insensitive (e.g., 'esUpload', 'ESUPLOAD', 'esupload' all work)",
       ]);
     }
 
@@ -94,11 +103,15 @@ export async function setupCLI(): Promise<CLIOutput> {
     Logger.debug`Parsed options: ${JSON.stringify(options, null, 2)}`;
     Logger.debug`Remaining arguments: ${program.args.join(", ")}`;
 
-    // Determine the profile based on the command name
-    let profile: CLIprofile = "upload"; // Default to upload
-    switch (commandName) {
-      case "upload":
-        profile = "upload";
+    // Determine the profile based on the command name (case-insensitive)
+    let profile: CLIprofile = "esUpload"; // Default to esUpload
+
+    // Use the actual command name from the found command for profile mapping
+    const actualCommandName = command.name();
+
+    switch (actualCommandName) {
+      case "esUpload": // Changed from "upload" to "esUpload"
+        profile = "esUpload";
         break;
       case "postgresUpload":
         profile = "postgresUpload";
@@ -131,7 +144,7 @@ export async function setupCLI(): Promise<CLIOutput> {
         profile = "songPublishAnalysis";
         break;
       default:
-        throw ErrorFactory.args(`Unsupported command: ${commandName}`, [
+        throw ErrorFactory.args(`Unsupported command: ${rawCommandName}`, [
           "This command is not yet implemented",
           "Use 'conductor --help' to see available commands",
           "Check for typos in the command name",
@@ -247,13 +260,13 @@ function createSimplifiedConfig(options: any): Config {
       url: options.indexUrl || undefined,
     });
 
-    // Create PostgreSQL configuration
+    // Create PostgreSQL configuration with updated defaults
     const postgresConfig = {
       host: options.host || "localhost",
-      port: parseInt(options.port) || 5432,
+      port: parseInt(options.port) || 5435, // Updated default port
       database: options.database || "postgres",
-      user: options.user || "postgres",
-      password: options.password,
+      user: options.user || "admin", // Updated default user
+      password: options.password || "admin123", // Updated default password
       table: options.table,
       connectionString: options.connectionString,
       ssl: options.ssl || false,

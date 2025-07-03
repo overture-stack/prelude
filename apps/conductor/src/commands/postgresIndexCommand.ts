@@ -1,9 +1,9 @@
 // src/commands/postgresIndexCommand.ts
 /**
- * PostgreSQL to Elasticsearch Index Command
+ * PostgreSQL to Elasticsearch Index Command - UPDATED for nested data structure
  *
  * Command implementation for reading data from a PostgreSQL table
- * and indexing it directly into Elasticsearch.
+ * and indexing it directly into Elasticsearch with proper nested data mapping.
  */
 
 import { Command, CommandResult } from "./baseCommand";
@@ -20,6 +20,7 @@ import {
 } from "../services/elasticsearch";
 import { Pool } from "pg";
 import { Client } from "@elastic/elasticsearch";
+import { createRecordMetadata } from "../services/csvProcessor/metadata";
 
 export class PostgresIndexCommand extends Command {
   constructor() {
@@ -68,13 +69,14 @@ export class PostgresIndexCommand extends Command {
 
       Logger.info`Found ${tableData.length} records in table ${tableName}`;
 
-      // Index data to Elasticsearch
+      // Transform and index data to Elasticsearch with proper nested structure
       Logger.info`Indexing data to Elasticsearch index: ${indexName}`;
       const indexedCount = await this.indexToElasticsearch(
         esClient,
         tableData,
         indexName,
-        config.batchSize || 1000
+        config.batchSize || 1000,
+        tableName
       );
 
       Logger.successString("Indexing completed successfully");
@@ -204,32 +206,55 @@ export class PostgresIndexCommand extends Command {
   }
 
   /**
-   * Indexes data to Elasticsearch in batches
+   * Indexes data to Elasticsearch in batches with proper nested data structure
+   * UPDATED: Now wraps data in the 'data' object as required by the mapping
    */
   private async indexToElasticsearch(
     client: Client,
     data: any[],
     indexName: string,
-    batchSize: number
+    batchSize: number,
+    sourceTable: string
   ): Promise<number> {
     let totalIndexed = 0;
     const startTime = Date.now();
+    const processingStartTime = new Date().toISOString();
 
     try {
       // Process data in batches
       for (let i = 0; i < data.length; i += batchSize) {
         const batch = data.slice(i, i + batchSize);
 
-        // Prepare bulk index operations
+        // Prepare bulk index operations with proper nested structure
         const bulkOps = [];
-        for (const record of batch) {
+        for (let j = 0; j < batch.length; j++) {
+          const record = batch[j];
+          const recordId = record.id || `${i + j + 1}`;
+
+          // Create metadata for this record
+          const metadata = createRecordMetadata(
+            `postgresql://${sourceTable}`,
+            processingStartTime,
+            i + j + 1
+          );
+
+          // IMPORTANT: Structure the document to match your Elasticsearch mapping
+          // All actual data goes into the 'data' object, metadata as sibling
+          const esDocument = {
+            data: {
+              ...record, // All PostgreSQL table columns go here
+              submission_metadata: metadata, // Add metadata within data object
+            },
+          };
+
+          // Add the index operation
           bulkOps.push({
             index: {
               _index: indexName,
-              _id: record.id || `${i + bulkOps.length / 2}`, // Use record ID or generate one
+              _id: recordId,
             },
           });
-          bulkOps.push(record);
+          bulkOps.push(esDocument);
         }
 
         // Execute bulk index
@@ -277,6 +302,7 @@ export class PostgresIndexCommand extends Command {
           "Check Elasticsearch connection and status",
           "Verify index permissions",
           "Review Elasticsearch logs for detailed errors",
+          "Ensure the index mapping supports the nested data structure",
         ]
       );
     }

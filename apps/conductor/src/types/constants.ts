@@ -4,17 +4,21 @@
  *
  * This file defines constants for profiles, error codes, and other application-wide values.
  * Updated to remove scoreManifestUpload and songScoreSubmit profiles.
+ * Updated with esUpload rename.
  */
 
 /**
  * Available command profiles
  */
 export const Profiles = {
-  /** Upload data to Elasticsearch */
-  UPLOAD: "upload",
+  /** Upload data to Elasticsearch (renamed from UPLOAD) */
+  ES_UPLOAD: "esUpload",
 
   /** Upload data to PostgreSQL */
   POSTGRES_UPLOAD: "postgresUpload",
+
+  /** Index data from PostgreSQL to Elasticsearch */
+  POSTGRES_INDEX: "postgresIndex",
 
   /** Upload schema to Lectern server */
   LECTERN_UPLOAD: "lecternUpload",
@@ -29,14 +33,14 @@ export const Profiles = {
   INDEX_REPOSITORY: "maestroIndex",
 
   /** Upload schema to SONG server */
-  song_upload_schema: "songUploadSchema",
+  SONG_UPLOAD_SCHEMA: "songUploadSchema",
 
   /** Create study in SONG server */
-  song_create_study: "songCreateStudy",
+  SONG_CREATE_STUDY: "songCreateStudy",
 
   /** Submit analysis to SONG server and upload files to Score (combined workflow) */
-  song_submit_analysis: "songSubmitAnalysis",
+  SONG_SUBMIT_ANALYSIS: "songSubmitAnalysis",
 
   /** Publish analysis in SONG server */
-  song_publish_analysis: "songPublishAnalysis",
+  SONG_PUBLISH_ANALYSIS: "songPublishAnalysis",
 } as const;

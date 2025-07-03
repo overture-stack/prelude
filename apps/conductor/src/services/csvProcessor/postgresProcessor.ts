@@ -4,6 +4,7 @@
  *
  * Processes CSV files for PostgreSQL upload, similar to the Elasticsearch processor
  * but optimized for PostgreSQL bulk inserts.
+ * FIXED: Proper error handling to stop processing on header validation failures.
  */
 
 import * as fs from "fs";
@@ -116,11 +117,13 @@ export async function processCSVFileForPostgres(
       for await (const line of rl) {
         try {
           if (isFirstLine) {
+            // FIXED: If header processing fails, throw immediately - don't continue
             headers = await processHeaderLine(line, config, client, filePath);
             isFirstLine = false;
             continue;
           }
 
+          // Rest of processing only happens if headers were validated successfully
           const record = await processDataLine(
             line,
             headers,
@@ -154,7 +157,13 @@ export async function processCSVFileForPostgres(
             }
           }
         } catch (lineError) {
-          // Handle individual line processing errors
+          // FIXED: If this is a header validation error, don't treat it as a line processing error
+          if (isFirstLine) {
+            // Header validation failed - rethrow to stop processing entirely
+            throw lineError;
+          }
+
+          // Handle individual line processing errors (not header errors)
           Logger.warnString(
             `Error processing line: ${line.substring(0, 50)}...`
           );
@@ -190,12 +199,20 @@ export async function processCSVFileForPostgres(
       rl.close();
     }
   } catch (error) {
-    // If it's already a ConductorError, rethrow it
+    // FIXED: If it's a header validation error, don't proceed with CSV processing error handler
     if (error instanceof Error && error.name === "ConductorError") {
-      throw error;
+      const conductorError = error as any;
+      // Check if this is a header validation error by examining the error details
+      if (
+        conductorError.details?.extraHeaders ||
+        conductorError.details?.missingHeaders
+      ) {
+        // This is a header validation error - rethrow it directly
+        throw error;
+      }
     }
 
-    // Use the error handler to process and throw the error
+    // Use the error handler for other processing errors
     CSVProcessingErrorHandler.handleProcessingError(
       error,
       processedRecords,
@@ -207,6 +224,7 @@ export async function processCSVFileForPostgres(
 
 /**
  * Process the header line of the CSV file
+ * FIXED: Proper error handling to stop processing on validation failures
  */
 async function processHeaderLine(
   line: string,
@@ -232,7 +250,7 @@ async function processHeaderLine(
 
     Logger.debug`Validating headers against table schema`;
 
-    // Validate headers against table structure
+    // FIXED: This validation should throw and stop processing if it fails
     await validateHeadersAgainstTable(
       client,
       headers,
@@ -243,6 +261,7 @@ async function processHeaderLine(
 
     return headers;
   } catch (error) {
+    // FIXED: Don't wrap header validation errors - let them bubble up to stop processing
     if (error instanceof Error && error.name === "ConductorError") {
       throw error;
     }
@@ -364,7 +383,7 @@ async function validateHeadersAgainstTable(
         });
       }
 
-      Logger.suggestion("Available table columns");
+      Logger.suggestion("Expected table columns");
       tableColumns.forEach((col: string) => {
         Logger.generic(`   ▸ ${col}`);
       });

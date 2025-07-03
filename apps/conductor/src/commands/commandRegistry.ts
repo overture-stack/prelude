@@ -2,6 +2,7 @@
 /**
  * Simplified command registry to replace the complex factory pattern
  * Updated to use error factory pattern for consistent error handling
+ * Updated with case-insensitive command handling and esUpload rename
  */
 
 import { Command } from "./baseCommand";
@@ -33,103 +34,105 @@ interface CommandInfo {
 
 /**
  * Registry of all available commands with metadata
+ * Updated with case-insensitive lookup and esUpload rename
  */
 export class CommandRegistry {
   private static commands = new Map<string, CommandInfo>([
+    // Store commands with lowercase keys for case-insensitive lookup
     [
-      "upload",
+      "esupload", // Changed from "upload" to "esupload"
       {
-        name: "upload",
+        name: "esUpload", // Display name
         description: "Upload CSV data to Elasticsearch",
         category: "Data Upload",
         constructor: UploadCommand,
       },
     ],
     [
-      "postgresUpload",
+      "postgresupload", // lowercase key
       {
-        name: "postgresUpload",
+        name: "postgresUpload", // original name for display
         description: "Upload CSV data to PostgreSQL database",
         category: "Data Upload",
         constructor: PostgresUploadCommand,
       },
     ],
     [
-      "postgresIndex",
+      "postgresindex", // lowercase key
       {
-        name: "postgresIndex",
+        name: "postgresIndex", // original name for display
         description: "Index data from PostgreSQL table to Elasticsearch",
         category: "Data Integration",
         constructor: PostgresIndexCommand,
       },
     ],
     [
-      "lecternUpload",
+      "lecternupload", // lowercase key
       {
-        name: "lecternUpload",
+        name: "lecternUpload", // original name for display
         description: "Upload schema to Lectern server",
         category: "Schema Management",
         constructor: LecternUploadCommand,
       },
     ],
     [
-      "lyricRegister",
+      "lyricregister", // lowercase key
       {
-        name: "lyricRegister",
+        name: "lyricRegister", // original name for display
         description: "Register a dictionary with Lyric service",
         category: "Data Management",
         constructor: LyricRegistrationCommand,
       },
     ],
     [
-      "lyricUpload",
+      "lyricupload", // lowercase key
       {
-        name: "lyricUpload",
+        name: "lyricUpload", // original name for display
         description: "Upload data to Lyric service",
         category: "Data Upload",
         constructor: LyricUploadCommand,
       },
     ],
     [
-      "songUploadSchema",
+      "songuploadschema", // lowercase key
       {
-        name: "songUploadSchema",
+        name: "songUploadSchema", // original name for display
         description: "Upload schema to SONG server",
         category: "Schema Management",
         constructor: SongUploadSchemaCommand,
       },
     ],
     [
-      "songCreateStudy",
+      "songcreatestudy", // lowercase key
       {
-        name: "songCreateStudy",
+        name: "songCreateStudy", // original name for display
         description: "Create study in SONG server",
         category: "Study Management",
         constructor: SongCreateStudyCommand,
       },
     ],
     [
-      "songSubmitAnalysis",
+      "songsubmitanalysis", // lowercase key
       {
-        name: "songSubmitAnalysis",
+        name: "songSubmitAnalysis", // original name for display
         description: "Submit analysis to SONG and upload files to Score",
         category: "Analysis Management",
         constructor: SongSubmitAnalysisCommand,
       },
     ],
     [
-      "songPublishAnalysis",
+      "songpublishanalysis", // lowercase key
       {
-        name: "songPublishAnalysis",
+        name: "songPublishAnalysis", // original name for display
         description: "Publish analysis in SONG server",
         category: "Analysis Management",
         constructor: SongPublishAnalysisCommand,
       },
     ],
     [
-      "maestroIndex",
+      "maestroindex", // lowercase key
       {
-        name: "maestroIndex",
+        name: "maestroIndex", // original name for display
         description: "Index data using Maestro",
         category: "Data Indexing",
         constructor: MaestroIndexCommand,
@@ -138,17 +141,23 @@ export class CommandRegistry {
   ]);
 
   /**
-   * Create a command instance by name
+   * Create a command instance by name (case-insensitive)
    */
   static createCommand(commandName: string): Command {
-    const commandInfo = this.commands.get(commandName);
+    // Convert to lowercase for case-insensitive lookup
+    const normalizedCommandName = commandName.toLowerCase();
+    const commandInfo = this.commands.get(normalizedCommandName);
 
     if (!commandInfo) {
-      const availableCommands = Array.from(this.commands.keys()).join(", ");
+      const availableCommands = Array.from(this.commands.values())
+        .map((info) => info.name) // Use display names in error message
+        .join(", ");
+
       throw ErrorFactory.args(`Unknown command: ${commandName}`, [
         `Available commands: ${availableCommands}`,
         "Use 'conductor --help' to see all available commands",
         "Check the command spelling and try again",
+        "Commands are case-insensitive",
       ]);
     }
 
@@ -166,24 +175,24 @@ export class CommandRegistry {
   }
 
   /**
-   * Check if a command exists
+   * Check if a command exists (case-insensitive)
    */
   static hasCommand(commandName: string): boolean {
-    return this.commands.has(commandName);
+    return this.commands.has(commandName.toLowerCase());
   }
 
   /**
-   * Get all available command names
+   * Get all available command names (returns display names)
    */
   static getCommandNames(): string[] {
-    return Array.from(this.commands.keys());
+    return Array.from(this.commands.values()).map((info) => info.name);
   }
 
   /**
-   * Get command information
+   * Get command information (case-insensitive lookup)
    */
   static getCommandInfo(commandName: string): CommandInfo | undefined {
-    return this.commands.get(commandName);
+    return this.commands.get(commandName.toLowerCase());
   }
 
   /**
@@ -236,7 +245,7 @@ export class CommandRegistry {
 
     // You could extend this to show command-specific options
     Logger.tipString(
-      `Use 'conductor ${commandName} --help' for command-specific options`
+      `Use 'conductor ${commandInfo.name} --help' for command-specific options`
     );
   }
 
@@ -249,13 +258,14 @@ export class CommandRegistry {
     category: string,
     constructor: CommandConstructor
   ): void {
-    if (this.commands.has(name)) {
+    const normalizedName = name.toLowerCase();
+    if (this.commands.has(normalizedName)) {
       Logger.warnString(
         `Command '${name}' is already registered. Overwriting.`
       );
     }
 
-    this.commands.set(name, {
+    this.commands.set(normalizedName, {
       name,
       description,
       category,
@@ -269,7 +279,7 @@ export class CommandRegistry {
    * Unregister a command
    */
   static unregisterCommand(name: string): boolean {
-    return this.commands.delete(name);
+    return this.commands.delete(name.toLowerCase());
   }
 
   /**
@@ -278,21 +288,21 @@ export class CommandRegistry {
   static validateRegistry(): void {
     const issues: string[] = [];
 
-    for (const [name, info] of this.commands) {
-      if (!info.name || info.name !== name) {
-        issues.push(`Command '${name}' has mismatched name property`);
+    for (const [normalizedName, info] of this.commands) {
+      if (!info.name || info.name.toLowerCase() !== normalizedName) {
+        issues.push(`Command '${normalizedName}' has mismatched name property`);
       }
 
       if (!info.description) {
-        issues.push(`Command '${name}' is missing description`);
+        issues.push(`Command '${normalizedName}' is missing description`);
       }
 
       if (!info.category) {
-        issues.push(`Command '${name}' is missing category`);
+        issues.push(`Command '${normalizedName}' is missing category`);
       }
 
       if (!info.constructor) {
-        issues.push(`Command '${name}' is missing constructor`);
+        issues.push(`Command '${normalizedName}' is missing constructor`);
       }
     }
 

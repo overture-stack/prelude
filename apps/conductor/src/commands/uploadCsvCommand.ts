@@ -32,7 +32,7 @@ export class UploadCommand extends Command {
    * Creates a new UploadCommand instance.
    */
   constructor() {
-    super("upload");
+    super("esUpload");
   }
 
   /**

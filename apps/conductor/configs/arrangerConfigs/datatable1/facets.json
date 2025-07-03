@@ -3,152 +3,152 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "donor_id",
+        "fieldName": "data__donor_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "gender",
+        "fieldName": "data__gender",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "primary_site",
+        "fieldName": "data__primary_site",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "vital_status",
+        "fieldName": "data__vital_status",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "diagnosis_id",
+        "fieldName": "data__diagnosis_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "age_at_diagnosis",
+        "fieldName": "data__age_at_diagnosis",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "cancer_type",
+        "fieldName": "data__cancer_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "staging_system",
+        "fieldName": "data__staging_system",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "stage",
+        "fieldName": "data__stage",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "specimen_id",
+        "fieldName": "data__specimen_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "specimen_type",
+        "fieldName": "data__specimen_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "tissue_source",
+        "fieldName": "data__tissue_source",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "sample_id",
+        "fieldName": "data__sample_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "sample_type",
+        "fieldName": "data__sample_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "treatment_id",
+        "fieldName": "data__treatment_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "treatment_type",
+        "fieldName": "data__treatment_type",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "treatment_start",
+        "fieldName": "data__treatment_start",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "treatment_duration",
+        "fieldName": "data__treatment_duration",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "treatment_response",
+        "fieldName": "data__treatment_response",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "drug_name",
+        "fieldName": "data__drug_name",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "followup_id",
+        "fieldName": "data__followup_id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "followup_interval",
+        "fieldName": "data__followup_interval",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "disease_status",
+        "fieldName": "data__disease_status",
         "show": true
       },
       {
         "active": false,
-        "fieldName": "submission_metasubmitter_id",
+        "fieldName": "data__submission_metadata__submitter_id",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "submission_metaprocessing_started",
+        "fieldName": "data__submission_metadata__processing_started",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "submission_metaprocessed_at",
+        "fieldName": "data__submission_metadata__processed_at",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "submission_metasource_file",
+        "fieldName": "data__submission_metadata__source_file",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "submission_metarecord_number",
+        "fieldName": "data__submission_metadata__record_number",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "submission_metahostname",
+        "fieldName": "data__submission_metadata__hostname",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "submission_metausername",
+        "fieldName": "data__submission_metadata__username",
         "show": false
       }
     ]

@@ -42,10 +42,10 @@ export function createPostgresClient(config: Config): Pool {
     Logger.debug`Using PostgreSQL connection string`;
   } else {
     options.host = config.postgresql?.host || "localhost";
-    options.port = config.postgresql?.port || 5432;
+    options.port = config.postgresql?.port || 5435; // Updated default
     options.database = config.postgresql?.database || "postgres";
-    options.user = config.postgresql?.user || "postgres";
-    options.password = config.postgresql?.password;
+    options.user = config.postgresql?.user || "admin"; // Updated default
+    options.password = config.postgresql?.password || "admin123"; // Updated default
     options.ssl = config.postgresql?.ssl || false;
 
     Logger.debug`Connecting to PostgreSQL at: ${options.host}:${options.port}/${options.database}`;
