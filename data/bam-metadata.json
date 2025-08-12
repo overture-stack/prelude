@@ -1,0 +1,126 @@
+{
+  "studyId": "demo",
+  "analysisType": {
+    "name": "quickStartSchema"
+  },
+  "collaborator": [
+    {
+      "name": "IICR",
+      "contactEmail": "dataSubmitter@example.com"
+    }
+  ],
+  "samples": [
+    {
+      "submitterSampleId": "SP128901",
+      "sampleType": "Total DNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "SP128901",
+        "specimenType": "Normal - tissue adjacent to primary tumour",
+        "tumourNormalDesignation": "Normal",
+        "specimenTissueSource": "Intestine"
+      },
+      "donor": {
+        "submitterDonorId": "DO1289",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP128901.bam",
+      "fileSize": 125266,
+      "fileMd5sum": "001754a1cf01923329a946831e7e856b",
+      "fileAccess": "open",
+      "fileType": "BAM",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    },
+    {
+      "dataType": "Aligned Reads",
+      "fileName": "SP128901.bam.bai",
+      "fileSize": 27256,
+      "fileMd5sum": "4801ae82c1aa3b4ccddabe04d9be0e3e",
+      "fileAccess": "open",
+      "fileType": "BAI",
+      "info": {
+        "dataCategory": "Sequencing Reads",
+        "jbrowseCoordinates": "hg38:chr1:100000-200000"
+      }
+    }
+  ],
+  "specimen": {
+    "submitterPrimaryDiagnosisId": "PD128901",
+    "submitterSpecimenId": "SP128901",
+    "specimenAnatomicLocation": "C10",
+    "tumourGradingSystem": "Gleason grade group system",
+    "tumourGrade": "Grade Group 5"
+  },
+  "donor": {
+    "submitterDonorId": "DO1289",
+    "primarySite": "Hematopoietic and reticuloendothelial systems",
+    "vitalStatus": "Alive",
+    "survivalTime": null,
+    "causeOfDeath": null,
+    "primaryDiagnosis": [
+      {
+        "submitterPrimaryDiagnosisId": "PD128901",
+        "ageAtDiagnosis": 26,
+        "cancerTypeCode": "C88.0",
+        "clinicalTumourStagingSystem": "St Jude staging system",
+        "clinicalStageGroup": "Stage I",
+        "treatment": [
+          {
+            "submitterTreatmentId": "TR128901",
+            "treatmentType": ["Hormonal therapy"],
+            "treatmentStartInterval": 66,
+            "treatmentDuration": 68,
+            "responseToTreatment": "Disease progression",
+            "hormoneTherapy": [
+              {
+                "drugName": "Exemestane"
+              }
+            ]
+          }
+        ],
+        "followUp": [
+          {
+            "submitterFollowUpId": "FO128901",
+            "submitterTreatmentId": "TR128901",
+            "intervalOfFollowUp": 65,
+            "diseaseStatusAtFollowUp": "Partial remission",
+            "relapseType": null
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "platform": "ILLUMINA",
+    "experimentalStrategy": "WXS",
+    "model": "NovaSeq X",
+    "sequencingCenter": "ACGT",
+    "sequencingDate": "2020-08-09T19:00:00.000Z"
+  },
+  "workflow": {
+    "workflowName": "BWA mem2 Alignment",
+    "workflowShortName": "BWAmem2Aln",
+    "workflowVersion": "0.8",
+    "genomeBuild": "GRCh38_hla_decoy_ebv",
+    "inputs": [
+      {
+        "analysisType": "sequencing_experiment",
+        "analysisId": "00000000-0000-0000-0000-0000000001289"
+      }
+    ],
+    "runId": "RI1289",
+    "sessionId": "SI1289"
+  },
+  "publication": {
+    "publication": "Cell Genomics",
+    "doi": "10.1016/j.xgen.2024.100537"
+  }
+}
