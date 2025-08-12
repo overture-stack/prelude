@@ -26,19 +26,9 @@ phase0:
 	./apps/conductor/scripts/deployments/phase0.sh 
 
 # Start Phase One deployment
-phase1:
-	@echo "Starting Phase 1 development environment..."
-	PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach conductor 
-
-# Start Phase Two deployment
-phase2:
-	@echo "Starting Phase 2 development environment..."
-	PROFILE=phase2 docker compose -f ./docker-compose.yml --profile phase2 up --attach conductor
-
-# Start Phase Three deployment
-phase3:
-	@echo "Starting Phase 3 development environment..."
-	PROFILE=phase3 docker compose -f ./docker-compose.yml --profile phase3 up --attach conductor 
+demo:
+	@echo "Starting JBrowse demo environment..."
+	PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach conductor 
 
 # Start Stage devepment deployment
 stage-dev:
@@ -53,7 +43,7 @@ down:
 # Restart containers and run deployment scripts for a specific profile
 restart:
 	@echo "Restarting containers with fresh deployment..."
-	@read -p "Enter profile to restart (phase1, phase2, phase3, stageDev): " profile; \
+	@read -p "Enter profile to restart (demo, stageDev): " profile; \
 	echo "Shutting down containers..."; \
 	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile down; \
 	echo "Starting containers with profile $$profile..."; \

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -20,273 +20,76 @@
  */
 
 const base = {
-	white: '#fff',
-	black: '#282A35',
-	red: '#9E005D',
+  white: '#fff',
+  black: '#282a35',
 };
 
 const grey = {
-	grey_1: '#F2F5F8',
-	grey_2: '#F2F3F5',
-	grey_3: '#AEAFB3',
-	grey_4: '#9BB9D1',
-	grey_5: '#5E6068',
-	grey_6: '#282A35',
-	grey_highlight: '#DFDFE1',
+  grey_1: '#f2f5f8',
+  grey_2: '#f2f3f5',
+  grey_3: '#dfdfe1',
+  grey_4: '#cecfd3',
+  grey_5: '#aeafb3',
+  grey_6: '#5e6068',
+  grey_highlight: '#eceff2',
 };
 
 const primary = {
-	primary: '#113052',
-	primary_dark: '#0A1F35',
-	primary_darker: '#06131F',
-	primary_light: '#1A4270',
-	primary_lighter: '#265A97',
-	primary_lightest: '#3373BF',
-	primary_pale: '#DAE2EC',
-	primary_palest: '#EDF1F5',
+  primary: '#00ddbe',
+  primary_dark: '#00c4a7',
 };
 
-// Blue shades from the Secondary palette
-const secondary = {
-	secondary: '#0B75A2',
-	secondary_dark: '#109ED9',
-	secondary_light: '#4BC6F0',
-	secondary_lighter: '#66CEF2',
-	secondary_lightest: '#AEE5F8',
-	secondary_pale: '#D2F1FB',
-	secondary_palest: '#EDF9FD',
-
-	// Legacy names for backward compatibility
-	secondary_accessible: '#0B75A2', // Using the main secondary color
-	secondary_1: '#AEE5F8', // Matching secondary_lightest
-	secondary_2: '#4BC6F0', // Matching secondary_light
-	secondary_black: '#282A35', // Using the black color
-};
-
-// Dark blue shades from the Accent 1 palette
-const accent1 = {
-	accent1_dark: '#00305D',
-	accent1_medium: '#04518C',
-	accent1_light: '#4F85AE',
-	accent1_lighter: '#9BB9D1',
-	accent1_lightest: '#C0D3E2',
-	accent1_pale: '#E5EDF3',
-};
-
-// Purple/Pink shades from the Accent 2 palette
-const accent2 = {
-	accent2_dark: '#9E005D',
-	accent2_medium: '#B74A89',
-	accent2_light: '#C772A3',
-	accent2_lighter: '#E2B7D0',
-	accent2_lightest: '#EDD2E1',
-	accent2_pale: '#F7ECF3',
-};
-
-// Yellow/Gold shades from the Accent 3 palette
-const accent3 = {
-	accent3_dark: '#CFD509',
-	accent3_medium: '#D9DE3A',
-	accent3_light: '#E4E775',
-	accent3_lighter: '#F0F2B0',
-	accent3_lightest: '#F5F7CE',
-	accent3_pale: '#FBFBEB',
-};
-
-// Legacy accent properties for backward compatibility
+// dark blues
 const accent = {
-	accent: '#0B75A2', // Using the main secondary color
-	accent_dark: '#00305D', // Using accent1_dark
-	accent_light: '#C0D3E2', // Using accent1_lightest
-	accent_light_rgb: '192, 211, 226', // RGB version of accent1_lightest
-	accent_1: '#E5EDF3', // Using accent1_pale
-	accent_highlight: '#4F85AE40', // Semi-transparent version of accent1_light
+  accent: '#04518c',
+  accent_light: '#4f85ae',
+  accent_dark: '#003055',
+  accent_1: '#e5edf3',
 };
 
-// Grayscale colors
-const grayscale = {
-	grayscale_dark: '#282A35',
-	grayscale_medium: '#5E6068',
-	grayscale_light: '#AEAFB3',
-	grayscale_lighter: '#DFDFE1',
-	grayscale_lightest: '#F2F3F5',
-	grayscale_pale: '#F2F5F8',
+// light blues
+const secondary = {
+  secondary: '#4bc6f0',
+  secondary_light: '#edf9fd',
+  secondary_dark: '#109ed9',
+  secondary_accessible: '#0c7cac',
+  secondary_1: '#d2f1fb',
+  secondary_2: '#aee5f8',
 };
 
-// Gradient colors
-const gradients = {
-	gradient_start: '#45A0D4',
-	gradient_end: '#6EC9D0',
-	gradient: 'linear-gradient(90deg, #45A0D4 0%, #6EC9D0 100%)',
+const accent2 = {
+  accent2_dark: '#9e005d',
+  accent2: '#b74a89',
+  accent2_light: '#f7ecf3',
 };
 
-// Success, error, warning states
-const success = {
-	success: '#00A88F',
-	success_dark: '#00896F',
-	success_light: '#E6F7F4',
+const accent3 = {
+  accent3: '#d9de3a',
 };
 
 const error = {
-	error: '#9E005D',
-	error_dark: '#7D0049',
-	error_light: '#F7E6EF',
-
-	// Legacy error names for backward compatibility
-	error_1: '#F7E6EF', // Using error_light
-	error_2: '#EDD2E1', // Using accent2_lightest
+  error: '#c86370',
+  error_dark: '#ad404e',
+  error_1: '#f9eff0',
+  error_2: '#e9c1c6',
 };
 
 const warning = {
-	warning: '#CFD509',
-	warning_dark: '#A9AD07',
-	warning_light: '#F9FAE6',
-
-	// Legacy warning name for backward compatibility
-	warning_1: '#F9FAE6', // Using warning_light
+  warning: '#f2d021',
+  warning_dark: '#e6c104',
+  warning_light: '#fef8e5',
+  warning_medium: '#fcdf8e',
+  warning_2: '#f5aa00',
 };
 
 export default {
-	...base,
-	...grey,
-	...grayscale,
-	...primary,
-	...secondary,
-	...accent1,
-	...accent2,
-	...accent3,
-	...accent, // Include legacy accent properties
-	...gradients,
-	...success,
-	...error,
-	...warning,
+  ...base,
+  ...grey,
+  ...accent,
+  ...accent2,
+  ...accent3,
+  ...primary,
+  ...secondary,
+  ...error,
+  ...warning,
 };
-
-// Clean update for future
-
-// const home = {
-// 	hero: '#0B75A2',
-// 	main: '#F2F5F8',
-// 	button: '#00A88F',
-// 	highlight: '#109ED9',
-// };
-
-// const base = {
-// 	white: '#fff',
-// 	black: '#282A35',
-// 	red: '#9E005D',
-// };
-
-// const grey = {
-// 	grey_1: '#F2F5F8',
-// 	grey_2: '#F2F3F5',
-// 	grey_3: '#AEAFB3',
-// 	grey_4: '#9BB9D1',
-// 	grey_5: '#5E6068',
-// 	grey_6: '#282A35',
-// 	grey_highlight: '#DFDFE1',
-// };
-
-// // Teal/Green shades from the Primary palette
-// const primary = {
-// 	primary: '#00A88F',
-// 	primary_dark: '#00C4A7',
-// 	primary_light: '#00DDBE',
-// 	primary_lighter: '#40E6CF',
-// 	primary_lightest: '#99F1E5',
-// 	primary_pale: '#CCF8F2',
-// 	primary_palest: '#E5FBF8',
-// };
-
-// // Blue shades from the Secondary palette
-// const secondary = {
-// 	secondary: '#0B75A2',
-// 	secondary_dark: '#109ED9',
-// 	secondary_light: '#4BC6F0',
-// 	secondary_lighter: '#66CEF2',
-// 	secondary_lightest: '#AEE5F8',
-// 	secondary_pale: '#D2F1FB',
-// 	secondary_palest: '#EDF9FD',
-// };
-
-// // Dark blue shades from the Accent 1 palette
-// const accent1 = {
-// 	accent1_dark: '#00305D',
-// 	accent1_medium: '#04518C',
-// 	accent1_light: '#4F85AE',
-// 	accent1_lighter: '#9BB9D1',
-// 	accent1_lightest: '#C0D3E2',
-// 	accent1_pale: '#E5EDF3',
-// };
-
-// // Purple/Pink shades from the Accent 2 palette
-// const accent2 = {
-// 	accent2_dark: '#9E005D',
-// 	accent2_medium: '#B74A89',
-// 	accent2_light: '#C772A3',
-// 	accent2_lighter: '#E2B7D0',
-// 	accent2_lightest: '#EDD2E1',
-// 	accent2_pale: '#F7ECF3',
-// };
-
-// // Yellow/Gold shades from the Accent 3 palette
-// const accent3 = {
-// 	accent3_dark: '#CFD509',
-// 	accent3_medium: '#D9DE3A',
-// 	accent3_light: '#E4E775',
-// 	accent3_lighter: '#F0F2B0',
-// 	accent3_lightest: '#F5F7CE',
-// 	accent3_pale: '#FBFBEB',
-// };
-
-// // Grayscale colors
-// const grayscale = {
-// 	grayscale_dark: '#282A35',
-// 	grayscale_medium: '#5E6068',
-// 	grayscale_light: '#AEAFB3',
-// 	grayscale_lighter: '#DFDFE1',
-// 	grayscale_lightest: '#F2F3F5',
-// 	grayscale_pale: '#F2F5F8',
-// };
-
-// // Gradient colors
-// const gradients = {
-// 	gradient_start: '#45A0D4',
-// 	gradient_end: '#6EC9D0',
-// 	gradient: 'linear-gradient(90deg, #45A0D4 0%, #6EC9D0 100%)',
-// };
-
-// // Success, error, warning states
-// const success = {
-// 	success: '#00A88F',
-// 	success_dark: '#00896F',
-// 	success_light: '#E6F7F4',
-// };
-
-// const error = {
-// 	error: '#9E005D',
-// 	error_dark: '#7D0049',
-// 	error_light: '#F7E6EF',
-// };
-
-// const warning = {
-// 	warning: '#CFD509',
-// 	warning_dark: '#A9AD07',
-// 	warning_light: '#F9FAE6',
-// };
-
-// export default {
-// 	...base,
-// 	...grey,
-// 	...grayscale,
-// 	...primary,
-// 	...secondary,
-// 	...accent1,
-// 	...accent2,
-// 	...accent3,
-// 	...gradients,
-// 	...success,
-// 	...error,
-// 	...warning,
-// 	...home,
-// };

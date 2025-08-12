@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -28,18 +28,18 @@ import { ClientSideGetInitialPropsContext } from '../global/utils/pages/types';
 import defaultTheme from './theme';
 
 const Root = ({
-	children,
-	pageContext,
-	session,
+  children,
+  egoJwt,
+  pageContext,
 }: {
-	children: React.ReactElement;
-	pageContext: ClientSideGetInitialPropsContext;
-	session: any;
+  children: React.ReactElement;
+  egoJwt?: string;
+  pageContext: ClientSideGetInitialPropsContext;
 }) => {
-	return (
-		<>
-			<style>
-				{`
+  return (
+    <>
+      <style>
+        {`
         body {
           margin: 0;
           position: absolute;
@@ -56,15 +56,15 @@ const Root = ({
           right: 0px;
         }
       `}
-			</style>
+      </style>
 
-			<AuthProvider session={session}>
-				<PageContext.Provider value={pageContext}>
-					<ThemeProvider theme={defaultTheme}>{children}</ThemeProvider>
-				</PageContext.Provider>
-			</AuthProvider>
-		</>
-	);
+      <AuthProvider egoJwt={egoJwt}>
+        <PageContext.Provider value={pageContext}>
+          <ThemeProvider theme={defaultTheme}>{children}</ThemeProvider>
+        </PageContext.Provider>
+      </AuthProvider>
+    </>
+  );
 };
 
 export default Root;

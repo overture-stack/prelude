@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -19,34 +19,35 @@
  *
  */
 
-import GoogleLogo from './google';
+import Arrow from './arrow';
+import Avatar from './avatar';
+import Checkmark from './checkmark';
+import Chevron from './chevron';
+import Dismiss from './dismiss';
+import Download from './download';
+import Error from './error';
 import FacebookLogo from './facebook';
 import GitHubLogo from './github';
+import GoogleLogo from './google';
+import Illustration from './illustration';
 import LinkedInLogo from './linkedin';
 import OrcidLogo from './orcid';
-import KeycloakLogo from './keycloak';
-import Illustration from './illustration';
-import Avatar from './avatar';
-import ChevronDown from './chevron_down';
-import Download from './download';
 import OvertureLogo from './overture_logo';
 import OvertureLogoWithText from './overture_logo_with_text';
 import OvertureUser from './overture_user';
-import Checkmark from './checkmark';
 import Spinner from './spinner';
-import Error from './error';
 import Warning from './warning';
 
 export {
+	Arrow,
 	GoogleLogo,
 	FacebookLogo,
 	GitHubLogo,
 	LinkedInLogo,
 	OrcidLogo,
-	KeycloakLogo,
 	Illustration,
 	Avatar,
-	ChevronDown,
+	Chevron,
 	Download,
 	OvertureLogo,
 	OvertureLogoWithText,
@@ -55,4 +56,5 @@ export {
 	Spinner,
 	Error,
 	Warning,
+	Dismiss,
 };

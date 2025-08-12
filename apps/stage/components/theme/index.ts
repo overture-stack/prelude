@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -21,17 +21,17 @@
 
 import colors from './colors';
 import components from './components';
-import typography from './typography';
-import shadow from './shadow';
 import dimensions from './dimensions';
+import shadow from './shadow';
+import typography from './typography';
 
 const defaultTheme = {
 	colors,
+	components: components(colors),
 	typography,
 	shadow,
 	dimensions,
-	components: components(colors),
 };
 
 export default defaultTheme;
-export type StageThemeInterface = typeof defaultTheme;
+export type DMSThemeInterface = typeof defaultTheme;

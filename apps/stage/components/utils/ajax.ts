@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -30,17 +30,17 @@ import axios from 'axios';
 const ajax = axios.create();
 
 ajax.interceptors.request.use(
-	(config) => {
-		// set Authorization headers on a per request basis
-		// setting headers on axios get/put/post or common seems to be shared accross all axios instances
-		config.headers = {
-			...config.headers,
-		};
-		return config;
-	},
-	(err) => {
-		return Promise.reject(err);
-	},
+  (config) => {
+    // set Authorization headers on a per request basis
+    // setting headers on axios get/put/post or common seems to be shared accross all axios instances
+    config.headers = {
+      ...config.headers,
+    };
+    return config;
+  },
+  (err) => {
+    return Promise.reject(err);
+  },
 );
 
 export default ajax;

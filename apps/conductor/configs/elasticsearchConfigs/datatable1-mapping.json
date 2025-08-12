@@ -5,107 +5,322 @@
   },
   "mappings": {
     "properties": {
-      "data": {
-        "type": "object",
+      "analysisId": {
+        "type": "keyword"
+      },
+      "studyId": {
+        "type": "keyword"
+      },
+      "analysisState": {
+        "type": "keyword"
+      },
+      "createdAt": {
+        "type": "date"
+      },
+      "updatedAt": {
+        "type": "date"
+      },
+      "firstPublishedAt": {
+        "type": "keyword"
+      },
+      "publishedAt": {
+        "type": "keyword"
+      },
+      "analysisStateHistory": {
+        "type": "nested",
         "properties": {
-          "donor_id": {
+          "initialState": {
             "type": "keyword"
           },
-          "gender": {
+          "updatedState": {
             "type": "keyword"
           },
-          "primary_site": {
-            "type": "keyword"
-          },
-          "vital_status": {
-            "type": "keyword"
-          },
-          "diagnosis_id": {
-            "type": "keyword"
-          },
-          "age_at_diagnosis": {
-            "type": "integer"
-          },
-          "cancer_type": {
-            "type": "keyword"
-          },
-          "staging_system": {
-            "type": "keyword"
-          },
-          "stage": {
-            "type": "keyword"
-          },
-          "specimen_id": {
-            "type": "keyword"
-          },
-          "specimen_type": {
-            "type": "keyword"
-          },
-          "tissue_source": {
-            "type": "keyword"
-          },
-          "sample_id": {
-            "type": "keyword"
-          },
-          "sample_type": {
-            "type": "keyword"
-          },
-          "treatment_id": {
-            "type": "keyword"
-          },
-          "treatment_type": {
-            "type": "keyword"
-          },
-          "treatment_start": {
-            "type": "integer"
-          },
-          "treatment_duration": {
-            "type": "integer"
-          },
-          "treatment_response": {
-            "type": "keyword"
-          },
-          "drug_name": {
-            "type": "keyword"
-          },
-          "followup_id": {
-            "type": "keyword"
-          },
-          "followup_interval": {
-            "type": "integer"
-          },
-          "disease_status": {
-            "type": "keyword"
-          },
-          "submission_metadata": {
+          "updatedAt": {
+            "type": "date"
+          }
+        }
+      },
+      "files": {
+        "type": "nested",
+        "properties": {
+          "info": {
             "type": "object",
             "properties": {
-              "submitter_id": {
-                "type": "keyword",
-                "null_value": "No Data"
+              "dataCategory": {
+                "type": "keyword"
               },
-              "processing_started": {
-                "type": "date"
-              },
-              "processed_at": {
-                "type": "date"
-              },
-              "source_file": {
-                "type": "keyword",
-                "null_value": "No Data"
-              },
-              "record_number": {
-                "type": "integer"
-              },
-              "hostname": {
-                "type": "keyword",
-                "null_value": "No Data"
-              },
-              "username": {
-                "type": "keyword",
-                "null_value": "No Data"
+              "jbrowseCoordinates": {
+                "type": "keyword"
               }
             }
+          },
+          "objectId": {
+            "type": "keyword"
+          },
+          "studyId": {
+            "type": "keyword"
+          },
+          "fileName": {
+            "type": "keyword"
+          },
+          "fileSize": {
+            "type": "integer"
+          },
+          "fileType": {
+            "type": "keyword"
+          },
+          "fileMd5sum": {
+            "type": "keyword"
+          },
+          "fileAccess": {
+            "type": "keyword"
+          },
+          "dataType": {
+            "type": "keyword"
+          }
+        }
+      },
+      "analysisType": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "keyword"
+          },
+          "version": {
+            "type": "integer"
+          }
+        }
+      },
+      "donor": {
+        "type": "object",
+        "properties": {
+          "primarySite": {
+            "type": "keyword"
+          },
+          "vitalStatus": {
+            "type": "keyword"
+          },
+          "causeOfDeath": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "survivalTime": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "primaryDiagnosis": {
+            "type": "nested",
+            "properties": {
+              "followUp": {
+                "type": "nested",
+                "properties": {
+                  "relapseType": {
+                    "type": "keyword",
+                    "null_value": "No Data"
+                  },
+                  "intervalOfFollowUp": {
+                    "type": "integer"
+                  },
+                  "submitterFollowUpId": {
+                    "type": "keyword"
+                  },
+                  "submitterTreatmentId": {
+                    "type": "keyword"
+                  },
+                  "diseaseStatusAtFollowUp": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "treatment": {
+                "type": "nested",
+                "properties": {
+                  "chemotherapy": {
+                    "type": "nested",
+                    "properties": {
+                      "drugName": {
+                        "type": "keyword"
+                      }
+                    }
+                  },
+                  "treatmentType": {
+                    "type": "keyword"
+                  },
+                  "treatmentDuration": {
+                    "type": "integer"
+                  },
+                  "responseToTreatment": {
+                    "type": "keyword"
+                  },
+                  "submitterTreatmentId": {
+                    "type": "keyword"
+                  },
+                  "treatmentStartInterval": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "ageAtDiagnosis": {
+                "type": "integer"
+              },
+              "cancerTypeCode": {
+                "type": "keyword"
+              },
+              "clinicalStageGroup": {
+                "type": "keyword"
+              },
+              "clinicalTumourStagingSystem": {
+                "type": "keyword"
+              },
+              "submitterPrimaryDiagnosisId": {
+                "type": "keyword"
+              }
+            }
+          },
+          "submitterDonorId": {
+            "type": "keyword"
+          }
+        }
+      },
+      "samples": {
+        "type": "nested",
+        "properties": {
+          "donor": {
+            "type": "object",
+            "properties": {
+              "gender": {
+                "type": "keyword"
+              },
+              "submitterDonorId": {
+                "type": "keyword"
+              }
+            }
+          },
+          "specimen": {
+            "type": "object",
+            "properties": {
+              "specimenType": {
+                "type": "keyword"
+              },
+              "submitterSpecimenId": {
+                "type": "keyword"
+              },
+              "specimenTissueSource": {
+                "type": "keyword"
+              },
+              "tumourNormalDesignation": {
+                "type": "keyword"
+              }
+            }
+          },
+          "sampleType": {
+            "type": "keyword"
+          },
+          "submitterSampleId": {
+            "type": "keyword"
+          },
+          "matchedNormalSubmitterSampleId": {
+            "type": "keyword",
+            "null_value": "No Data"
+          }
+        }
+      },
+      "specimen": {
+        "type": "object",
+        "properties": {
+          "tumourGrade": {
+            "type": "keyword"
+          },
+          "submitterSpecimenId": {
+            "type": "keyword"
+          },
+          "tumourGradingSystem": {
+            "type": "keyword"
+          },
+          "specimenAnatomicLocation": {
+            "type": "keyword"
+          },
+          "submitterPrimaryDiagnosisId": {
+            "type": "keyword"
+          }
+        }
+      },
+      "workflow": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "keyword"
+          },
+          "inputs": {
+            "type": "nested",
+            "properties": {
+              "analysisType": {
+                "type": "keyword"
+              },
+              "normalAnalysisId": {
+                "type": "keyword"
+              },
+              "tumourAnalysisId": {
+                "type": "keyword"
+              }
+            }
+          },
+          "sessionId": {
+            "type": "keyword"
+          },
+          "genomeBuild": {
+            "type": "keyword"
+          },
+          "workflowName": {
+            "type": "keyword"
+          },
+          "workflowVersion": {
+            "type": "keyword"
+          },
+          "workflowShortName": {
+            "type": "keyword"
+          }
+        }
+      },
+      "experiment": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "keyword"
+          },
+          "platform": {
+            "type": "keyword"
+          },
+          "sequencingDate": {
+            "type": "date"
+          },
+          "sequencingCenter": {
+            "type": "keyword"
+          },
+          "experimentalStrategy": {
+            "type": "keyword"
+          }
+        }
+      },
+      "publication": {
+        "type": "object",
+        "properties": {
+          "doi": {
+            "type": "keyword"
+          },
+          "publication": {
+            "type": "keyword"
+          }
+        }
+      },
+      "collaborator": {
+        "type": "nested",
+        "properties": {
+          "name": {
+            "type": "keyword"
+          },
+          "contactEmail": {
+            "type": "keyword"
           }
         }
       }

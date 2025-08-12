@@ -3,153 +3,378 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "data__donor_id",
+        "fieldName": "analysisId",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__gender",
+        "fieldName": "studyId",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__primary_site",
+        "fieldName": "analysisState",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__vital_status",
+        "fieldName": "createdAt",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__diagnosis_id",
+        "fieldName": "updatedAt",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__age_at_diagnosis",
+        "fieldName": "firstPublishedAt",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__cancer_type",
+        "fieldName": "publishedAt",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__staging_system",
+        "fieldName": "analysisStateHistory__initialState",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__stage",
+        "fieldName": "analysisStateHistory__updatedState",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__specimen_id",
+        "fieldName": "analysisStateHistory__updatedAt",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__specimen_type",
+        "fieldName": "files__info__dataCategory",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__tissue_source",
+        "fieldName": "files__info__jbrowseCoordinates",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__sample_id",
+        "fieldName": "files__objectId",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__sample_type",
+        "fieldName": "files__studyId",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__treatment_id",
+        "fieldName": "files__fileName",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__treatment_type",
+        "fieldName": "files__fileSize",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__treatment_start",
+        "fieldName": "files__fileType",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__treatment_duration",
+        "fieldName": "files__fileMd5sum",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__treatment_response",
+        "fieldName": "files__fileAccess",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__drug_name",
+        "fieldName": "files__dataType",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__followup_id",
+        "fieldName": "analysisType__name",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__followup_interval",
+        "fieldName": "analysisType__version",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__disease_status",
+        "fieldName": "donor__primarySite",
         "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__submitter_id",
-        "show": false
+        "active": true,
+        "fieldName": "donor__vitalStatus",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__processing_started",
-        "show": false
+        "active": true,
+        "fieldName": "donor__causeOfDeath",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__processed_at",
-        "show": false
+        "active": true,
+        "fieldName": "donor__survivalTime",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__source_file",
-        "show": false
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__followUp__relapseType",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__record_number",
-        "show": false
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__followUp__intervalOfFollowUp",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__hostname",
-        "show": false
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__followUp__submitterFollowUpId",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "data__submission_metadata__username",
-        "show": false
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__followUp__submitterTreatmentId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__followUp__diseaseStatusAtFollowUp",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__treatment__chemotherapy__drugName",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__treatment__treatmentType",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__treatment__treatmentDuration",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__treatment__responseToTreatment",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__treatment__submitterTreatmentId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__treatment__treatmentStartInterval",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__ageAtDiagnosis",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__cancerTypeCode",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__clinicalStageGroup",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__clinicalTumourStagingSystem",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__primaryDiagnosis__submitterPrimaryDiagnosisId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "donor__submitterDonorId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__donor__gender",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__donor__submitterDonorId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__specimen__specimenType",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__specimen__submitterSpecimenId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__specimen__specimenTissueSource",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__specimen__tumourNormalDesignation",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__sampleType",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__submitterSampleId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "samples__matchedNormalSubmitterSampleId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen__tumourGrade",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen__submitterSpecimenId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen__tumourGradingSystem",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen__specimenAnatomicLocation",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "specimen__submitterPrimaryDiagnosisId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__runId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__inputs__analysisType",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__inputs__normalAnalysisId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__inputs__tumourAnalysisId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__sessionId",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__genomeBuild",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__workflowName",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__workflowVersion",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "workflow__workflowShortName",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "experiment__model",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "experiment__platform",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "experiment__sequencingDate",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "experiment__sequencingCenter",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "experiment__experimentalStrategy",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "publication__doi",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "publication__publication",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "collaborator__name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "collaborator__contactEmail",
+        "show": true
       }
     ]
   }

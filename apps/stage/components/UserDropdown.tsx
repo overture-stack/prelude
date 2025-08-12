@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -19,189 +19,175 @@
  *
  */
 
+import { useEffect, useState, useRef } from 'react';
 import { css, useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
-import { signOut } from 'next-auth/react';
-import { useEffect, useRef, useState } from 'react';
 
-import { getConfig } from '@/global/config';
-import { useRouter } from 'next/router';
+import defaultTheme from './theme';
+import { Avatar, Chevron } from './theme/icons';
 import useAuthContext from '../global/hooks/useAuthContext';
-import { UserWithId } from '../global/types/types';
-import { AUTH_PROVIDER, USER_PATH } from '../global/utils/constants';
+import { UserWithId } from '../global/types';
 import { InternalLink as Link } from './Link';
-import { Avatar, ChevronDown } from './theme/icons';
+import { useRouter } from 'next/router';
+import { USER_PATH } from '../global/utils/constants';
 
 const getDisplayName = (user?: UserWithId) => {
-	const greeting = 'Hello';
-	if (user) {
-		if (user.firstName) {
-			return `${greeting}, ${user.firstName}`;
-		} else if (user.lastName) {
-			return `${greeting}, ${user.lastName}`;
-		} else if (user.email) {
-			return `${greeting}, ${user.email}`;
-		}
-	}
-	return greeting;
+  const greeting = 'Hello';
+  if (user) {
+    if (user.firstName) {
+      return `${greeting}, ${user.firstName}`;
+    } else if (user.lastName) {
+      return `${greeting}, ${user.lastName}`;
+    } else if (user.email) {
+      return `${greeting}, ${user.email}`;
+    }
+  }
+  return greeting;
 };
 
 const CurrentUser = () => {
-	const { user } = useAuthContext();
-	return (
-		<div
-			css={css`
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			`}
-		>
-			<span
-				css={css`
-					padding-left: 5px;
-					padding-right: 5px;
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					max-width: 142px;
-				`}
-			>
-				{getDisplayName(user)}
-			</span>
-		</div>
-	);
+  const { user } = useAuthContext();
+  return (
+    <div
+      css={css`
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `}
+    >
+      <span
+        css={css`
+          padding-left: 5px;
+          padding-right: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 142px;
+        `}
+      >
+        {getDisplayName(user)}
+      </span>
+    </div>
+  );
 };
 
 const StyledListLink = styled('a')`
-	${({ theme }) => css`
-		text-decoration: none;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		padding: 6px 12px;
-		color: ${theme.colors.black};
-		background-color: ${theme.colors.white};
-		outline: none;
-		font-size: 16px;
-		cursor: pointer;
-		width: 100%;
-
-		&:hover {
-			background-color: ${theme.colors.grey_1};
-		}
-
-		&:not(:last-child) {
-			border-bottom: 1px solid ${theme.colors.grey_3};
-		}
-	`}
+  ${({ theme }) => css`
+    text-decoration: none;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    background: (theme.colors.white)};
+    padding: 6px 12px;
+    color: ${theme.colors.black};
+    background-color: ${theme.colors.white};
+    border: 1px solid ${theme.colors.grey_3};
+    outline: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    &:hover {
+      background-color: ${theme.colors.grey_1};
+    }
+  `}
 `;
 
 const UserDropdown = () => {
-	const [open, setOpen] = useState(false);
-	const node: any = useRef();
-	const router = useRouter();
-	const theme = useTheme();
-	const { NEXT_PUBLIC_AUTH_PROVIDER } = getConfig();
+  const [open, setOpen] = useState(false);
+  const { logout } = useAuthContext();
+  const node: any = useRef();
+  const router = useRouter();
+  const theme = useTheme();
 
-	const handleClickOutside = (e: any) => {
-		if (node.current.contains(e.target)) {
-			return;
-		}
-		setOpen(false);
-	};
+  const handleClickOutside = (e: any) => {
+    if (node.current.contains(e.target)) {
+      return;
+    }
+    setOpen(false);
+  };
 
-	useEffect(() => {
-		if (open) {
-			document.addEventListener('mousedown', handleClickOutside);
-		} else {
-			document.removeEventListener('mousedown', handleClickOutside);
-		}
+  useEffect(() => {
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
 
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, [open]);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
 
-	const fillColor = router.pathname === USER_PATH ? theme.colors.accent2_dark : theme.colors.accent_dark;
+  const fillColor =
+    router.pathname === USER_PATH ? theme.colors.accent2_dark : theme.colors.accent_dark;
 
-	const handleLogout = () => {
-		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
-			signOut();
-		}
-	};
+  return (
+    <div
+      ref={node}
+      css={css`
+        position: relative;
+        display: flex;
+        height: 100%;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      `}
+      onClick={() => setOpen(!open)}
+    >
+      <Avatar
+        fill={fillColor}
+        width={16}
+        height={16}
+        style={css`
+          padding-left: 4px;
+        `}
+      />
 
-	return (
-		<div
-			ref={node}
-			css={css`
-				position: relative;
-				display: flex;
-				height: 100%;
-				width: 100%;
-				align-items: center;
-				justify-content: center;
-				cursor: pointer;
-			`}
-			onClick={() => setOpen(!open)}
-		>
-			<Avatar
-				fill={fillColor}
-				width={16}
-				height={16}
-				style={css`
-					padding-left: 4px;
-				`}
-			/>
-
-			<CurrentUser />
-			{open ? (
-				<ChevronDown
-					fill={fillColor}
-					width={12}
-					height={12}
-					style={css`
-						transform: rotate(180deg) translateY(-2px);
-					`}
-				/>
-			) : (
-				<ChevronDown
-					fill={fillColor}
-					width={12}
-					height={12}
-					style={css`
-						transform: translateY(1px);
-					`}
-				/>
-			)}
-			{open && (
-				<ul
-					css={css`
-						position: absolute;
-						width: 100%;
-						list-style: none;
-						padding: 0;
-						margin: 0;
-						top: 100%;
-						background: ${theme.colors.white};
-						box-shadow: ${theme.shadow.default};
-						left: 0;
-						border: 1px solid ${theme.colors.grey_3};
-						border-radius: 0 0 4px 4px;
-						overflow: hidden;
-					`}
-				>
-					<li>
-						<Link path={USER_PATH}>
-							<StyledListLink>Profile & Token</StyledListLink>
-						</Link>
-					</li>
-					<li>
-						<StyledListLink onClick={handleLogout}>Logout</StyledListLink>
-					</li>
-				</ul>
-			)}
-		</div>
-	);
+      <CurrentUser />
+      {open ? (
+        <Chevron
+          fill={fillColor}
+          width={12}
+          height={12}
+          style={css`
+            transform: rotate(180deg) translateY(-2px);
+          `}
+        />
+      ) : (
+        <Chevron
+          fill={fillColor}
+          width={12}
+          height={12}
+          style={css`
+            transform: translateY(1px);
+          `}
+        />
+      )}
+      {open && (
+        <ul
+          css={css`
+            width: 100%;
+            list-style: none;
+            padding: 0;
+            position: absolute;
+            top: ${theme.dimensions.navbar.height}px;
+            left: 0;
+            margin: 0;
+          `}
+        >
+          <li>
+            <Link path={USER_PATH}>
+              <StyledListLink>Profile & Token</StyledListLink>
+            </Link>
+          </li>
+          <li>
+            <StyledListLink onClick={() => logout()}>Logout</StyledListLink>
+          </li>
+        </ul>
+      )}
+    </div>
+  );
 };
 
 export default UserDropdown;

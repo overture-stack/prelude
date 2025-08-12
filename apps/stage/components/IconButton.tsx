@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -23,28 +23,28 @@ import { css } from '@emotion/react';
 import { IconProps } from './theme/icons/types';
 
 const IconButton = ({
-	Icon,
-	fill,
-	height,
-	width,
-	onClick = () => {},
+  Icon,
+  fill,
+  height,
+  width,
+  onClick = () => {},
 }: {
-	Icon: React.ComponentType<IconProps>;
-	fill: string;
-	height: number;
-	width: number;
-	onClick: React.MouseEventHandler;
+  Icon: React.ComponentType<IconProps>;
+  fill: string;
+  height: number;
+  width: number;
+  onClick: React.MouseEventHandler;
 }) => {
-	return (
-		<span
-			onClick={onClick}
-			css={css`
-				cursor: pointer;
-			`}
-		>
-			<Icon height={height} width={width} fill={fill} />
-		</span>
-	);
+  return (
+    <span
+      onClick={onClick}
+      css={css`
+        cursor: pointer;
+      `}
+    >
+      <Icon height={height} width={width} fill={fill} />
+    </span>
+  );
 };
 
 export default IconButton;

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -19,25 +19,24 @@
  *
  */
 
-import { GitHubLogo, GoogleLogo, LinkedInLogo, OrcidLogo, KeycloakLogo } from '../../components/theme/icons';
-import { ProviderType } from '../types/types';
+import { GitHubLogo, GoogleLogo, LinkedInLogo, OrcidLogo } from '../../components/theme/icons';
+import { ProviderType } from '../types';
 
 export type ProviderDetail = {
-	displayName: string;
-	path: string;
-	icon: any;
+  displayName: string;
+  path: string;
+  icon: any;
 };
 
 export type ProviderMap = { [k in ProviderType]: ProviderDetail };
 
 const providerMap: ProviderMap = {
-	[ProviderType.GOOGLE]: { displayName: 'Google', path: 'google', icon: GoogleLogo },
-	[ProviderType.ORCID]: { displayName: 'ORCiD', path: 'orcid', icon: OrcidLogo },
-	[ProviderType.GITHUB]: { displayName: 'GitHub', path: 'github', icon: GitHubLogo },
-	[ProviderType.LINKEDIN]: { displayName: 'LinkedIn', path: 'linkedin', icon: LinkedInLogo },
-	[ProviderType.KEYCLOAK]: { displayName: 'Keycloak', path: 'keycloak', icon: KeycloakLogo },
-	// Facebook will be hidden until provider implementation is fixed in Ego https://github.com/overture-stack/ego/issues/555
-	// [ProviderType.FACEBOOK]: { displayName: 'Facebook', path: '', icon: FacebookLogo },
+  [ProviderType.GOOGLE]: { displayName: 'Google', path: 'google', icon: GoogleLogo },
+  [ProviderType.ORCID]: { displayName: 'ORCiD', path: 'orcid', icon: OrcidLogo },
+  [ProviderType.GITHUB]: { displayName: 'GitHub', path: 'github', icon: GitHubLogo },
+  [ProviderType.LINKEDIN]: { displayName: 'LinkedIn', path: 'linkedin', icon: LinkedInLogo },
+  // Facebook will be hidden until provider implementation is fixed in Ego https://github.com/overture-stack/ego/issues/555
+  // [ProviderType.FACEBOOK]: { displayName: 'Facebook', path: '', icon: FacebookLogo },
 };
 
 export default providerMap;

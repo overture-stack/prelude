@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -19,162 +19,226 @@
  *
  */
 
-import { css, useTheme } from '@emotion/react';
+import { Theme, css, useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
 import React from 'react';
 import IconButton from './IconButton';
 
+import { Error as ErrorIcon } from './theme/icons';
 import DismissIcon from './theme/icons/dismiss';
 
 type ErrorSize = 'lg' | 'md' | 'sm';
 
 const ERROR_SIZES = {
-	LG: 'lg' as ErrorSize,
-	MD: 'md' as ErrorSize,
-	SM: 'sm' as ErrorSize,
+  LG: 'lg' as ErrorSize,
+  MD: 'md' as ErrorSize,
+  SM: 'sm' as ErrorSize,
 };
 
+type ErrorLevel = 'error' | 'warning';
+
+const ERROR_LEVELS = {
+  ERROR: 'error' as ErrorLevel,
+  WARNING: 'warning' as ErrorLevel,
+};
+
+const getIconDimensions = (size: ErrorSize) =>
+  ({
+    [ERROR_SIZES.LG]: { width: 26, height: 27 },
+    [ERROR_SIZES.MD]: { width: 21, height: 22 },
+    [ERROR_SIZES.SM]: { width: 18, height: 18 },
+  }[size]);
+
+const getDismissIconDimensions = (size: ErrorSize) =>
+  ({
+    [ERROR_SIZES.LG]: 12,
+    [ERROR_SIZES.MD]: 12,
+    [ERROR_SIZES.SM]: 9,
+  }[size]);
+
+const getFontSize = (size: ErrorSize) =>
+  ({
+    [ERROR_SIZES.LG]: { fontSize: '16px' },
+    [ERROR_SIZES.MD]: { fontSize: '16px' },
+    [ERROR_SIZES.SM]: { fontSize: '13px' },
+  }[size]);
+
+const getColors = ({ item, level, theme }: { item: string; level: ErrorLevel; theme: Theme }) =>
+  ({
+    [ERROR_LEVELS.ERROR]: {
+      background: theme.colors.error_1,
+      border: theme.colors.error_2,
+      icon: theme.colors.error_dark,
+    },
+    [ERROR_LEVELS.WARNING]: {
+      background: theme.colors.warning_light,
+      border: theme.colors.warning_medium,
+      icon: theme.colors.warning_dark,
+    },
+  }[level][item]);
+
 const getContainerStyles = (size: ErrorSize) =>
-	({
-		[ERROR_SIZES.LG]: `
-      padding: 1rem 2rem;
+  ({
+    [ERROR_SIZES.LG]: `
+      padding: 1rem 60px 2rem 1rem;
+      line-height: 26px;
+    `,
+    [ERROR_SIZES.MD]: `
+      padding: 1rem 60px 1rem 1rem;
       line-height: 24px;
     `,
-		[ERROR_SIZES.MD]: `
-      padding: 1rem;
-      line-height: 22px;
-    `,
-		[ERROR_SIZES.SM]: `
-      padding: 0.5rem;
-      line-height: 18px;
+    [ERROR_SIZES.SM]: `
+      padding: 0.5rem 60px 0.5rem 0.5rem;
+      line-height: 20px;
       display: flex;
       align-items: center;
     `,
-	}[size]);
+  }[size]);
 
-const ErrorContentContainer = styled('div')<{ size: ErrorSize }>`
-	${({ theme, size }) => css`
-		border: 1px solid ${theme.colors.error_2};
-		border-radius: 5px;
-		${theme.shadow.default};
-		${theme.typography.subheading};
-		font-weight: normal;
-		background-color: ${theme.colors.grey_1};
-		color: ${theme.colors.accent_dark};
-		${getContainerStyles(size)};
-		max-width: 600px;
-	`}
+const ErrorContentContainer = styled('div')<{ level: ErrorLevel; size: ErrorSize }>`
+  ${({ level, size, theme }) => css`
+    border: 1px solid ${getColors({ level, theme, item: 'border' })};
+    border-radius: 5px;
+    ${theme.shadow.default};
+    ${theme.typography.subheading};
+    font-weight: normal;
+    background-color: ${getColors({ level, theme, item: 'background' })};
+    color: ${theme.colors.black};
+    ${getContainerStyles(size)};
+  `}
 `;
 
-// Title styles
+const getIconStyle = (size: ErrorSize) =>
+  ({
+    [ERROR_SIZES.LG]: 'padding-right: 15px',
+    [ERROR_SIZES.MD]: 'padding-right: 15px',
+    [ERROR_SIZES.SM]: '',
+  }[size]);
+
 const getTitleStyle = (size: ErrorSize) =>
-	({
-		[ERROR_SIZES.LG]: `
+  ({
+    [ERROR_SIZES.LG]: `
       margin: 0.5rem 0 1rem;
-      font-size: 18px;
-      line-height: 24px;
+      font-size: 24px;
+      line-height: 38px;
     `,
-		[ERROR_SIZES.MD]: `
+    [ERROR_SIZES.MD]: `
       margin: 0rem;
       padding-bottom: 0.4rem;
-      font-size: 16px;
-      line-height: 18px;
+      font-size: 18px;
+      line-height: 20px;
     `,
-		[ERROR_SIZES.SM]: `
+    [ERROR_SIZES.SM]: `
       margin: 0rem,
       line-height: 16px;
     `,
-	}[size]);
+  }[size]);
 
 const ErrorTitle = styled('h1')`
-	${({ size }: { size: ErrorSize }) => css`
-		display: flex;
-		align-items: center;
-		${getTitleStyle(size)}
-	`}
+  ${({ size }: { size: ErrorSize }) => css`
+    display: flex;
+    align-items: center;
+    ${getTitleStyle(size)}
+  `}
 `;
 
 const ErrorNotification = ({
-	children,
-	className,
-	title,
-	size,
-	onDismiss,
-	dismissible = false,
-	...props
+  children,
+  className,
+  dismissible = false,
+  level = ERROR_LEVELS.ERROR,
+  onDismiss,
+  size,
+  title,
+  ...props
 }: {
-	children: React.ReactNode;
-	className?: string;
-	title?: string;
-	size: ErrorSize;
-	styles?: string;
-	onDismiss?: Function;
-	dismissible?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  dismissible?: boolean;
+  level?: ErrorLevel;
+  onDismiss?: Function;
+  size: ErrorSize;
+  styles?: string;
+  title?: string;
 }) => {
-	const theme = useTheme();
+  const theme = useTheme();
 
-	return (
-		<div
-			className={className}
-			css={css`
-				display: flex;
-				flex: 1;
-			`}
-		>
-			<ErrorContentContainer size={size}>
-				{title ? (
-					<div>
-						<ErrorTitle size={size}>
-							{title}
-							{dismissible && (
-								<span
-									css={css`
-										margin-left: 8px;
-									`}
-								>
-									<IconButton
-										onClick={(e: React.MouseEvent) => (onDismiss ? onDismiss() : () => null)}
-										Icon={DismissIcon}
-										height={10}
-										width={10}
-										fill={theme.colors.error_dark}
-									/>
-								</span>
-							)}
-						</ErrorTitle>
-						{children}
-					</div>
-				) : (
-					<div
-						css={css`
-							display: flex;
-							flex-direction: row;
-						`}
-					>
-						<div
-							css={css`
-								display: flex;
-								align-items: center;
-								justify-content: center;
-								flex: 1;
-							`}
-						>
-							{children}
-						</div>
-						{dismissible && (
-							<IconButton
-								onClick={(e: React.MouseEvent) => (onDismiss ? onDismiss() : () => null)}
-								Icon={DismissIcon}
-								height={10}
-								width={10}
-								fill={theme.colors.error_dark}
-							/>
-						)}
-					</div>
-				)}
-			</ErrorContentContainer>
-		</div>
-	);
+  const clickHandler = (e: React.MouseEvent) => onDismiss?.();
+
+  return (
+    <div
+      className={className}
+      css={css`
+        max-width: 600px;
+        position: relative;
+      `}
+    >
+      <ErrorContentContainer level={level} size={size}>
+        {title ? (
+          <div>
+            <ErrorTitle size={size}>
+              <ErrorIcon
+                {...getIconDimensions(size)}
+                style={css`
+                  line-height: 16px;
+                  ${getIconStyle(size)}
+                `}
+                fill={getColors({ level, theme, item: 'icon' })}
+              />{' '}
+              {title}
+              {dismissible && <DismissIcon height={15} width={15} fill={theme.colors.black} />}
+            </ErrorTitle>
+            {children}
+          </div>
+        ) : (
+          <div
+            css={css`
+              display: flex;
+              flex-direction: row;
+            `}
+          >
+            <span>
+              <ErrorIcon
+                {...getIconDimensions(size)}
+                style={css`
+                  ${getIconStyle(size)}
+                `}
+                fill={getColors({ level, theme, item: 'icon' })}
+              />
+            </span>
+            <div
+              css={css`
+                margin-left: 10px;
+                margin-right: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                ${getFontSize(size)}
+              `}
+            >
+              {children}
+            </div>
+            {dismissible && (
+              <div
+                css={css`
+                  position: absolute;
+                  right: 16px;
+                `}
+              >
+                <IconButton
+                  onClick={clickHandler}
+                  Icon={DismissIcon}
+                  height={getDismissIconDimensions(size)}
+                  width={getDismissIconDimensions(size)}
+                  fill={theme.colors.black}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </ErrorContentContainer>
+    </div>
+  );
 };
 
 export default ErrorNotification;

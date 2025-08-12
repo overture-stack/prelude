@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -20,16 +20,16 @@
  */
 
 import React from 'react';
-import PlatformAdminContact from '../PlatformAdminContact';
+import DMSAdminContact from '../DMSAdminContact';
 import { ErrorPageLayout } from '../PageLayout';
 
 const Error404 = () => {
-	return (
-		<ErrorPageLayout errorTitle="404: Page not found" subtitle="Error 404 - Page not found">
-			The page you requested could not be found. Please check that you have entered the correct URL.
-			If the problem persists, contact the <PlatformAdminContact /> for help.
-		</ErrorPageLayout>
-	);
+  return (
+    <ErrorPageLayout errorTitle="404: Page not found" subtitle="Error 404 - Page not found">
+      The page you requested could not be found. Please check that you have entered the correct URL.
+      If the problem persists, contact the <DMSAdminContact /> for help.
+    </ErrorPageLayout>
+  );
 };
 
 export default Error404;

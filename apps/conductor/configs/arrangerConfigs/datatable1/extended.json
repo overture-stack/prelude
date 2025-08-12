@@ -1,128 +1,385 @@
 {
   "extended": [
     {
-      "displayName": "Donor Id",
-      "fieldName": "data.donor_id"
+      "displayName": "Analysis Id",
+      "fieldName": "analysisId"
     },
     {
-      "displayName": "Gender",
-      "fieldName": "data.gender"
+      "displayName": "Study Id",
+      "fieldName": "studyId"
+    },
+    {
+      "displayName": "Analysis State",
+      "fieldName": "analysisState"
+    },
+    {
+      "displayName": "Created At",
+      "fieldName": "createdAt"
+    },
+    {
+      "displayName": "Updated At",
+      "fieldName": "updatedAt"
+    },
+    {
+      "displayName": "First Published At",
+      "fieldName": "firstPublishedAt"
+    },
+    {
+      "displayName": "Published At",
+      "fieldName": "publishedAt"
+    },
+    {
+      "displayName": "Analysis State History",
+      "fieldName": "analysisStateHistory",
+      "isArray": true
+    },
+    {
+      "displayName": "Initial State",
+      "fieldName": "analysisStateHistory.initialState"
+    },
+    {
+      "displayName": "Updated State",
+      "fieldName": "analysisStateHistory.updatedState"
+    },
+    {
+      "displayName": "Updated At",
+      "fieldName": "analysisStateHistory.updatedAt"
+    },
+    {
+      "displayName": "Files",
+      "fieldName": "files",
+      "isArray": true
+    },
+    {
+      "displayName": "Info",
+      "fieldName": "files.info"
+    },
+    {
+      "displayName": "Data Category",
+      "fieldName": "files.info.dataCategory"
+    },
+    {
+      "displayName": "Jbrowse Coordinates",
+      "fieldName": "files.info.jbrowseCoordinates"
+    },
+    {
+      "displayName": "Object Id",
+      "fieldName": "files.objectId"
+    },
+    {
+      "displayName": "Study Id",
+      "fieldName": "files.studyId"
+    },
+    {
+      "displayName": "File Name",
+      "fieldName": "files.fileName"
+    },
+    {
+      "displayName": "File Size",
+      "fieldName": "files.fileSize"
+    },
+    {
+      "displayName": "File Type",
+      "fieldName": "files.fileType"
+    },
+    {
+      "displayName": "File Md5sum",
+      "fieldName": "files.fileMd5sum"
+    },
+    {
+      "displayName": "File Access",
+      "fieldName": "files.fileAccess"
+    },
+    {
+      "displayName": "Data Type",
+      "fieldName": "files.dataType"
+    },
+    {
+      "displayName": "Analysis Type",
+      "fieldName": "analysisType"
+    },
+    {
+      "displayName": "Name",
+      "fieldName": "analysisType.name"
+    },
+    {
+      "displayName": "Version",
+      "fieldName": "analysisType.version"
+    },
+    {
+      "displayName": "Donor",
+      "fieldName": "donor"
     },
     {
       "displayName": "Primary Site",
-      "fieldName": "data.primary_site"
+      "fieldName": "donor.primarySite"
     },
     {
       "displayName": "Vital Status",
-      "fieldName": "data.vital_status"
+      "fieldName": "donor.vitalStatus"
     },
     {
-      "displayName": "Diagnosis Id",
-      "fieldName": "data.diagnosis_id"
+      "displayName": "Cause Of Death",
+      "fieldName": "donor.causeOfDeath"
     },
     {
-      "displayName": "Age At Diagnosis",
-      "fieldName": "data.age_at_diagnosis"
+      "displayName": "Survival Time",
+      "fieldName": "donor.survivalTime"
     },
     {
-      "displayName": "Cancer Type",
-      "fieldName": "data.cancer_type"
+      "displayName": "Primary Diagnosis",
+      "fieldName": "donor.primaryDiagnosis",
+      "isArray": true
     },
     {
-      "displayName": "Staging System",
-      "fieldName": "data.staging_system"
+      "displayName": "Follow Up",
+      "fieldName": "donor.primaryDiagnosis.followUp",
+      "isArray": true
     },
     {
-      "displayName": "Stage",
-      "fieldName": "data.stage"
+      "displayName": "Relapse Type",
+      "fieldName": "donor.primaryDiagnosis.followUp.relapseType"
     },
     {
-      "displayName": "Specimen Id",
-      "fieldName": "data.specimen_id"
+      "displayName": "Interval Of Follow Up",
+      "fieldName": "donor.primaryDiagnosis.followUp.intervalOfFollowUp"
     },
     {
-      "displayName": "Specimen Type",
-      "fieldName": "data.specimen_type"
+      "displayName": "Submitter Follow Up Id",
+      "fieldName": "donor.primaryDiagnosis.followUp.submitterFollowUpId"
     },
     {
-      "displayName": "Tissue Source",
-      "fieldName": "data.tissue_source"
+      "displayName": "Submitter Treatment Id",
+      "fieldName": "donor.primaryDiagnosis.followUp.submitterTreatmentId"
     },
     {
-      "displayName": "Sample Id",
-      "fieldName": "data.sample_id"
+      "displayName": "Disease Status At Follow Up",
+      "fieldName": "donor.primaryDiagnosis.followUp.diseaseStatusAtFollowUp"
     },
     {
-      "displayName": "Sample Type",
-      "fieldName": "data.sample_type"
+      "displayName": "Treatment",
+      "fieldName": "donor.primaryDiagnosis.treatment",
+      "isArray": true
     },
     {
-      "displayName": "Treatment Id",
-      "fieldName": "data.treatment_id"
-    },
-    {
-      "displayName": "Treatment Type",
-      "fieldName": "data.treatment_type"
-    },
-    {
-      "displayName": "Treatment Start",
-      "fieldName": "data.treatment_start"
-    },
-    {
-      "displayName": "Treatment Duration",
-      "fieldName": "data.treatment_duration"
-    },
-    {
-      "displayName": "Treatment Response",
-      "fieldName": "data.treatment_response"
+      "displayName": "Chemotherapy",
+      "fieldName": "donor.primaryDiagnosis.treatment.chemotherapy",
+      "isArray": true
     },
     {
       "displayName": "Drug Name",
-      "fieldName": "data.drug_name"
+      "fieldName": "donor.primaryDiagnosis.treatment.chemotherapy.drugName"
     },
     {
-      "displayName": "Followup Id",
-      "fieldName": "data.followup_id"
+      "displayName": "Treatment Type",
+      "fieldName": "donor.primaryDiagnosis.treatment.treatmentType"
     },
     {
-      "displayName": "Followup Interval",
-      "fieldName": "data.followup_interval"
+      "displayName": "Treatment Duration",
+      "fieldName": "donor.primaryDiagnosis.treatment.treatmentDuration"
     },
     {
-      "displayName": "Disease Status",
-      "fieldName": "data.disease_status"
+      "displayName": "Response To Treatment",
+      "fieldName": "donor.primaryDiagnosis.treatment.responseToTreatment"
     },
     {
-      "displayName": "Submission Metadata",
-      "fieldName": "data.submission_metadata"
+      "displayName": "Submitter Treatment Id",
+      "fieldName": "donor.primaryDiagnosis.treatment.submitterTreatmentId"
     },
     {
-      "displayName": "Submission Metadata Submitter Id",
-      "fieldName": "data.submission_metadata.submitter_id"
+      "displayName": "Treatment Start Interval",
+      "fieldName": "donor.primaryDiagnosis.treatment.treatmentStartInterval"
     },
     {
-      "displayName": "Submission Metadata Processing Started",
-      "fieldName": "data.submission_metadata.processing_started"
+      "displayName": "Age At Diagnosis",
+      "fieldName": "donor.primaryDiagnosis.ageAtDiagnosis"
     },
     {
-      "displayName": "Submission Metadata Processed At",
-      "fieldName": "data.submission_metadata.processed_at"
+      "displayName": "Cancer Type Code",
+      "fieldName": "donor.primaryDiagnosis.cancerTypeCode"
     },
     {
-      "displayName": "Submission Metadata Source File",
-      "fieldName": "data.submission_metadata.source_file"
+      "displayName": "Clinical Stage Group",
+      "fieldName": "donor.primaryDiagnosis.clinicalStageGroup"
     },
     {
-      "displayName": "Submission Metadata Record Number",
-      "fieldName": "data.submission_metadata.record_number"
+      "displayName": "Clinical Tumour Staging System",
+      "fieldName": "donor.primaryDiagnosis.clinicalTumourStagingSystem"
     },
     {
-      "displayName": "Submission Metadata Hostname",
-      "fieldName": "data.submission_metadata.hostname"
+      "displayName": "Submitter Primary Diagnosis Id",
+      "fieldName": "donor.primaryDiagnosis.submitterPrimaryDiagnosisId"
     },
     {
-      "displayName": "Submission Metadata Username",
-      "fieldName": "data.submission_metadata.username"
+      "displayName": "Submitter Donor Id",
+      "fieldName": "donor.submitterDonorId"
+    },
+    {
+      "displayName": "Samples",
+      "fieldName": "samples",
+      "isArray": true
+    },
+    {
+      "displayName": "Donor",
+      "fieldName": "samples.donor"
+    },
+    {
+      "displayName": "Gender",
+      "fieldName": "samples.donor.gender"
+    },
+    {
+      "displayName": "Submitter Donor Id",
+      "fieldName": "samples.donor.submitterDonorId"
+    },
+    {
+      "displayName": "Specimen",
+      "fieldName": "samples.specimen"
+    },
+    {
+      "displayName": "Specimen Type",
+      "fieldName": "samples.specimen.specimenType"
+    },
+    {
+      "displayName": "Submitter Specimen Id",
+      "fieldName": "samples.specimen.submitterSpecimenId"
+    },
+    {
+      "displayName": "Specimen Tissue Source",
+      "fieldName": "samples.specimen.specimenTissueSource"
+    },
+    {
+      "displayName": "Tumour Normal Designation",
+      "fieldName": "samples.specimen.tumourNormalDesignation"
+    },
+    {
+      "displayName": "Sample Type",
+      "fieldName": "samples.sampleType"
+    },
+    {
+      "displayName": "Submitter Sample Id",
+      "fieldName": "samples.submitterSampleId"
+    },
+    {
+      "displayName": "Matched Normal Submitter Sample Id",
+      "fieldName": "samples.matchedNormalSubmitterSampleId"
+    },
+    {
+      "displayName": "Specimen",
+      "fieldName": "specimen"
+    },
+    {
+      "displayName": "Tumour Grade",
+      "fieldName": "specimen.tumourGrade"
+    },
+    {
+      "displayName": "Submitter Specimen Id",
+      "fieldName": "specimen.submitterSpecimenId"
+    },
+    {
+      "displayName": "Tumour Grading System",
+      "fieldName": "specimen.tumourGradingSystem"
+    },
+    {
+      "displayName": "Specimen Anatomic Location",
+      "fieldName": "specimen.specimenAnatomicLocation"
+    },
+    {
+      "displayName": "Submitter Primary Diagnosis Id",
+      "fieldName": "specimen.submitterPrimaryDiagnosisId"
+    },
+    {
+      "displayName": "Workflow",
+      "fieldName": "workflow"
+    },
+    {
+      "displayName": "Run Id",
+      "fieldName": "workflow.runId"
+    },
+    {
+      "displayName": "Inputs",
+      "fieldName": "workflow.inputs",
+      "isArray": true
+    },
+    {
+      "displayName": "Analysis Type",
+      "fieldName": "workflow.inputs.analysisType"
+    },
+    {
+      "displayName": "Normal Analysis Id",
+      "fieldName": "workflow.inputs.normalAnalysisId"
+    },
+    {
+      "displayName": "Tumour Analysis Id",
+      "fieldName": "workflow.inputs.tumourAnalysisId"
+    },
+    {
+      "displayName": "Session Id",
+      "fieldName": "workflow.sessionId"
+    },
+    {
+      "displayName": "Genome Build",
+      "fieldName": "workflow.genomeBuild"
+    },
+    {
+      "displayName": "Workflow Name",
+      "fieldName": "workflow.workflowName"
+    },
+    {
+      "displayName": "Workflow Version",
+      "fieldName": "workflow.workflowVersion"
+    },
+    {
+      "displayName": "Workflow Short Name",
+      "fieldName": "workflow.workflowShortName"
+    },
+    {
+      "displayName": "Experiment",
+      "fieldName": "experiment"
+    },
+    {
+      "displayName": "Model",
+      "fieldName": "experiment.model"
+    },
+    {
+      "displayName": "Platform",
+      "fieldName": "experiment.platform"
+    },
+    {
+      "displayName": "Sequencing Date",
+      "fieldName": "experiment.sequencingDate"
+    },
+    {
+      "displayName": "Sequencing Center",
+      "fieldName": "experiment.sequencingCenter"
+    },
+    {
+      "displayName": "Experimental Strategy",
+      "fieldName": "experiment.experimentalStrategy"
+    },
+    {
+      "displayName": "Publication",
+      "fieldName": "publication"
+    },
+    {
+      "displayName": "Doi",
+      "fieldName": "publication.doi"
+    },
+    {
+      "displayName": "Publication",
+      "fieldName": "publication.publication"
+    },
+    {
+      "displayName": "Collaborator",
+      "fieldName": "collaborator",
+      "isArray": true
+    },
+    {
+      "displayName": "Name",
+      "fieldName": "collaborator.name"
+    },
+    {
+      "displayName": "Contact Email",
+      "fieldName": "collaborator.contactEmail"
     }
   ]
 }

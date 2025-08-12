@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2021 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -20,18 +20,30 @@
  */
 
 import { css } from '@emotion/react';
+import { ReactElement } from 'react';
+import Spinner from './theme/icons/spinner';
 
-// TODO: this is a placeholder Loader
-const Loader = () => {
+const Loader = ({
+	inline = false,
+	margin = 'auto',
+	overlay = false,
+	size = '120px',
+}): ReactElement => {
+	const unit = size.replace(/\d+/, '');
+	const stroke = `${Number(size.match(/\d+/)?.pop()) * 0.25}${unit}`;
+
 	return (
 		<div
 			css={(theme) => css`
-				border: 10px solid ${theme.colors.grey_3};
-				border-top: 10px solid ${theme.colors.secondary_dark};
+				border: ${stroke} solid ${theme.colors.grey_3};
+				border-top: ${stroke} solid ${theme.colors.secondary_dark};
 				border-radius: 50%;
-				width: 60px;
-				height: 60px;
+				display: ${inline ? 'inline-' : ''}block;
+				height: ${size};
+				width: ${size};
+				margin: ${margin};
 				animation: spin 2s linear infinite;
+				z-index: 1;
 
 				@keyframes spin {
 					0% {
@@ -41,9 +53,38 @@ const Loader = () => {
 						transform: rotate(360deg);
 					}
 				}
+				${overlay &&
+				`
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					margin: calc(-${size} / 2) 0 0 calc(-${size} / 2);
+				`}
 			`}
 		/>
 	);
 };
+
+export const OverlayLoader = ({ minHeight }: { minHeight?: number }) => (
+	<div
+		css={css`
+			width: 100%;
+			height: 100%;
+			min-height: ${minHeight || 500}px;
+			display: flex;
+			position: absolute;
+			justify-content: center;
+			padding-top: 200px;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			background: rgba(255, 255, 255, 0.8);
+			z-index: 999;
+		`}
+	>
+		<Spinner width={50} />
+	</div>
+);
 
 export default Loader;
