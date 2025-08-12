@@ -5,7 +5,7 @@ This integration connects Overture's genomic data management platform with [JBro
 ![JbrowseIntegration](/jbrowse.png "jBrowse Integration")
 
 > [!IMPORTANT]  
-> Each tool integration requires unique data transformations and custom development approaches that limit the broad reusability of the platform. Learning from this body of work, we've transitioned to focusing on more flexible and broadly applicable API-driven approaches specifically standardized interfaces and client libraries (like Python)to give users greater tool choice, extensibility, and the ability to integrate their preferred solutions without platform-specific constraints.
+> Each tool integration requires unique data transformations and custom development approaches that may limit the broad reusability of the platform. Learning from this body of work, we've transitioned to focusing on more flexible and broadly applicable API-driven approaches specifically standardized interfaces and client libraries (like Python)to give users greater tool choice, extensibility, and the ability to integrate their preferred solutions without platform-specific constraints.
 
 ## Quick Start
 
