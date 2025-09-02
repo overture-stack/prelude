@@ -12,7 +12,7 @@ import { ErrorFactory } from "../utils/errors";
 // Import all command classes
 import { UploadCommand } from "./uploadCsvCommand";
 import { PostgresUploadCommand } from "./postgresUploadCommand";
-import { PostgresIndexCommand } from "./postgresIndexCommand";
+import { IndexCommand } from "./postgresIndexCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
 import { LyricRegistrationCommand } from "./lyricRegistrationCommand";
 import { LyricUploadCommand } from "./lyricUploadCommand";
@@ -58,12 +58,12 @@ export class CommandRegistry {
       },
     ],
     [
-      "postgresindex", // lowercase key
+      "index", // lowercase key
       {
-        name: "postgresIndex", // original name for display
+        name: "index", // original name for display
         description: "Index data from PostgreSQL table to Elasticsearch",
         category: "Data Integration",
-        constructor: PostgresIndexCommand,
+        constructor: IndexCommand,
       },
     ],
     [

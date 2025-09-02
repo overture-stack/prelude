@@ -15,21 +15,29 @@ import { ErrorFactory } from "../utils/errors";
 
 /**
  * Configures the command-line options for the Conductor CLI
- * Updated with esUpload rename and case-insensitive aliases
+ * Updated with suppressed Commander help to only show custom reference commands
  * @param program - The Commander.js program instance
  */
 export function configureCommandOptions(program: Command): void {
+  // Check if help was requested before parsing
+  if (process.argv.includes("-h") || process.argv.includes("--help")) {
+    Logger.showReferenceCommands();
+    process.exit(0);
+  }
+
+  // Suppress Commander's built-in help and error output
+  program.configureOutput({
+    writeOut: () => {}, // Suppress help output
+    writeErr: () => {}, // Suppress error output
+  });
+
   // Global options
   program
     .version("1.0.0")
     .description("Conductor: Data Processing Pipeline")
     .option("--debug", "Enable debug mode")
-    // Add a custom action for the help option
-    .addHelpCommand("help [command]", "Display help for a specific command")
-    .on("--help", () => {
-      // Call the reference commands after the default help
-      Logger.showReferenceCommands();
-    });
+    .helpOption(false) // Disable automatic help option
+    .exitOverride(); // Prevent Commander from calling process.exit()
 
   // Elasticsearch Upload command (renamed from "upload" to "esUpload")
   // Added aliases for case-insensitive matching
@@ -82,9 +90,9 @@ export function configureCommandOptions(program: Command): void {
 
   // PostgreSQL to Elasticsearch index command (updated defaults)
   program
-    .command("postgresIndex")
-    .alias("postgresindex") // lowercase alias
-    .alias("POSTGRESINDEX") // uppercase alias
+    .command("index")
+    .alias("index") // lowercase alias
+    .alias("INDEX") // uppercase alias
     .description("Index data from PostgreSQL table to Elasticsearch")
     .option("-t, --table <n>", "Source PostgreSQL table name")
     .option("-i, --index <n>", "Target Elasticsearch index name")

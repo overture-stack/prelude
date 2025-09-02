@@ -1,4 +1,4 @@
-// src/commands/postgresIndexCommand.ts
+// src/commands/indexCommand.ts
 /**
  * PostgreSQL to Elasticsearch Index Command - UPDATED for nested data structure
  *
@@ -22,9 +22,9 @@ import { Pool } from "pg";
 import { Client } from "@elastic/elasticsearch";
 import { createRecordMetadata } from "../services/csvProcessor/metadata";
 
-export class PostgresIndexCommand extends Command {
+export class IndexCommand extends Command {
   constructor() {
-    super("postgresIndex");
+    super("index");
   }
 
   /**

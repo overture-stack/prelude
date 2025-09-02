@@ -17,9 +17,9 @@ import { ErrorFactory } from "../utils/errors";
  * Updated with esUpload rename
  */
 type CLIprofile =
-  | "esUpload" // Changed from "upload" to "esUpload"
+  | "esUpload"
   | "postgresUpload"
-  | "postgresIndex"
+  | "index"
   | "lecternUpload"
   | "lyricRegister"
   | "lyricUpload"
@@ -116,8 +116,8 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "postgresUpload":
         profile = "postgresUpload";
         break;
-      case "postgresIndex":
-        profile = "postgresIndex";
+      case "index":
+        profile = "index";
         break;
       case "lecternUpload":
         profile = "lecternUpload";
@@ -274,7 +274,7 @@ function createSimplifiedConfig(options: any): Config {
       addMetadata: options.addMetadata || false,
     };
 
-    // Handle Elasticsearch credentials separately for postgresIndex command
+    // Handle Elasticsearch credentials separately for index command
     const esUser = options.esUser || options.user || "elastic";
     const esPassword =
       options.esPassword || options.password || "myelasticpassword";

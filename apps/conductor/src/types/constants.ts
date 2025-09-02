@@ -18,7 +18,7 @@ export const Profiles = {
   POSTGRES_UPLOAD: "postgresUpload",
 
   /** Index data from PostgreSQL to Elasticsearch */
-  POSTGRES_INDEX: "postgresIndex",
+  POSTGRES_INDEX: "index",
 
   /** Upload schema to Lectern server */
   LECTERN_UPLOAD: "lecternUpload",
