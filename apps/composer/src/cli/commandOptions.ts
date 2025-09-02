@@ -1,4 +1,4 @@
-// src/cli/commandOptions.ts - Fixed with PostgreSQL support and proper exports
+// src/cli/commandOptions.ts - Fixed with PostgreSQL support and suppressed Commander help
 import { Command, Option } from "commander";
 import { Profile, Profiles } from "../types";
 import { ErrorFactory } from "../utils/errors";
@@ -33,10 +33,22 @@ const PROFILE_DESCRIPTIONS = new Map([
 ]);
 
 /**
- * Configure CLI command options with PostgreSQL support
+ * Configure CLI command options with PostgreSQL support - suppresses Commander help
  */
 export function configureCommandOptions(program: Command): Command {
   Logger.debug`Configuring command options`;
+
+  // Check if help was requested before parsing
+  if (process.argv.includes("-h") || process.argv.includes("--help")) {
+    Logger.showReferenceCommands();
+    process.exit(0);
+  }
+
+  // Suppress Commander's built-in help and error output
+  program.configureOutput({
+    writeOut: () => {}, // Suppress help output
+    writeErr: () => {}, // Suppress error output
+  });
 
   return (
     program
@@ -98,11 +110,8 @@ export function configureCommandOptions(program: Command): Command {
       .option("--include-constraints", "Include primary key constraints")
       .option("--include-indexes", "Include database indexes")
       .option("--force", "Force overwrite of existing files without prompting")
-      .helpOption("-h, --help", "Display help for command")
-      .addHelpText("after", () => {
-        Logger.showReferenceCommands();
-        return "";
-      })
+      .helpOption(false) // Disable automatic help option
+      .exitOverride() // Prevent Commander from calling process.exit()
       .hook("preAction", (thisCommand) => {
         const opts = thisCommand.opts();
         if (opts.debug) {
