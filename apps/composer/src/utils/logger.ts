@@ -512,11 +512,14 @@ export class Logger {
     commands.forEach((cmd) => {
       this.generic(chalk.bold.magenta(`${cmd.name}:`));
       this.generic(chalk.white(cmd.command));
+      this.generic("");
 
       if (cmd.options.length > 0) {
-        this.generic(chalk.gray("Options:"));
+        this.generic(chalk.gray(" Options:"));
         cmd.options.forEach((opt) => {
-          this.generic(chalk.gray(`${opt.flag.padEnd(35)} ${opt.description}`));
+          this.generic(
+            chalk.gray(`   ${opt.flag.padEnd(35)} ${opt.description}`)
+          );
         });
       }
 
@@ -525,7 +528,7 @@ export class Logger {
       // Handle regular examples
       if (cmd.examples.length > 0) {
         cmd.examples.forEach((example) => {
-          this.generic(chalk.gray(`Example: ${example}`));
+          this.generic(chalk.gray(` Example: ${example}`));
         });
       }
 
@@ -539,12 +542,13 @@ export class Logger {
 
       this.generic("");
     });
-    this.generic(
-      "▸ Composer generates base templates for key Overture configuration files."
-    );
+    this.header("The Composer CLI Tool");
     this.generic("▸ Command options with examples are provided above.");
     this.generic(
-      "▸ More information can be found from our documentation site here: https://docs.overture.bio/docs/platform-tools/composer.\n"
+      "▸ Generates base templates for key Overture configuration files."
+    );
+    this.generic(
+      "▸ More information can be found from our documentation site here: https://docs.overture.bio/docs/platform-tools/composer\n"
     );
   }
 }

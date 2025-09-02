@@ -1,4 +1,4 @@
-// src/cli/commandOptions.ts - Fixed with PostgreSQL support and suppressed Commander help
+// src/cli/commandOptions.ts - PostgreSQL support and suppressed Commander help
 import { Command, Option } from "commander";
 import { Profile, Profiles } from "../types";
 import { ErrorFactory } from "../utils/errors";
