@@ -91,6 +91,7 @@ export class PostgresToElasticsearchIndexer {
         };
       }
 
+      Logger.generic("");
       Logger.info`Indexing ${totalRecords} records: ${indexConfig.tableName} → ${indexConfig.indexName} in batches of ${indexConfig.batchSize}\n`;
 
       const recordsIndexed = await this.performStreamingIndex(
