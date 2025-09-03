@@ -4,6 +4,8 @@
  *
  * Command implementation for reading data from a PostgreSQL table
  * and indexing it directly into Elasticsearch with proper nested data mapping.
+ * FIXED: Memory-efficient streaming processing for large datasets
+ * UPDATED: Respects user-specified batch size consistently
  */
 
 import { Command, CommandResult } from "./baseCommand";
@@ -21,6 +23,11 @@ import {
 import { Pool } from "pg";
 import { Client } from "@elastic/elasticsearch";
 import { createRecordMetadata } from "../services/csvProcessor/metadata";
+import {
+  formatDuration,
+  calculateETA,
+} from "../services/csvProcessor/progressBar";
+import chalk from "chalk";
 
 export class IndexCommand extends Command {
   constructor() {
@@ -29,6 +36,7 @@ export class IndexCommand extends Command {
 
   /**
    * Executes the indexing process from PostgreSQL to Elasticsearch
+   * UPDATED: Uses user-specified batch size consistently
    */
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config } = cliOutput;
@@ -49,14 +57,17 @@ export class IndexCommand extends Command {
       Logger.debug`Validating Elasticsearch connection`;
       await validateElasticsearchConnection(esClient);
 
-      // Get table data
+      // Get table info
       const tableName = config.postgresql!.table;
       const indexName = config.elasticsearch!.index;
+      const batchSize = config.batchSize || 1000;
 
       Logger.info`Reading data from PostgreSQL table: ${tableName}`;
-      const tableData = await this.readTableData(pgClient, tableName);
 
-      if (tableData.length === 0) {
+      // Get total record count first to avoid memory issues
+      const totalRecords = await this.getTableRecordCount(pgClient, tableName);
+
+      if (totalRecords === 0) {
         Logger.warn`No data found in table ${tableName}`;
         return {
           success: true,
@@ -67,29 +78,40 @@ export class IndexCommand extends Command {
         };
       }
 
-      Logger.info`Found ${tableData.length} records in table ${tableName}`;
+      Logger.info`Found ${totalRecords} records in table ${tableName}`;
 
-      // Transform and index data to Elasticsearch with proper nested structure
+      // Log batch size info for transparency
+      if (totalRecords > 100000) {
+        Logger.info`Large dataset detected (${totalRecords} records) - using batch size: ${batchSize}`;
+        Logger.info`Note: Large batch sizes may require more Elasticsearch memory`;
+      }
+
       Logger.info`Indexing data to Elasticsearch index: ${indexName}\n`;
-      const indexedCount = await this.indexToElasticsearch(
+
+      // Process data in chunks instead of loading all into memory
+      // FIXED: Use the actual user-specified batch size
+      const indexedCount = await this.indexToElasticsearchStreamed(
+        pgClient,
         esClient,
-        tableData,
+        tableName,
         indexName,
-        config.batchSize || 1000,
-        tableName
+        batchSize, // Use original batch size, not overridden
+        totalRecords
       );
 
       Logger.successString("Indexing completed successfully");
-      Logger.generic(`  ▸ Total Records processed: ${tableData.length}`);
+      Logger.generic(`  ▸ Total Records processed: ${totalRecords}`);
       Logger.generic(`  ▸ Records Successfully indexed: ${indexedCount}`);
+      Logger.generic(`  ▸ Batch size used: ${batchSize}`);
 
       return {
         success: true,
         details: {
-          recordsProcessed: tableData.length,
+          recordsProcessed: totalRecords,
           recordsIndexed: indexedCount,
           sourceTable: tableName,
           targetIndex: indexName,
+          batchSize: batchSize,
         },
       };
     } catch (error) {
@@ -106,6 +128,7 @@ export class IndexCommand extends Command {
           "Check PostgreSQL and Elasticsearch connections",
           "Verify table and index names are correct",
           "Review error details for specific issues",
+          "If using large batch sizes, consider reducing batch size if you encounter memory issues",
         ]
       );
     } finally {
@@ -119,10 +142,15 @@ export class IndexCommand extends Command {
         }
       }
 
-      // Force exit after cleanup
-      setTimeout(() => {
-        process.exit(0);
-      }, 500);
+      // Only force exit if running as standalone command
+      const isStandalone =
+        process.argv[2] === "index" || process.argv[2] === "INDEX";
+
+      if (isStandalone) {
+        setTimeout(() => {
+          process.exit(0);
+        }, 500);
+      }
     }
   }
 
@@ -161,19 +189,69 @@ export class IndexCommand extends Command {
         "Example: --index demo_data_index",
       ]);
     }
+
+    // Validate batch size with PostgreSQL context since we're reading from PostgreSQL
+    this.validateBatchSize(config.batchSize);
   }
 
   /**
-   * Reads all data from a PostgreSQL table
+   * Validates batch size with PostgreSQL-specific warnings for indexing operations
    */
-  private async readTableData(client: Pool, tableName: string): Promise<any[]> {
+  private validateBatchSize(batchSize: number): void {
+    if (!batchSize || isNaN(batchSize) || batchSize <= 0) {
+      throw ErrorFactory.validation(
+        "Batch size must be a positive number",
+        {
+          provided: batchSize,
+          type: typeof batchSize,
+        },
+        [
+          "Provide a positive number for batch size",
+          "Recommended range: 100–5000 for PostgreSQL indexing",
+          "Example: --batch-size 1000",
+        ]
+      );
+    }
+
+    // Single, consolidated PostgreSQL batch size warning
+    if (batchSize >= 10000) {
+      Logger.warnString(
+        `Batch size ${batchSize} is extremely large and may cause PostgreSQL connection timeouts during indexing`
+      );
+      Logger.tipString(
+        "Recommended: Use 1000-5000 for reliable PostgreSQL performance"
+      );
+    } else if (batchSize > 5000) {
+      Logger.warnString(
+        `Batch size ${batchSize} is large and may impact PostgreSQL performance`
+      );
+      Logger.tipString(
+        "Consider reducing to 2000-5000 if you encounter issues"
+      );
+    } else if (batchSize > 2000) {
+      Logger.infoString(
+        `Using indexing batch size: ${batchSize} (higher than default)`
+      );
+    } else {
+      Logger.debug`Indexing batch size validated: ${batchSize}`;
+    }
+  }
+
+  /**
+   * Gets total record count from a PostgreSQL table
+   */
+  private async getTableRecordCount(
+    client: Pool,
+    tableName: string
+  ): Promise<number> {
     try {
-      Logger.debug`Executing query: SELECT * FROM ${tableName}`;
+      Logger.debug`Getting record count for table: ${tableName}`;
 
-      const result = await client.query(`SELECT * FROM ${tableName}`);
+      const result = await client.query(`SELECT COUNT(*) FROM ${tableName}`);
+      const count = parseInt(result.rows[0].count);
 
-      Logger.debug`Query returned ${result.rows.length} rows`;
-      return result.rows;
+      Logger.debug`Table ${tableName} has ${count} records`;
+      return count;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -194,7 +272,7 @@ export class IndexCommand extends Command {
       }
 
       throw ErrorFactory.validation(
-        `Failed to read data from table ${tableName}`,
+        `Failed to count records in table ${tableName}`,
         { tableName, originalError: error },
         [
           "Check PostgreSQL connection",
@@ -206,48 +284,71 @@ export class IndexCommand extends Command {
   }
 
   /**
-   * Indexes data to Elasticsearch in batches with proper nested data structure
-   * UPDATED: Now wraps data in the 'data' object as required by the mapping
+   * Indexes data to Elasticsearch in streaming batches to handle large datasets
+   * UPDATED: Uses user-specified batch size consistently, with informative logging
    */
-  private async indexToElasticsearch(
-    client: Client,
-    data: any[],
+  private async indexToElasticsearchStreamed(
+    pgClient: Pool,
+    esClient: Client,
+    tableName: string,
     indexName: string,
     batchSize: number,
-    sourceTable: string
+    totalRecords: number
   ): Promise<number> {
     let totalIndexed = 0;
+    let processedRecords = 0;
     const startTime = Date.now();
     const processingStartTime = new Date().toISOString();
 
+    // FIXED: Use the user-specified batch size directly
+    // No more automatic overriding - respect user choice
+    Logger.debug`Using user-specified batch size: ${batchSize} for ${totalRecords} records`;
+
+    // Provide helpful guidance for large datasets without forcing changes
+    if (totalRecords > 100000 && batchSize > 2000) {
+      Logger.warn`Large dataset (${totalRecords} records) with large batch size (${batchSize})`;
+      Logger.warn`Monitor Elasticsearch memory usage - consider reducing batch size if errors occur`;
+    }
+
     try {
-      // Process data in batches
-      for (let i = 0; i < data.length; i += batchSize) {
-        const batch = data.slice(i, i + batchSize);
+      // Process data in chunks using LIMIT/OFFSET to avoid memory issues
+      for (let offset = 0; offset < totalRecords; offset += batchSize) {
+        // Fetch batch from PostgreSQL
+        Logger.debug`Fetching batch: OFFSET ${offset} LIMIT ${batchSize}`;
+
+        const batchData = await this.readTableDataBatch(
+          pgClient,
+          tableName,
+          offset,
+          batchSize
+        );
+
+        if (batchData.length === 0) {
+          Logger.debug`No more data to process`;
+          break;
+        }
 
         // Prepare bulk index operations with proper nested structure
         const bulkOps = [];
-        for (let j = 0; j < batch.length; j++) {
-          const record = batch[j];
-          const recordId = record.id || `${i + j + 1}`;
+        for (let j = 0; j < batchData.length; j++) {
+          const record = batchData[j];
+          const recordId = record.id || `${offset + j + 1}`;
 
           // Create metadata for this record
           const metadata = createRecordMetadata(
-            `postgresql://${sourceTable}`,
+            `postgresql://${tableName}`,
             processingStartTime,
-            i + j + 1
+            offset + j + 1
           );
 
-          // IMPORTANT: Structure the document to match your Elasticsearch mapping
-          // All actual data goes into the 'data' object, metadata as sibling
+          // Structure the document to match your Elasticsearch mapping
           const esDocument = {
             data: {
-              ...record, // All PostgreSQL table columns go here
-              submission_metadata: metadata, // Add metadata within data object
+              ...record,
+              submission_metadata: metadata,
             },
           };
 
-          // Add the index operation
           bulkOps.push({
             index: {
               _index: indexName,
@@ -257,10 +358,12 @@ export class IndexCommand extends Command {
           bulkOps.push(esDocument);
         }
 
-        // Execute bulk index
-        const response = await client.bulk({
+        // Execute bulk index with dynamic timeout based on batch size
+        const timeout = Math.max(30, Math.ceil(batchSize / 100)) + "s";
+        const response = await esClient.bulk({
           refresh: false,
           body: bulkOps,
+          timeout: timeout, // Dynamic timeout based on batch size
         });
 
         // Check for errors
@@ -284,58 +387,164 @@ export class IndexCommand extends Command {
         );
 
         totalIndexed += successfulItems.length;
+        processedRecords += batchData.length;
 
         // Update progress
-        this.updateProgress(i + batch.length, data.length, startTime);
+        this.updateProgress(processedRecords, totalRecords, startTime);
+
+        // REMOVED: Automatic delay - let user control performance vs speed
+        // Users can adjust batch size if they need to control load on Elasticsearch
       }
 
       // Refresh index to make data searchable
-      await client.indices.refresh({ index: indexName });
+      await esClient.indices.refresh({ index: indexName });
 
       console.log(""); // New line after progress
       return totalIndexed;
     } catch (error) {
+      // Enhanced error message with batch size context
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      // Check if it's a memory/performance related error
+      const isPerformanceError =
+        errorMessage.includes("memory") ||
+        errorMessage.includes("timeout") ||
+        errorMessage.includes("heap");
+
+      const suggestions = [
+        "Check Elasticsearch connection and status",
+        "Verify index permissions",
+        "Review Elasticsearch logs for detailed errors",
+        "Ensure the index mapping supports the nested data structure",
+      ];
+
+      if (isPerformanceError) {
+        suggestions.push(
+          `Consider reducing batch size from ${batchSize} if encountering memory issues`
+        );
+      }
+
       throw ErrorFactory.validation(
         "Failed to index data to Elasticsearch",
-        { indexName, originalError: error },
+        { indexName, batchSize, totalRecords, originalError: error },
+        suggestions
+      );
+    }
+  }
+
+  /**
+   * Reads a batch of data from a PostgreSQL table using LIMIT/OFFSET
+   */
+  private async readTableDataBatch(
+    client: Pool,
+    tableName: string,
+    offset: number,
+    limit: number
+  ): Promise<any[]> {
+    try {
+      Logger.debug`Executing batch query: SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${offset}`;
+
+      // Try with ORDER BY id first
+      let result;
+      try {
+        result = await client.query(
+          `SELECT * FROM ${tableName} ORDER BY id LIMIT $1 OFFSET $2`,
+          [limit, offset]
+        );
+      } catch (orderError) {
+        const errorMsg =
+          orderError instanceof Error ? orderError.message : String(orderError);
+        if (errorMsg.includes('column "id" does not exist')) {
+          Logger.debug`No id column, using unordered query`;
+          result = await client.query(
+            `SELECT * FROM ${tableName} LIMIT $1 OFFSET $2`,
+            [limit, offset]
+          );
+        } else {
+          throw orderError;
+        }
+      }
+
+      Logger.debug`Batch query returned ${result.rows.length} rows`;
+      return result.rows;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      throw ErrorFactory.validation(
+        `Failed to read batch data from table ${tableName}`,
+        { tableName, offset, limit, originalError: error },
         [
-          "Check Elasticsearch connection and status",
-          "Verify index permissions",
-          "Review Elasticsearch logs for detailed errors",
-          "Ensure the index mapping supports the nested data structure",
+          "Check PostgreSQL connection",
+          "Verify table exists and is accessible",
+          "Check your permissions on the table",
         ]
       );
     }
   }
 
   /**
-   * Updates progress display
+   * Updates progress display using shared utilities but with cyan styling
    */
   private updateProgress(
     processed: number,
     total: number,
     startTime: number
   ): void {
-    const elapsedMs = Date.now() - startTime;
+    const elapsedMs = Math.max(1, Date.now() - startTime);
     const progress = Math.min(100, (processed / total) * 100);
-    const progressBar = this.createProgressBar(progress);
+    const progressBar = this.createCyanProgressBar(progress);
+    const eta = calculateETA(processed, total, elapsedMs / 1000);
     const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
 
+    if (processed === 10) {
+      Logger.generic("");
+    }
+
+    // Use \r to overwrite previous line
+    process.stdout.write("\r");
     process.stdout.write(
-      `\r ${progressBar} | ${processed}/${total} | ⚡${recordsPerSecond} records/sec`
+      ` ${progressBar} | ` +
+        `${processed}/${total} | ` +
+        `⏱ ${formatDuration(elapsedMs)} | ` +
+        `🏁 ${eta} | ` +
+        `⚡${recordsPerSecond} records/sec`
     );
   }
 
   /**
-   * Creates a visual progress bar
+   * Creates a cyan-colored visual progress bar (modified from shared utility)
    */
-  private createProgressBar(percentage: number): string {
-    const width = 30;
-    const filled = Math.round((percentage / 100) * width);
-    const empty = width - filled;
-    return `${"█".repeat(filled)}${"░".repeat(empty)} ${percentage.toFixed(
-      1
-    )}%`;
+  private createCyanProgressBar(progress: number, width: number = 30): string {
+    try {
+      // Validate and normalize inputs
+      if (!isFinite(progress) || !isFinite(width)) {
+        return chalk.yellow("[Invalid progress value]");
+      }
+
+      // Clamp progress between 0 and 100
+      const normalizedProgress = Math.max(0, Math.min(100, progress || 0));
+      // Ensure width is reasonable
+      const normalizedWidth = Math.max(10, Math.min(100, width));
+
+      // Calculate bar segments
+      const filledWidth = Math.round(
+        normalizedWidth * (normalizedProgress / 100)
+      );
+      const emptyWidth = normalizedWidth - filledWidth;
+
+      // Create bar segments with cyan coloring instead of green
+      const filledBar = chalk.cyan("█").repeat(Math.max(0, filledWidth));
+      const emptyBar = chalk.gray("░").repeat(Math.max(0, emptyWidth));
+
+      // Return formatted progress bar with cyan percentage
+      return `${filledBar}${emptyBar} ${chalk.cyan(
+        normalizedProgress.toFixed(1) + "%"
+      )}`;
+    } catch (error) {
+      return chalk.yellow("[Progress calculation error]");
+    }
   }
 
   /**

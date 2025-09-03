@@ -1,12 +1,11 @@
 // src/commands/uploadCommand.ts
 /**
- * Unified Upload Command
+ * Unified Upload Command - SIMPLE & MAINTAINABLE
  *
- * Combines PostgreSQL and Elasticsearch upload functionality into a single command.
- * Handles three scenarios based on provided parameters:
- * 1. -t <tableName> only: PostgreSQL upload
- * 2. -i <indexName> only: Elasticsearch upload
- * 3. -t <tableName> -i <indexName>: PostgreSQL upload followed by indexing
+ * Handles three scenarios:
+ * 1. -t only: PostgreSQL upload
+ * 2. -i only: Elasticsearch upload
+ * 3. -t + -i: PostgreSQL upload → index (separate commands)
  */
 
 import { Command, CommandResult } from "./baseCommand";
@@ -15,16 +14,12 @@ import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
 import { PostgresUploadCommand } from "./postgresUploadCommand";
 import { UploadCommand } from "./elasticsearchUploadCommand";
-import { IndexCommand } from "./postgresIndexCommand";
 
 export class UnifiedUploadCommand extends Command {
   constructor() {
     super("upload");
   }
 
-  /**
-   * Validates the command parameters and ensures proper configuration
-   */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     await super.validate(cliOutput);
 
@@ -32,7 +27,6 @@ export class UnifiedUploadCommand extends Command {
     const tableName = config.postgresql?.table;
     const indexName = config.elasticsearch?.index;
 
-    // Must provide either table name or index name (or both)
     if (!tableName && !indexName) {
       throw ErrorFactory.args(
         "Must specify either table name (-t) or index name (-i) or both",
@@ -40,138 +34,36 @@ export class UnifiedUploadCommand extends Command {
           "Use -t <tableName> for PostgreSQL upload only",
           "Use -i <indexName> for Elasticsearch upload only",
           "Use -t <tableName> -i <indexName> for PostgreSQL upload + indexing",
-          "Example: conductor upload -f data.csv -t users",
-          "Example: conductor upload -f data.csv -i my-index",
-          "Example: conductor upload -f data.csv -t users -i users-index",
         ]
       );
     }
   }
 
-  /**
-   * Executes the appropriate upload workflow based on provided parameters
-   */
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config } = cliOutput;
     const tableName = config.postgresql?.table;
     const indexName = config.elasticsearch?.index;
 
-    Logger.debug`Determining upload workflow...`;
-
     try {
-      // Check dataset size for combined workflows
-      if (tableName && indexName) {
-        const recordCount = await this.estimateRecordCount(
-          cliOutput.filePaths[0]
-        );
-
-        if (recordCount > 10000) {
-          Logger.warn`Large dataset detected: ${recordCount} records`;
-          Logger.generic(
-            "For datasets over 10,000 records, separate commands are recommended for better reliability:"
-          );
-          Logger.generic(
-            `  conductor upload -f ${cliOutput.filePaths[0]} -t ${tableName}`
-          );
-          Logger.generic(`  conductor index -t ${tableName} -i ${indexName}`);
-          Logger.generic("");
-          Logger.generic(
-            "Large combined uploads may timeout or consume excessive memory."
-          );
-
-          if (!cliOutput.options?.force) {
-            const readline = require("readline");
-            const rl = readline.createInterface({
-              input: process.stdin,
-              output: process.stdout,
-            });
-
-            const answer = await new Promise<string>((resolve) => {
-              rl.question(
-                "Continue with combined workflow anyway? (y/N): ",
-                (answer: string) => {
-                  rl.close();
-                  resolve(answer);
-                }
-              );
-            });
-
-            if (!answer.toLowerCase().startsWith("y")) {
-              Logger.info`Workflow cancelled - use separate commands for large datasets`;
-              return {
-                success: false,
-                errorMessage: "Large dataset workflow cancelled by user",
-                details: {
-                  reason: "user_cancelled_large_dataset",
-                  recordCount,
-                  recommendation: "Use separate upload and index commands",
-                },
-              };
-            }
-          }
-
-          Logger.info`Proceeding with combined workflow for ${recordCount} records (user confirmed)`;
-        }
-      }
-
-      // Scenario 1: Table name only - PostgreSQL upload
+      // Scenario 1: Table only - PostgreSQL upload
       if (tableName && !indexName) {
         Logger.info`Executing PostgreSQL upload to table: ${tableName}`;
-        return await this.executePostgresUpload(cliOutput);
+        return await this.runPostgresUpload(cliOutput);
       }
 
-      // Scenario 2: Index name only - Elasticsearch upload with warning
+      // Scenario 2: Index only - Elasticsearch upload
       if (!tableName && indexName) {
-        Logger.warn`Warning: You are uploading directly to Elasticsearch index: ${indexName}`;
-        Logger.generic(
-          "This will bypass PostgreSQL storage and send data directly to Elasticsearch."
-        );
-        Logger.generic(
-          "Data will not be stored in a relational database for backup or further processing."
-        );
-
-        // Check if force flag is set to skip confirmation
-        if (!cliOutput.options?.force) {
-          const readline = require("readline");
-          const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-          });
-
-          const answer = await new Promise<string>((resolve) => {
-            rl.question(
-              "Do you wish to continue? (y/N): ",
-              (answer: string) => {
-                rl.close();
-                resolve(answer);
-              }
-            );
-          });
-
-          if (!answer.toLowerCase().startsWith("y")) {
-            Logger.info`Upload cancelled by user`;
-            return {
-              success: false,
-              errorMessage: "Upload cancelled by user",
-              details: { reason: "user_cancelled" },
-            };
-          }
-        }
-
+        await this.confirmDirectElasticsearchUpload(cliOutput, indexName);
         Logger.info`Executing Elasticsearch upload to index: ${indexName}`;
-        return await this.executeElasticsearchUpload(cliOutput);
+        return await this.runElasticsearchUpload(cliOutput);
       }
 
-      // Scenario 3: Both table and index - PostgreSQL upload + indexing
+      // Scenario 3: Both - Sequential execution without forced exits
       if (tableName && indexName) {
-        Logger.info`Executing PostgreSQL upload to table: ${tableName} followed by indexing to: ${indexName}`;
-        return await this.executePostgresUploadAndIndex(cliOutput);
+        return await this.runSequentialUploadAndIndex(cliOutput);
       }
 
-      // This shouldn't happen due to validation, but keep as safety
-      throw ErrorFactory.connection("Invalid parameter combination", [
-        "This error should not occur - please report this bug",
-      ]);
+      throw ErrorFactory.connection("Invalid parameter combination");
     } catch (error) {
       if (error instanceof Error && error.name === "ConductorError") {
         throw error;
@@ -181,88 +73,27 @@ export class UnifiedUploadCommand extends Command {
         `Upload command failed: ${
           error instanceof Error ? error.message : String(error)
         }`,
-        { tableName, indexName, error },
-        [
-          "Check your database/Elasticsearch connections",
-          "Verify table and index names are correct",
-          "Use --debug for more detailed error information",
-        ]
+        { tableName, indexName },
+        ["Check database connections", "Verify table and index names"]
       );
     }
   }
 
   /**
-   * Estimates record count in a CSV file by reading the first few KB and extrapolating
+   * Runs sequential upload and index using separate commands
    */
-  private async estimateRecordCount(filePath: string): Promise<number> {
-    const fs = require("fs");
-
-    try {
-      const stats = fs.statSync(filePath);
-      const fileSize = stats.size;
-
-      // For small files, count actual lines
-      if (fileSize < 1024 * 1024) {
-        // Less than 1MB
-        const content = fs.readFileSync(filePath, "utf8");
-        const lines = content.split("\n").length;
-        return Math.max(0, lines - 1); // Subtract header row
-      }
-
-      // For larger files, sample first 10KB and extrapolate
-      const sampleSize = Math.min(10240, fileSize); // 10KB sample
-      const buffer = Buffer.alloc(sampleSize);
-      const fd = fs.openSync(filePath, "r");
-      fs.readSync(fd, buffer, 0, sampleSize, 0);
-      fs.closeSync(fd);
-
-      const sampleContent = buffer.toString("utf8");
-      const sampleLines = sampleContent.split("\n").length - 1; // Subtract header
-
-      if (sampleLines <= 0) return 0;
-
-      // Extrapolate based on file size ratio
-      const estimatedRecords = Math.floor(
-        (fileSize / sampleSize) * sampleLines
-      );
-      return Math.max(0, estimatedRecords);
-    } catch (error) {
-      // If estimation fails, assume it's a large file to be safe
-      Logger.debug`Could not estimate record count: ${error}`;
-      return 15000; // Conservative estimate to trigger warning
-    }
-  }
-
-  /**
-   * Executes PostgreSQL upload only
-   */
-  private async executePostgresUpload(
+  private async runSequentialUploadAndIndex(
     cliOutput: CLIOutput
   ): Promise<CommandResult> {
-    const postgresCommand = new PostgresUploadCommand();
-    return await postgresCommand.run(cliOutput);
-  }
+    const { config } = cliOutput;
+    const tableName = config.postgresql!.table;
+    const indexName = config.elasticsearch!.index;
 
-  /**
-   * Executes Elasticsearch upload only
-   */
-  private async executeElasticsearchUpload(
-    cliOutput: CLIOutput
-  ): Promise<CommandResult> {
-    const elasticsearchCommand = new UploadCommand();
-    return await elasticsearchCommand.run(cliOutput);
-  }
+    Logger.info`Executing PostgreSQL upload to table: ${tableName} followed by indexing to: ${indexName}`;
 
-  /**
-   * Executes PostgreSQL upload followed by indexing to Elasticsearch
-   */
-  private async executePostgresUploadAndIndex(
-    cliOutput: CLIOutput
-  ): Promise<CommandResult> {
-    Logger.info`Step 1/2: Uploading to PostgreSQL...`;
-
-    // First, upload to PostgreSQL
-    const postgresResult = await this.executePostgresUpload(cliOutput);
+    // Step 1: PostgreSQL Upload
+    Logger.info`Uploading to PostgreSQL...`;
+    const postgresResult = await this.runPostgresUpload(cliOutput);
 
     if (!postgresResult.success) {
       Logger.error`PostgreSQL upload failed, skipping indexing step`;
@@ -270,10 +101,10 @@ export class UnifiedUploadCommand extends Command {
     }
 
     Logger.success`PostgreSQL upload completed successfully`;
-    Logger.info`Step 2/2: Indexing to Elasticsearch...`;
 
-    // Then, index the uploaded data to Elasticsearch
-    const indexResult = await this.executeIndexing(cliOutput);
+    // Step 2: Run standalone index command but suppress its exit
+    Logger.info`Indexing to Elasticsearch...`;
+    const indexResult = await this.runIndexCommandSafely(cliOutput);
 
     if (!indexResult.success) {
       Logger.error`Indexing failed, but PostgreSQL upload was successful`;
@@ -281,37 +112,114 @@ export class UnifiedUploadCommand extends Command {
         success: false,
         errorMessage: `PostgreSQL upload succeeded, but indexing failed: ${indexResult.errorMessage}`,
         errorCode: indexResult.errorCode,
-        details: {
-          postgresResult,
-          indexResult,
-          partialSuccess: true,
-        },
+        details: { postgresResult, indexResult, partialSuccess: true },
       };
     }
 
     Logger.success`Upload and indexing workflow completed successfully`;
-
     return {
       success: true,
-      details: {
-        postgresResult,
-        indexResult,
-        workflow: "upload-and-index",
-      },
+      details: { postgresResult, indexResult, workflow: "upload-and-index" },
     };
   }
 
   /**
-   * Executes the indexing from PostgreSQL to Elasticsearch
+   * Runs index command while suppressing its process.exit
    */
-  private async executeIndexing(cliOutput: CLIOutput): Promise<CommandResult> {
-    const indexCommand = new IndexCommand();
-    return await indexCommand.run(cliOutput);
+  private async runIndexCommandSafely(
+    cliOutput: CLIOutput
+  ): Promise<CommandResult> {
+    // Store original process.exit
+    const originalExit = process.exit;
+    let exitCalled = false;
+
+    try {
+      // Temporarily override process.exit to prevent forced termination
+      process.exit = ((code?: number) => {
+        Logger.debug`Index command attempted to exit with code: ${code}`;
+        exitCalled = true;
+        // Don't actually exit - just log it
+      }) as any;
+
+      const { IndexCommand } = await import("./postgresIndexCommand");
+      const indexCommand = new IndexCommand();
+      const result = await indexCommand.run(cliOutput);
+
+      return result;
+    } catch (error) {
+      return {
+        success: false,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        details: { originalError: error },
+      };
+    } finally {
+      // Restore original process.exit
+      process.exit = originalExit;
+
+      if (exitCalled) {
+        Logger.debug`Successfully intercepted index command exit`;
+      }
+    }
   }
 
   /**
-   * This command requires input files for upload operations
+   * Confirms direct Elasticsearch upload
    */
+  private async confirmDirectElasticsearchUpload(
+    cliOutput: CLIOutput,
+    indexName: string
+  ): Promise<void> {
+    Logger.warn`Direct upload to Elasticsearch index: ${indexName}`;
+    Logger.generic("This bypasses PostgreSQL storage.");
+
+    if (!cliOutput.options?.force) {
+      const confirmed = await this.getUserConfirmation("Continue? (y/N): ");
+      if (!confirmed) {
+        throw ErrorFactory.args("Upload cancelled by user");
+      }
+    }
+  }
+
+  /**
+   * Simple user confirmation prompt
+   */
+  private async getUserConfirmation(question: string): Promise<boolean> {
+    const readline = require("readline");
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    try {
+      const answer = await new Promise<string>((resolve) => {
+        rl.question(question, resolve);
+      });
+      return answer.toLowerCase().startsWith("y");
+    } finally {
+      rl.close();
+    }
+  }
+
+  /**
+   * Runs PostgreSQL upload command
+   */
+  private async runPostgresUpload(
+    cliOutput: CLIOutput
+  ): Promise<CommandResult> {
+    const command = new PostgresUploadCommand();
+    return await command.run(cliOutput);
+  }
+
+  /**
+   * Runs Elasticsearch upload command
+   */
+  private async runElasticsearchUpload(
+    cliOutput: CLIOutput
+  ): Promise<CommandResult> {
+    const command = new UploadCommand();
+    return await command.run(cliOutput);
+  }
+
   protected requiresInputFiles(): boolean {
     return true;
   }
