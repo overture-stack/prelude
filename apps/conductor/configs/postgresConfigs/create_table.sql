@@ -1,7 +1,7 @@
--- PostgreSQL table creation script
+-- PostgreSQL table creation script (SIMPLIFIED)
 -- Generated from CSV analysis
 -- Table: datatable1
--- Columns: 23
+-- Columns: 23 + submission_metadata
 
 CREATE TABLE IF NOT EXISTS datatable1 (
   donor VARCHAR(50) NOT NULL,
@@ -26,8 +26,14 @@ CREATE TABLE IF NOT EXISTS datatable1 (
   drug_name VARCHAR(50) NOT NULL,
   followup_id VARCHAR(50) NOT NULL,
   followup_interval SMALLINT NOT NULL,
-  disease_status VARCHAR(50) NOT NULL
+  disease_status VARCHAR(50) NOT NULL,
+  
+  -- Simplified submission metadata (just ID, hash, timestamp)
+  submission_metadata JSONB
 );
 
--- Table created for 23 columns
--- Sample data analysis: 51 rows
+-- Add index for submission_id queries
+CREATE INDEX IF NOT EXISTS idx_datatable1_submission_id 
+ON datatable1 ((submission_metadata->>'submission_id'));
+
+-- Table created for 23 data columns + 1 metadata column

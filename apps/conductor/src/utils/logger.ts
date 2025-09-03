@@ -372,7 +372,6 @@ export class Logger {
         "  --connection-string <url> PostgreSQL connection string (overrides individual options)",
         "  --ssl                     Use SSL connection",
         "  --max-connections <n>     Maximum pool connections (default: 20)",
-        "  --add-metadata            Add submission metadata to records",
         "",
         "Elasticsearch Options (used when -i is specified):",
         "  --url <url>               Elasticsearch URL (default: http://localhost:9200)",

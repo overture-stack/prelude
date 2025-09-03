@@ -1,10 +1,9 @@
 // src/commands/postgresIndexCommand.ts
 /**
- * PostgreSQL to Elasticsearch Index Command - CLEAN & SIMPLE
+ * PostgreSQL to Elasticsearch Index Command
  *
  * Reads data from PostgreSQL and indexes it to Elasticsearch.
- * UPDATED: Data structure now matches elasticsearch mapping expectations.
- * UPDATED: Using centralized progress display functions for indexing (cyan color)
+ * UPDATED: Simplified metadata without status flags
  */
 
 import { Command, CommandResult } from "./baseCommand";
@@ -20,7 +19,6 @@ import {
   createClientFromConfig,
   validateConnection as validateElasticsearchConnection,
 } from "../services/elasticsearch";
-import { createRecordMetadata } from "../services/csvProcessor/metadata";
 import { updateIndexingProgress } from "../services/csvProcessor/progressBar";
 
 export class IndexCommand extends Command {
@@ -56,11 +54,6 @@ export class IndexCommand extends Command {
   }
 }
 
-/**
- * Handles the indexing process from PostgreSQL to Elasticsearch
- * Clean separation of concerns with focused methods
- * UPDATED: Using centralized progress display
- */
 export class PostgresToElasticsearchIndexer {
   async index(config: any): Promise<CommandResult> {
     const connManager = new ConnectionManager();
@@ -91,7 +84,6 @@ export class PostgresToElasticsearchIndexer {
         };
       }
 
-      Logger.generic("");
       Logger.info`Indexing ${totalRecords} records: ${indexConfig.tableName} → ${indexConfig.indexName} in batches of ${indexConfig.batchSize}\n`;
 
       const recordsIndexed = await this.performStreamingIndex(
@@ -193,7 +185,6 @@ export class PostgresToElasticsearchIndexer {
           [
             "Check that the table name is correct",
             "Verify the table exists in the specified database",
-            "Ensure you have read permissions on the table",
           ]
         );
       }
@@ -201,11 +192,7 @@ export class PostgresToElasticsearchIndexer {
       throw ErrorFactory.validation(
         `Failed to count records in table ${tableName}`,
         { tableName, originalError: error },
-        [
-          "Check PostgreSQL connection",
-          "Verify table exists and is accessible",
-          "Check your permissions on the table",
-        ]
+        ["Check PostgreSQL connection", "Verify table exists and is accessible"]
       );
     }
   }
@@ -216,56 +203,57 @@ export class PostgresToElasticsearchIndexer {
     indexConfig: any,
     totalRecords: number
   ): Promise<number> {
-    let totalIndexed = 0;
-    let offset = 0;
     const { tableName, indexName, batchSize } = indexConfig;
     const startTime = Date.now();
+    let offset = 0;
+    let recordsIndexed = 0;
 
-    Logger.debug`Processing ${totalRecords} records in batches of ${batchSize}\n`;
-
-    while (offset < totalRecords) {
-      try {
-        const batch = await this.readTableBatch(
+    try {
+      while (offset < totalRecords) {
+        const batch = await this.readBatch(
           pgClient,
           tableName,
-          offset,
-          batchSize
+          batchSize,
+          offset
         );
 
         if (batch.length === 0) {
-          Logger.debug`No more records to process at offset ${offset}`;
           break;
         }
 
         await this.indexBatchToElasticsearch(esClient, indexName, batch);
 
-        totalIndexed += batch.length;
-        offset += batchSize;
+        recordsIndexed += batch.length;
+        offset += batch.length;
 
-        // Use centralized indexing progress (cyan color)
-        updateIndexingProgress(totalIndexed, totalRecords, startTime);
-      } catch (error) {
-        Logger.error`Error processing batch at offset ${offset}: ${error}`;
-        throw error;
+        updateIndexingProgress(recordsIndexed, totalRecords, startTime);
       }
+
+      console.log(""); // Newline after progress bar
+      const duration = Date.now() - startTime;
+      Logger.debug`Indexing completed in ${Math.round(duration / 1000)}s`;
+
+      return recordsIndexed;
+    } catch (error) {
+      throw ErrorFactory.validation(
+        "Failed during streaming index operation",
+        { offset, recordsIndexed, originalError: error },
+        [
+          "Check connection stability",
+          "Review batch size settings",
+          "Verify data format compatibility",
+        ]
+      );
     }
-
-    console.log(""); // Newline after progress bar
-    const duration = Date.now() - startTime;
-    Logger.debug`Indexing completed in ${Math.round(duration / 1000)}s`;
-
-    return totalIndexed;
   }
 
-  private async readTableBatch(
+  private async readBatch(
     client: any,
     tableName: string,
-    offset: number,
-    limit: number
+    limit: number,
+    offset: number
   ): Promise<any[]> {
     try {
-      Logger.debug`Reading batch: LIMIT ${limit} OFFSET ${offset}`;
-
       let result;
       try {
         result = await client.query(
@@ -329,18 +317,27 @@ export class PostgresToElasticsearchIndexer {
         "../services/elasticsearch"
       );
 
-      // Transform records to match elasticsearch expectations
+      // Transform records - preserve existing metadata from PostgreSQL
       const transformedRecords = batch.map((row) => {
-        const processingStartTime = new Date().toISOString();
-        const metadata = createRecordMetadata(
-          `table:${indexName}`,
-          processingStartTime,
-          row.id || Math.random()
-        );
+        // Parse existing metadata from PostgreSQL
+        let existingMetadata = {};
+        if (row.submission_metadata) {
+          try {
+            existingMetadata =
+              typeof row.submission_metadata === "string"
+                ? JSON.parse(row.submission_metadata)
+                : row.submission_metadata;
+          } catch (e) {
+            Logger.debug`Could not parse existing metadata: ${e}`;
+          }
+        }
+
+        // Remove submission_metadata from data to avoid duplication
+        const { submission_metadata, ...cleanData } = row;
 
         return {
-          submission_metadata: metadata,
-          data: row,
+          submission_metadata: existingMetadata,
+          data: cleanData,
         };
       });
 
@@ -353,32 +350,14 @@ export class PostgresToElasticsearchIndexer {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-
-      const isPerformanceError =
-        errorMessage.includes("memory") ||
-        errorMessage.includes("timeout") ||
-        errorMessage.includes("heap");
-
-      const suggestions = [
-        "Check Elasticsearch connection and status",
-        "Verify index permissions",
-        "Review Elasticsearch logs for detailed errors",
-      ];
-
-      if (isPerformanceError) {
-        suggestions.push(
-          "Consider reducing batch size if encountering memory issues"
-        );
-      }
-
-      throw ErrorFactory.validation(
-        "Failed to index batch to Elasticsearch",
-        {
-          indexName,
-          batchSize: batch.length,
-          originalError: error,
-        },
-        suggestions
+      throw ErrorFactory.connection(
+        `Elasticsearch indexing failed: ${errorMessage}`,
+        { indexName, batchSize: batch.length, originalError: error },
+        [
+          "Check Elasticsearch connection",
+          "Verify index mapping",
+          "Review document structure",
+        ]
       );
     }
   }

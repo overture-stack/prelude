@@ -59,7 +59,6 @@ export function configureCommandOptions(program: Command): void {
     .option("--connection-string <url>", "PostgreSQL connection string")
     .option("--ssl", "Use SSL connection")
     .option("--max-connections <number>", "Maximum pool connections", "20")
-    .option("--add-metadata", "Add submission metadata to records")
     // Elasticsearch options
     .option("--url <url>", "Elasticsearch URL", "http://localhost:9200")
     .option("--es-user <username>", "Elasticsearch username", "elastic")
@@ -115,7 +114,6 @@ export function configureCommandOptions(program: Command): void {
     .option("--connection-string <url>", "PostgreSQL connection string")
     .option("--ssl", "Use SSL connection")
     .option("--max-connections <number>", "Maximum pool connections", "20")
-    .option("--add-metadata", "Add submission metadata to records")
     .action(() => {
       /* Handled by main.ts */
     });

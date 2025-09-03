@@ -3,8 +3,7 @@
  * Elasticsearch CSV Processing Module
  *
  * Processes CSV files and indexes the data into Elasticsearch.
- * Updated to use error factory pattern for consistent error handling.
- * UPDATED: Using centralized progress display functions for indexing (cyan color)
+ * UPDATED: Now always includes enhanced submission metadata
  */
 
 import * as fs from "fs";
@@ -21,14 +20,15 @@ import {
 import { CSVProcessingErrorHandler } from "./logHandler";
 import { sendBulkWriteRequest } from "../elasticsearch";
 import { updateIndexingProgress } from "./progressBar";
-import { createRecordMetadata } from "./metadata";
+import { createSubmissionMetadata } from "./metadata";
+
+interface RecordWithMetadata {
+  submission_metadata: any;
+  data: any;
+}
 
 /**
- * Processes a CSV file and indexes the data into Elasticsearch.
- *
- * @param filePath - Path to the CSV file to process
- * @param config - Configuration object
- * @param client - Elasticsearch client for indexing
+ * Main export - processes CSV file for Elasticsearch with enhanced metadata
  */
 export async function processCSVFile(
   filePath: string,
@@ -40,8 +40,12 @@ export async function processCSVFile(
   let processedRecords = 0;
   let failedRecords = 0;
   const startTime = Date.now();
-  const batchedRecords: object[] = [];
+  const batchedRecords: RecordWithMetadata[] = [];
   const processingStartTime = new Date().toISOString();
+
+  // Read file content once for hashing
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  let submissionId: string = "";
 
   try {
     // Validate inputs
@@ -125,10 +129,16 @@ export async function processCSVFile(
             config,
             filePath,
             processingStartTime,
-            processedRecords + 1
+            processedRecords + 1,
+            fileContent
           );
 
           if (record) {
+            // Capture submission_id from first record
+            if (!submissionId && record.submission_metadata) {
+              submissionId = record.submission_metadata.submission_id;
+            }
+
             batchedRecords.push(record);
             processedRecords++;
 
@@ -171,6 +181,11 @@ export async function processCSVFile(
             failedRecords += count;
           }
         );
+      }
+
+      // Log completion (ES doesn't support updating records like PostgreSQL)
+      if (submissionId) {
+        Logger.debug`Elasticsearch submission ${submissionId} completed`;
       }
 
       // Ensure final progress is displayed using centralized indexing function
@@ -256,7 +271,7 @@ async function processHeaderLine(
 }
 
 /**
- * Process a data line of the CSV file
+ * Process a data line - now always includes enhanced metadata
  */
 async function processDataLine(
   line: string,
@@ -264,8 +279,9 @@ async function processDataLine(
   config: Config,
   filePath: string,
   processingStartTime: string,
-  recordNumber: number
-): Promise<object | null> {
+  recordNumber: number,
+  fileContent: string
+): Promise<RecordWithMetadata | null> {
   try {
     if (line.trim() === "") {
       Logger.debug`Skipping empty line ${recordNumber}`;
@@ -279,13 +295,15 @@ async function processDataLine(
       return null;
     }
 
-    const metadata = createRecordMetadata(
+    // ALWAYS create enhanced submission metadata
+    const metadata = createSubmissionMetadata(
       filePath,
       processingStartTime,
-      recordNumber
+      recordNumber,
+      fileContent
     );
 
-    const record = {
+    const record: RecordWithMetadata = {
       submission_metadata: metadata,
       data: Object.fromEntries(headers.map((h, i) => [h, rowValues[i]])),
     };
@@ -302,7 +320,7 @@ async function processDataLine(
  */
 async function sendBatchToElasticsearch(
   client: Client,
-  records: object[],
+  records: RecordWithMetadata[],
   indexName: string,
   filePath: string,
   onFailure: (count: number) => void
@@ -328,37 +346,20 @@ async function sendBatchToElasticsearch(
     // For other unexpected errors, provide more appropriate suggestions
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    if (
-      errorMessage.includes("ECONNREFUSED") ||
-      errorMessage.includes("ETIMEDOUT")
-    ) {
-      throw ErrorFactory.connection(
-        "Failed to connect to Elasticsearch",
-        {
-          filePath,
-          indexName,
-          originalError: error,
-        },
-        [
-          "Check that Elasticsearch is running",
-          "Verify the service URL and port",
-          "Check network connectivity",
-        ]
-      );
-    }
-
-    // For data validation errors, don't provide generic connection suggestions
-    throw ErrorFactory.validation(
-      "Data validation failed during upload",
+    throw ErrorFactory.connection(
+      `Elasticsearch bulk write failed: ${errorMessage}`,
       {
-        filePath,
         indexName,
+        recordCount: records.length,
+        filePath,
         originalError: error,
       },
       [
-        "Check the data type issues shown above",
-        "Fix your CSV data to match the expected types",
-        "Review the error log for detailed information",
+        "Check Elasticsearch server status and connectivity",
+        "Verify index exists and has correct mapping",
+        "Review data format and type compatibility",
+        "Check for document size limits",
+        "Consider reducing batch size if encountering timeouts",
       ]
     );
   }
