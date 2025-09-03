@@ -1,3 +1,12 @@
+// src/services/csvProcessor/index.ts
+/**
+ * Elasticsearch CSV Processing Module
+ *
+ * Processes CSV files and indexes the data into Elasticsearch.
+ * Updated to use error factory pattern for consistent error handling.
+ * UPDATED: Using centralized progress display functions for indexing (cyan color)
+ */
+
 import * as fs from "fs";
 import * as readline from "readline";
 import { Client } from "@elastic/elasticsearch";
@@ -11,12 +20,11 @@ import {
 } from "../../validations";
 import { CSVProcessingErrorHandler } from "./logHandler";
 import { sendBulkWriteRequest } from "../elasticsearch";
-import { formatDuration, calculateETA, createProgressBar } from "./progressBar";
+import { updateIndexingProgress } from "./progressBar";
 import { createRecordMetadata } from "./metadata";
 
 /**
  * Processes a CSV file and indexes the data into Elasticsearch.
- * Updated to use error factory pattern for consistent error handling.
  *
  * @param filePath - Path to the CSV file to process
  * @param config - Configuration object
@@ -124,9 +132,9 @@ export async function processCSVFile(
             batchedRecords.push(record);
             processedRecords++;
 
-            // Update progress more frequently
+            // Update progress more frequently using centralized indexing function (cyan color)
             if (processedRecords % 10 === 0) {
-              updateProgressDisplay(processedRecords, totalLines, startTime);
+              updateIndexingProgress(processedRecords, totalLines, startTime);
             }
 
             if (batchedRecords.length >= config.batchSize) {
@@ -165,8 +173,8 @@ export async function processCSVFile(
         );
       }
 
-      // Ensure final progress is displayed
-      updateProgressDisplay(processedRecords, totalLines, startTime);
+      // Ensure final progress is displayed using centralized indexing function
+      updateIndexingProgress(processedRecords, totalLines, startTime);
 
       // Display final summary
       CSVProcessingErrorHandler.displaySummary(
@@ -287,38 +295,6 @@ async function processDataLine(
     Logger.debug`Error processing data line ${recordNumber}: ${error}`;
     return null;
   }
-}
-
-/**
- * Updates the progress display in the console
- *
- * @param processed - Number of processed records
- * @param total - Total number of records
- * @param startTime - When processing started
- */
-function updateProgressDisplay(
-  processed: number,
-  total: number,
-  startTime: number
-): void {
-  const elapsedMs = Math.max(1, Date.now() - startTime);
-  const progress = Math.min(100, (processed / total) * 100);
-  const progressBar = createProgressBar(progress);
-  const eta = calculateETA(processed, total, elapsedMs / 1000);
-  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
-
-  if (processed === 10) {
-    Logger.generic("");
-  }
-  // Use \r to overwrite previous line
-  process.stdout.write("\r");
-  process.stdout.write(
-    ` ${progressBar} | ` + // Added space before progress bar
-      `${processed}/${total} | ` +
-      `⏱ ${formatDuration(elapsedMs)} | ` +
-      `🏁 ${eta} | ` +
-      `⚡${recordsPerSecond} rows/sec` // Added space after rows/sec
-  );
 }
 
 /**

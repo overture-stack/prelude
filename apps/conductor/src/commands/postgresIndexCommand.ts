@@ -3,8 +3,8 @@
  * PostgreSQL to Elasticsearch Index Command - CLEAN & SIMPLE
  *
  * Reads data from PostgreSQL and indexes it to Elasticsearch.
- * Updated to nest data in 'data' object to match elasticsearch upload format.
- * FIXED: Data structure now matches elasticsearch mapping expectations.
+ * UPDATED: Data structure now matches elasticsearch mapping expectations.
+ * UPDATED: Using centralized progress display functions for indexing (cyan color)
  */
 
 import { Command, CommandResult } from "./baseCommand";
@@ -20,12 +20,8 @@ import {
   createClientFromConfig,
   validateConnection as validateElasticsearchConnection,
 } from "../services/elasticsearch";
-import chalk from "chalk";
-import {
-  formatDuration,
-  calculateETA,
-  createProgressBar,
-} from "../services/csvProcessor/progressBar";
+import { createRecordMetadata } from "../services/csvProcessor/metadata";
+import { updateIndexingProgress } from "../services/csvProcessor/progressBar";
 
 export class IndexCommand extends Command {
   constructor() {
@@ -63,7 +59,7 @@ export class IndexCommand extends Command {
 /**
  * Handles the indexing process from PostgreSQL to Elasticsearch
  * Clean separation of concerns with focused methods
- * UPDATED: Now nests data in 'data' object to match elasticsearch upload structure
+ * UPDATED: Using centralized progress display
  */
 export class PostgresToElasticsearchIndexer {
   async index(config: any): Promise<CommandResult> {
@@ -245,7 +241,8 @@ export class PostgresToElasticsearchIndexer {
         totalIndexed += batch.length;
         offset += batchSize;
 
-        this.updateProgress(totalIndexed, totalRecords, startTime);
+        // Use centralized indexing progress (cyan color)
+        updateIndexingProgress(totalIndexed, totalRecords, startTime);
       } catch (error) {
         Logger.error`Error processing batch at offset ${offset}: ${error}`;
         throw error;
@@ -277,8 +274,9 @@ export class PostgresToElasticsearchIndexer {
       } catch (orderError) {
         const errorMsg =
           orderError instanceof Error ? orderError.message : String(orderError);
+
         if (errorMsg.includes('column "id" does not exist')) {
-          Logger.debug`No id column found, using unordered query`;
+          Logger.debug`No 'id' column found, using unordered query`;
           result = await client.query(
             `SELECT * FROM ${tableName} LIMIT $1 OFFSET $2`,
             [limit, offset]
@@ -288,49 +286,69 @@ export class PostgresToElasticsearchIndexer {
         }
       }
 
-      Logger.debug`Batch query returned ${result.rows.length} rows`;
-      return result.rows;
+      return result.rows || [];
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (
+        errorMessage.includes("relation") &&
+        errorMessage.includes("does not exist")
+      ) {
+        throw ErrorFactory.invalidFile(
+          `Table "${tableName}" does not exist`,
+          tableName,
+          [
+            "Check that the table name is correct",
+            "Verify the table exists in the specified database",
+            "Ensure you have read permissions on the table",
+          ]
+        );
+      }
+
       throw ErrorFactory.validation(
         `Failed to read batch from table ${tableName}`,
         { tableName, offset, limit, originalError: error },
         [
           "Check PostgreSQL connection",
           "Verify table exists and is accessible",
-          "Ensure sufficient memory for batch size",
+          "Check your permissions on the table",
         ]
       );
     }
   }
 
-  /**
-   * UPDATED: Now wraps records in 'data' object to match elasticsearch upload structure
-   * This ensures compatibility with elasticsearch mappings that expect nested data structure
-   */
   private async indexBatchToElasticsearch(
-    esClient: any,
+    client: any,
     indexName: string,
     batch: any[]
   ): Promise<void> {
     try {
-      // NEW: Wrap each record in a 'data' object to match elasticsearch upload format
-      const bulkBody = batch.flatMap((record) => [
-        { index: { _index: indexName } },
-        { data: record }, // ← KEY CHANGE: Nest record inside 'data' object
-      ]);
+      const { sendBulkWriteRequest } = await import(
+        "../services/elasticsearch"
+      );
 
-      const response = await esClient.bulk({ body: bulkBody });
-
-      if (response.errors) {
-        const errorItems = response.items.filter(
-          (item: any) => item.index?.error
+      // Transform records to match elasticsearch expectations
+      const transformedRecords = batch.map((row) => {
+        const processingStartTime = new Date().toISOString();
+        const metadata = createRecordMetadata(
+          `table:${indexName}`,
+          processingStartTime,
+          row.id || Math.random()
         );
-        Logger.warn`${errorItems.length} records had indexing errors`;
 
-        errorItems.slice(0, 3).forEach((item: any) => {
-          Logger.debug`Index error: ${item.index.error.reason}`;
-        });
-      }
+        return {
+          submission_metadata: metadata,
+          data: row,
+        };
+      });
+
+      await sendBulkWriteRequest(
+        client,
+        transformedRecords,
+        indexName,
+        () => {} // Simple error callback
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -362,29 +380,5 @@ export class PostgresToElasticsearchIndexer {
         suggestions
       );
     }
-  }
-
-  /**
-   * Updates progress bar with cyan style
-   */
-  private updateProgress(
-    processed: number,
-    total: number,
-    startTime: number
-  ): void {
-    const elapsedMs = Math.max(1, Date.now() - startTime);
-    const progress = Math.min(100, (processed / total) * 100);
-    const progressBar = createProgressBar(progress, 30, "cyan");
-    const eta = calculateETA(processed, total, elapsedMs / 1000);
-    const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
-
-    process.stdout.write("\r");
-    process.stdout.write(
-      ` ${progressBar} | ` +
-        `${processed}/${total} | ` +
-        `⏱ ${formatDuration(elapsedMs)} | ` +
-        `🏁 ${eta} | ` +
-        `⚡${recordsPerSecond} records/sec`
-    );
   }
 }

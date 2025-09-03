@@ -5,6 +5,7 @@
  * Processes CSV files for PostgreSQL upload, similar to the Elasticsearch processor
  * but optimized for PostgreSQL bulk inserts.
  * FIXED: Proper error handling to stop processing on header validation failures.
+ * UPDATED: Using centralized progress display functions
  */
 
 import * as fs from "fs";
@@ -16,7 +17,7 @@ import { Logger } from "../../utils/logger";
 import { ErrorFactory } from "../../utils/errors";
 import { CSVProcessingErrorHandler } from "./logHandler";
 import { sendBulkInsertRequest } from "../postgresql/bulk";
-import { formatDuration, calculateETA, createProgressBar } from "./progressBar";
+import { updateUploadProgress } from "./progressBar";
 import { createRecordMetadata } from "./metadata";
 
 /**
@@ -137,9 +138,9 @@ export async function processCSVFileForPostgres(
             batchedRecords.push(record);
             processedRecords++;
 
-            // Update progress more frequently
+            // Update progress more frequently using centralized function
             if (processedRecords % 10 === 0) {
-              updateProgressDisplay(processedRecords, totalLines, startTime);
+              updateUploadProgress(processedRecords, totalLines, startTime);
             }
 
             if (batchedRecords.length >= config.batchSize) {
@@ -177,7 +178,7 @@ export async function processCSVFileForPostgres(
         await sendBatchToPostgreSQL(
           client,
           batchedRecords,
-          config.postgresql!.table, // Use non-null assertion since we validated above
+          config.postgresql!.table,
           headers,
           filePath,
           (count) => {
@@ -187,7 +188,7 @@ export async function processCSVFileForPostgres(
       }
 
       // Ensure final progress is displayed
-      updateProgressDisplay(processedRecords, totalLines, startTime);
+      updateUploadProgress(processedRecords, totalLines, startTime);
 
       // Display final summary
       CSVProcessingErrorHandler.displaySummary(
@@ -199,20 +200,12 @@ export async function processCSVFileForPostgres(
       rl.close();
     }
   } catch (error) {
-    // FIXED: If it's a header validation error, don't proceed with CSV processing error handler
+    // If it's already a ConductorError, rethrow it
     if (error instanceof Error && error.name === "ConductorError") {
-      const conductorError = error as any;
-      // Check if this is a header validation error by examining the error details
-      if (
-        conductorError.details?.extraHeaders ||
-        conductorError.details?.missingHeaders
-      ) {
-        // This is a header validation error - rethrow it directly
-        throw error;
-      }
+      throw error;
     }
 
-    // Use the error handler for other processing errors
+    // Use the error handler to process and throw the error
     CSVProcessingErrorHandler.handleProcessingError(
       error,
       processedRecords,
@@ -224,7 +217,6 @@ export async function processCSVFileForPostgres(
 
 /**
  * Process the header line of the CSV file
- * FIXED: Proper error handling to stop processing on validation failures
  */
 async function processHeaderLine(
   line: string,
@@ -334,74 +326,70 @@ async function validateHeadersAgainstTable(
   tableName: string
 ): Promise<void> {
   try {
-    // Get table columns
+    // Query table columns
     const result = await client.query(
-      `SELECT column_name, data_type, is_nullable 
-       FROM information_schema.columns 
-       WHERE table_schema = 'public' 
-       AND table_name = $1 
-       ORDER BY ordinal_position`,
+      `
+      SELECT column_name, data_type, is_nullable
+      FROM information_schema.columns
+      WHERE table_name = $1
+      ORDER BY ordinal_position
+    `,
       [tableName]
     );
 
-    const tableColumns = result.rows.map((row: any) => row.column_name);
+    const tableColumns = result.rows.map((row) => ({
+      name: row.column_name,
+      type: row.data_type,
+      nullable: row.is_nullable === "YES",
+    }));
 
-    Logger.debug`Table columns: ${tableColumns.join(", ")}`;
-    Logger.debug`CSV headers: ${headers.join(", ")}`;
-
-    // Filter out metadata columns from comparison
-    const requiredColumns = tableColumns.filter(
-      (col: string) => col !== "submission_metadata" && col !== "id"
-    );
-
-    // Check for missing headers
-    const missingHeaders = requiredColumns.filter(
-      (col: string) => !headers.includes(col)
-    );
-
-    // Check for extra headers
-    const extraHeaders = headers.filter(
-      (header: string) => !tableColumns.includes(header)
-    );
-
-    if (missingHeaders.length > 0 || extraHeaders.length > 0) {
-      Logger.errorString("CSV headers do not match table structure");
-
-      if (extraHeaders.length > 0) {
-        Logger.suggestion("Extra headers (in CSV, not in table)");
-        extraHeaders.forEach((header) => {
-          Logger.generic(`   ▸ ${header}`);
-        });
-      }
-
-      if (missingHeaders.length > 0) {
-        Logger.suggestion(
-          "Missing headers (required by table, missing from CSV)"
-        );
-        missingHeaders.forEach((header) => {
-          Logger.generic(`   ▸ ${header}`);
-        });
-      }
-
-      Logger.suggestion("Expected table columns");
-      tableColumns.forEach((col: string) => {
-        Logger.generic(`   ▸ ${col}`);
-      });
-
+    if (tableColumns.length === 0) {
       throw ErrorFactory.validation(
-        "Header validation failed - CSV headers do not match table structure",
-        {
-          tableName,
-          tableColumns,
-          csvHeaders: headers,
-          missingHeaders,
-          extraHeaders,
-        },
-        [] // Empty suggestions since we already displayed them above
+        `Table '${tableName}' does not exist or has no columns`,
+        { tableName },
+        [
+          "Verify the table name is correct",
+          "Ensure the table exists in the database",
+          "Check your database connection and permissions",
+        ]
       );
     }
 
-    Logger.debug`Headers match table structure perfectly`;
+    // Check for missing required columns
+    const tableColumnNames = tableColumns.map((col) => col.name.toLowerCase());
+    const csvHeaderNames = headers.map((h) => h.toLowerCase());
+
+    const missingColumns = tableColumnNames.filter(
+      (colName) => !csvHeaderNames.includes(colName)
+    );
+
+    const requiredMissingColumns = missingColumns.filter((colName) => {
+      const column = tableColumns.find(
+        (col) => col.name.toLowerCase() === colName
+      );
+      return column && !column.nullable;
+    });
+
+    if (requiredMissingColumns.length > 0) {
+      throw ErrorFactory.validation(
+        `CSV headers are missing required table columns: ${requiredMissingColumns.join(
+          ", "
+        )}`,
+        {
+          tableName,
+          missingColumns: requiredMissingColumns,
+          csvHeaders: headers,
+          tableColumns: tableColumnNames,
+        },
+        [
+          "Add the missing columns to your CSV file",
+          "Verify CSV headers match table schema",
+          "Check column name spelling and case",
+        ]
+      );
+    }
+
+    Logger.debug`Header validation successful - CSV compatible with table schema`;
   } catch (error) {
     if (error instanceof Error && error.name === "ConductorError") {
       throw error;
@@ -420,34 +408,6 @@ async function validateHeadersAgainstTable(
       ]
     );
   }
-}
-
-/**
- * Updates the progress display in the console
- */
-function updateProgressDisplay(
-  processed: number,
-  total: number,
-  startTime: number
-): void {
-  const elapsedMs = Math.max(1, Date.now() - startTime);
-  const progress = Math.min(100, (processed / total) * 100);
-  const progressBar = createProgressBar(progress);
-  const eta = calculateETA(processed, total, elapsedMs / 1000);
-  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
-
-  if (processed === 10) {
-    Logger.generic("");
-  }
-  // Use \r to overwrite previous line
-  process.stdout.write("\r");
-  process.stdout.write(
-    ` ${progressBar} | ` +
-      `${processed}/${total} | ` +
-      `⏱ ${formatDuration(elapsedMs)} | ` +
-      `🏁 ${eta} | ` +
-      `⚡${recordsPerSecond} rows/sec`
-  );
 }
 
 /**
@@ -494,7 +454,7 @@ async function sendBatchToPostgreSQL(
         },
         [
           "Check that PostgreSQL is running",
-          "Verify the connection details",
+          "Verify the service URL and port",
           "Check network connectivity",
         ]
       );
@@ -509,8 +469,8 @@ async function sendBatchToPostgreSQL(
         originalError: error,
       },
       [
-        "Check the data constraint issues shown above",
-        "Fix your CSV data to match the table schema",
+        "Check the data type issues shown above",
+        "Fix your CSV data to match the expected types",
         "Review the error log for detailed information",
       ]
     );

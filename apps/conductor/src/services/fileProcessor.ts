@@ -17,7 +17,7 @@ export class FileProcessor {
 
     for (const filePath of filePaths) {
       Logger.generic("");
-      Logger.info`Uploading ${filePath}`;
+      Logger.debug`Uploading ${filePath}`;
 
       try {
         await processFile(filePath);

@@ -9,6 +9,7 @@ import chalk from "chalk";
  * - Format time durations
  * - Calculate estimated time to completion (ETA)
  * - Create visual progress bars
+ * - Centralized progress display functions
  */
 
 export function formatDuration(ms: number): string {
@@ -78,7 +79,7 @@ export function createProgressBar(
     const colorFn = (chalk as any)[color] || chalk.green;
 
     const filledBar = colorFn("█").repeat(Math.max(0, filledWidth));
-    const emptyBar = chalk.gray("░").repeat(Math.max(0, emptyWidth));
+    const emptyBar = chalk.gray("▒").repeat(Math.max(0, emptyWidth));
 
     return `${filledBar}${emptyBar} ${colorFn(
       normalizedProgress.toFixed(1) + "%"
@@ -86,4 +87,53 @@ export function createProgressBar(
   } catch {
     return chalk.yellow("[Progress calculation error]");
   }
+}
+
+/**
+ * Centralized progress display for uploads (green bar)
+ */
+export function updateUploadProgress(
+  processed: number,
+  total: number,
+  startTime: number
+): void {
+  const elapsedMs = Math.max(1, Date.now() - startTime);
+  const progress = Math.min(100, (processed / total) * 100);
+  const progressBar = createProgressBar(progress, 30, "green");
+  const eta = calculateETA(processed, total, elapsedMs / 1000);
+  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
+
+  // Use \r to overwrite previous line
+  process.stdout.write("\r");
+  process.stdout.write(
+    ` ${progressBar} | ` +
+      `${processed}/${total} | ` +
+      `⏱ ${formatDuration(elapsedMs)} | ` +
+      `🏁 ${eta} | ` +
+      `⚡${recordsPerSecond} rows/sec`
+  );
+}
+
+/**
+ * Centralized progress display for indexing (cyan bar)
+ */
+export function updateIndexingProgress(
+  processed: number,
+  total: number,
+  startTime: number
+): void {
+  const elapsedMs = Math.max(1, Date.now() - startTime);
+  const progress = Math.min(100, (processed / total) * 100);
+  const progressBar = createProgressBar(progress, 30, "cyan");
+  const eta = calculateETA(processed, total, elapsedMs / 1000);
+  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
+
+  process.stdout.write("\r");
+  process.stdout.write(
+    ` ${progressBar} | ` +
+      `${processed}/${total} | ` +
+      `⏱ ${formatDuration(elapsedMs)} | ` +
+      `🏁 ${eta} | ` +
+      `⚡${recordsPerSecond} rows/sec`
+  );
 }

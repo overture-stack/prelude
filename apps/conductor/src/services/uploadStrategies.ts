@@ -1,8 +1,11 @@
 // src/services/uploadStrategies.ts
 /**
- * Upload strategy implementations using Strategy pattern
- * Makes different upload scenarios explicit and testable
- * FIXED: Proper null checking and correct method calls
+ * Upload strategy implementations with simplified payload-only indexing
+ *
+ * SIMPLE APPROACH:
+ * - Sequential upload: Upload to postgres, then index the same CSV payload directly to elasticsearch
+ * - Standalone index command: Indexes the entire database
+ * UPDATED: Added info messages for both upload and indexing steps
  */
 
 import { CommandResult } from "../commands/baseCommand";
@@ -10,9 +13,6 @@ import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
 
-/**
- * Base interface for all upload strategies
- */
 export interface UploadStrategy {
   execute(cliOutput: CLIOutput): Promise<CommandResult>;
 }
@@ -22,7 +22,6 @@ export interface UploadStrategy {
  */
 export class PostgresOnlyStrategy implements UploadStrategy {
   async execute(cliOutput: CLIOutput): Promise<CommandResult> {
-    // Safe access with null checking
     const tableName = cliOutput.config.postgresql?.table;
     if (!tableName) {
       throw ErrorFactory.args("PostgreSQL table name is required");
@@ -34,10 +33,7 @@ export class PostgresOnlyStrategy implements UploadStrategy {
       "../commands/postgresUploadCommand"
     );
     const command = new PostgresUploadCommand();
-
-    // Use the inherited run method from Command base class
-    const result = await command.run(cliOutput);
-    return result;
+    return await command.run(cliOutput);
   }
 }
 
@@ -46,13 +42,11 @@ export class PostgresOnlyStrategy implements UploadStrategy {
  */
 export class ElasticsearchOnlyStrategy implements UploadStrategy {
   async execute(cliOutput: CLIOutput): Promise<CommandResult> {
-    // Safe access with null checking
     const indexName = cliOutput.config.elasticsearch?.index;
     if (!indexName) {
       throw ErrorFactory.args("Elasticsearch index name is required");
     }
 
-    // Confirm direct Elasticsearch upload (bypasses PostgreSQL)
     await this.confirmDirectUpload(cliOutput, indexName);
 
     Logger.info`Uploading to Elasticsearch index: ${indexName}`;
@@ -61,10 +55,7 @@ export class ElasticsearchOnlyStrategy implements UploadStrategy {
       "../commands/elasticsearchUploadCommand"
     );
     const command = new UploadCommand();
-
-    // Use the inherited run method from Command base class
-    const result = await command.run(cliOutput);
-    return result;
+    return await command.run(cliOutput);
   }
 
   private async confirmDirectUpload(
@@ -102,31 +93,26 @@ export class ElasticsearchOnlyStrategy implements UploadStrategy {
 
 /**
  * Strategy for sequential PostgreSQL upload followed by Elasticsearch indexing
+ * SIMPLE APPROACH: Upload to postgres, then process the same CSV files to elasticsearch
+ * UPDATED: Added info message for PostgreSQL upload step
  */
 export class SequentialUploadStrategy implements UploadStrategy {
   async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config } = cliOutput;
-
-    // Safe access with null checking
     const tableName = config.postgresql?.table;
     const indexName = config.elasticsearch?.index;
 
-    if (!tableName) {
+    if (!tableName || !indexName) {
       throw ErrorFactory.args(
-        "PostgreSQL table name is required for sequential upload"
-      );
-    }
-
-    if (!indexName) {
-      throw ErrorFactory.args(
-        "Elasticsearch index name is required for sequential upload"
+        "Both PostgreSQL table and Elasticsearch index are required for sequential upload"
       );
     }
 
     Logger.debug`Sequential upload: PostgreSQL(${tableName}) → Elasticsearch(${indexName})`;
 
     // Step 1: PostgreSQL Upload
-    Logger.debug`Step 1: Uploading to PostgreSQL...`;
+    Logger.generic("");
+    Logger.info`Uploading data to ${tableName}`;
     const postgresResult = await this.runPostgresUpload(cliOutput);
 
     if (!postgresResult.success) {
@@ -136,21 +122,21 @@ export class SequentialUploadStrategy implements UploadStrategy {
 
     Logger.debug`PostgreSQL upload completed successfully`;
 
-    // Step 2: Elasticsearch Indexing
-    Logger.debug`Step 2: Indexing to Elasticsearch...`;
-    const indexResult = await this.runIndexing(cliOutput);
+    // Step 2: Index the same CSV payload directly to Elasticsearch
+    Logger.info`Indexing data to ${indexName}`;
+    const elasticsearchResult = await this.runElasticsearchUpload(cliOutput);
 
-    if (!indexResult.success) {
+    if (!elasticsearchResult.success) {
       Logger.errorString(
-        "Indexing failed, but PostgreSQL upload was successful"
+        "Elasticsearch indexing failed, but PostgreSQL upload was successful"
       );
       return {
         success: false,
-        errorMessage: `PostgreSQL upload succeeded, but indexing failed: ${indexResult.errorMessage}`,
-        errorCode: indexResult.errorCode,
+        errorMessage: `PostgreSQL upload succeeded, but elasticsearch indexing failed: ${elasticsearchResult.errorMessage}`,
+        errorCode: elasticsearchResult.errorCode,
         details: {
           postgresResult,
-          indexResult,
+          elasticsearchResult,
           partialSuccess: true,
         },
       };
@@ -162,7 +148,7 @@ export class SequentialUploadStrategy implements UploadStrategy {
       success: true,
       details: {
         postgresResult,
-        indexResult,
+        elasticsearchResult,
         workflow: "sequential",
         sourceTable: tableName,
         targetIndex: indexName,
@@ -177,24 +163,34 @@ export class SequentialUploadStrategy implements UploadStrategy {
       "../commands/postgresUploadCommand"
     );
     const command = new PostgresUploadCommand();
-
-    // Use the inherited run method from Command base class
     return await command.run(cliOutput);
   }
 
-  private async runIndexing(cliOutput: CLIOutput): Promise<CommandResult> {
-    const { IndexCommand } = await import("../commands/postgresIndexCommand");
-    const command = new IndexCommand();
+  /**
+   * SIMPLE APPROACH: Process the same CSV files to elasticsearch
+   * This avoids the postgres table reading issues and ensures we index exactly what was uploaded
+   */
+  private async runElasticsearchUpload(
+    cliOutput: CLIOutput
+  ): Promise<CommandResult> {
+    const { UploadCommand } = await import(
+      "../commands/elasticsearchUploadCommand"
+    );
+    const command = new UploadCommand();
 
-    // Use the inherited run method from Command base class
-    return await command.run(cliOutput);
+    // Create elasticsearch-only config (same files, different target)
+    const esConfig: CLIOutput = {
+      ...cliOutput,
+      config: {
+        ...cliOutput.config,
+        postgresql: undefined, // Clear postgres config to avoid confusion
+      },
+    };
+
+    return await command.run(esConfig);
   }
 }
 
-/**
- * Factory function to create appropriate upload strategy
- * FIXED: Proper null checking for config properties
- */
 export function createUploadStrategy(cliOutput: CLIOutput): UploadStrategy {
   const { config } = cliOutput;
   const hasTable = !!config.postgresql?.table;
