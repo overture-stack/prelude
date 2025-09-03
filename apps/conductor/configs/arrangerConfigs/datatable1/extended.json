@@ -1,7 +1,7 @@
 {
   "extended": [
     {
-      "displayName": "Donor Id",
+      "displayName": "Donor",
       "fieldName": "data.donor"
     },
     {

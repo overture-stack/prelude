@@ -204,7 +204,6 @@ export class CSVProcessingErrorHandler {
         Logger.warnString(`No records were processed`);
       } else {
         Logger.successString(`Transfer complete`);
-        Logger.generic("");
       }
 
       // Print detailed summary
@@ -229,7 +228,7 @@ export class CSVProcessingErrorHandler {
       }
 
       Logger.generic(
-        `  ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec`
+        `  ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec\n`
       );
       Logger.debug` ⏱ Total processing time: ${formatDuration(elapsedMs)}`;
 

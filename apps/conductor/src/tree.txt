@@ -5,6 +5,7 @@
 ├── commands
 │   ├── baseCommand.ts
 │   ├── commandRegistry.ts
+│   ├── dataUploadCommand.ts
 │   ├── elasticsearchUploadCommand.ts
 │   ├── lecternUploadCommand.ts
 │   ├── lyricRegistrationCommand.ts
@@ -26,6 +27,7 @@
 │   │   ├── baseService.ts
 │   │   ├── HttpService.ts
 │   │   └── types.ts
+│   ├── connectionManager.ts
 │   ├── csvProcessor
 │   │   ├── csvParser.ts
 │   │   ├── index.ts
@@ -37,6 +39,7 @@
 │   │   ├── bulk.ts
 │   │   ├── client.ts
 │   │   └── index.ts
+│   ├── fileProcessor.ts
 │   ├── lectern
 │   │   ├── index.ts
 │   │   ├── lecternService.ts
@@ -50,13 +53,14 @@
 │   │   ├── bulk.ts
 │   │   ├── client.ts
 │   │   └── index.ts
-│   └── song-score
-│       ├── index.ts
-│       ├── scoreService.ts
-│       ├── songSchemaValidator.ts
-│       ├── songScoreService.ts
-│       ├── songService.ts
-│       └── types.ts
+│   ├── song-score
+│   │   ├── index.ts
+│   │   ├── scoreService.ts
+│   │   ├── songSchemaValidator.ts
+│   │   ├── songScoreService.ts
+│   │   ├── songService.ts
+│   │   └── types.ts
+│   └── uploadStrategies.ts
 ├── tree.txt
 ├── types
 │   ├── cli.ts
@@ -76,4 +80,4 @@
     ├── index.ts
     └── utils.ts
 
-15 directories, 62 files
+15 directories, 66 files
