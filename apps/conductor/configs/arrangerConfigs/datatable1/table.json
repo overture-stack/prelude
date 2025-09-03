@@ -3,19 +3,19 @@
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "data.donor_id",
+        "fieldName": "data.donor",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.donor_id",
-        "query": "data { donor_id }"
+        "jsonPath": "$.data.donor",
+        "query": "data { donor }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.gender",
+        "fieldName": "data.sex",
         "show": true,
         "sortable": true,
-        "jsonPath": "$.data.gender",
-        "query": "data { gender }"
+        "jsonPath": "$.data.sex",
+        "query": "data { sex }"
       },
       {
         "canChangeShow": true,

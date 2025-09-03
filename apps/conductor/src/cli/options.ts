@@ -1,21 +1,20 @@
+// src/cli/options.ts
 /**
- * CLI Options Module - Fixed for Case Insensitive Commands
+ * CLI Options Module - Updated with Unified Upload Command
  *
  * This module configures the command-line options for the Conductor CLI.
- * Updated to reflect the refactored SONG/Score services and removed commands.
+ * Updated to include the new unified upload command that combines PostgreSQL and Elasticsearch functionality.
  * Enhanced with error factory pattern for consistent error handling.
- * Updated with esUpload rename and case-insensitive command aliases.
  */
 
 import { Command } from "commander";
-import { Profiles } from "../types/constants";
-import { CLIOutput } from "../types/cli";
+import { CLIOutput, Config } from "../types/cli";
 import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
 
 /**
  * Configures the command-line options for the Conductor CLI
- * Updated with suppressed Commander help to only show custom reference commands
+ * Updated with unified upload command and suppressed Commander help
  * @param program - The Commander.js program instance
  */
 export function configureCommandOptions(program: Command): void {
@@ -39,13 +38,46 @@ export function configureCommandOptions(program: Command): void {
     .helpOption(false) // Disable automatic help option
     .exitOverride(); // Prevent Commander from calling process.exit()
 
-  // Elasticsearch Upload command (renamed from "upload" to "esUpload")
-  // Added aliases for case-insensitive matching
+  // Unified Upload command - combines PostgreSQL and Elasticsearch functionality
+  program
+    .command("upload")
+    .alias("UPLOAD") // uppercase alias
+    .description("Upload data to PostgreSQL and/or Elasticsearch")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-t, --table <tableName>", "PostgreSQL table name")
+    .option("-i, --index <indexName>", "Elasticsearch index name")
+    .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for generated files")
+    .option("--force", "Force overwrite of existing files")
+    // PostgreSQL options
+    .option("--host <host>", "PostgreSQL host", "localhost")
+    .option("--port <port>", "PostgreSQL port", "5435")
+    .option("--database <database>", "PostgreSQL database name", "postgres")
+    .option("--user <username>", "PostgreSQL username", "admin")
+    .option("--password <password>", "PostgreSQL password", "admin123")
+    .option("--connection-string <url>", "PostgreSQL connection string")
+    .option("--ssl", "Use SSL connection")
+    .option("--max-connections <number>", "Maximum pool connections", "20")
+    .option("--add-metadata", "Add submission metadata to records")
+    // Elasticsearch options
+    .option("--url <url>", "Elasticsearch URL", "http://localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option(
+      "--es-password <password>",
+      "Elasticsearch password",
+      "myelasticpassword"
+    )
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // Elasticsearch Upload command (specialized - kept for backward compatibility)
   program
     .command("esUpload")
     .alias("esupload") // lowercase alias
     .alias("ESUPLOAD") // uppercase alias
-    .description("Upload data to Elasticsearch")
+    .description("Upload data to Elasticsearch (specialized command)")
     .option("-f, --file <files...>", "Input files to process")
     .option("-i, --index <n>", "Elasticsearch index name")
     .option("-b, --batch-size <size>", "Batch size for uploads")
@@ -63,12 +95,12 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // PostgreSQL upload command (updated defaults)
+  // PostgreSQL upload command (specialized - kept for backward compatibility)
   program
     .command("postgresUpload")
     .alias("postgresupload") // lowercase alias
     .alias("POSTGRESUPLOAD") // uppercase alias
-    .description("Upload data to PostgreSQL database")
+    .description("Upload data to PostgreSQL database (specialized command)")
     .option("-f, --file <files...>", "Input files to process")
     .option("-t, --table <n>", "PostgreSQL table name")
     .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
@@ -76,10 +108,10 @@ export function configureCommandOptions(program: Command): void {
     .option("-o, --output <path>", "Output directory for generated files")
     .option("--force", "Force overwrite of existing files")
     .option("--host <host>", "PostgreSQL host", "localhost")
-    .option("--port <port>", "PostgreSQL port", "5435") // Updated default
+    .option("--port <port>", "PostgreSQL port", "5435")
     .option("--database <database>", "PostgreSQL database name", "postgres")
-    .option("--user <username>", "PostgreSQL username", "admin") // Updated default
-    .option("--password <password>", "PostgreSQL password", "admin123") // Updated default
+    .option("--user <username>", "PostgreSQL username", "admin")
+    .option("--password <password>", "PostgreSQL password", "admin123")
     .option("--connection-string <url>", "PostgreSQL connection string")
     .option("--ssl", "Use SSL connection")
     .option("--max-connections <number>", "Maximum pool connections", "20")
@@ -88,20 +120,19 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // PostgreSQL to Elasticsearch index command (updated defaults)
+  // PostgreSQL to Elasticsearch index command
   program
     .command("index")
-    .alias("index") // lowercase alias
     .alias("INDEX") // uppercase alias
     .description("Index data from PostgreSQL table to Elasticsearch")
     .option("-t, --table <n>", "Source PostgreSQL table name")
     .option("-i, --index <n>", "Target Elasticsearch index name")
     .option("-b, --batch-size <size>", "Batch size for indexing", "1000")
     .option("--host <host>", "PostgreSQL host", "localhost")
-    .option("--port <port>", "PostgreSQL port", "5435") // Updated default
+    .option("--port <port>", "PostgreSQL port", "5435")
     .option("--database <database>", "PostgreSQL database name", "postgres")
-    .option("--user <username>", "PostgreSQL username", "admin") // Updated default
-    .option("--password <password>", "PostgreSQL password", "admin123") // Updated default
+    .option("--user <username>", "PostgreSQL username", "admin")
+    .option("--password <password>", "PostgreSQL password", "admin123")
     .option("--connection-string <url>", "PostgreSQL connection string")
     .option("--ssl", "Use SSL connection")
     .option("--url <url>", "Elasticsearch URL", "http://localhost:9200")
@@ -177,64 +208,32 @@ export function configureCommandOptions(program: Command): void {
       "Directory containing CSV data files",
       process.env.LYRIC_DATA
     )
-    .option(
-      "-c, --category-id <id>",
-      "Category ID",
-      process.env.CATEGORY_ID || "1"
-    )
-    .option(
-      "-g, --organization <n>",
-      "Organization name",
-      process.env.ORGANIZATION || "OICR"
-    )
-    .option(
-      "-m, --max-retries <number>",
-      "Maximum number of retry attempts",
-      process.env.MAX_RETRIES || "10"
-    )
-    .option(
-      "-r, --retry-delay <milliseconds>",
-      "Delay between retry attempts in milliseconds",
-      process.env.RETRY_DELAY || "1000"
-    )
+    .option("-c, --category-name <n>", "Category name")
+    .option("--dict-name <n>", "Dictionary name")
+    .option("-v, --dictionary-version <version>", "Dictionary version")
+    .option("-e, --default-centric-entity <entity>", "Default centric entity")
     .option("-o, --output <path>", "Output directory for response logs")
     .option("--force", "Force overwrite of existing files")
     .action(() => {
       /* Handled by main.ts */
     });
 
-  // Repository indexing command
+  // Maestro indexing command
   program
     .command("maestroIndex")
     .alias("maestroindex") // lowercase alias
     .alias("MAESTROINDEX") // uppercase alias
-    .description("Index a repository with optional filtering")
+    .description("Index a repository using Maestro")
+    .option("--repository-code <code>", "Repository code to index")
     .option(
       "--index-url <url>",
       "Indexing service URL",
-      process.env.MAESTRO_URL || "http://localhost:8080"
+      process.env.MAESTRO_URL || "http://localhost:11235"
     )
-    .option(
-      "--repo-url <url>",
-      "Repository URL to index",
-      process.env.REPOSITORY_URL
-    )
-    .option(
-      "--repo-name <name>",
-      "Repository name",
-      process.env.REPOSITORY_NAME
-    )
-    .option("--analysis-id <id>", "Analysis ID to index")
-    .option("-b, --batch-size <size>", "Batch size for indexing", "1000")
+    .option("--organization <n>", "Filter to specific organization")
+    .option("--id <id>", "Index only specific document ID")
     .option("-o, --output <path>", "Output directory for logs")
-    .option(
-      "--exclude-analysis-types <types>",
-      "Comma-separated list of analysis types to exclude"
-    )
-    .option(
-      "--include-analysis-types <types>",
-      "Comma-separated list of analysis types to include"
-    )
+    .option("--force", "Skip confirmation prompts")
     .action(() => {
       /* Handled by main.ts */
     });
@@ -244,8 +243,8 @@ export function configureCommandOptions(program: Command): void {
     .command("songUploadSchema")
     .alias("songuploadschema") // lowercase alias
     .alias("SONGUPLOADSCHEMA") // uppercase alias
-    .description("Upload analysis schema to SONG server")
-    .option("-s, --schema-file <path>", "Schema JSON file to upload")
+    .description("Upload schema to SONG server")
+    .option("-f, --file <path>", "Schema JSON file to upload")
     .option(
       "-u, --song-url <url>",
       "SONG server URL",
@@ -319,223 +318,65 @@ export function configureCommandOptions(program: Command): void {
 }
 
 /**
- * Parses command-line arguments into a standardized CLIOutput object
- * Updated to handle the combined SONG/Score workflow with enhanced error handling
- * Updated with esUpload rename and PostgreSQL defaults
- *
- * @param options - Parsed command-line options
- * @returns A CLIOutput object for command execution
+ * Parses command line arguments into a standardized CLIOutput format
+ * Updated to handle unified upload command
+ * @param args - Raw command line arguments
+ * @returns CLIOutput object with parsed configuration
  */
-export function parseCommandLineArgs(options: any): CLIOutput {
+export function parseCommandLineArgs(args: any): CLIOutput {
   try {
-    // Log raw options for debugging
-    Logger.debug`Raw options: ${JSON.stringify(options)}`;
-    Logger.debug`Process argv: ${process.argv.join(" ")}`;
-
-    // Determine the profile from options
-    let profile = options.profile || Profiles.ES_UPLOAD; // Updated to use ES_UPLOAD
-
-    // Special handling for lyricData command to ensure data directory is captured
-    if (profile === Profiles.LYRIC_DATA) {
-      // Check for a positional argument that might be the data directory
-      const positionalArgs = process.argv
-        .slice(3)
-        .filter((arg) => !arg.startsWith("-"));
-
-      if (positionalArgs.length > 0 && !options.dataDirectory) {
-        options.dataDirectory = positionalArgs[0];
-        Logger.debug`Captured data directory from positional argument: ${options.dataDirectory}`;
-      }
-    }
-
-    // Parse file paths with better error handling
+    // Handle file paths - support both single files and arrays
     let filePaths: string[] = [];
-
-    if (Array.isArray(options.file)) {
-      filePaths = options.file;
-    } else if (options.file) {
-      filePaths = [options.file];
+    if (args.file) {
+      filePaths = Array.isArray(args.file) ? args.file : [args.file];
+    } else if (args.files) {
+      filePaths = Array.isArray(args.files) ? args.files : [args.files];
+    } else if (args.schemaFile) {
+      filePaths = [args.schemaFile];
+    } else if (args.analysisFile) {
+      filePaths = [args.analysisFile];
     }
 
-    // Add template file to filePaths if present
-    if (options.templateFile && !filePaths.includes(options.templateFile)) {
-      filePaths.push(options.templateFile);
-    }
-
-    // Add schema file to filePaths if present for Lectern or SONG upload
-    if (options.schemaFile && !filePaths.includes(options.schemaFile)) {
-      filePaths.push(options.schemaFile);
-    }
-
-    // Add analysis file to filePaths if present for SONG analysis submission
-    if (options.analysisFile && !filePaths.includes(options.analysisFile)) {
-      filePaths.push(options.analysisFile);
-    }
-
-    Logger.debug`Parsed profile: ${profile}`;
-    Logger.debug`Parsed file paths: ${filePaths.join(", ")}`;
-
-    // Validate numeric options
-    const batchSize = options.batchSize
-      ? parseInt(options.batchSize, 10)
-      : 1000;
-    const maxRetries = options.maxRetries ? parseInt(options.maxRetries) : 10;
-    const retryDelay = options.retryDelay
-      ? parseInt(options.retryDelay)
-      : 20000;
-
-    if (isNaN(batchSize) || batchSize <= 0) {
-      throw ErrorFactory.validation(
-        "Invalid batch size",
-        { batchSize: options.batchSize },
-        ["Batch size must be a positive number", "Example: --batch-size 1000"]
-      );
-    }
-
-    if (isNaN(maxRetries) || maxRetries < 0) {
-      throw ErrorFactory.validation(
-        "Invalid max retries",
-        { maxRetries: options.maxRetries },
-        [
-          "Max retries must be a non-negative number",
-          "Example: --max-retries 3",
-        ]
-      );
-    }
-
-    if (isNaN(retryDelay) || retryDelay < 0) {
-      throw ErrorFactory.validation(
-        "Invalid retry delay",
-        { retryDelay: options.retryDelay },
-        [
-          "Retry delay must be a non-negative number in milliseconds",
-          "Example: --retry-delay 1000",
-        ]
-      );
-    }
-
-    // Create config object with support for all services (updated PostgreSQL defaults)
-    const config = {
-      elasticsearch: {
-        url:
-          options.url ||
-          process.env.ELASTICSEARCH_URL ||
-          "http://localhost:9200",
-        user: options.user || process.env.ELASTICSEARCH_USER,
-        password: options.password || process.env.ELASTICSEARCH_PASSWORD,
-        index: options.index || options.indexName || "conductor-data",
-        templateFile: options.templateFile,
-        templateName: options.templateName,
-        alias: options.aliasName,
+    // Create the CLIOutput object with proper Config structure
+    const cliOutput: CLIOutput = {
+      profile: args.profile,
+      filePaths: filePaths,
+      config: {
+        elasticsearch: {
+          url: args.url || "http://localhost:9200",
+          user: args.esUser || args.user || "elastic",
+          password: args.esPassword || args.password || "myelasticpassword",
+          index: args.index || "",
+        },
+        postgresql: args.table
+          ? {
+              host: args.host || "localhost",
+              port: parseInt(args.port) || 5435,
+              database: args.database || "postgres",
+              user: args.user || "admin",
+              password: args.password || "admin123",
+              table: args.table,
+              connectionString: args.connectionString,
+              ssl: args.ssl || false,
+              maxConnections: parseInt(args.maxConnections) || 20,
+              addMetadata: args.addMetadata || false,
+            }
+          : undefined,
+        batchSize: args.batchSize ? parseInt(args.batchSize) : 1000,
+        delimiter: args.delimiter || ",",
       },
-      postgresql: {
-        connectionString: options.connectionString || process.env.DATABASE_URL,
-        host: options.host || process.env.PGHOST || "localhost",
-        port: parseInt(options.port || process.env.PGPORT || "5435"), // Updated default
-        database: options.database || process.env.PGDATABASE || "postgres",
-        user: options.user || process.env.PGUSER || "admin", // Updated default
-        password: options.password || process.env.PGPASSWORD || "admin123", // Updated default
-        ssl: options.ssl || process.env.PGSSLMODE === "require",
-        table: options.table || "data",
-        maxConnections: parseInt(options.maxConnections || "20"),
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000,
-        addMetadata: options.addMetadata || false,
-      },
-      lectern: {
-        url:
-          options.lecternUrl ||
-          process.env.LECTERN_URL ||
-          "http://localhost:3031",
-        authToken: options.authToken || process.env.LECTERN_AUTH_TOKEN || "",
-      },
-      lyric: {
-        url:
-          options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
-        categoryName: options.categoryName || process.env.CATEGORY_NAME,
-        dictionaryName: options.dictName || process.env.DICTIONARY_NAME,
-        dictionaryVersion:
-          options.dictionaryVersion || process.env.DICTIONARY_VERSION,
-        defaultCentricEntity:
-          options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY,
-        // Data loading specific options
-        dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
-        categoryId: options.categoryId || process.env.CATEGORY_ID,
-        organization: options.organization || process.env.ORGANIZATION,
-        maxRetries,
-        retryDelay,
-      },
-      song: {
-        url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
-        authToken: options.authToken || process.env.AUTH_TOKEN || "123",
-        schemaFile: options.schemaFile || process.env.SONG_SCHEMA,
-        studyId: options.studyId || process.env.STUDY_ID || "demo",
-        studyName: options.studyName || process.env.STUDY_NAME || "string",
-        organization:
-          options.organization || process.env.ORGANIZATION || "string",
-        description: options.description || process.env.DESCRIPTION || "string",
-        analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
-        allowDuplicates:
-          options.allowDuplicates ||
-          process.env.ALLOW_DUPLICATES === "true" ||
-          false,
-        ignoreUndefinedMd5:
-          options.ignoreUndefinedMd5 ||
-          process.env.IGNORE_UNDEFINED_MD5 === "true" ||
-          false,
-        // Combined Score functionality (now part of song config)
-        scoreUrl:
-          options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
-        dataDir: options.dataDir || process.env.DATA_DIR || "./data",
-        outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
-        manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
-      },
-      maestroIndex: {
-        url:
-          options.indexUrl || process.env.INDEX_URL || "http://localhost:11235",
-        repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
-        organization: options.organization || process.env.ORGANIZATION,
-        id: options.id || process.env.ID,
-      },
-      batchSize,
-      delimiter: options.delimiter || ",",
+      debug: args.debug || false,
+      envConfig: {}, // Required by CLIOutput interface
+      options: args, // Keep raw options for command-specific handling
     };
 
-    // Build the standardized CLI output
-    return {
-      profile,
-      filePaths,
-      outputPath: options.output,
-      config,
-      options,
-      envConfig: {
-        elasticsearchUrl: config.elasticsearch.url,
-        esUser: config.elasticsearch.user,
-        esPassword: config.elasticsearch.password,
-        indexName: config.elasticsearch.index,
-        lecternUrl: config.lectern.url,
-        lyricUrl: config.lyric.url,
-        songUrl: config.song.url,
-        lyricData: config.lyric.dataDirectory,
-        categoryId: config.lyric.categoryId,
-        organization: config.lyric.organization,
-      },
-    };
+    Logger.debug`Parsed CLI output: ${JSON.stringify(cliOutput, null, 2)}`;
+    return cliOutput;
   } catch (error) {
-    // If it's already a ConductorError, rethrow it
-    if (error instanceof Error && error.name === "ConductorError") {
-      throw error;
-    }
-
-    // Wrap unexpected parsing errors
-    throw ErrorFactory.parsing(
-      "Failed to parse command line arguments",
-      { options, originalError: error },
-      [
-        "Check command line argument syntax",
-        "Use --help for usage information",
-        "Verify all required parameters are provided",
-      ]
-    );
+    throw ErrorFactory.args("Failed to parse command line arguments", [
+      "Check command syntax",
+      "Use --help for usage information",
+      "Verify all required parameters are provided",
+    ]);
   }
 }

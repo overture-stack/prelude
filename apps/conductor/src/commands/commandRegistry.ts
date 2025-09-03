@@ -1,8 +1,7 @@
-// src/commands/CommandRegistry.ts
+// src/commands/commandRegistry.ts
 /**
- * Simplified command registry to replace the complex factory pattern
- * Updated to use error factory pattern for consistent error handling
- * Updated with case-insensitive command handling and esUpload rename
+ * Updated command registry with unified upload command
+ * Updated to include the new upload command that combines PostgreSQL and Elasticsearch functionality
  */
 
 import { Command } from "./baseCommand";
@@ -10,7 +9,8 @@ import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
 
 // Import all command classes
-import { UploadCommand } from "./uploadCsvCommand";
+import { UnifiedUploadCommand } from "./uploadCommand";
+import { UploadCommand } from "./elasticsearchUploadCommand";
 import { PostgresUploadCommand } from "./postgresUploadCommand";
 import { IndexCommand } from "./postgresIndexCommand";
 import { LecternUploadCommand } from "./lecternUploadCommand";
@@ -22,7 +22,6 @@ import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand";
 import { SongPublishAnalysisCommand } from "./songPublishAnalysisCommand";
 import { MaestroIndexCommand } from "./maestroIndexCommand";
 
-// Only export what's actually needed externally
 type CommandConstructor = new () => Command;
 
 interface CommandInfo {
@@ -34,312 +33,181 @@ interface CommandInfo {
 
 /**
  * Registry of all available commands with metadata
- * Updated with case-insensitive lookup and esUpload rename
+ * Updated with unified upload command
  */
 export class CommandRegistry {
   private static commands = new Map<string, CommandInfo>([
-    // Store commands with lowercase keys for case-insensitive lookup
+    // New unified upload command
     [
-      "esupload", // Changed from "upload" to "esupload"
+      "upload",
       {
-        name: "esUpload", // Display name
-        description: "Upload CSV data to Elasticsearch",
+        name: "upload",
+        description: "Upload data to PostgreSQL and/or Elasticsearch",
+        category: "Data Upload",
+        constructor: UnifiedUploadCommand,
+      },
+    ],
+    // Keep existing specialized commands for backward compatibility
+    [
+      "esupload",
+      {
+        name: "esUpload",
+        description: "Upload CSV data to Elasticsearch (specialized)",
         category: "Data Upload",
         constructor: UploadCommand,
       },
     ],
     [
-      "postgresupload", // lowercase key
+      "postgresupload",
       {
-        name: "postgresUpload", // original name for display
-        description: "Upload CSV data to PostgreSQL database",
+        name: "postgresUpload",
+        description: "Upload CSV data to PostgreSQL (specialized)",
         category: "Data Upload",
         constructor: PostgresUploadCommand,
       },
     ],
     [
-      "index", // lowercase key
+      "index",
       {
-        name: "index", // original name for display
+        name: "index",
         description: "Index data from PostgreSQL table to Elasticsearch",
-        category: "Data Integration",
+        category: "Data Processing",
         constructor: IndexCommand,
       },
     ],
     [
-      "lecternupload", // lowercase key
+      "lecternupload",
       {
-        name: "lecternUpload", // original name for display
+        name: "lecternUpload",
         description: "Upload schema to Lectern server",
         category: "Schema Management",
         constructor: LecternUploadCommand,
       },
     ],
     [
-      "lyricregister", // lowercase key
+      "lyricregister",
       {
-        name: "lyricRegister", // original name for display
-        description: "Register a dictionary with Lyric service",
-        category: "Data Management",
+        name: "lyricRegister",
+        description: "Register dictionary with Lyric service",
+        category: "Dictionary Management",
         constructor: LyricRegistrationCommand,
       },
     ],
     [
-      "lyricupload", // lowercase key
+      "lyricupload",
       {
-        name: "lyricUpload", // original name for display
+        name: "lyricUpload",
         description: "Upload data to Lyric service",
         category: "Data Upload",
         constructor: LyricUploadCommand,
       },
     ],
     [
-      "songuploadschema", // lowercase key
+      "maestroindex",
       {
-        name: "songUploadSchema", // original name for display
+        name: "maestroIndex",
+        description: "Index repository using Maestro",
+        category: "Repository Indexing",
+        constructor: MaestroIndexCommand,
+      },
+    ],
+    [
+      "songuploadschema",
+      {
+        name: "songUploadSchema",
         description: "Upload schema to SONG server",
         category: "Schema Management",
         constructor: SongUploadSchemaCommand,
       },
     ],
     [
-      "songcreatestudy", // lowercase key
+      "songcreatestudy",
       {
-        name: "songCreateStudy", // original name for display
+        name: "songCreateStudy",
         description: "Create study in SONG server",
         category: "Study Management",
         constructor: SongCreateStudyCommand,
       },
     ],
     [
-      "songsubmitanalysis", // lowercase key
+      "songsubmitanalysis",
       {
-        name: "songSubmitAnalysis", // original name for display
-        description: "Submit analysis to SONG and upload files to Score",
+        name: "songSubmitAnalysis",
+        description: "Submit analysis to SONG server",
         category: "Analysis Management",
         constructor: SongSubmitAnalysisCommand,
       },
     ],
     [
-      "songpublishanalysis", // lowercase key
+      "songpublishanalysis",
       {
-        name: "songPublishAnalysis", // original name for display
+        name: "songPublishAnalysis",
         description: "Publish analysis in SONG server",
         category: "Analysis Management",
         constructor: SongPublishAnalysisCommand,
       },
     ],
-    [
-      "maestroindex", // lowercase key
-      {
-        name: "maestroIndex", // original name for display
-        description: "Index data using Maestro",
-        category: "Data Indexing",
-        constructor: MaestroIndexCommand,
-      },
-    ],
   ]);
 
   /**
-   * Create a command instance by name (case-insensitive)
+   * Creates a command instance based on the profile name (case-insensitive)
+   * @param profile - The command profile to create
+   * @returns Command instance
+   * @throws ConductorError if command not found
    */
-  static createCommand(commandName: string): Command {
-    // Convert to lowercase for case-insensitive lookup
-    const normalizedCommandName = commandName.toLowerCase();
-    const commandInfo = this.commands.get(normalizedCommandName);
+  static createCommand(profile: string): Command {
+    const normalizedProfile = profile.toLowerCase();
+    const commandInfo = this.commands.get(normalizedProfile);
 
     if (!commandInfo) {
-      const availableCommands = Array.from(this.commands.values())
-        .map((info) => info.name) // Use display names in error message
-        .join(", ");
-
-      throw ErrorFactory.args(`Unknown command: ${commandName}`, [
-        `Available commands: ${availableCommands}`,
-        "Use 'conductor --help' to see all available commands",
-        "Check the command spelling and try again",
+      throw ErrorFactory.args(`Unknown command: ${profile}`, [
+        "Use 'conductor --help' to see available commands",
+        "Check the command spelling",
         "Commands are case-insensitive",
+        "Available commands: " + Array.from(this.commands.keys()).join(", "),
       ]);
     }
 
-    Logger.debug`Creating command: ${commandInfo.name}`;
+    return new commandInfo.constructor();
+  }
 
-    try {
-      return new commandInfo.constructor();
-    } catch (error) {
-      throw ErrorFactory.args(`Failed to create command: ${commandName}`, [
-        "This appears to be an internal error",
-        "Try running with --debug for more information",
-        "Contact support if the issue persists",
-      ]);
+  /**
+   * Displays help information for all available commands
+   */
+  static displayHelp(): void {
+    const categories = this.groupCommandsByCategory();
+
+    for (const [category, commands] of categories.entries()) {
+      Logger.generic(`\n${category}:`);
+      commands.forEach((cmd) => {
+        Logger.generic(`  ${cmd.name.padEnd(20)} ${cmd.description}`);
+      });
     }
+
+    Logger.generic("\nFor detailed command help:");
+    Logger.generic("  conductor <command> --help");
   }
 
   /**
-   * Check if a command exists (case-insensitive)
+   * Groups commands by category for organized help display
    */
-  static hasCommand(commandName: string): boolean {
-    return this.commands.has(commandName.toLowerCase());
-  }
-
-  /**
-   * Get all available command names (returns display names)
-   */
-  static getCommandNames(): string[] {
-    return Array.from(this.commands.values()).map((info) => info.name);
-  }
-
-  /**
-   * Get command information (case-insensitive lookup)
-   */
-  static getCommandInfo(commandName: string): CommandInfo | undefined {
-    return this.commands.get(commandName.toLowerCase());
-  }
-
-  /**
-   * Get all commands grouped by category
-   */
-  static getCommandsByCategory(): Map<string, CommandInfo[]> {
+  private static groupCommandsByCategory(): Map<string, CommandInfo[]> {
     const categories = new Map<string, CommandInfo[]>();
 
-    for (const commandInfo of this.commands.values()) {
-      const existing = categories.get(commandInfo.category) || [];
-      existing.push(commandInfo);
-      categories.set(commandInfo.category, existing);
+    for (const command of this.commands.values()) {
+      if (!categories.has(command.category)) {
+        categories.set(command.category, []);
+      }
+      categories.get(command.category)!.push(command);
     }
 
     return categories;
   }
 
   /**
-   * Display help information for all commands
+   * Gets all available command names
    */
-  static displayHelp(): void {
-    Logger.header("Available Commands");
-
-    const categories = this.getCommandsByCategory();
-
-    for (const [category, commands] of categories) {
-      Logger.suggestion(category);
-      for (const command of commands) {
-        Logger.commandInfo(command.name, command.description);
-      }
-      Logger.generic("");
-    }
-  }
-
-  /**
-   * Display help for a specific command
-   */
-  static displayCommandHelp(commandName: string): void {
-    const commandInfo = this.getCommandInfo(commandName);
-
-    if (!commandInfo) {
-      Logger.errorString(`Unknown command: ${commandName}`);
-      this.displayHelp();
-      return;
-    }
-
-    Logger.header(`Command: ${commandInfo.name}`);
-    Logger.infoString(commandInfo.description);
-    Logger.infoString(`Category: ${commandInfo.category}`);
-
-    // You could extend this to show command-specific options
-    Logger.tipString(
-      `Use 'conductor ${commandInfo.name} --help' for command-specific options`
-    );
-  }
-
-  /**
-   * Register a new command (useful for plugins or extensions)
-   */
-  static registerCommand(
-    name: string,
-    description: string,
-    category: string,
-    constructor: CommandConstructor
-  ): void {
-    const normalizedName = name.toLowerCase();
-    if (this.commands.has(normalizedName)) {
-      Logger.warnString(
-        `Command '${name}' is already registered. Overwriting.`
-      );
-    }
-
-    this.commands.set(normalizedName, {
-      name,
-      description,
-      category,
-      constructor,
-    });
-
-    Logger.debug`Registered command: ${name}`;
-  }
-
-  /**
-   * Unregister a command
-   */
-  static unregisterCommand(name: string): boolean {
-    return this.commands.delete(name.toLowerCase());
-  }
-
-  /**
-   * Validate that all registered commands are properly configured
-   */
-  static validateRegistry(): void {
-    const issues: string[] = [];
-
-    for (const [normalizedName, info] of this.commands) {
-      if (!info.name || info.name.toLowerCase() !== normalizedName) {
-        issues.push(`Command '${normalizedName}' has mismatched name property`);
-      }
-
-      if (!info.description) {
-        issues.push(`Command '${normalizedName}' is missing description`);
-      }
-
-      if (!info.category) {
-        issues.push(`Command '${normalizedName}' is missing category`);
-      }
-
-      if (!info.constructor) {
-        issues.push(`Command '${normalizedName}' is missing constructor`);
-      }
-    }
-
-    if (issues.length > 0) {
-      throw ErrorFactory.validation(
-        "Command registry validation failed",
-        { issues },
-        [
-          "Check command definitions in CommandRegistry",
-          "Ensure all commands have required properties",
-          "Fix the validation issues and try again",
-        ]
-      );
-    }
-
-    Logger.debug`Command registry validation passed (${this.commands.size} commands)`;
-  }
-
-  /**
-   * Get registry statistics
-   */
-  static getStats(): {
-    totalCommands: number;
-    categoryCounts: Record<string, number>;
-    categories: string[];
-  } {
-    const categories = this.getCommandsByCategory();
-    const categoryCounts: Record<string, number> = {};
-
-    for (const [category, commands] of categories) {
-      categoryCounts[category] = commands.length;
-    }
-
-    return {
-      totalCommands: this.commands.size,
-      categoryCounts,
-      categories: Array.from(categories.keys()),
-    };
+  static getAvailableCommands(): string[] {
+    return Array.from(this.commands.keys());
   }
 }

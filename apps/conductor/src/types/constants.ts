@@ -11,6 +11,9 @@
  * Available command profiles
  */
 export const Profiles = {
+  /** Unified upload command - handles PostgreSQL and/or Elasticsearch uploads */
+  UPLOAD: "upload",
+
   /** Upload data to Elasticsearch (renamed from UPLOAD) */
   ES_UPLOAD: "esUpload",
 

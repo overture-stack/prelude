@@ -1,6 +1,6 @@
 // src/cli/index.ts - Simplified CLI setup using new configuration system
 // Updated to use error factory pattern for consistent error handling
-// Updated with esUpload rename and case-insensitive command handling
+// Updated with unified upload command
 
 import { Command } from "commander";
 import { Config, CLIOutput } from "../types/cli";
@@ -14,9 +14,10 @@ import { ErrorFactory } from "../utils/errors";
 /**
  * Type definition for supported CLI profiles.
  * This should match the CommandRegistry command names exactly.
- * Updated with esUpload rename
+ * Updated with unified upload command
  */
 type CLIprofile =
+  | "upload" // New unified upload command
   | "esUpload"
   | "postgresUpload"
   | "index"
@@ -55,7 +56,7 @@ interface CLIOutputInternal {
 /**
  * Sets up the CLI environment and parses command-line arguments.
  * Now uses the simplified configuration system with enhanced error handling.
- * Updated with case-insensitive command handling and esUpload rename.
+ * Updated with unified upload command handling.
  */
 export async function setupCLI(): Promise<CLIOutput> {
   const program = new Command();
@@ -76,7 +77,7 @@ export async function setupCLI(): Promise<CLIOutput> {
       throw ErrorFactory.args("No command specified", [
         "Specify a command to run",
         "Use 'conductor --help' to see available commands",
-        "Example: conductor esUpload -f data.csv", // Updated example
+        "Example: conductor upload -f data.csv -t users",
       ]);
     }
 
@@ -93,7 +94,7 @@ export async function setupCLI(): Promise<CLIOutput> {
         "Use 'conductor --help' to see available commands",
         "Check the command spelling",
         "Ensure you're using the correct command name",
-        "Commands are case-insensitive (e.g., 'esUpload', 'ESUPLOAD', 'esupload' all work)",
+        "Commands are case-insensitive",
       ]);
     }
 
@@ -104,13 +105,16 @@ export async function setupCLI(): Promise<CLIOutput> {
     Logger.debug`Remaining arguments: ${program.args.join(", ")}`;
 
     // Determine the profile based on the command name (case-insensitive)
-    let profile: CLIprofile = "esUpload"; // Default to esUpload
+    let profile: CLIprofile = "upload"; // Default to unified upload
 
     // Use the actual command name from the found command for profile mapping
     const actualCommandName = command.name();
 
     switch (actualCommandName) {
-      case "esUpload": // Changed from "upload" to "esUpload"
+      case "upload":
+        profile = "upload";
+        break;
+      case "esUpload":
         profile = "esUpload";
         break;
       case "postgresUpload":
@@ -152,9 +156,9 @@ export async function setupCLI(): Promise<CLIOutput> {
     }
 
     // Validate environment for services that need it
-    // Skip validation for services that don't use Elasticsearch
+    // Updated to handle unified upload command which may use both PostgreSQL and Elasticsearch
     const skipElasticsearchValidation: CLIprofile[] = [
-      "postgresUpload",
+      "postgresUpload", // PostgreSQL only
       "lecternUpload",
       "lyricRegister",
       "lyricUpload",
@@ -164,10 +168,36 @@ export async function setupCLI(): Promise<CLIOutput> {
       "songPublishAnalysis",
     ];
 
-    if (!skipElasticsearchValidation.includes(profile)) {
+    // For unified upload, validate based on what's actually being used
+    if (profile === "upload") {
+      const tableName = options.table;
+      const indexName = options.index;
+
+      // Only validate Elasticsearch if an index is specified
+      if (indexName) {
+        try {
+          const esConfig = ServiceConfigManager.createElasticsearchConfig({
+            url: options.url || "http://localhost:9200",
+          });
+          await validateEnvironment({
+            elasticsearchUrl: esConfig.url,
+          });
+        } catch (error) {
+          throw ErrorFactory.environment(
+            "Elasticsearch environment validation failed",
+            { profile, originalError: error },
+            [
+              "Check Elasticsearch configuration",
+              "Verify Elasticsearch URL is accessible",
+              "Use --debug for detailed error information",
+            ]
+          );
+        }
+      }
+    } else if (!skipElasticsearchValidation.includes(profile)) {
       try {
         const esConfig = ServiceConfigManager.createElasticsearchConfig({
-          url: options.url || "http://localhost:9200", // Ensure default URL
+          url: options.url || "http://localhost:9200",
         });
         await validateEnvironment({
           elasticsearchUrl: esConfig.url,
@@ -200,6 +230,7 @@ export async function setupCLI(): Promise<CLIOutput> {
 
     // Override with simplified config
     cliOutput.config = config;
+    cliOutput.outputPath = options.output; // Set outputPath at CLIOutput level
 
     Logger.debug`CLI setup completed successfully`;
     return cliOutput;
@@ -220,16 +251,17 @@ export async function setupCLI(): Promise<CLIOutput> {
 
 /**
  * Create simplified configuration using the new configuration system
+ * Updated to handle unified upload command parameters
  */
 function createSimplifiedConfig(options: any): Config {
   try {
     // Get base configurations from the new system
     const esConfig = ServiceConfigManager.createElasticsearchConfig({
-      url: options.url || "http://localhost:9200", // Ensure default URL
-      user: options.user || "elastic",
-      password: options.password || "myelasticpassword",
+      url: options.url || "http://localhost:9200",
+      user: options.esUser || options.user || "elastic",
+      password: options.esPassword || options.password || "myelasticpassword",
       index: options.index || options.indexName || undefined,
-      batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 100,
+      batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 1000,
       delimiter: options.delimiter || `,`,
     });
 
@@ -263,10 +295,10 @@ function createSimplifiedConfig(options: any): Config {
     // Create PostgreSQL configuration with updated defaults
     const postgresConfig = {
       host: options.host || "localhost",
-      port: parseInt(options.port) || 5435, // Updated default port
+      port: parseInt(options.port) || 5435,
       database: options.database || "postgres",
-      user: options.user || "admin", // Updated default user
-      password: options.password || "admin123", // Updated default password
+      user: options.user || "admin",
+      password: options.password || "admin123",
       table: options.table,
       connectionString: options.connectionString,
       ssl: options.ssl || false,

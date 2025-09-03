@@ -1,20 +1,22 @@
-.
+./
 ├── cli
 │   ├── index.ts
 │   └── options.ts
 ├── commands
 │   ├── baseCommand.ts
 │   ├── commandRegistry.ts
+│   ├── elasticsearchUploadCommand.ts
 │   ├── lecternUploadCommand.ts
 │   ├── lyricRegistrationCommand.ts
 │   ├── lyricUploadCommand.ts
 │   ├── maestroIndexCommand.ts
+│   ├── postgresIndexCommand.ts
 │   ├── postgresUploadCommand.ts
 │   ├── songCreateStudyCommand.ts
 │   ├── songPublishAnalysisCommand.ts
 │   ├── songSubmitAnalysisCommand.ts
 │   ├── songUploadSchemaCommand.ts
-│   └── uploadCsvCommand.ts
+│   └── uploadCommand.ts
 ├── config
 │   ├── environment.ts
 │   └── serviceConfigManager.ts
@@ -74,4 +76,4 @@
     ├── index.ts
     └── utils.ts
 
-15 directories, 60 files
+15 directories, 62 files

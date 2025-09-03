@@ -300,6 +300,7 @@ export class Logger {
 
   // src/utils/logger.ts - Complete updated showReferenceCommands method
 
+  // Updated showReferenceCommands method with unified upload command
   static showReferenceCommands(): void {
     // Helper function to reduce repetition
     const section = (
@@ -351,57 +352,54 @@ export class Logger {
     ].forEach((opt) => this.generic(chalk.gray(`    ${opt}`))); // Added 4 spaces for indentation
     this.generic("");
 
-    // Command sections
+    // Updated unified upload command section
     section(
-      "Upload tabular data directly to Elasticsearch",
-      "conductor esUpload -f data.csv",
-      "Upload CSV data to Elasticsearch index",
+      "Upload data to PostgreSQL and/or Elasticsearch",
+      "conductor upload -f data.csv -t users",
+      "Unified upload command that handles PostgreSQL uploads, Elasticsearch uploads, or both based on parameters provided",
       ["-f, --file <paths...>     CSV files to upload"],
       [
-        "-i, --index <name>        Target Elasticsearch index",
-        "-b, --batch-size <n>      Batch size (default: 1000)",
-        "--delimiter <char>        CSV delimiter (default: ,)",
-        "--url <url>               Elasticsearch URL (default: http://localhost:9200)",
-        "--user <username>         Elasticsearch username (default: elastic)",
-        "--password <password>     Elasticsearch password (default: myelasticpassword)",
-        "-o, --output <path>       Output directory for logs",
-        "--force                   Force overwrite of existing files",
+        "Database Target Options:",
+        "  -t, --table <name>        PostgreSQL table name (for PostgreSQL upload)",
+        "  -i, --index <name>        Elasticsearch index name (for Elasticsearch upload)",
+        "",
+        "PostgreSQL Options (used when -t is specified):",
+        "  --host <host>             PostgreSQL host (default: localhost)",
+        "  --port <port>             PostgreSQL port (default: 5435)",
+        "  --database <name>         PostgreSQL database name (default: postgres)",
+        "  --user <username>         PostgreSQL username (default: admin)",
+        "  --password <password>     PostgreSQL password (default: admin123)",
+        "  --connection-string <url> PostgreSQL connection string (overrides individual options)",
+        "  --ssl                     Use SSL connection",
+        "  --max-connections <n>     Maximum pool connections (default: 20)",
+        "  --add-metadata            Add submission metadata to records",
+        "",
+        "Elasticsearch Options (used when -i is specified):",
+        "  --url <url>               Elasticsearch URL (default: http://localhost:9200)",
+        "  --es-user <username>      Elasticsearch username (default: elastic)",
+        "  --es-password <password>  Elasticsearch password (default: myelasticpassword)",
+        "",
+        "General Options:",
+        "  -b, --batch-size <n>      Batch size for uploads (default: 1000)",
+        "  --delimiter <char>        CSV delimiter character (default: ,)",
+        "  -o, --output <path>       Output directory for logs",
+        "  --force                   Force overwrite of existing files / Skip confirmation prompts",
       ],
       [
-        "conductor esUpload -f data.csv -i my-index",
-        "conductor esUpload -f data1.csv data2.csv -i my-index -b 2000",
-        "conductor esUpload -f data.csv --url http://es.company.com:9200 --user admin",
-      ]
-    );
-
-    section(
-      "Upload tabular data to Postgres",
-      "conductor postgresUpload -f data.csv -t users",
-      "Upload CSV data to PostgreSQL database table",
-      [
-        "-f, --file <paths...>     CSV files to upload",
-        "-t, --table <name>        Target PostgreSQL table",
-      ],
-      [
-        "-b, --batch-size <n>      Batch size (default: 1000)",
-        "--delimiter <char>        CSV delimiter (default: ,)",
-        "--host <host>             PostgreSQL host (default: localhost)",
-        "--port <port>             PostgreSQL port (default: 5435)",
-        "--database <name>         Database name (default: postgres)",
-        "--user <username>         PostgreSQL username (default: admin)",
-        "--password <password>     PostgreSQL password (default: admin123)",
-        "--connection-string <url> PostgreSQL connection string (overrides individual options)",
-        "--ssl                     Use SSL connection",
-        "--max-connections <n>     Maximum pool connections (default: 20)",
-        "--add-metadata            Add submission metadata to records",
-        "-o, --output <path>       Output directory for logs",
-        "--force                   Force overwrite of existing files",
-      ],
-      [
-        "conductor postgresUpload -f users.csv -t users",
-        "conductor postgresUpload -f orders.csv -t orders --database myapp",
-        "conductor postgresUpload -f data.csv -t data --port 5432 --user postgres",
-        "conductor postgresUpload -f data.csv -t data --connection-string postgresql://user:pass@host:5432/db",
+        "# PostgreSQL upload only",
+        "conductor upload -f data.csv -t users",
+        "conductor upload -f orders.csv -t orders --database myapp --port 5432",
+        "",
+        "# Elasticsearch upload only",
+        "conductor upload -f data.csv -i my-index",
+        "conductor upload -f logs.csv -i log-index --url http://es.company.com:9200",
+        "",
+        "# Combined workflow: PostgreSQL upload followed by Elasticsearch indexing",
+        "conductor upload -f data.csv -t users -i users-index",
+        "conductor upload -f products.csv -t products -i products-search --batch-size 2000",
+        "",
+        "# Multiple files",
+        "conductor upload -f file1.csv file2.csv -t combined_data -i combined-index",
       ]
     );
 
@@ -560,7 +558,7 @@ export class Logger {
     section(
       "File Upload using Song and Score",
       "conductor songSubmitAnalysis -a metadata.json",
-      "Submit your file metadata (metadata.json) to Song and upload associated data files to Score (combined workflow)\n  ⚠️  EXPERIMENTAL: This feature requires Docker containers for Score operations",
+      "Submit your file metadata (metadata.json) to Song and upload associated data files to Score (combined workflow)\n⚠️  EXPERIMENTAL: This feature requires Docker containers for Score operations",
       ["-a, --analysis-file <path>   Analysis JSON file to submit"],
       [
         "-u, --song-url <url>         SONG server URL (default: http://localhost:8080)",

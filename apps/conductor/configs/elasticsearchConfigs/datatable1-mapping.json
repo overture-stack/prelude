@@ -8,10 +8,10 @@
       "data": {
         "type": "object",
         "properties": {
-          "donor_id": {
+          "donor": {
             "type": "keyword"
           },
-          "gender": {
+          "sex": {
             "type": "keyword"
           },
           "primary_site": {

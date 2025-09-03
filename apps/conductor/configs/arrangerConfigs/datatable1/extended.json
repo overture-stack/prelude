@@ -2,11 +2,11 @@
   "extended": [
     {
       "displayName": "Donor Id",
-      "fieldName": "data.donor_id"
+      "fieldName": "data.donor"
     },
     {
-      "displayName": "Gender",
-      "fieldName": "data.gender"
+      "displayName": "Sex",
+      "fieldName": "data.sex"
     },
     {
       "displayName": "Primary Site",

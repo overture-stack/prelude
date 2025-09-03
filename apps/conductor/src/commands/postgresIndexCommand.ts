@@ -36,17 +36,17 @@ export class IndexCommand extends Command {
     let esClient: Client | undefined;
 
     try {
-      Logger.info`Starting PostgreSQL to Elasticsearch indexing`;
+      Logger.debug`Starting PostgreSQL to Elasticsearch indexing`;
 
       // Set up clients
       pgClient = createPostgresClient(config);
       esClient = createClientFromConfig(config);
 
       // Validate connections
-      Logger.info`Validating PostgreSQL connection`;
+      Logger.debug`Validating PostgreSQL connection`;
       await validatePostgresConnection(pgClient);
 
-      Logger.info`Validating Elasticsearch connection`;
+      Logger.debug`Validating Elasticsearch connection`;
       await validateElasticsearchConnection(esClient);
 
       // Get table data
@@ -70,7 +70,7 @@ export class IndexCommand extends Command {
       Logger.info`Found ${tableData.length} records in table ${tableName}`;
 
       // Transform and index data to Elasticsearch with proper nested structure
-      Logger.info`Indexing data to Elasticsearch index: ${indexName}`;
+      Logger.info`Indexing data to Elasticsearch index: ${indexName}\n`;
       const indexedCount = await this.indexToElasticsearch(
         esClient,
         tableData,
