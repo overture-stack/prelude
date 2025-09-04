@@ -1,4 +1,4 @@
--- PostgreSQL table creation script (SIMPLIFIED)
+-- PostgreSQL table creation script
 -- Generated from CSV analysis
 -- Table: datatable1
 -- Columns: 23 + submission_metadata
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS datatable1 (
   followup_id VARCHAR(50) NOT NULL,
   followup_interval SMALLINT NOT NULL,
   disease_status VARCHAR(50) NOT NULL,
-  
+
   -- Simplified submission metadata (just ID, hash, timestamp)
   submission_metadata JSONB
 );
@@ -37,3 +37,9 @@ CREATE INDEX IF NOT EXISTS idx_datatable1_submission_id
 ON datatable1 ((submission_metadata->>'submission_id'));
 
 -- Table created for 23 data columns + 1 metadata column
+-- Sample data analysis: 100 rows
+
+-- Example queries:
+-- SELECT * FROM datatable1 WHERE submission_metadata->>'submission_id' = 'your_submission_id';
+-- SELECT submission_metadata->>'source_file_hash' as file_hash FROM datatable1;
+-- SELECT submission_metadata->>'processed_at' as processed_date FROM datatable1;

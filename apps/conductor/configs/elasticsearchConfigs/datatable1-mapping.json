@@ -80,30 +80,16 @@
           "submission_metadata": {
             "type": "object",
             "properties": {
-              "submitter_id": {
+              "submission_id": {
                 "type": "keyword",
                 "null_value": "No Data"
               },
-              "processing_started": {
-                "type": "date"
+              "source_file_hash": {
+                "type": "keyword",
+                "null_value": "No Data"
               },
               "processed_at": {
                 "type": "date"
-              },
-              "source_file": {
-                "type": "keyword",
-                "null_value": "No Data"
-              },
-              "record_number": {
-                "type": "integer"
-              },
-              "hostname": {
-                "type": "keyword",
-                "null_value": "No Data"
-              },
-              "username": {
-                "type": "keyword",
-                "null_value": "No Data"
               }
             }
           }

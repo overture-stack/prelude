@@ -1,4 +1,4 @@
-// src/services/generatePostgresTable.ts
+// src/services/generatePostgresTable.ts - Fixed syntax error in SQL generation
 import { Logger } from "../utils/logger";
 
 // ---- Type Inference Configuration ----
@@ -228,6 +228,7 @@ function inferPostgresType(
 
 /**
  * Generates a PostgreSQL CREATE TABLE statement from CSV headers and sample data
+ * Now includes JSONB submission_metadata column with simplified structure
  */
 export function generatePostgresTable(
   tableName: string,
@@ -253,8 +254,8 @@ export function generatePostgresTable(
       Logger.warn`Table name "${tableName}" sanitized to "${sanitizedTableName}"`;
     }
 
-    // Build column definitions
-    const columnDefinitions: string[] = [];
+    // Build column definitions (for data columns only)
+    const dataColumnDefinitions: string[] = [];
     const constraints: string[] = [];
     const indexes: string[] = [];
 
@@ -288,7 +289,7 @@ export function generatePostgresTable(
         columnDef += " NOT NULL";
       }
 
-      columnDefinitions.push(columnDef);
+      dataColumnDefinitions.push(columnDef);
 
       // Add constraints if requested
       if (options.includeConstraints && isPotentialPK) {
@@ -323,7 +324,7 @@ export function generatePostgresTable(
     sql += `-- PostgreSQL table creation script\n`;
     sql += `-- Generated from CSV analysis\n`;
     sql += `-- Table: ${fullTableName}\n`;
-    sql += `-- Columns: ${headers.length}\n\n`;
+    sql += `-- Columns: ${headers.length} + submission_metadata\n\n`;
 
     // Add schema creation if specified
     if (options.schema) {
@@ -331,7 +332,10 @@ export function generatePostgresTable(
     }
 
     sql += `CREATE TABLE IF NOT EXISTS ${fullTableName} (\n`;
-    sql += columnDefinitions.join(",\n");
+    sql += dataColumnDefinitions.join(",\n");
+    sql +=
+      ",\n\n  -- Simplified submission metadata (just ID, hash, timestamp)\n";
+    sql += "  submission_metadata JSONB";
 
     if (constraints.length > 0) {
       sql += ",\n" + constraints.join(",\n");
@@ -339,17 +343,28 @@ export function generatePostgresTable(
 
     sql += "\n);\n";
 
-    // Add indexes
+    // Add index for submission_metadata queries (always included)
+    sql += `\n-- Add index for submission_id queries\n`;
+    sql += `CREATE INDEX IF NOT EXISTS idx_${sanitizedTableName}_submission_id \n`;
+    sql += `ON ${fullTableName} ((submission_metadata->>'submission_id'));\n`;
+
+    // Add other indexes if requested
     if (indexes.length > 0) {
-      sql += "\n-- Indexes\n";
+      sql += "\n-- Additional indexes\n";
       sql += indexes.join("\n") + "\n";
     }
 
     // Add helpful comments
-    sql += `\n-- Table created for ${headers.length} columns\n`;
+    sql += `\n-- Table created for ${headers.length} data columns + 1 metadata column\n`;
     sql += `-- Sample data analysis: ${Math.max(
       ...Object.values(sampleData).map((arr) => arr.length)
     )} rows\n`;
+
+    // Add usage examples in comments
+    sql += `\n-- Example queries:\n`;
+    sql += `-- SELECT * FROM ${fullTableName} WHERE submission_metadata->>'submission_id' = 'your_submission_id';\n`;
+    sql += `-- SELECT submission_metadata->>'source_file_hash' as file_hash FROM ${fullTableName};\n`;
+    sql += `-- SELECT submission_metadata->>'processed_at' as processed_date FROM ${fullTableName};\n`;
 
     Logger.debugString(
       "PostgreSQL CREATE TABLE statement generated successfully"

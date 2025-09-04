@@ -1,9 +1,9 @@
-// src/services/generateEsMappingFromJSON.ts - Updated with consolidated error handling
+// src/services/generateEsMappingFromJSON.ts - Updated with new submission metadata structure
 import fs from "fs";
 import path from "path";
 import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 
 // ---- Type Inference Configuration ----
 
@@ -139,7 +139,6 @@ function inferFieldType(
   } catch (error) {
     Logger.errorString("Error inferring field type");
     Logger.debugObject("Error details", { keyName, sampleValue, error });
-    // UPDATED: Use ErrorFactory
     throw ErrorFactory.generation(
       "Error inferring field type",
       { keyName, sampleValue, error },
@@ -205,7 +204,6 @@ export function generateMappingFromJson(
     }
 
     if (typeof jsonData !== "object" || jsonData === null) {
-      // UPDATED: Use ErrorFactory
       throw ErrorFactory.file(
         "Invalid JSON: Expected a non-null object",
         jsonFilePath,
@@ -256,15 +254,61 @@ export function generateMappingFromJson(
       return dataProperties;
     };
 
+    let finalDataProperties: Record<string, ElasticsearchField>;
+
     if (hasDataKey) {
+      const processedProperties = processDataStructure(sampleData);
+
+      // Add submission metadata to the data properties if not skipping
+      finalDataProperties = skipMetadata
+        ? processedProperties
+        : {
+            ...processedProperties,
+            submission_metadata: {
+              type: "object" as const,
+              properties: {
+                submission_id: {
+                  type: "keyword" as const,
+                  null_value: "No Data",
+                },
+                source_file_hash: {
+                  type: "keyword" as const,
+                  null_value: "No Data",
+                },
+                processed_at: { type: "date" as const },
+              },
+            },
+          };
+
       mappingProperties = {
         data: {
           type: "object",
-          properties: processDataStructure(sampleData),
+          properties: finalDataProperties,
         },
       };
     } else {
-      mappingProperties = processDataStructure(sampleData);
+      const processedProperties = processDataStructure(sampleData);
+
+      // For root-level JSON without a "data" key, add submission_metadata at the same level
+      mappingProperties = skipMetadata
+        ? processedProperties
+        : {
+            ...processedProperties,
+            submission_metadata: {
+              type: "object" as const,
+              properties: {
+                submission_id: {
+                  type: "keyword" as const,
+                  null_value: "No Data",
+                },
+                source_file_hash: {
+                  type: "keyword" as const,
+                  null_value: "No Data",
+                },
+                processed_at: { type: "date" as const },
+              },
+            },
+          };
     }
 
     const mapping: ElasticsearchMapping = {
@@ -299,7 +343,6 @@ export function generateMappingFromJson(
     if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    // UPDATED: Use ErrorFactory
     throw ErrorFactory.generation(
       `Error generating mapping from JSON: ${errorMessage}`,
       {
