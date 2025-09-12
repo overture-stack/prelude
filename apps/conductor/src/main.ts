@@ -20,11 +20,13 @@ async function main() {
     if (Environment.isDebug) {
       Logger.enableDebug();
     }
+
     // Setup CLI and get parsed arguments
     const cliOutput = await setupCLI();
     Logger.initialize();
     Logger.debugString(`Profile: ${cliOutput.profile}`);
-    // Use the simplified command registry
+
+    // Use the simplified command registry with case-insensitive lookup
     const command = CommandRegistry.createCommand(cliOutput.profile);
     Logger.debug`Running command`;
 
@@ -44,6 +46,8 @@ async function main() {
     // Special handling ONLY for unknown commands and CLI setup errors
     if (error instanceof Error && error.message.includes("Unknown command")) {
       handleError(error, () => {
+        Logger.generic("");
+        Logger.generic("Available commands (case-insensitive):");
         Logger.generic("");
         CommandRegistry.displayHelp();
       });

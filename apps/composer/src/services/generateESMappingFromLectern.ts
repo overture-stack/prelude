@@ -1,4 +1,4 @@
-// src/services/generateEsMappingFromLectern.ts
+// src/services/generateEsMappingFromLectern.ts - Updated with new submission metadata structure
 import fs from "fs";
 import path from "path";
 import { Logger } from "../utils/logger";
@@ -162,7 +162,7 @@ export function generateMappingFromLectern(
     if (indexName === "default" || indexName === "data") {
       Logger.defaultValueWarning(
         "No index name supplied, defaulting to: data",
-        "--index <name>"
+        "--index <n>"
       );
       indexName = "data";
     } else {
@@ -259,7 +259,7 @@ export function generateMappingFromLectern(
 
     Logger.info`Generated mapping for ${totalFieldCount} unique fields`;
 
-    // Create the data object structure
+    // Create the data object structure with updated submission metadata
     const dataProperties = skipMetadata
       ? { ...allProperties }
       : {
@@ -267,13 +267,15 @@ export function generateMappingFromLectern(
           submission_metadata: {
             type: "object" as const,
             properties: {
-              submitter_id: { type: "keyword" as const, null_value: "No Data" },
-              processing_started: { type: "date" as const },
+              submission_id: {
+                type: "keyword" as const,
+                null_value: "No Data",
+              },
+              source_file_hash: {
+                type: "keyword" as const,
+                null_value: "No Data",
+              },
               processed_at: { type: "date" as const },
-              source_file: { type: "keyword" as const, null_value: "No Data" },
-              record_number: { type: "integer" as const },
-              hostname: { type: "keyword" as const, null_value: "No Data" },
-              username: { type: "keyword" as const, null_value: "No Data" },
             },
           },
         };

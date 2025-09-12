@@ -201,7 +201,15 @@ export async function validateIndex(
 /**
  * Validates that batch size is a positive number and warns about excessive size.
  */
-export function validateBatchSize(batchSize: number): void {
+// Update for validateBatchSize function in elasticsearchValidator.ts or shared validator
+/**
+ * Validates that batch size is a positive number and warns about excessive size.
+ * Updated with PostgreSQL-specific warnings for better user guidance.
+ */
+export function validateBatchSize(
+  batchSize: number,
+  context: "postgresql" | "elasticsearch" = "elasticsearch"
+): void {
   if (!batchSize || isNaN(batchSize) || batchSize <= 0) {
     throw ErrorFactory.validation(
       "Batch size must be a positive number",
@@ -211,20 +219,51 @@ export function validateBatchSize(batchSize: number): void {
       },
       [
         "Provide a positive number for batch size",
-        "Recommended range: 100–5000",
+        context === "postgresql"
+          ? "Recommended range: 100–5000 for PostgreSQL"
+          : "Recommended range: 100–5000 for Elasticsearch",
         "Example: --batch-size 1000",
       ]
     );
   }
 
-  if (batchSize > 10000) {
-    Logger.warnString(
-      `Batch size ${batchSize} is quite large and may cause performance issues`
-    );
-    Logger.tipString(
-      "Consider using a smaller batch size (1000–5000) for better performance"
-    );
+  // Context-specific warnings
+  if (context === "postgresql") {
+    // PostgreSQL is more sensitive to large batch sizes due to connection limits
+    if (batchSize > 5000) {
+      Logger.warnString(
+        `PostgreSQL batch size ${batchSize} is very large and may cause connection timeouts or memory issues`
+      );
+      Logger.tipString(
+        "Recommended PostgreSQL batch size: 1000–5000 for optimal performance"
+      );
+
+      if (batchSize >= 10000) {
+        Logger.warnString(
+          `Batch size ${batchSize} is extremely large and likely to cause PostgreSQL errors`
+        );
+        Logger.tipString(
+          "Strong recommendation: Reduce to 2000-5000 to prevent database connection issues"
+        );
+      }
+    } else if (batchSize > 2000) {
+      Logger.infoString(
+        `Using PostgreSQL batch size: ${batchSize} (higher than default, monitor for performance)`
+      );
+    } else {
+      Logger.debug`PostgreSQL batch size validated: ${batchSize}`;
+    }
   } else {
-    Logger.debug`Batch size validated: ${batchSize}`;
+    // Elasticsearch warnings (original behavior)
+    if (batchSize > 10000) {
+      Logger.warnString(
+        `Elasticsearch batch size ${batchSize} is quite large and may cause performance issues`
+      );
+      Logger.tipString(
+        "Consider using a smaller batch size (1000–5000) for better performance"
+      );
+    } else {
+      Logger.debug`Elasticsearch batch size validated: ${batchSize}`;
+    }
   }
 }

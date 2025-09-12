@@ -1,7 +1,7 @@
-// src/services/generateEsMappingFromCSV.ts - Updated with consolidated error handling
+// src/services/generateEsMappingFromCSV.ts - Updated with new submission metadata structure
 import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 
 // ---- Type Inference Configuration ----
 
@@ -84,7 +84,6 @@ function inferFieldType(
   } catch (error) {
     Logger.errorString("Error inferring field type");
     Logger.debugObject("Error details", { headerName, sampleValue, error });
-    // UPDATED: Use ErrorFactory
     throw ErrorFactory.generation(
       "Error inferring field type",
       { headerName, sampleValue, error },
@@ -212,13 +211,15 @@ export function generateMappingFromCSV(
           submission_metadata: {
             type: "object" as const,
             properties: {
-              submitter_id: { type: "keyword" as const, null_value: "No Data" },
-              processing_started: { type: "date" as const },
+              submission_id: {
+                type: "keyword" as const,
+                null_value: "No Data",
+              },
+              source_file_hash: {
+                type: "keyword" as const,
+                null_value: "No Data",
+              },
               processed_at: { type: "date" as const },
-              source_file: { type: "keyword" as const, null_value: "No Data" },
-              record_number: { type: "integer" as const },
-              hostname: { type: "keyword" as const, null_value: "No Data" },
-              username: { type: "keyword" as const, null_value: "No Data" },
             },
           },
         };
@@ -248,7 +249,6 @@ export function generateMappingFromCSV(
   } catch (error) {
     Logger.errorString("Error generating mapping from CSV");
     Logger.debugObject("Error details", { csvHeaders, error });
-    // UPDATED: Use ErrorFactory
     throw ErrorFactory.generation(
       "Error generating mapping from CSV",
       { csvHeaders, error },

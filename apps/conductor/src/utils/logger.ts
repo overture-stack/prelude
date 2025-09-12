@@ -1,4 +1,4 @@
-// src/utils/logger.ts - Enhanced logger with standardized template literal usage
+// src/utils/logger.ts - Enhanced logger with PostgreSQL upload commands
 import chalk from "chalk";
 
 // Make LogLevel public for use in other modules
@@ -35,13 +35,13 @@ const LOG_CONFIG = {
 
   colors: {
     [LogLevel.DEBUG]: chalk.bold.green,
-    [LogLevel.INFO]: chalk.bold.cyan,
+    [LogLevel.INFO]: chalk.bold,
     [LogLevel.SUCCESS]: chalk.bold.green,
     [LogLevel.WARN]: chalk.bold.yellow,
     [LogLevel.ERROR]: chalk.bold.red,
     [LogLevel.TIP]: chalk.bold.white,
     [LogLevel.GENERIC]: chalk.white,
-    [LogLevel.SUGGESTION]: chalk.bold.cyan,
+    [LogLevel.SUGGESTION]: chalk.bold,
     [LogLevel.INPUT]: chalk.bold.yellow,
   } as const,
 
@@ -225,10 +225,7 @@ export class Logger {
   }
 
   static header(text: string): void {
-    const separator = "═".repeat(text.length + 6);
-    console.log(`\n${chalk.bold.magenta(separator)}`);
-    console.log(`${chalk.bold.magenta("  " + text + "  ")}`);
-    console.log(`${chalk.bold.magenta(separator)}\n`);
+    console.log(`${chalk.bold.cyan(" \n" + text + "  \n")}`);
   }
 
   static commandInfo(command: string, description: string): void {
@@ -301,243 +298,320 @@ export class Logger {
     });
   }
 
+  // src/utils/logger.ts - Complete updated showReferenceCommands method
+
+  // Updated showReferenceCommands method with unified upload command
   static showReferenceCommands(): void {
-    this.header("Available Commands");
+    // Helper function to reduce repetition
+    const section = (
+      title: string,
+      command: string,
+      description: string,
+      requiredOptions: string[],
+      optionalOptions: string[],
+      examples: string[]
+    ) => {
+      this.generic(chalk.bold.magenta(title));
+      this.generic(`${description}`);
+      this.generic("");
 
-    // Common options displayed at the top
-    this.generic(chalk.bold.yellow("Common Options (all commands):"));
-    this.generic(chalk.gray("--debug           Enable detailed debug logging"));
-    this.generic(chalk.gray("--config <path>   Use configuration file"));
-    this.generic("");
+      if (requiredOptions.length > 0) {
+        this.generic("  ▸ Required Options:"); // First level indent
+        requiredOptions.forEach((opt) => this.generic(chalk.gray(`   ${opt}`))); // Second level indent (6 spaces)
+      }
 
-    // Upload commands
-    this.generic(chalk.bold.magenta("CSV Upload Commands:"));
-    this.generic(chalk.white("conductor upload -f data.csv"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray("-f, --file <paths...>  CSV files to upload (required)")
-    );
-    this.generic(
-      chalk.gray("-i, --index <name>      Target Elasticsearch index")
-    );
-    this.generic(
-      chalk.gray("-b, --batch-size <n>    Batch size (default: 1000)")
-    );
-    this.generic(
-      chalk.gray("--delimiter <char>      CSV delimiter (default: ,)")
-    );
-    this.generic(chalk.gray("-o, --output <path>     Output path for logs"));
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor upload -f data.csv -i my-index -b 2000")
-    );
-    this.generic("");
+      if (optionalOptions.length > 0) {
+        this.generic("  ▸ Optional Options:"); // First level indent
+        optionalOptions.forEach((opt) => this.generic(chalk.gray(`   ${opt}`))); // Second level indent (6 spaces)
+      }
 
-    // Repository Indexing commands
-    this.generic(chalk.bold.magenta("Repository Indexing Commands:"));
-    this.generic(
-      chalk.white("conductor maestroIndex --repository-code lyric.overture")
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "--repository-code <code>  Repository code to index (required)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--index-url <url>       Indexing service URL (default: http://localhost:11235)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--organization <name>   Filter indexing to a specific organization"
-      )
-    );
-    this.generic(
-      chalk.gray("--id <id>               Index only a specific document ID")
-    );
-    this.generic(chalk.gray("-o, --output <path>     Output path for logs"));
+      this.generic("  ▸ Examples:"); // First level indent (2 spaces)
+      examples.forEach((ex) => this.generic(chalk.gray(`    ${ex}`))); // Second level indent (6 spaces)
+      this.generic("");
+    };
+
+    // Global options
     this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor maestroIndex --repository-code lyric.overture --organization OICR"
-      )
-    );
+    this.generic(chalk.bold("Global Options (available for all commands):"));
+    [
+      "--debug           Enable detailed debug logging",
+      "--config <path>   Use configuration file",
+      "--help            Show help for specific command",
+    ].forEach((opt) => this.generic(chalk.gray(`    ${opt}`))); // Added 4 spaces for indentation
     this.generic("");
 
-    // Lectern Upload commands
-    this.generic(chalk.bold.magenta("Lectern Schema Upload Command:"));
-    this.generic(chalk.white("conductor lecternUpload -s dictionary.json"));
-    this.generic(chalk.gray("Options:"));
     this.generic(
-      chalk.gray(
-        "-s, --schema-file <path>  Schema JSON file to upload (required)"
-      )
+      chalk.bold("Environment Variables: ") +
+        "Most options can be set via environment variables"
     );
-    this.generic(
-      chalk.gray(
-        "-u, --lectern-url <url>   Lectern server URL (default: http://localhost:3031)"
-      )
-    );
-    this.generic(
-      chalk.gray("-t, --auth-token <token>  Authentication token (optional)")
-    );
-    this.generic(
-      chalk.gray("-o, --output <path>    Output directory for logs")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor lecternUpload -s data-dictionary.json")
-    );
+    [
+      "- ELASTICSEARCH_URL, ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD",
+      "- PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD",
+      "- LECTERN_URL, LYRIC_URL, SONG_URL, SCORE_URL",
+      "- AUTH_TOKEN, CATEGORY_ID, ORGANIZATION",
+    ].forEach((opt) => this.generic(chalk.gray(`    ${opt}`))); // Added 4 spaces for indentation
     this.generic("");
 
-    // Lyric Register commands
-    this.generic(chalk.bold.magenta("Lyric Register Dictionary Command:"));
-    this.generic(
-      chalk.white(
-        "conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0 -e entity1"
-      )
+    // Updated unified upload command section
+    section(
+      "Upload data to PostgreSQL and/or Elasticsearch",
+      "conductor upload -f data.csv -t users",
+      "Unified upload command that handles PostgreSQL uploads, Elasticsearch uploads, or both based on parameters provided",
+      ["-f, --file <paths...>     CSV files to upload"],
+      [
+        "Database Target Options:",
+        "  -t, --table <name>        PostgreSQL table name (for PostgreSQL upload)",
+        "  -i, --index <name>        Elasticsearch index name (for Elasticsearch upload)",
+        "",
+        "PostgreSQL Options (used when -t is specified):",
+        "  --host <host>             PostgreSQL host (default: localhost)",
+        "  --port <port>             PostgreSQL port (default: 5435)",
+        "  --database <name>         PostgreSQL database name (default: postgres)",
+        "  --user <username>         PostgreSQL username (default: admin)",
+        "  --password <password>     PostgreSQL password (default: admin123)",
+        "  --connection-string <url> PostgreSQL connection string (overrides individual options)",
+        "  --ssl                     Use SSL connection",
+        "  --max-connections <n>     Maximum pool connections (default: 20)",
+        "",
+        "Elasticsearch Options (used when -i is specified):",
+        "  --url <url>               Elasticsearch URL (default: http://localhost:9200)",
+        "  --es-user <username>      Elasticsearch username (default: elastic)",
+        "  --es-password <password>  Elasticsearch password (default: myelasticpassword)",
+        "",
+        "General Options:",
+        "  -b, --batch-size <n>      Batch size for uploads (default: 1000)",
+        "  --delimiter <char>        CSV delimiter character (default: ,)",
+        "  -o, --output <path>       Output directory for logs",
+        "  --force                   Force overwrite of existing files / Skip confirmation prompts",
+      ],
+      [
+        "# PostgreSQL upload only",
+        "conductor upload -f data.csv -t users",
+        "conductor upload -f orders.csv -t orders --database myapp --port 5432",
+        "",
+        "# Elasticsearch upload only",
+        "conductor upload -f data.csv -i my-index",
+        "conductor upload -f logs.csv -i log-index --url http://es.company.com:9200",
+        "",
+        "# Combined workflow: PostgreSQL upload followed by Elasticsearch indexing",
+        "conductor upload -f data.csv -t users -i users-index",
+        "conductor upload -f products.csv -t products -i products-search --batch-size 2000",
+        "",
+        "# Multiple files",
+        "conductor upload -f file1.csv file2.csv -t combined_data -i combined-index",
+      ]
     );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-u, --lyric-url <url>     Lyric server URL (default: http://localhost:3030)"
-      )
-    );
-    this.generic(
-      chalk.gray("-c, --category-name <name> Category name (required)")
-    );
-    this.generic(
-      chalk.gray("--dict-name <name>        Dictionary name (required)")
-    );
-    this.generic(
-      chalk.gray(
-        "-v, --dictionary-version <version> Dictionary version (required)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-e, --default-centric-entity <entity> Default centric entity (required) - must be a valid schema in the dictionary"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor lyricRegister -c my-category --dict-name my-dictionary -v 2.0 -e donor"
-      )
-    );
-    this.generic("");
 
-    // Lyric Data commands
-    this.generic(chalk.bold.magenta("Lyric Data Upload Command:"));
-    this.generic(chalk.white("conductor lyricUpload -d ./data-directory"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-u, --lyric-url <url>     Lyric server URL (default: http://localhost:3030)"
-      )
+    section(
+      "Index Db data into Elasticsearch",
+      "conductor index -t demo_data -i demo_index",
+      "Index data from PostgreSQL table directly into Elasticsearch",
+      [
+        "-t, --table <name>        Source PostgreSQL table",
+        "-i, --index <name>        Target Elasticsearch index",
+      ],
+      [
+        "--host <host>             PostgreSQL host (default: localhost)",
+        "--port <port>             PostgreSQL port (default: 5435)",
+        "--database <name>         PostgreSQL database name",
+        "--user <username>         PostgreSQL username (default: admin)",
+        "--password <password>     PostgreSQL password (default: admin123)",
+        "--connection-string <url> PostgreSQL connection string",
+        "--ssl                     Use SSL connection",
+        "--url <url>               Elasticsearch URL (default: http://localhost:9200)",
+        "--es-user <username>      Elasticsearch username (default: elastic)",
+        "--es-password <password>  Elasticsearch password",
+        "-b, --batch-size <n>      Batch size (default: 1000)",
+        "-o, --output <path>       Output directory for logs",
+      ],
+      [
+        "conductor index -t demo_data -i demo_index",
+        "conductor index -t users -i users_index --database myapp",
+        "conductor index -t data -i data_index --host db.company.com --port 5432",
+      ]
     );
-    this.generic(
-      chalk.gray(
-        "-l, --lectern-url <url>   Lectern server URL (default: http://localhost:3031)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-d, --data-directory <path> Directory containing CSV data files"
-      )
-    );
-    this.generic(
-      chalk.gray("-c, --category-id <id>    Category ID (default: 1)")
-    );
-    this.generic(
-      chalk.gray("-g, --organization <name> Organization name (default: OICR)")
-    );
-    this.generic(
-      chalk.gray(
-        "-m, --max-retries <number> Maximum retry attempts (default: 10)"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor lyricUpload -d ./my-data -c 2 -g MyOrg")
-    );
-    this.generic("");
 
-    // Song Upload commands
-    this.generic(chalk.bold.magenta("Song Schema Upload Commands:"));
-    this.generic(chalk.white("conductor songUploadSchema -s schema.json"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-s, --schema-file <path>  Schema JSON file to upload (required)"
-      )
+    section(
+      "Index a repository (Db) using Maestro",
+      "conductor maestroIndex --repository-code lyric.overture",
+      "Index a repository with optional organization and ID filtering",
+      ["--repository-code <code>  Repository code to index"],
+      [
+        "--index-url <url>         Indexing service URL (default: http://localhost:11235)",
+        "--organization <name>     Filter to specific organization",
+        "--id <id>                 Index only specific document ID",
+        "-o, --output <path>       Output directory for logs",
+        "--force                   Skip confirmation prompts",
+      ],
+      [
+        "conductor maestroIndex --repository-code lyric.overture",
+        "conductor maestroIndex --repository-code song.overture --organization OICR",
+        "conductor maestroIndex --repository-code ego.overture --id DO123",
+      ]
     );
-    this.generic(
-      chalk.gray(
-        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-t, --auth-token <token>  Authentication token (default: 123)"
-      )
-    );
-    this.generic(
-      chalk.gray("-o, --output <path>    Output directory for logs")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor songUploadSchema -s analysis-schema.json -u http://song-api:8080"
-      )
-    );
-    this.generic("");
 
-    // Song Create Study commands
-    this.generic(chalk.bold.magenta("Song Create Study Commands:"));
-    this.generic(
-      chalk.white("conductor songCreateStudy -i study-id -n study-name")
+    section(
+      "Upload a data dictionary to Lectern",
+      "conductor lecternUpload -s dictionary.json",
+      "Upload dictionary schema to Lectern server",
+      ["-s, --schema-file <path>  Schema JSON file to upload"],
+      [
+        "-u, --lectern-url <url>   Lectern server URL (default: http://localhost:3031)",
+        "-t, --auth-token <token>  Authentication token",
+        "-o, --output <path>       Output directory for logs",
+        "--force                   Force overwrite of existing files",
+      ],
+      [
+        "conductor lecternUpload -s data-dictionary.json",
+        "conductor lecternUpload -s schema.json -u http://lectern.company.com:3031",
+        "conductor lecternUpload -s schema.json -t myAuthToken123",
+      ]
     );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
-      )
+
+    section(
+      "Register a dictionary with Lyric",
+      "conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0 -e donor",
+      "Register a dictionary from Lectern with Lyric service",
+      [
+        "-c, --category-name <name>       Category name",
+        "--dict-name <name>               Dictionary name",
+        "-v, --dictionary-version <ver>   Dictionary version",
+        "-e, --default-centric-entity <entity>  Default centric entity (must exist in dictionary)",
+      ],
+      [
+        "-u, --lyric-url <url>            Lyric server URL (default: http://localhost:3030)",
+        "-l, --lectern-url <url>          Lectern server URL (default: http://localhost:3031)",
+        "-t, --auth-token <token>         Authentication token",
+        "-o, --output <path>              Output directory for logs",
+        "--force                          Force overwrite of existing files",
+      ],
+      [
+        "conductor lyricRegister -c research --dict-name cancer-data -v 2.0 -e donor",
+        "conductor lyricRegister -c clinical --dict-name patient-data -v 1.5 -e patient",
+      ]
     );
-    this.generic(
-      chalk.gray("-i, --study-id <id>       Study ID (default: demo)")
+
+    section(
+      "Upload tabular data to Lyirc",
+      "conductor lyricUpload -d ./data-directory",
+      "Upload CSV data files to Lyric service (supports single files or directories)",
+      [
+        "-d, --data-directory <path>  Directory containing CSV files OR single CSV file",
+      ],
+      [
+        "-u, --lyric-url <url>        Lyric server URL (default: http://localhost:3030)",
+        "-l, --lectern-url <url>      Lectern server URL (default: http://localhost:3031)",
+        "-c, --category-id <id>       Category ID (default: 1)",
+        "-g, --organization <name>    Organization name (default: OICR)",
+        "-m, --max-retries <number>   Maximum retry attempts (default: 10)",
+        "-r, --retry-delay <ms>       Delay between retries (default: 1000ms)",
+        "-o, --output <path>          Output directory for logs",
+        "--force                      Force overwrite of existing files",
+      ],
+      [
+        "conductor lyricUpload -d ./csv-files",
+        "conductor lyricUpload -d ./donor.csv",
+        "conductor lyricUpload -d ./data -c 2 -g MyOrganization",
+      ]
     );
-    this.generic(
-      chalk.gray("-n, --study-name <name>   Study name (default: string)")
+
+    section(
+      "Upload a Song schema",
+      "conductor songUploadSchema -s schema.json",
+      "Upload analysis schema to SONG server",
+      ["-s, --schema-file <path>     Schema JSON file to upload"],
+      [
+        "-u, --song-url <url>         SONG server URL (default: http://localhost:8080)",
+        "-t, --auth-token <token>     Authentication token (default: 123)",
+        "-o, --output <path>          Output directory for logs",
+        "--force                      Force overwrite of existing files",
+      ],
+      [
+        "conductor songUploadSchema -s analysis-schema.json",
+        "conductor songUploadSchema -s schema.json -u http://song-api:8080",
+        "conductor songUploadSchema -s schema.json -t myAuthToken123",
+      ]
     );
-    this.generic(
-      chalk.gray(
-        "-g, --organization <name> Organization name (default: string)"
-      )
+
+    section(
+      "Create a study for Song",
+      "conductor songCreateStudy -i study-id",
+      "Create a new study in SONG server",
+      ["-i, --study-id <id>          Study ID"],
+      [
+        "-u, --song-url <url>         SONG server URL (default: http://localhost:8080)",
+        "--name <name>                Study display name (defaults to study ID)",
+        "-g, --organization <name>    Organization name (default: OICR)",
+        "--description <text>         Study description (default: string)",
+        "-t, --auth-token <token>     Authentication token (default: 123)",
+        "--force                      Force creation even if study exists",
+        "-o, --output <path>          Output directory for logs",
+      ],
+      [
+        "conductor songCreateStudy -i my-study",
+        "conductor songCreateStudy -i research-001 --name 'Cancer Research Study'",
+        "conductor songCreateStudy -i study-123 -g MyOrganization --description 'Clinical trial data'",
+      ]
     );
-    this.generic(
-      chalk.gray(
-        "--description <text>      Study description (default: string)"
-      )
+
+    section(
+      "File Upload using Song and Score",
+      "conductor songSubmitAnalysis -a metadata.json",
+      "Submit your file metadata (metadata.json) to Song and upload associated data files to Score (combined workflow)\n⚠️  EXPERIMENTAL: This feature requires Docker containers for Score operations",
+      ["-a, --analysis-file <path>   Analysis JSON file to submit"],
+      [
+        "-u, --song-url <url>         SONG server URL (default: http://localhost:8080)",
+        "-s, --score-url <url>        Score server URL (default: http://localhost:8087)",
+        "-i, --study-id <id>          Study ID (default: demo)",
+        "-d, --data-dir <path>        Directory containing data files (default: ./data)",
+        "--output-dir <path>          Directory for manifest output (default: ./output)",
+        "-m, --manifest-file <path>   Path for manifest file",
+        "-t, --auth-token <token>     Authentication token (default: 123)",
+        "--allow-duplicates           Allow duplicate analysis submissions",
+        "--ignore-undefined-md5       Ignore files with undefined MD5 checksums",
+        "-o, --output <path>          Output directory for logs",
+        "--force                      Force studyId from command line",
+      ],
+      [
+        "conductor songSubmitAnalysis -a analysis.json",
+        "conductor songSubmitAnalysis -a analysis.json -i my-study -d ./my-data",
+        "conductor songSubmitAnalysis -a analysis.json --allow-duplicates",
+      ]
     );
-    this.generic(
-      chalk.gray(
-        "-t, --auth-token <token>  Authentication token (default: 123)"
-      )
+
+    section(
+      "Publish file data uploads",
+      "conductor songPublishAnalysis -a AN123456",
+      "Publish a submitted analysis in SONG server",
+      ["-a, --analysis-id <id>       Analysis ID to publish"],
+      [
+        "-u, --song-url <url>         SONG server URL (default: http://localhost:8080)",
+        "-i, --study-id <id>          Study ID (default: demo)",
+        "-t, --auth-token <token>     Authentication token (default: 123)",
+        "--ignore-undefined-md5       Ignore files with undefined MD5 checksums",
+        "-o, --output <path>          Output directory for logs",
+      ],
+      [
+        "conductor songPublishAnalysis -a AN123456",
+        "conductor songPublishAnalysis -a AN789012 -i my-study",
+        "conductor songPublishAnalysis -a AN345678 --ignore-undefined-md5",
+      ]
     );
-    this.generic(
-      chalk.gray(
-        "--force                   Force creation even if study exists"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor songCreateStudy -i my-study -n 'My Research Study' -g MyOrg"
-      )
-    );
-    this.generic("");
+
+    // Footer
+    const footerSections = [
+      [
+        "The Conductor CLI Tool:",
+        "▸ Command options with examples are provided above.",
+        "▸ Unifies common interactions with Overture platforms into a single CLI",
+        "▸ More information can also be found from our documentation site here: https://docs.overture.bio/docs/platform-tools/conductor\n",
+      ],
+    ];
+
+    footerSections.forEach(([title, ...items]) => {
+      this.generic(chalk.cyan.bold(title));
+      this.generic("");
+      items.forEach((item) => this.generic(`  ${item}`));
+    });
   }
 }

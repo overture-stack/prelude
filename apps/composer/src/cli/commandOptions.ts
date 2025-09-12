@@ -1,4 +1,4 @@
-// src/cli/commandOptions.ts - Updated with case-insensitive profile matching
+// src/cli/commandOptions.ts - PostgreSQL support and suppressed Commander help
 import { Command, Option } from "commander";
 import { Profile, Profiles } from "../types";
 import { ErrorFactory } from "../utils/errors";
@@ -9,8 +9,9 @@ import {
   DictionaryConfig,
   SongConfig,
 } from "../types";
+import { PostgresConfig } from "../types/postgres";
 
-// Profile descriptions integrated here
+// Profile descriptions including PostgreSQL
 const PROFILE_DESCRIPTIONS = new Map([
   [Profiles.GENERATE_SONG_SCHEMA, "Generate Song schema from JSON metadata"],
   [
@@ -25,90 +26,104 @@ const PROFILE_DESCRIPTIONS = new Map([
     Profiles.GENERATE_ARRANGER_CONFIGS,
     "Generate Arranger configs from Elasticsearch mapping",
   ],
+  [
+    Profiles.GENERATE_POSTGRES_TABLE,
+    "Generate PostgreSQL CREATE TABLE from CSV file",
+  ],
 ]);
 
 /**
- * Configure CLI command options - separated from parsing logic
+ * Configure CLI command options with PostgreSQL support - suppresses Commander help
  */
 export function configureCommandOptions(program: Command): Command {
   Logger.debug`Configuring command options`;
 
-  return program
-    .name("composer")
-    .description(
-      "Generate Dictionary, Song Schema, or Elasticsearch configurations"
-    )
-    .option("--debug", "Enable debug logging")
-    .addOption(
-      new Option("-p, --profile <profile>", "Execution profile")
-        .choices(Object.values(Profiles))
-        .default(Profiles.GENERATE_SONG_SCHEMA)
-        .argParser((value) => {
-          // Find matching profile (case-insensitive)
-          const matchingProfile = Object.values(Profiles).find(
-            (profile) => profile.toLowerCase() === value.toLowerCase()
-          );
+  // Check if help was requested before parsing
+  if (process.argv.includes("-h") || process.argv.includes("--help")) {
+    Logger.showReferenceCommands();
+    process.exit(0);
+  }
 
-          if (!matchingProfile) {
-            // UPDATED: Use ErrorFactory with formatted suggestions
-            const suggestions = Array.from(PROFILE_DESCRIPTIONS.entries()).map(
-              ([profile, desc]) => `  ▸ ${profile}: ${desc}`
-            );
+  // Suppress Commander's built-in help and error output
+  program.configureOutput({
+    writeOut: () => {}, // Suppress help output
+    writeErr: () => {}, // Suppress error output
+  });
 
-            throw ErrorFactory.args(`Invalid profile: ${value}`, [
-              "Valid profiles are (case-insensitive):\n",
-              ...suggestions,
-            ]);
-          }
-          return matchingProfile as Profile;
-        })
-    )
-    .requiredOption(
-      "-f, --files <paths...>",
-      "Input file paths (CSV or JSON, space separated)"
-    )
-    .option("-i, --index <n>", "Elasticsearch index name", "data")
-    .option("--shards <number>", "Number of Elasticsearch shards", "1")
-    .option("--replicas <number>", "Number of Elasticsearch replicas", "1")
-    .option(
-      "-o, --output <path>",
-      "Output file path for generated schemas or mapping"
-    )
-    .option("--arranger-doc-type <type>", "Arranger document type", "file")
-    .option("-n, --name <n>", "Dictionary/Schema name")
-    .option(
-      "-d, --description <text>",
-      "Dictionary description",
-      "Generated dictionary from CSV files"
-    )
-    .option("-v, --version <version>", "Dictionary version", "1.0.0")
-    .option("--file-types <types...>", "Allowed file types for Song schema")
-    .option("--delimiter <char>", "CSV delimiter", ",")
-    .option(
-      "--ignore-fields <fields...>",
-      "Field names to exclude from Elasticsearch mapping"
-    )
-    .option(
-      "--skip-metadata",
-      "Skip adding submission metadata to Elasticsearch mapping"
-    )
-    .option("--force", "Force overwrite of existing files without prompting")
-    .helpOption("-h, --help", "Display help for command")
-    .addHelpText("after", () => {
-      Logger.showReferenceCommands();
-      return "";
-    })
-    .hook("preAction", (thisCommand) => {
-      const opts = thisCommand.opts();
-      if (opts.debug) {
-        Logger.enableDebug();
-        Logger.debug`Full command options: ${JSON.stringify(opts, null, 2)}`;
-      }
-    });
+  return (
+    program
+      .name("composer")
+      .description(
+        "Generate Dictionary, Song Schema, Elasticsearch, or PostgreSQL configurations"
+      )
+      .option("--debug", "Enable debug logging")
+      .addOption(
+        new Option("-p, --profile <profile>", "Execution profile")
+          .choices(Object.values(Profiles))
+          .default(Profiles.GENERATE_SONG_SCHEMA)
+          .argParser((value) => {
+            if (!Object.values(Profiles).includes(value as Profile)) {
+              const suggestions = Array.from(
+                PROFILE_DESCRIPTIONS.entries()
+              ).map(([profile, desc]) => `  ${profile}: ${desc}`);
+
+              throw ErrorFactory.args(`Invalid profile: ${value}`, [
+                "Valid profiles are:",
+                ...suggestions,
+              ]);
+            }
+            return value as Profile;
+          })
+      )
+      .requiredOption(
+        "-f, --files <paths...>",
+        "Input file paths (CSV or JSON, space separated)"
+      )
+      .option("-i, --index <n>", "Elasticsearch index name", "data")
+      .option("--shards <number>", "Number of Elasticsearch shards", "1")
+      .option("--replicas <number>", "Number of Elasticsearch replicas", "1")
+      .option(
+        "-o, --output <path>",
+        "Output file path for generated schemas or mapping"
+      )
+      .option("--arranger-doc-type <type>", "Arranger document type", "file")
+      .option("-n, --name <n>", "Dictionary/Schema name")
+      .option(
+        "-d, --description <text>",
+        "Dictionary description",
+        "Generated dictionary from CSV files"
+      )
+      .option("-v, --version <version>", "Dictionary version", "1.0.0")
+      .option("--file-types <types...>", "Allowed file types for Song schema")
+      .option("--delimiter <char>", "CSV delimiter", ",")
+      .option(
+        "--ignore-fields <fields...>",
+        "Field names to exclude from Elasticsearch mapping"
+      )
+      .option(
+        "--skip-metadata",
+        "Skip adding submission metadata to Elasticsearch mapping"
+      )
+      // PostgreSQL options
+      .option("--table-name <n>", "PostgreSQL table name")
+      .option("--schema <n>", "PostgreSQL schema name")
+      .option("--include-constraints", "Include primary key constraints")
+      .option("--include-indexes", "Include database indexes")
+      .option("--force", "Force overwrite of existing files without prompting")
+      .helpOption(false) // Disable automatic help option
+      .exitOverride() // Prevent Commander from calling process.exit()
+      .hook("preAction", (thisCommand) => {
+        const opts = thisCommand.opts();
+        if (opts.debug) {
+          Logger.enableDebug();
+          Logger.debug`Full command options: ${JSON.stringify(opts, null, 2)}`;
+        }
+      })
+  );
 }
 
 /**
- * Parse command line arguments into structured CLIOutput
+ * Parse command line arguments into structured CLIOutput with PostgreSQL support
  */
 export function parseOptions(opts: any): CLIOutput {
   Logger.debug`Parsing command line arguments`;
@@ -142,6 +157,20 @@ export function parseOptions(opts: any): CLIOutput {
         }
       : undefined;
 
+  // Build postgres config if needed
+  const postgresConfig: PostgresConfig | undefined =
+    opts.tableName ||
+    opts.schema ||
+    opts.includeConstraints ||
+    opts.includeIndexes
+      ? {
+          tableName: opts.tableName || "generated_table",
+          schema: opts.schema,
+          includeConstraints: opts.includeConstraints || false,
+          includeIndexes: opts.includeIndexes || false,
+        }
+      : undefined;
+
   const output: CLIOutput = {
     profile: opts.profile,
     debug: opts.debug || false,
@@ -153,6 +182,7 @@ export function parseOptions(opts: any): CLIOutput {
     envConfig: {}, // Will be populated by environment loader
     dictionaryConfig,
     songConfig,
+    postgresConfig,
     arrangerConfig: opts.arrangerDocType
       ? {
           documentType: opts.arrangerDocType,

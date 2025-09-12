@@ -1,6 +1,7 @@
-// src/types/cli.ts - Updated to include Lectern dictionary support
+// src/types/cli.ts - Updated with PostgreSQL support
 import { Profiles } from "./profiles";
 import { ArrangerConfig } from "./arranger";
+import { PostgresConfig } from "./postgres"; // IMPORT FROM POSTGRES TYPES
 
 export type Profile = (typeof Profiles)[keyof typeof Profiles];
 
@@ -10,7 +11,6 @@ export interface ElasticsearchConfig {
   shards: number;
   replicas: number;
   ignoredFields?: string[];
-  ignoredSchemas?: string[]; // NEW: Support for ignoring schemas in Lectern dictionaries
   skipMetadata?: boolean;
 }
 
@@ -24,6 +24,8 @@ export interface SongConfig {
   name?: string;
   fileTypes?: string[];
 }
+
+// NOTE: PostgresConfig is imported from ./postgres instead of defined here
 
 // Simplified environment config
 export interface EnvConfig {
@@ -47,7 +49,6 @@ export interface EnvConfig {
   esShards?: number;
   esReplicas?: number;
   esIgnoredFields?: string[];
-  esIgnoredSchemas?: string[]; // NEW: Environment support for ignored schemas
   esSkipMetadata?: boolean;
 
   // CSV options
@@ -55,9 +56,15 @@ export interface EnvConfig {
 
   // Arranger options
   arrangerDocType?: string;
+
+  // PostgreSQL options
+  postgresTableName?: string;
+  postgresSchema?: string;
+  postgresIncludeConstraints?: boolean;
+  postgresIncludeIndexes?: boolean;
 }
 
-// Main CLI output interface
+// Main CLI output interface with PostgreSQL support
 export interface CLIOutput {
   profile: Profile;
   debug?: boolean;
@@ -73,5 +80,6 @@ export interface CLIOutput {
   // Command-specific configs (optional)
   dictionaryConfig?: DictionaryConfig;
   songConfig?: SongConfig;
+  postgresConfig?: PostgresConfig; // USES IMPORTED TYPE
   arrangerConfig?: ArrangerConfig;
 }

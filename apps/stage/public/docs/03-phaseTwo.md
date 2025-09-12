@@ -246,129 +246,129 @@ The generated dictionary provides a basic structure derived from your CSV files.
 
 4.  **Entity Relationships:** the `foreignKey` restriction object defines relationships between different schemas in your Lectern dictionary:
 
-  - In our example data `donor` schemas `donor_id` is the `primaryKey`
+- In our example data `donor` schemas `donor_id` is the `primaryKey`
 
-    ```json
-        {
-          "name": "donor",
-          "description": "Core demographic information about donors. One donor can have multiple diagnoses, treatments, and followups.",
-          "fields": [
-          ...
-          ],
-          "restrictions": {
-          "primaryKey": ["donor_id"]
-          },
-          "meta": {
-            "createdAt": "2025-03-20T16:11:06.493Z",
-            "sourceFile": "donor.csv"
-          }
-        },
-    ```
-
-- All other schemas will relate to the `donor` schema using the `donor_id` as the `local` and `foreignKey`:
-
-    ```json
-    "restrictions": {
-      "foreignKey": [
-        {
-          "schema": "donor",
-          "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
-        }
-      ]
-    }
-    ```
-
-    <details>
-    <summary>Syntax Breakdown</summary>
-
-    - The `foreignKey` field defines a parent-child relationship between two schemas
-      - `"schema": "donor"` specifies that this schema references the "donor" schema
-      - `"mappings"` indicates which fields connect the two schemas:
-        - `"local": "donor_id"` is the field in the current schema
-        - `"foreign": "donor_id"` is the field in the referenced (donor) schema
-
-    This constraint ensures that every value in the current schema's `donor_id` field must exist in the `donor_id` field of the donor schema. For example, you cannot add a diagnosis record with a donor ID that doesn't exist in the donor table.
-
-    </details>
-
-    <details>
-    <summary>Updated dictionary example</summary>
-
-    ```json
-    "schemas": [
+  ```json
       {
         "name": "donor",
         "description": "Core demographic information about donors. One donor can have multiple diagnoses, treatments, and followups.",
         "fields": [
-          // Fields...
+        ...
         ],
         "restrictions": {
-          "primaryKey": ["donor_id"]
+        "primaryKey": ["donor_id"]
         },
         "meta": {
           "createdAt": "2025-03-20T16:11:06.493Z",
           "sourceFile": "donor.csv"
         }
       },
+  ```
+
+- All other schemas will relate to the `donor` schema using the `donor_id` as the `local` and `foreignKey`:
+
+  ```json
+  "restrictions": {
+    "foreignKey": [
       {
-        "name": "diagnosis",
-        "description": "Clinical diagnosis details linked to a donor via donor_id. Each diagnosis belongs to exactly one donor.",
-        "fields": [
-          // Fields...
-        ],
-        "restrictions": {
-          "primaryKey": ["diagnosis_id"],
-          "foreignKey": [
-            {
-              "schema": "donor",
-              "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
-            }
-          ]
-        },
-        "meta": {
-          "sourceFile": "diagnosis.csv"
-        }
-      },
-      {
-        "name": "treatment",
-        "description": "Treatment information linked to a donor and diagnosis. Each treatment belongs to exactly one donor.",
-        "fields": [
-          // Fields...
-        ],
-        "restrictions": {
-          "primaryKey": ["treatment_id"],
-          "foreignKey": [
-            {
-              "schema": "donor",
-              "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
-            }
-          ]
-        },
-        "meta": {
-          "sourceFile": "treatment.csv"
-        }
-      },
-      {
-        "name": "followup",
-        "description": "Follow-up assessment information linked to treatments and donors. Each followup is associated with exactly one treatment.",
-        "fields": [
-          // Fields...
-        ],
-        "restrictions": {
-          "primaryKey": ["followup_id"],
-          "foreignKey": [
-            {
-              "schema": "treatment",
-              "mappings": [{ "local": "treatment_id", "foreign": "treatment_id" }]
-            }
-          ]
-        },
-        "meta": {
-          "sourceFile": "followup.csv"
-        }
+        "schema": "donor",
+        "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
       }
     ]
-    ```
+  }
+  ```
+
+    <details>
+    <summary>Syntax Breakdown</summary>
+
+  - The `foreignKey` field defines a parent-child relationship between two schemas
+    - `"schema": "donor"` specifies that this schema references the "donor" schema
+    - `"mappings"` indicates which fields connect the two schemas:
+      - `"local": "donor_id"` is the field in the current schema
+      - `"foreign": "donor_id"` is the field in the referenced (donor) schema
+
+  This constraint ensures that every value in the current schema's `donor_id` field must exist in the `donor_id` field of the donor schema. For example, you cannot add a diagnosis record with a donor ID that doesn't exist in the donor table.
+
+    </details>
+
+    <details>
+    <summary>Updated dictionary example</summary>
+
+  ```json
+  "schemas": [
+    {
+      "name": "donor",
+      "description": "Core demographic information about donors. One donor can have multiple diagnoses, treatments, and followups.",
+      "fields": [
+        // Fields...
+      ],
+      "restrictions": {
+        "primaryKey": ["donor_id"]
+      },
+      "meta": {
+        "createdAt": "2025-03-20T16:11:06.493Z",
+        "sourceFile": "donor.csv"
+      }
+    },
+    {
+      "name": "diagnosis",
+      "description": "Clinical diagnosis details linked to a donor via donor_id. Each diagnosis belongs to exactly one donor.",
+      "fields": [
+        // Fields...
+      ],
+      "restrictions": {
+        "primaryKey": ["diagnosis_id"],
+        "foreignKey": [
+          {
+            "schema": "donor",
+            "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
+          }
+        ]
+      },
+      "meta": {
+        "sourceFile": "diagnosis.csv"
+      }
+    },
+    {
+      "name": "treatment",
+      "description": "Treatment information linked to a donor and diagnosis. Each treatment belongs to exactly one donor.",
+      "fields": [
+        // Fields...
+      ],
+      "restrictions": {
+        "primaryKey": ["treatment_id"],
+        "foreignKey": [
+          {
+            "schema": "donor",
+            "mappings": [{ "local": "donor_id", "foreign": "donor_id" }]
+          }
+        ]
+      },
+      "meta": {
+        "sourceFile": "treatment.csv"
+      }
+    },
+    {
+      "name": "followup",
+      "description": "Follow-up assessment information linked to treatments and donors. Each followup is associated with exactly one treatment.",
+      "fields": [
+        // Fields...
+      ],
+      "restrictions": {
+        "primaryKey": ["followup_id"],
+        "foreignKey": [
+          {
+            "schema": "treatment",
+            "mappings": [{ "local": "treatment_id", "foreign": "treatment_id" }]
+          }
+        ]
+      },
+      "meta": {
+        "sourceFile": "followup.csv"
+      }
+    }
+  ]
+  ```
 
     </details>
 
@@ -795,10 +795,11 @@ In these commands:
 </details>
 
 > **Note on category IDs:** When making submissions to Lyric, category IDs must be provided as integers. If you're unsure of your category ID, you can retrieve by using the `GET /category` endpoint in the Lyric API.
+>
 > - Access this endpoint through the Swagger UI:
->    - From the documentation portal, select "API" from the dropdown menu
->    - Or navigate directly to http://localhost:3030/api-docs/#/Category/get_category
-> 
+>   - From the documentation portal, select "API" from the dropdown menu
+>   - Or navigate directly to http://localhost:3030/api-docs/#/Category/get_category
+>
 > In a future update, Lyric will support accepting category names.
 
 ## Step 6: Indexing Data into Elasticsearch
@@ -824,8 +825,8 @@ After data validation and indexing, you must ensure your Elasticsearch mapping a
 ### A) Generate Updated Elasticsearch Index Mappings
 
 We will use [Elasticvue](https://elasticvue.com/) here to examine our indexed documents
-  
-1. Navigate to the "Indices" section and select your index of interest. 
+
+1. Navigate to the "Indices" section and select your index of interest.
 
 ![Elasticvue](/docs/images/elasticvue.png "Elasticsearch document viewer")
 
@@ -836,6 +837,7 @@ We will use [Elasticvue](https://elasticvue.com/) here to examine our indexed do
 ![Elasticvue](/docs/images/esDoc.png "Elasticsearch document example")
 
 4. Generate an updated Elasticsearch mapping using Composer:
+
    ```bash
    composer -p ElasticsearchMapping -f ./data/esDoc.json -i datatable1 -o ./configs/elasticsearchConfigs/datatable1-mapping.json --skip-metadata
    ```
@@ -862,11 +864,13 @@ We will use [Elasticvue](https://elasticvue.com/) here to examine our indexed do
 Now that you have an updated Elasticsearch mapping, generate corresponding Arranger configuration files:
 
 1. Run Composer to create Arranger configuration files:
+
    ```bash
    composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/datatable1-mapping.json -o ./configs/arrangerConfigs/datatable1/
    ```
 
 2. Review the generated Arranger configuration files:
+
    - `base.json`: Update the `index` field to match your index alias (e.g., `"index": "datatable1_centric"`)
    - `extended.json`: Verify field names and update display names for better UI presentation
    - `table.json`: Adjust column visibility and sort settings as needed
@@ -888,11 +892,13 @@ Now that you have an updated Elasticsearch mapping, generate corresponding Arran
 After updating your configurations, you need to restart services and reindex your data:
 
 1. Restart all services to apply the new configurations:
+
    ```bash
    make restart
    ```
 
 2. Trigger Maestro to reindex the data with your updated mappings:
+
    ```bash
    conductor maestroIndex --repository-code lyric.overture
    ```
@@ -917,5 +923,3 @@ For support, feature requests, and bug reports, please see our [Support Guide](/
 For detailed information on how to contribute to this project, please see our [Contributing Guide](/documentation/contribution).
 
 > **Next Steps:** In phase 3 we will add our backend file transfer (object storage) and file metadata management services.
-
-

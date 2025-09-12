@@ -1,4 +1,4 @@
-// src/cli/environment.ts - Updated with Lectern dictionary support
+// src/cli/environment.ts - Fixed with PostgreSQL support (no esIgnoredSchemas)
 import { EnvConfig } from "../types";
 import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
@@ -6,7 +6,7 @@ import { BASE_CONFIG_DIR } from "../utils/paths";
 
 /**
  * Maps config key to environment variable name
- * Added support for Lectern dictionary options
+ * Updated with PostgreSQL support
  */
 const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
   // Input files
@@ -29,7 +29,6 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
   esShards: "ES_SHARDS",
   esReplicas: "ES_REPLICAS",
   esIgnoredFields: "ES_IGNORED_FIELDS",
-  esIgnoredSchemas: "ES_IGNORED_SCHEMAS", // NEW: Environment variable for ignored schemas
   esSkipMetadata: "ES_SKIP_METADATA",
 
   // CSV options
@@ -37,10 +36,16 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
 
   // Arranger options
   arrangerDocType: "ARRANGER_DOC_TYPE",
+
+  // PostgreSQL options
+  postgresTableName: "POSTGRES_TABLE_NAME",
+  postgresSchema: "POSTGRES_SCHEMA",
+  postgresIncludeConstraints: "POSTGRES_INCLUDE_CONSTRAINTS",
+  postgresIncludeIndexes: "POSTGRES_INCLUDE_INDEXES",
 };
 
 /**
- * Enhanced environment configuration with Lectern dictionary support
+ * Environment configuration with PostgreSQL support
  */
 export function loadEnvironmentConfig(): EnvConfig {
   try {
@@ -66,7 +71,6 @@ export function loadEnvironmentConfig(): EnvConfig {
       esShards: parseInt(process.env.ES_SHARDS || "1", 10),
       esReplicas: parseInt(process.env.ES_REPLICAS || "1", 10),
       esIgnoredFields: process.env.ES_IGNORED_FIELDS?.split(/\s+/),
-      esIgnoredSchemas: process.env.ES_IGNORED_SCHEMAS?.split(/\s+/), // NEW: Parse ignored schemas
       esSkipMetadata: process.env.ES_SKIP_METADATA?.toLowerCase() === "true",
 
       // CSV options
@@ -74,6 +78,14 @@ export function loadEnvironmentConfig(): EnvConfig {
 
       // Arranger options
       arrangerDocType: process.env.ARRANGER_DOC_TYPE || "file",
+
+      // PostgreSQL options
+      postgresTableName: process.env.POSTGRES_TABLE_NAME || "generated_table",
+      postgresSchema: process.env.POSTGRES_SCHEMA,
+      postgresIncludeConstraints:
+        process.env.POSTGRES_INCLUDE_CONSTRAINTS?.toLowerCase() === "true",
+      postgresIncludeIndexes:
+        process.env.POSTGRES_INCLUDE_INDEXES?.toLowerCase() === "true",
     };
 
     // Log overridden defaults
@@ -94,7 +106,6 @@ export function loadEnvironmentConfig(): EnvConfig {
         "Check that environment variables are properly formatted",
         "Ensure numeric values (like ES_SHARDS) are valid integers",
         "Verify file paths are accessible",
-        "For space-separated lists (like ES_IGNORED_SCHEMAS), use proper formatting",
       ]
     );
   }

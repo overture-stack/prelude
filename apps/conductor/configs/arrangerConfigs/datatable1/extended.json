@@ -1,12 +1,12 @@
 {
   "extended": [
     {
-      "displayName": "Donor Id",
-      "fieldName": "data.donor_id"
+      "displayName": "Donor",
+      "fieldName": "data.donor"
     },
     {
-      "displayName": "Gender",
-      "fieldName": "data.gender"
+      "displayName": "Sex",
+      "fieldName": "data.sex"
     },
     {
       "displayName": "Primary Site",
@@ -97,32 +97,16 @@
       "fieldName": "data.submission_metadata"
     },
     {
-      "displayName": "Submission Metadata Submitter Id",
-      "fieldName": "data.submission_metadata.submitter_id"
+      "displayName": "Submission Metadata Submission Id",
+      "fieldName": "data.submission_metadata.submission_id"
     },
     {
-      "displayName": "Submission Metadata Processing Started",
-      "fieldName": "data.submission_metadata.processing_started"
+      "displayName": "Submission Metadata Source File Hash",
+      "fieldName": "data.submission_metadata.source_file_hash"
     },
     {
       "displayName": "Submission Metadata Processed At",
       "fieldName": "data.submission_metadata.processed_at"
-    },
-    {
-      "displayName": "Submission Metadata Source File",
-      "fieldName": "data.submission_metadata.source_file"
-    },
-    {
-      "displayName": "Submission Metadata Record Number",
-      "fieldName": "data.submission_metadata.record_number"
-    },
-    {
-      "displayName": "Submission Metadata Hostname",
-      "fieldName": "data.submission_metadata.hostname"
-    },
-    {
-      "displayName": "Submission Metadata Username",
-      "fieldName": "data.submission_metadata.username"
     }
   ]
 }

@@ -1,18 +1,34 @@
-import * as os from "os";
-import { v4 as uuidv4 } from "uuid";
+import * as crypto from "crypto";
 
-export function createRecordMetadata(
+export interface SubmissionMetadata {
+  submission_id: string; // Groups records from same upload
+  source_file_hash: string; // Detects duplicate files
+  processed_at: string; // ISO timestamp
+}
+
+// Simplified function - generates basic submission metadata
+export function createSubmissionMetadata(
   filePath: string,
   processingStartTime: string,
-  recordNumber: number
-): Record<string, any> {
+  recordNumber: number,
+  fileContent: string
+): SubmissionMetadata {
+  // Create submission ID based on file and processing time
+  const submissionSeed = `${filePath}:${processingStartTime}`;
+  const submission_id = crypto
+    .createHash("sha256")
+    .update(submissionSeed)
+    .digest("hex");
+
+  // Hash file content to detect duplicate files
+  const source_file_hash = crypto
+    .createHash("md5")
+    .update(fileContent)
+    .digest("hex");
+
   return {
-    submitter_id: uuidv4(),
-    processing_started: processingStartTime,
+    submission_id,
+    source_file_hash,
     processed_at: new Date().toISOString(),
-    source_file: filePath,
-    record_number: recordNumber,
-    hostname: os.hostname(),
-    username: os.userInfo().username,
   };
 }

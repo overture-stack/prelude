@@ -22,11 +22,13 @@
   "license": "ISC",
   "dependencies": {
     "@elastic/elasticsearch": "^7.17.0",
+    "@types/pg": "^8.15.4",
     "axios": "^1.6.0",
     "chalk": "^4.1.2",
     "commander": "^9.4.1",
     "csv-parse": "^5.3.3",
     "form-data": "^4.0.3",
+    "pg": "^8.16.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

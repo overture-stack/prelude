@@ -1,3 +1,4 @@
+// src/services/csvProcessor/progressBar.ts
 import chalk from "chalk";
 
 /**
@@ -8,8 +9,7 @@ import chalk from "chalk";
  * - Format time durations
  * - Calculate estimated time to completion (ETA)
  * - Create visual progress bars
- * - Generate unique submission identifiers
- * - Prompt users for confirmation
+ * - Centralized progress display functions
  */
 
 export function formatDuration(ms: number): string {
@@ -27,7 +27,6 @@ export function calculateETA(
   total: number,
   elapsedSeconds: number
 ): string {
-  // Validate inputs
   if (!isFinite(processed) || !isFinite(total) || !isFinite(elapsedSeconds)) {
     return chalk.yellow("Invalid calculation");
   }
@@ -46,41 +45,95 @@ export function calculateETA(
     }
 
     return formatDuration(remainingSeconds * 1000);
-  } catch (error) {
+  } catch {
     return chalk.red("ETA calculation error");
   }
 }
 
+/**
+ * Create a progress bar with configurable color (default = green).
+ *
+ * @param progress - percentage 0–100
+ * @param width - number of blocks (default 30)
+ * @param color - chalk color for filled bar and percent (default "green")
+ */
 export function createProgressBar(
   progress: number,
-  width: number = 30
+  width: number = 30,
+  color: "green" | "cyan" | "yellow" | "magenta" = "green"
 ): string {
   try {
-    // Validate and normalize inputs
     if (!isFinite(progress) || !isFinite(width)) {
       return chalk.yellow("[Invalid progress value]");
     }
 
-    // Clamp progress between 0 and 100
     const normalizedProgress = Math.max(0, Math.min(100, progress || 0));
-    // Ensure width is reasonable
     const normalizedWidth = Math.max(10, Math.min(100, width));
 
-    // Calculate bar segments
     const filledWidth = Math.round(
       normalizedWidth * (normalizedProgress / 100)
     );
     const emptyWidth = normalizedWidth - filledWidth;
 
-    // Create bar segments with boundary checks
-    const filledBar = chalk.green("█").repeat(Math.max(0, filledWidth));
-    const emptyBar = chalk.gray("░").repeat(Math.max(0, emptyWidth));
+    // Pick the requested chalk color, fallback to green
+    const colorFn = (chalk as any)[color] || chalk.green;
 
-    // Return formatted progress bar
-    return `${filledBar}${emptyBar} ${chalk.green(
+    const filledBar = colorFn("█").repeat(Math.max(0, filledWidth));
+    const emptyBar = chalk.gray("▒").repeat(Math.max(0, emptyWidth));
+
+    return `${filledBar}${emptyBar} ${colorFn(
       normalizedProgress.toFixed(1) + "%"
     )}`;
-  } catch (error) {
+  } catch {
     return chalk.yellow("[Progress calculation error]");
   }
+}
+
+/**
+ * Centralized progress display for uploads (green bar)
+ */
+export function updateUploadProgress(
+  processed: number,
+  total: number,
+  startTime: number
+): void {
+  const elapsedMs = Math.max(1, Date.now() - startTime);
+  const progress = Math.min(100, (processed / total) * 100);
+  const progressBar = createProgressBar(progress, 30, "green");
+  const eta = calculateETA(processed, total, elapsedMs / 1000);
+  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
+
+  // Use \r to overwrite previous line
+  process.stdout.write("\r");
+  process.stdout.write(
+    ` ${progressBar} | ` +
+      `${processed}/${total} | ` +
+      `⏱ ${formatDuration(elapsedMs)} | ` +
+      `🏁 ${eta} | ` +
+      `⚡${recordsPerSecond} rows/sec`
+  );
+}
+
+/**
+ * Centralized progress display for indexing (cyan bar)
+ */
+export function updateIndexingProgress(
+  processed: number,
+  total: number,
+  startTime: number
+): void {
+  const elapsedMs = Math.max(1, Date.now() - startTime);
+  const progress = Math.min(100, (processed / total) * 100);
+  const progressBar = createProgressBar(progress, 30, "cyan");
+  const eta = calculateETA(processed, total, elapsedMs / 1000);
+  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
+
+  process.stdout.write("\r");
+  process.stdout.write(
+    ` ${progressBar} | ` +
+      `${processed}/${total} | ` +
+      `⏱ ${formatDuration(elapsedMs)} | ` +
+      `🏁 ${eta} | ` +
+      `⚡${recordsPerSecond} rows/sec`
+  );
 }

@@ -1,4 +1,4 @@
-// src/commands/commandRegistry.ts - Updated to support Lectern dictionaries
+// src/commands/commandRegistry.ts - Updated with PostgreSQL command
 import { Command } from "./baseCommand";
 import { Profile, Profiles } from "../types";
 import { Logger } from "../utils/logger";
@@ -9,6 +9,7 @@ import { SongCommand } from "./songCommand";
 import { DictionaryCommand } from "./lecternCommand";
 import { MappingCommand } from "./mappingCommands";
 import { ArrangerCommand } from "./arrangerCommand";
+import { PostgresCommand } from "./postgresCommand"; // NEW IMPORT
 
 // Simplified command configuration
 interface CommandConfig {
@@ -19,7 +20,7 @@ interface CommandConfig {
 }
 
 /**
- * Simplified command registry with Lectern dictionary support for mapping generation
+ * Simplified command registry with PostgreSQL support
  */
 export class CommandRegistry {
   private static readonly commands = new Map<Profile, CommandConfig>([
@@ -45,9 +46,8 @@ export class CommandRegistry {
       Profiles.GENERATE_ELASTICSEARCH_MAPPING,
       {
         name: "ElasticsearchMapping",
-        description:
-          "Generate Elasticsearch mapping from CSV, JSON, or Lectern dictionary",
-        fileTypes: [".csv", ".json"], // Note: Lectern dictionaries are JSON files
+        description: "Generate Elasticsearch mapping from CSV or JSON",
+        fileTypes: [".csv", ".json"],
         createCommand: () => new MappingCommand(),
       },
     ],
@@ -58,6 +58,15 @@ export class CommandRegistry {
         description: "Generate Arranger configs from Elasticsearch mapping",
         fileTypes: [".json"],
         createCommand: () => new ArrangerCommand(),
+      },
+    ],
+    [
+      Profiles.GENERATE_POSTGRES_TABLE, // UPDATED TO USE PROFILES ENUM
+      {
+        name: "PostgresTable",
+        description: "Generate PostgreSQL CREATE TABLE from CSV file",
+        fileTypes: [".csv"],
+        createCommand: () => new PostgresCommand(),
       },
     ],
   ]);
@@ -112,7 +121,6 @@ export class CommandRegistry {
 
   /**
    * Validate file types for a given profile
-   * Note: For ElasticsearchMapping, Lectern dictionaries are validated by content, not just extension
    */
   static validateFileTypes(
     profile: Profile,
@@ -138,5 +146,18 @@ export class CommandRegistry {
       invalidFiles,
       supportedTypes: config.fileTypes,
     };
+  }
+
+  /**
+   * Display help information for all commands
+   */
+  static showHelp(): void {
+    Logger.header("Available Commands");
+
+    for (const [profile, config] of this.commands) {
+      Logger.commandInfo(profile, config.description);
+      Logger.generic(`  Supported files: ${config.fileTypes.join(", ")}`);
+      Logger.generic("");
+    }
   }
 }

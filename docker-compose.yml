@@ -19,6 +19,14 @@ services:
       # Global Configuration
       PROFILE: ${PROFILE:-default}
       DEBUG: false
+      # PostgreSQL Configuration (SIMPLIFIED)
+      POSTGRES_CONFIGS_DIR: conductor/configs/postgresConfigs
+      # PostgreSQL Connection
+      POSTGRES_HOST: postgres-phase1
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
       # Elasticsearch Index Configuration
       # Dynamic indices are configured with a count and indexed variables
       ES_INDEX_COUNT: 1
@@ -102,6 +110,33 @@ services:
   # want them configured. This is also a good time to do any theming of your portal.   #
   # through Stage.                                                                     #
   # ================================================================================== #
+
+  # -----------------------------------------------------------------------------------#
+  # PostgreSQL                                                                         #
+  # -----------------------------------------------------------------------------------#
+  # Database for storing data uploaded via conductor                                   #
+  # -----------------------------------------------------------------------------------#
+  postgres-phase1:
+    profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
+    image: postgres:15-alpine
+    container_name: postgres-phase1
+    platform: linux/amd64
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: admin
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - postgres-phase1-data:/var/lib/postgresql/data
+    networks:
+      - conductor-network
 
   # --------------------------------------------------------------------------------------#
   # Elasticsearch                                                                         #
@@ -699,6 +734,7 @@ volumes:
   song-db-data:
   lyric-db-data:
   lectern-db-data:
+  postgres-phase1-data:
 networks:
   conductor-network:
     driver: bridge

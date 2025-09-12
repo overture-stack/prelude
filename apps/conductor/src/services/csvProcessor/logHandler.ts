@@ -194,19 +194,16 @@ export class CSVProcessingErrorHandler {
       // Determine overall success status
       if (failed > 0) {
         if (successfulRecords > 0) {
-          Logger.warnString(
-            `Transfer to elasticsearch completed with partial errors`
-          );
+          Logger.warnString(`Transfer completed with partial errors`);
         } else {
           Logger.errorString(
-            `Transfer to elasticsearch failed - no records processed successfully`
+            `Transfer failed - no records processed successfully`
           );
         }
       } else if (processed === 0) {
         Logger.warnString(`No records were processed`);
       } else {
-        Logger.successString(`Transfer to elasticsearch complete`);
-        Logger.generic("");
+        Logger.successString(`Transfer complete`);
       }
 
       // Print detailed summary
@@ -231,7 +228,7 @@ export class CSVProcessingErrorHandler {
       }
 
       Logger.generic(
-        `  ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec`
+        `  ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec\n`
       );
       Logger.debug` ⏱ Total processing time: ${formatDuration(elapsedMs)}`;
 

@@ -1,0 +1,47 @@
+./
+├── cli
+│   ├── commandOptions.ts
+│   ├── environment.ts
+│   └── index.ts
+├── commands
+│   ├── arrangerCommand.ts
+│   ├── baseCommand.ts
+│   ├── commandRegistry.ts
+│   ├── lecternCommand.ts
+│   ├── mappingCommands.ts
+│   ├── postgresCommand.ts
+│   └── songCommand.ts
+├── main.ts
+├── services
+│   ├── generateArrangerConfigs.ts
+│   ├── generateEsMappingFromCSV.ts
+│   ├── generateEsMappingFromJSON.ts
+│   ├── generateESMappingFromLectern.ts
+│   ├── generateLecternDictionary.ts
+│   ├── generatePostgresTable.ts
+│   └── generateSongSchema.ts
+├── tree.txt
+├── types
+│   ├── arranger.ts
+│   ├── cli.ts
+│   ├── elasticsearch.ts
+│   ├── index.ts
+│   ├── lectern.ts
+│   ├── postgres.ts
+│   ├── profiles.ts
+│   ├── song.ts
+│   └── validations.ts
+├── utils
+│   ├── csvParser.ts
+│   ├── errors.ts
+│   ├── fileUtils.ts
+│   ├── logger.ts
+│   └── paths.ts
+└── validations
+    ├── baseCommand.ts
+    ├── csvValidator.ts
+    ├── enviromentValidator.ts
+    ├── fileValidator.ts
+    └── index.ts
+
+7 directories, 38 files
