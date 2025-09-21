@@ -1,14 +1,14 @@
 help:
 	@echo "================ Prelude Makefile Commands ================"
 	@echo ""
-	@echo "Conductor Development Environments:"
+	@echo "setup Development Environments:"
 	@echo "  phase0         - Run pre-deployment checks"
-	@echo "  phase1         - Start Phase 1 deployment"
-	@echo "  phase2         - Start Phase 2 deployment"
-	@echo "  phase3         - Start Phase 3 deployment"
+	@echo "  demo           - Start demo deployment (with data)"
+	@echo "  phase1         - Start Phase 1 deployment (without data)"
+	@echo ""
 	@echo "  stage-dev      - Start Stage development environment"
 	@echo ""
-	@echo "Conductor System Management:"
+	@echo "setup System Management:"
 	@echo "  down           - Gracefully shutdown all containers"
 	@echo "  reset          - DANGER: Remove all containers and volumes (DATA LOSS)"
 	@echo "  restart        - Restart containers for a specific profile"
@@ -22,28 +22,60 @@ help:
 # Run pre-deployment checks
 phase0:
 	@echo "Running Pre-deployment checks..."
-	chmod +x ./apps/conductor/scripts/deployments/phase0.sh
-	./apps/conductor/scripts/deployments/phase0.sh 
+	chmod +x ./apps/setup/scripts/deployments/phase0.sh
+	./apps/setup/scripts/deployments/phase0.sh 
 
-# Start Phase One deployment
+# Start demo deployment (populates portal with data for you)
+demo:
+	@echo "\033[1;36mStarting demo environment...\033[0m"
+	@echo ""
+	@echo "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m"
+	@echo ""
+	@echo ""
+	@echo ""
+	@docker compose build stage 2>&1 | { \
+		line1=""; line2=""; line3=""; \
+		while IFS= read -r line; do \
+			line1="$$line2"; line2="$$line3"; line3="$$line"; \
+			printf "\033[4A\033[2K\r\033[1;33mBuilding docker image...\033[0m\n"; \
+			[ -n "$$line1" ] && echo "$$line1" || echo ""; \
+			[ -n "$$line2" ] && echo "$$line2" || echo ""; \
+			[ -n "$$line3" ] && echo "$$line3" || echo ""; \
+		done; \
+	}
+	@echo ""
+	@echo "\033[1;32mPortal UI built!\033[0m"
+	@echo ""
+	@PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup 
+
+# Start Phase One deployment (you configure the portal for your data)
 phase1:
-	@echo "Starting Phase 1 development environment..."
-	PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach conductor 
+	@echo "\033[1;36mStarting Phase 1 development environment...\033[0m"
+	@echo ""
+	@echo "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m"
+	@echo ""
+	@echo ""
+	@echo ""
+	@docker compose build stage 2>&1 | { \
+		line1=""; line2=""; line3=""; \
+		while IFS= read -r line; do \
+			line1="$$line2"; line2="$$line3"; line3="$$line"; \
+			printf "\033[4A\033[2K\r\033[1;33mBuilding docker image...\033[0m\n"; \
+			[ -n "$$line1" ] && echo "$$line1" || echo ""; \
+			[ -n "$$line2" ] && echo "$$line2" || echo ""; \
+			[ -n "$$line3" ] && echo "$$line3" || echo ""; \
+		done; \
+	}
+	@echo ""
+	@echo "\033[1;32mPortal UI built!\033[0m"
+	@echo ""
+	@PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach setup 
 
-# Start Phase Two deployment
-phase2:
-	@echo "Starting Phase 2 development environment..."
-	PROFILE=phase2 docker compose -f ./docker-compose.yml --profile phase2 up --attach conductor
-
-# Start Phase Three deployment
-phase3:
-	@echo "Starting Phase 3 development environment..."
-	PROFILE=phase3 docker compose -f ./docker-compose.yml --profile phase3 up --attach conductor 
 
 # Start Stage devepment deployment
 stage-dev:
 	@echo "Starting Stage development environment..."
-	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach conductor
+	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach setup
 
 # Gracefully shutdown all containers while preserving volumes
 down:
@@ -53,11 +85,11 @@ down:
 # Restart containers and run deployment scripts for a specific profile
 restart:
 	@echo "Restarting containers with fresh deployment..."
-	@read -p "Enter profile to restart (phase1, phase2, phase3, stageDev): " profile; \
+	@read -p "Enter profile to restart (phase1, demo, stageDev): " profile; \
 	echo "Shutting down containers..."; \
 	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile down; \
 	echo "Starting containers with profile $$profile..."; \
-	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile up --attach conductor
+	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile up --attach setup
 
 # Shutdown all containers and remove all volumes (Deletes all data)
 reset:

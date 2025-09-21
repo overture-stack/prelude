@@ -302,23 +302,26 @@ export class Logger {
   }
 
   static showReferenceCommands(): void {
-    this.header("Available Commands");
+    this.header("Conductor Upload Commands");
 
-    // Common options displayed at the top
-    this.generic(chalk.bold.yellow("Common Options (all commands):"));
-    this.generic(chalk.gray("--debug           Enable detailed debug logging"));
-    this.generic(chalk.gray("--config <path>   Use configuration file"));
-    this.generic("");
-
-    // Upload commands
-    this.generic(chalk.bold.magenta("CSV Upload Commands:"));
-    this.generic(chalk.white("conductor upload -f data.csv"));
+    // Upload commands only
+    this.generic(chalk.bold.magenta("CSV Data Upload:"));
+    this.generic(chalk.white("conductor upload -f data.csv -i index-name"));
     this.generic(chalk.gray("Options:"));
     this.generic(
       chalk.gray("-f, --file <paths...>  CSV files to upload (required)")
     );
     this.generic(
-      chalk.gray("-i, --index <name>      Target Elasticsearch index")
+      chalk.gray("-i, --index <name>      Target Elasticsearch index (required)")
+    );
+    this.generic(
+      chalk.gray("-u, --url <url>         Elasticsearch URL")
+    );
+    this.generic(
+      chalk.gray("--user <username>       Elasticsearch username")
+    );
+    this.generic(
+      chalk.gray("--password <password>   Elasticsearch password")
     );
     this.generic(
       chalk.gray("-b, --batch-size <n>    Batch size (default: 1000)")
@@ -326,218 +329,17 @@ export class Logger {
     this.generic(
       chalk.gray("--delimiter <char>      CSV delimiter (default: ,)")
     );
-    this.generic(chalk.gray("-o, --output <path>     Output path for logs"));
     this.generic("");
     this.generic(
-      chalk.gray("Example: conductor upload -f data.csv -i my-index -b 2000")
-    );
-    this.generic("");
-
-    // Repository Indexing commands
-    this.generic(chalk.bold.magenta("Repository Indexing Commands:"));
-    this.generic(
-      chalk.white("conductor maestroIndex --repository-code lyric.overture")
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "--repository-code <code>  Repository code to index (required)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--index-url <url>       Indexing service URL (default: http://localhost:11235)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--organization <name>   Filter indexing to a specific organization"
-      )
-    );
-    this.generic(
-      chalk.gray("--id <id>               Index only a specific document ID")
-    );
-    this.generic(chalk.gray("-o, --output <path>     Output path for logs"));
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor maestroIndex --repository-code lyric.overture --organization OICR"
-      )
+      chalk.gray("Example: conductor upload -f data.csv -i my-index --url http://localhost:9200")
     );
     this.generic("");
 
-    // Lectern Upload commands
-    this.generic(chalk.bold.magenta("Lectern Schema Upload Command:"));
-    this.generic(chalk.white("conductor lecternUpload -s dictionary.json"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-s, --schema-file <path>  Schema JSON file to upload (required)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-u, --lectern-url <url>   Lectern server URL (default: http://localhost:3031)"
-      )
-    );
-    this.generic(
-      chalk.gray("-t, --auth-token <token>  Authentication token (optional)")
-    );
-    this.generic(
-      chalk.gray("-o, --output <path>    Output directory for logs")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor lecternUpload -s data-dictionary.json")
-    );
-    this.generic("");
-
-    // Lyric Register commands
-    this.generic(chalk.bold.magenta("Lyric Register Dictionary Command:"));
-    this.generic(
-      chalk.white(
-        "conductor lyricRegister -c category1 --dict-name dictionary1 -v 1.0 -e entity1"
-      )
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-u, --lyric-url <url>     Lyric server URL (default: http://localhost:3030)"
-      )
-    );
-    this.generic(
-      chalk.gray("-c, --category-name <name> Category name (required)")
-    );
-    this.generic(
-      chalk.gray("--dict-name <name>        Dictionary name (required)")
-    );
-    this.generic(
-      chalk.gray(
-        "-v, --dictionary-version <version> Dictionary version (required)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-e, --default-centric-entity <entity> Default centric entity (required) - must be a valid schema in the dictionary"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor lyricRegister -c my-category --dict-name my-dictionary -v 2.0 -e donor"
-      )
-    );
-    this.generic("");
-
-    // Lyric Data commands
-    this.generic(chalk.bold.magenta("Lyric Data Upload Command:"));
-    this.generic(chalk.white("conductor lyricUpload -d ./data-directory"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-u, --lyric-url <url>     Lyric server URL (default: http://localhost:3030)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-l, --lectern-url <url>   Lectern server URL (default: http://localhost:3031)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-d, --data-directory <path> Directory containing CSV data files"
-      )
-    );
-    this.generic(
-      chalk.gray("-c, --category-id <id>    Category ID (default: 1)")
-    );
-    this.generic(
-      chalk.gray("-g, --organization <name> Organization name (default: OICR)")
-    );
-    this.generic(
-      chalk.gray(
-        "-m, --max-retries <number> Maximum retry attempts (default: 10)"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor lyricUpload -d ./my-data -c 2 -g MyOrg")
-    );
-    this.generic("");
-
-    // Song Upload commands
-    this.generic(chalk.bold.magenta("Song Schema Upload Commands:"));
-    this.generic(chalk.white("conductor songUploadSchema -s schema.json"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-s, --schema-file <path>  Schema JSON file to upload (required)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-t, --auth-token <token>  Authentication token (default: 123)"
-      )
-    );
-    this.generic(
-      chalk.gray("-o, --output <path>    Output directory for logs")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor songUploadSchema -s analysis-schema.json -u http://song-api:8080"
-      )
-    );
-    this.generic("");
-
-    // Song Create Study commands
-    this.generic(chalk.bold.magenta("Song Create Study Commands:"));
-    this.generic(
-      chalk.white("conductor songCreateStudy -i study-id -n study-name")
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray(
-        "-u, --song-url <url>      Song server URL (default: http://localhost:8080)"
-      )
-    );
-    this.generic(
-      chalk.gray("-i, --study-id <id>       Study ID (default: demo)")
-    );
-    this.generic(
-      chalk.gray("-n, --study-name <name>   Study name (default: string)")
-    );
-    this.generic(
-      chalk.gray(
-        "-g, --organization <name> Organization name (default: string)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--description <text>      Study description (default: string)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "-t, --auth-token <token>  Authentication token (default: 123)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--force                   Force creation even if study exists"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor songCreateStudy -i my-study -n 'My Research Study' -g MyOrg"
-      )
-    );
+    // Elasticsearch Connection Info
+    this.generic(chalk.bold.magenta("Connection Information:"));
+    this.generic(chalk.gray("Default Elasticsearch URL: http://localhost:9200"));
+    this.generic(chalk.gray("Default credentials: elastic / myelasticpassword"));
+    this.generic(chalk.gray("Default index pattern: <filename>-index"));
     this.generic("");
   }
 }

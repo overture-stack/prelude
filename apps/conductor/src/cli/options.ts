@@ -22,14 +22,16 @@ export function configureCommandOptions(program: Command): void {
     .version("1.0.0")
     .description("Conductor: Data Processing Pipeline")
     .option("--debug", "Enable debug mode")
-    // Add a custom action for the help option
-    .addHelpCommand("help [command]", "Display help for a specific command")
-    .on("--help", () => {
-      // Call the reference commands after the default help
+    // Override the default help to only show our custom reference commands
+    .helpOption(false) // Disable default help option
+    .option("-h, --help", "display help for command")
+    .on("option:help", () => {
+      // Show only our custom reference commands
       Logger.showReferenceCommands();
+      process.exit(0);
     });
 
-  // Upload command
+  // Upload command - the only visible command
   program
     .command("upload")
     .description("Upload data to Elasticsearch")
@@ -50,10 +52,10 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // Lectern schema upload command
+  // Hidden commands - still functional but not shown in help
+  // These are registered without descriptions to hide them from help output
   program
-    .command("lecternUpload")
-    .description("Upload schema to Lectern server")
+    .command("lecternUpload", { hidden: true })
     .option("-s, --schema-file <path>", "Schema JSON file to upload")
     .option(
       "-u, --lectern-url <url>",
@@ -67,10 +69,8 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // Lyric dictionary registration command
   program
-    .command("lyricRegister")
-    .description("Register a dictionary with Lyric service")
+    .command("lyricRegister", { hidden: true })
     .option(
       "-u, --lyric-url <url>",
       "Lyric server URL",
@@ -86,10 +86,8 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // Lyric data loading command
   program
-    .command("lyricUpload")
-    .description("Load data into Lyric service")
+    .command("lyricUpload", { hidden: true })
     .option(
       "-u, --lyric-url <url>",
       "Lyric server URL",
@@ -131,10 +129,8 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // Repository indexing command
   program
-    .command("maestroIndex")
-    .description("Index a repository with optional filtering")
+    .command("maestroIndex", { hidden: true })
     .option(
       "--index-url <url>",
       "Indexing service URL",
@@ -158,10 +154,8 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // SONG schema upload command
   program
-    .command("songUploadSchema")
-    .description("Upload schema to SONG server")
+    .command("songUploadSchema", { hidden: true })
     .option("-s, --schema-file <path>", "Schema JSON file to upload")
     .option(
       "-u, --song-url <url>",
@@ -179,11 +173,8 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // SONG study creation command
-  // Song Create Study commands - SIMPLIFIED: Only study ID required
   program
-    .command("songCreateStudy")
-    .description("Create study in SONG server")
+    .command("songCreateStudy", { hidden: true })
     .option(
       "-u, --song-url <url>",
       "SONG server URL",
@@ -216,10 +207,8 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // SONG analysis submission command (now includes Score file upload)
   program
-    .command("songSubmitAnalysis")
-    .description("Submit analysis to SONG and upload files to Score")
+    .command("songSubmitAnalysis", { hidden: true })
     .option("-a, --analysis-file <path>", "Analysis JSON file to submit")
     .option(
       "-u, --song-url <url>",
@@ -268,10 +257,8 @@ export function configureCommandOptions(program: Command): void {
       /* Handled by main.ts */
     });
 
-  // SONG publish analysis command
   program
-    .command("songPublishAnalysis")
-    .description("Publish analysis in SONG server")
+    .command("songPublishAnalysis", { hidden: true })
     .option("-a, --analysis-id <id>", "Analysis ID to publish")
     .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
     .option(
@@ -293,9 +280,6 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
-
-  // Note: scoreManifestUpload and songScoreSubmit commands have been removed
-  // Their functionality is now integrated into songSubmitAnalysis
 }
 
 /**

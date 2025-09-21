@@ -62,7 +62,7 @@ Depending on the command Composer can input CSV or JSON file(s) that represent y
 
 ### Conductor
 
-Conductor runs the automated deployments from the `/apps/conductor/scripts` directory. It can also be run as a command line client made to streamline interactions with various Overture API endpoints.
+Conductor runs the automated deployments from the `/setup/scripts` directory. It can also be run as a command line client made to streamline interactions with various Overture API endpoints.
 
 As summary of command line client interactions is provided in the table below:
 

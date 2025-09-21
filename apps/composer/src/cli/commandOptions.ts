@@ -93,10 +93,12 @@ export function configureCommandOptions(program: Command): Command {
       "Skip adding submission metadata to Elasticsearch mapping"
     )
     .option("--force", "Force overwrite of existing files without prompting")
-    .helpOption("-h, --help", "Display help for command")
-    .addHelpText("after", () => {
+    .helpOption(false) // Disable default help option
+    .option("-h, --help", "display help for command")
+    .on("option:help", () => {
+      // Show only our custom reference commands
       Logger.showReferenceCommands();
-      return "";
+      process.exit(0);
     })
     .hook("preAction", (thisCommand) => {
       const opts = thisCommand.opts();
