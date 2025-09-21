@@ -24,13 +24,13 @@ TODO gif of moving through the interface
 
 ### Architecture
 
-![Search & Exploration Architecture](/docs/images/search&exploration.png)
+![Search & Exploration Architecture](/apps/stage/public/docs/images/search&exploration.png)
 
 Arranger serves as the search API layer, interfacing with Elasticsearch to provide flexible querying capabilities, while Stage provides the user-facing portal interface with integrated Arranger search UI components.
 
 This architecture can be extended with any persistent storage:
 
-![Custom Build](/docs/images/platformintegration.png)
+![Custom Build](/apps/stage/public/docs/images/platformintegration.png)
 
 ## Get Started
 
