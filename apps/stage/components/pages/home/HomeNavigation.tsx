@@ -2,7 +2,6 @@
 import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
-import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
 interface CardItem {
@@ -24,24 +23,22 @@ const HomeNavigation = (): ReactElement => {
 	const theme = useTheme();
 	const [openDropdown, setOpenDropdown] = useState<number | null>(null);
 	const [docSections, setDocSections] = useState<SectionItem[]>([]);
-	const [dataTables, setDataTables] = useState<DataTableInfo[]>([]);
 	const [homeCards, setHomeCards] = useState<CardItem[]>([
 		{
 			title: 'Explore the Data',
-			link: '#',
-			description: 'Browse and interact with datasets',
-			subItems: [], // Will be populated dynamically with data tables
+			link: '/dataTableOne',
+			description: 'Browse and interact with data',
 		},
 		{
-			title: 'Documentation & Guides',
+			title: 'Documentation',
 			link: INTERNAL_PATHS.DOCUMENTATION,
-			description: 'Phased guides covering Prelude usage',
+			description: 'Everything you want know about this demo platform',
 			isDynamic: true,
 		},
 		{
 			title: 'Find Support',
 			link: 'https://docs.overture.bio/community/support',
-			description: 'Connect with our community and get help',
+			description: 'Connect and get help',
 			external: true,
 		},
 		{
@@ -55,33 +52,6 @@ const HomeNavigation = (): ReactElement => {
 			],
 		},
 	]);
-
-	// Load data tables from API
-	useEffect(() => {
-		fetch('/api/data-tables')
-			.then((response) => response.json())
-			.then((data) => {
-				setDataTables(data);
-
-				// Update the Explore the Data card with data tables
-				setHomeCards((prevCards) =>
-					prevCards.map((card) =>
-						card.title === 'Explore the Data'
-							? {
-									...card,
-									subItems: data.map((table: DataTableInfo) => ({
-										title: table.title,
-										link: table.path,
-									})),
-							  }
-							: card,
-					),
-				);
-			})
-			.catch((error) => {
-				console.error('Error fetching data tables:', error);
-			});
-	}, []);
 
 	// Load documentation sections
 	useEffect(() => {

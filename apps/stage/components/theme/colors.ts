@@ -27,7 +27,7 @@ const base = {
 
 const grey = {
 	grey_1: '#F2F5F8',
-	grey_2: '#F2F3F5',
+	grey_2: '#E8EAED',
 	grey_3: '#AEAFB3',
 	grey_4: '#9BB9D1',
 	grey_5: '#5E6068',
@@ -75,6 +75,7 @@ const accent1 = {
 
 // Purple/Pink shades from the Accent 2 palette
 const accent2 = {
+	accent2: '#B74A89', // Main accent2 color for facets
 	accent2_dark: '#9E005D',
 	accent2_medium: '#B74A89',
 	accent2_light: '#C772A3',
@@ -85,6 +86,7 @@ const accent2 = {
 
 // Yellow/Gold shades from the Accent 3 palette
 const accent3 = {
+	accent3: '#D9DE3A', // Main accent3 color for facets
 	accent3_dark: '#CFD509',
 	accent3_medium: '#D9DE3A',
 	accent3_light: '#E4E775',
@@ -95,10 +97,10 @@ const accent3 = {
 
 // Legacy accent properties for backward compatibility
 const accent = {
-	accent: '#0B75A2', // Using the main secondary color
+	accent: '#04518C', // Changed to a more vibrant blue
 	accent_dark: '#00305D', // Using accent1_dark
-	accent_light: '#C0D3E2', // Using accent1_lightest
-	accent_light_rgb: '192, 211, 226', // RGB version of accent1_lightest
+	accent_light: '#4F85AE', // Changed to be more vibrant
+	accent_light_rgb: '79, 133, 174', // RGB version of new accent_light
 	accent_1: '#E5EDF3', // Using accent1_pale
 	accent_highlight: '#4F85AE40', // Semi-transparent version of accent1_light
 };

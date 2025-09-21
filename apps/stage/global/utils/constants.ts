@@ -40,6 +40,7 @@ export enum INTERNAL_PATHS {
 	DATATABLE_5 = '/dataTableFive',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
+	ELASTICVUE = '/documentation/elasticvue',
 	SONG = '/swaggerDocs/song',
 	LYRIC = '/swaggerDocs/lyric',
 	LECTERN = '/swaggerDocs/lectern',
@@ -51,6 +52,9 @@ export const LECTERN_SWAGGER = 'http://localhost:3031/api-docs';
 export const LYRIC_SWAGGER = 'http://localhost:3030/api-docs';
 export const SONG_SWAGGER = 'http://localhost:8080/swagger-ui.html';
 export const SCORE_SWAGGER = 'http://localhost:8087/swagger-ui.html';
+
+// graphql api
+export const ARRANGER_GQL = 'http://localhost:5050/graphql/apollo';
 
 // external docs links
 export const HELP_URL = 'https://github.com/overture-stack/docs/discussions/new?category=support';

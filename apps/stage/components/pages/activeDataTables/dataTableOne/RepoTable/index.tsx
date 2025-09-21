@@ -117,7 +117,7 @@ const getTableConfigs = ({
 				`,
 				fontColor: theme.colors.accent_dark,
 				disabledFontColor: theme.colors.grey_5,
-				hoverBackground: theme.colors.secondary_light,
+				hoverBackground: `${theme.colors.secondary_light}20`,
 
 				ListWrapper: {
 					background: theme.colors.white,
@@ -126,7 +126,7 @@ const getTableConfigs = ({
 					`,
 					fontColor: theme.colors.black,
 					fontSize: '0.7rem',
-					hoverBackground: theme.colors.secondary_light,
+					hoverBackground: `${theme.colors.secondary_light}20`,
 				},
 			},
 			HeaderRow: {

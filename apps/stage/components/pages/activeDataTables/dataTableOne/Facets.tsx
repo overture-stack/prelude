@@ -31,43 +31,100 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 		Aggregations: {
 			ActionIcon: {
 				fill: theme.colors.secondary,
+				css: css`
+					&:hover {
+						fill: ${theme.colors.secondary_light};
+					}
+				`,
 			},
 			AggsGroup: {
 				collapsedBackground: theme.colors.grey_2,
 				css: css`
+					border-left: 3px solid;
+
+					&:nth-of-type(5n + 1) {
+						border-left-color: ${theme.colors.secondary};
+					}
+					&:nth-of-type(5n + 2) {
+						border-left-color: ${theme.colors.accent2};
+					}
+					&:nth-of-type(5n + 3) {
+						border-left-color: ${theme.colors.warning};
+					}
+					&:nth-of-type(5n + 4) {
+						border-left-color: ${theme.colors.primary};
+					}
+					&:nth-of-type(5n + 5) {
+						border-left-color: ${theme.colors.accent3};
+					}
+
+					.bucket-item {
+						${theme.typography.data}
+					}
+
 					.title {
-						${theme.typography.subheading2}
+						${theme.typography.subheading}
 						line-height: 20px;
 					}
-					// Leaving these toggle-button styles untouch as I haven't been able to test making changes
-					.toggle-button {
-						${theme.typography.data};
-						padding: 2px 5px 8px 5px;
-						margin-left: 5px;
-						.toggle-button-option {
-							border: 1px solid ${theme.colors.grey_5};
-							&:nth-of-type(2) {
-								border-left: 0px;
-								border-right: 0px;
-							}
+
+					.sorting-icon,
+					.alphabetic-sorting,
+					[class*="SortAlphaIcon"] {
+						color: ${theme.colors.grey_5} !important;
+						transition: color 0.2s ease-in-out !important;
+						&:hover {
+							color: ${theme.colors.secondary_light} !important;
 						}
-						.toggle-button-option .bucket-count {
-							${theme.typography.label2}
-							display: inline-block;
-							background-color: ${theme.colors.grey_3};
-							padding: 0 3px;
-							border-radius: 3px;
+					}
+
+					.title:hover .sorting-icon,
+					.title:hover .alphabetic-sorting,
+					.title:hover [class*="SortAlphaIcon"] {
+						color: ${theme.colors.secondary_light} !important;
+					}
+
+					.search-icon,
+					[class*="SearchIcon"],
+					[class*="search-icon"] {
+						color: ${theme.colors.grey_5} !important;
+						transition: color 0.2s ease-in-out !important;
+						&:hover {
+							color: ${theme.colors.secondary_light} !important;
 						}
-						.toggle-button-option.active {
-							background-color: ${theme.colors.secondary_light};
-							.bucket-count {
-								background-color: ${theme.colors.secondary_2};
-							}
+					}
+
+					.title:hover .search-icon,
+					.title:hover [class*="SearchIcon"],
+					.title:hover [class*="search-icon"] {
+						color: ${theme.colors.secondary_light} !important;
+					}
+
+					.columns-icon,
+					.download-icon,
+					[class*="ColumnsIcon"],
+					[class*="DownloadIcon"],
+					[class*="columns-icon"],
+					[class*="download-icon"],
+					button svg,
+					.action-icon,
+					[class*="action-icon"] {
+						color: ${theme.colors.grey_5} !important;
+						transition: color 0.2s ease-in-out !important;
+						&:hover {
+							color: ${theme.colors.secondary_light} !important;
 						}
-						.toggle-button-option.disabled {
-							background-color: ${theme.colors.grey_2};
-							color: ${theme.colors.grey_6};
-						}
+					}
+
+					button:hover svg,
+					.title:hover .columns-icon,
+					.title:hover .download-icon,
+					.title:hover [class*="ColumnsIcon"],
+					.title:hover [class*="DownloadIcon"],
+					.title:hover [class*="columns-icon"],
+					.title:hover [class*="download-icon"],
+					.title:hover .action-icon,
+					.title:hover [class*="action-icon"] {
+						color: ${theme.colors.secondary_light} !important;
 					}
 				`,
 				groupDividerColor: theme.colors.grey_3,
@@ -75,9 +132,23 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 				headerDividerColor: theme.colors.grey_2,
 				headerFontColor: theme.colors.accent_dark,
 			},
+			BooleanAgg: {
+				BucketCount: {
+					css: css`
+						margin: 0;
+					`,
+				},
+			},
 			BucketCount: {
-				background: `rgba(${theme.colors.accent_light_rgb}, 0.45)`,
-				fontSize: '0.75rem',
+				activeBackground: theme.colors.secondary_2,
+				background: theme.colors.grey_2,
+				borderRadius: '3px',
+				css: css`
+					${theme.typography.label2}
+					padding: 0 3px;
+					margin: 2px 0;
+				`,
+				fontSize: '10px',
 			},
 			FilterInput: {
 				css: css`
@@ -102,55 +173,66 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 			MoreOrLessButton: {
 				css: css`
 					${theme.typography.label2};
+					color: ${theme.colors.accent};
+
 					&::before {
 						padding-top: 3px;
 						margin-right: 3px;
 					}
+
 					&.more::before {
 						content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 11 11'%3E%3Cpath fill='%2304518C' fill-rule='evenodd' d='M7.637 6.029H6.034v1.613c0 .291-.24.53-.534.53-.294 0-.534-.239-.534-.53V6.03H3.363c-.294 0-.534-.238-.534-.529 0-.29.24-.529.534-.529h1.603V3.358c0-.291.24-.53.534-.53.294 0 .534.239.534.53V4.97h1.603c.294 0 .534.238.534.529 0 .29-.24.529-.534.529M5.5 0C2.462 0 0 2.462 0 5.5S2.462 11 5.5 11 11 8.538 11 5.5 8.538 0 5.5 0'/%3E%3C/svg%3E%0A");
 					}
+
 					&.less::before {
 						content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 20 20'%3E%3Cpath fill='%2304518c' fill-rule='evenodd' d='M13.81 10.952H6.19c-.523 0-.952-.428-.952-.952s.429-.952.952-.952h7.62c.523 0 .952.428.952.952s-.429.952-.952.952M10 0C4.476 0 0 4.476 0 10s4.476 10 10 10 10-4.476 10-10S15.524 0 10 0'/%3E%3C/svg%3E%0A");
 					}
 				`,
-				fontColor: theme.colors.primary,
 			},
 			RangeAgg: {
-				css: css`
-					&[data-fieldName='analysis.host.host_age'] .unit-wrapper {
-						display: none;
-					}
-				`,
 				RangeLabel: {
-					borderRadius: '0.2rem',
-					fontWeight: 'bold !important',
+					// each of the labels with values
+					borderRadius: '3px',
 					css: css`
 						${theme.typography.label2}
-						background-color: ${theme.colors.grey_3};
-						&:last-of-type,
-						&:nth-of-type(4) {
-							background-color: ${theme.colors.white};
-							color: ${theme.colors.grey_6};
+						padding: 0 4px;
+
+						&.top {
+							background: ${theme.colors.grey_3};
 						}
 					`,
-					padding: '0 0.2rem',
+					fontWeight: 'bold',
 				},
-				// slider is the button that you drag to select values
 				RangeSlider: {
+					// the knobs you click on to select a value
 					borderColor: theme.colors.grey_5,
-					css: theme.shadow.default,
-					disabledBackground: theme.colors.grey_3,
+					css: css`
+						${theme.shadow.default}
+					`,
 				},
-				// the band upon which the sliders move
 				RangeTrack: {
-					disabledInBackground: theme.colors.grey_4,
-					disabledOutBackground: theme.colors.grey_3,
-					inBackground: theme.colors.primary_dark,
-					outBackground: theme.colors.grey_4,
+					// the line behind the component
+					inBackground: theme.colors.secondary, // within the selected range
+					outBackground: theme.colors.accent, // outside the selected range
 				},
 			},
+			ToggleButton: {
+				background: theme.colors.white,
+				activeBackground: theme.colors.secondary_light,
+				borderColor: theme.colors.grey_4,
+				css: css`
+					padding: 2px 5px 8px;
+					margin: 5px 5px 0;
+				`,
+				disabledBackground: theme.colors.grey_2,
+				disabledFontColor: theme.colors.grey_6,
+				fontColor: theme.colors.black,
+				OptionCSS: css`
+					${theme.typography.data}
+				`,
+			},
 			TreeJointIcon: {
-				fill: theme.colors.primary_dark,
+				fill: '#151c3d',
 				size: 8,
 				transition: 'all 0s',
 			},
@@ -215,11 +297,9 @@ const Facets = (): ReactElement => {
 	const theme = useTheme();
 	useArrangerTheme(getAggregationsStyles(theme));
 	return (
-		<article
+		<div
 			css={css`
-				display: flex;
-				flex-direction: column;
-				height: 100%;
+				padding-bottom: 2rem;
 			`}
 		>
 			<h2
@@ -234,7 +314,7 @@ const Facets = (): ReactElement => {
 			</h2>
 			{NEXT_PUBLIC_ENABLE_DATATABLE_1_QUICKSEARCH && <QuickSearch />}
 			<Aggregations />
-		</article>
+		</div>
 	);
 };
 export default Facets;

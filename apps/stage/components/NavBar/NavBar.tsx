@@ -1,29 +1,19 @@
 // components/NavBar/NavBar.tsx
 import { css, useTheme } from '@emotion/react';
-import cx from 'classnames';
 import { useRouter } from 'next/router';
 import { createRef, ReactElement } from 'react';
 
 import { getConfig } from '../../global/config';
 import useAuthContext from '../../global/hooks/useAuthContext';
-import {
-	INTERNAL_PATHS,
-	LECTERN_SWAGGER,
-	LOGIN_PATH,
-	LYRIC_SWAGGER,
-	SCORE_SWAGGER,
-	SONG_SWAGGER,
-	USER_PATH,
-} from '../../global/utils/constants';
+import { ARRANGER_GQL, INTERNAL_PATHS, LOGIN_PATH, USER_PATH } from '../../global/utils/constants';
 import { InternalLink, StyledLinkAsButton } from '../Link';
 import defaultTheme from '../theme';
 import UserDropdown from '../UserDropdown';
 
 import labIcon from '@/public/images/navbar-logo.png';
-import DataTablesDropdown from './DataTablesDropdown';
 import DocumentationDropdown from './DocumentationDropdown';
 import Dropdown from './Dropdown';
-import { linkStyles, StyledListLink } from './styles';
+import { StyledListLink } from './styles';
 
 export const navBarRef = createRef<HTMLDivElement>();
 
@@ -125,30 +115,95 @@ const NavBar = (): ReactElement => {
 						color: ${theme.colors.black};
 					`}
 				>
-					<DataTablesDropdown />
-					<DocumentationDropdown />
-					<Dropdown
-						css={linkStyles}
-						data={[
-							<a href={LYRIC_SWAGGER} target="_blank" rel="noopener noreferrer">
-								<StyledListLink>Lyric API</StyledListLink>
-							</a>,
-							<a href={LECTERN_SWAGGER} target="_blank" rel="noopener noreferrer">
-								<StyledListLink>Lectern API</StyledListLink>
-							</a>,
-							<a href={SONG_SWAGGER} target="_blank" rel="noopener noreferrer">
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SONG) })}>
-									Song API
-								</StyledListLink>
-							</a>,
-							<a href={SCORE_SWAGGER} target="_blank" rel="noopener noreferrer">
-								<StyledListLink className={cx({ active: router.asPath.startsWith(INTERNAL_PATHS.SCORE) })}>
-									Score API
-								</StyledListLink>
-							</a>,
-						]}
-						label="APIs"
-					/>
+					<div
+						css={(theme) => css`
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 144px;
+							background-color: ${theme.colors.white};
+							height: 100%;
+							&:hover {
+								background-color: ${theme.colors.grey_2};
+							}
+							border-right: 2px solid ${theme.colors.white};
+							margin: 0;
+						`}
+					>
+						<InternalLink path="/dataTableOne">
+							<a
+								css={(theme) => css`
+									display: flex;
+									flex: 1;
+									height: 100%;
+									justify-content: center;
+									align-items: center;
+									text-decoration: none;
+									color: ${theme.colors.accent_dark};
+									cursor: pointer;
+									font-size: 14px;
+									font-weight: bold;
+									${router.asPath.startsWith('/dataTableOne') ? activeLinkStyle : ''}
+								`}
+							>
+								Explore Data
+							</a>
+						</InternalLink>
+					</div>
+					<div
+						css={(theme) => css`
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 144px;
+							background-color: ${theme.colors.white};
+							height: 100%;
+							&:hover {
+								background-color: ${theme.colors.grey_2};
+							}
+							border-right: 2px solid ${theme.colors.white};
+							margin: 0;
+						`}
+					>
+						<DocumentationDropdown />
+					</div>
+					<div
+						css={(theme) => css`
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 144px;
+							background-color: ${theme.colors.white};
+							height: 100%;
+							&:hover {
+								background-color: ${theme.colors.grey_2};
+							}
+							border-right: 2px solid ${theme.colors.white};
+							margin: 0;
+						`}
+					>
+						<Dropdown
+							css={css`
+								width: 100%;
+								height: 100%;
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								color: ${theme.colors.accent_dark};
+								font-size: 14px;
+								font-weight: bold;
+							`}
+							data={[
+								<a href={ARRANGER_GQL} target="_blank" rel="noopener noreferrer">
+									<StyledListLink>GraphQL API</StyledListLink>
+								</a>,
+								<a href={INTERNAL_PATHS.ELASTICVUE} target="_blank" rel="noopener noreferrer">
+									<StyledListLink>ElasticVue</StyledListLink>
+								</a>,
+							]}
+							label="APIs"
+						/>
+					</div>
 				</div>
 
 				{/* Auth Section */}

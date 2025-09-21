@@ -1,11 +1,12 @@
 // components/NavBar/DocumentationDropdown.tsx
+import { css, useTheme } from '@emotion/react';
 import cx from 'classnames';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../global/utils/constants';
 import { InternalLink } from '../Link';
 import Dropdown from './Dropdown';
-import { linkStyles, StyledListLink } from './styles';
+import { StyledListLink } from './styles';
 
 interface DocSection {
 	title: string;
@@ -15,6 +16,7 @@ interface DocSection {
 
 const DocumentationDropdown = () => {
 	const router = useRouter();
+	const theme = useTheme();
 	const [docSections, setDocSections] = useState<DocSection[]>([]);
 	const [loading, setLoading] = useState(true);
 
@@ -77,7 +79,23 @@ const DocumentationDropdown = () => {
 	// Generate paths for active state tracking
 	const docPaths = docSections.map((section) => `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}` as INTERNAL_PATHS);
 
-	return <Dropdown css={linkStyles} data={dropdownItems} label="Documentation" urls={docPaths} />;
+	return (
+		<Dropdown
+			css={css`
+				width: 100%;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: ${theme.colors.accent_dark};
+				font-size: 14px;
+				font-weight: bold;
+			`}
+			data={dropdownItems}
+			label="Documentation"
+			urls={docPaths}
+		/>
+	);
 };
 
 // Helper functions
