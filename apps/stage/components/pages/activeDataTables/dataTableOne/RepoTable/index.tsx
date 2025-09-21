@@ -56,7 +56,7 @@ const getTableConfigs = ({
 
 			// appearance
 			background: theme.colors.white,
-			borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+			borderColor: theme.colors.grey_3,
 			css: css`
 				${theme.shadow.default}
 			`,
@@ -66,16 +66,32 @@ const getTableConfigs = ({
 				all: {
 					cellValue: ({ getValue }) => {
 						const value = getValue();
-						return ['', null, 'null', 'NA', undefined, 'undefined'].includes(value) ? (
+						return (
 							<span
 								css={css`
-									color: #9c9c9c;
+									display: block;
+									padding: 4px 8px;
+									margin: -4px -8px;
+									border-radius: 4px;
+									transition: background-color 0.2s ease-in-out;
+
+									&:hover {
+										background-color: ${theme.colors.secondary_light}40;
+									}
 								`}
 							>
-								--
+								{['', null, 'null', 'NA', undefined, 'undefined'].includes(value) ? (
+									<span
+										css={css`
+											color: #9c9c9c;
+										`}
+									>
+										--
+									</span>
+								) : (
+									value
+								)}
 							</span>
-						) : (
-							value
 						);
 					},
 				},
@@ -130,7 +146,7 @@ const getTableConfigs = ({
 				},
 			},
 			HeaderRow: {
-				borderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+				borderColor: theme.colors.grey_3,
 				css: css`
 					${theme.typography.data}
 				`,
@@ -150,8 +166,8 @@ const getTableConfigs = ({
 				`,
 				hoverBackground: theme.colors.grey_highlight,
 				lineHeight: '1.5rem',
-				selectedBackground: theme.colors.accent_highlight,
-				verticalBorderColor: theme.colors.grey_5, // Updated from grey_3 to grey_5 for more contrast
+				selectedBackground: theme.colors.secondary_pale,
+				verticalBorderColor: theme.colors.grey_3,
 			},
 			TableWrapper: {
 				margin: '0.5rem 0',
@@ -167,9 +183,6 @@ const RepoTable = () => {
 	const customExporters = [
 		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
-
-	// console.log('NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD:', config.NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD);
-	// console.log('NEXT_PUBLIC_LAB_NAME:', config.NEXT_PUBLIC_LAB_NAME);
 
 	useArrangerTheme(
 		getTableConfigs({
