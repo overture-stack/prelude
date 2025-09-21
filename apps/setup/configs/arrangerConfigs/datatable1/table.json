@@ -1,5 +1,6 @@
 {
   "table": {
+    "rowIdFieldName": "submission_metadata.submitter_id",
     "columns": [
       {
         "canChangeShow": true,
@@ -187,59 +188,59 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.submitter_id",
+        "fieldName": "submission_metadata.submitter_id",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.submitter_id",
-        "query": "data { submission_metadata { submitter_id } }"
+        "jsonPath": "$.submission_metadata.submitter_id",
+        "query": "submission_metadata { submitter_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.processing_started",
+        "fieldName": "submission_metadata.processing_started",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.processing_started",
-        "query": "data { submission_metadata { processing_started } }"
+        "jsonPath": "$.submission_metadata.processing_started",
+        "query": "submission_metadata { processing_started }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.processed_at",
+        "fieldName": "submission_metadata.processed_at",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.processed_at",
-        "query": "data { submission_metadata { processed_at } }"
+        "jsonPath": "$.submission_metadata.processed_at",
+        "query": "submission_metadata { processed_at }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.source_file",
+        "fieldName": "submission_metadata.source_file",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.source_file",
-        "query": "data { submission_metadata { source_file } }"
+        "jsonPath": "$.submission_metadata.source_file",
+        "query": "submission_metadata { source_file }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.record_number",
+        "fieldName": "submission_metadata.record_number",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.record_number",
-        "query": "data { submission_metadata { record_number } }"
+        "jsonPath": "$.submission_metadata.record_number",
+        "query": "submission_metadata { record_number }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.hostname",
+        "fieldName": "submission_metadata.hostname",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.hostname",
-        "query": "data { submission_metadata { hostname } }"
+        "jsonPath": "$.submission_metadata.hostname",
+        "query": "submission_metadata { hostname }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.submission_metadata.username",
+        "fieldName": "submission_metadata.username",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.data.submission_metadata.username",
-        "query": "data { submission_metadata { username } }"
+        "jsonPath": "$.submission_metadata.username",
+        "query": "submission_metadata { username }"
       }
     ]
   }

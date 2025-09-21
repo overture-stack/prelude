@@ -37,14 +37,14 @@ demo:
 		line1=""; line2=""; line3=""; \
 		while IFS= read -r line; do \
 			line1="$$line2"; line2="$$line3"; line3="$$line"; \
-			printf "\033[4A\033[2K\r\033[1;33mBuilding docker image...\033[0m\n"; \
+			printf "\033[4A\033[2K\r\033[1;33mBuilding portal UI (stage) image (this may take a minute)....\033[0m\n"; \
 			[ -n "$$line1" ] && echo "$$line1" || echo ""; \
 			[ -n "$$line2" ] && echo "$$line2" || echo ""; \
 			[ -n "$$line3" ] && echo "$$line3" || echo ""; \
 		done; \
 	}
 	@echo ""
-	@echo "\033[1;32mPortal UI built!\033[0m"
+	@echo "\033[1;32mStage Portal UI built!\033[0m"
 	@echo ""
 	@PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup 
 
@@ -52,7 +52,7 @@ demo:
 phase1:
 	@echo "\033[1;36mStarting Phase 1 development environment...\033[0m"
 	@echo ""
-	@echo "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m"
+	@echo "\033[1;33mBuilding portal UI image (Stage) (this may take a minute)...\033[0m"
 	@echo ""
 	@echo ""
 	@echo ""
