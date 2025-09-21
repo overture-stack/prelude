@@ -2,7 +2,7 @@
 # Comprehensive Pre-Deployment Checks for Prelude Application
 
 # Minimum Requirements
-DOCKER_ENGINE_MIN_VERSION="20.0.0"  # Docker engine version requirement
+DOCKER_ENGINE_MIN_VERSION="28.0.0"  # Docker engine version requirement
 DOCKER_MIN_CPU_CORES=8
 DOCKER_MIN_MEMORY_GB=8
 DOCKER_MIN_DISK_GB=64
@@ -44,16 +44,6 @@ safe_compare() {
     esac
 }
 
-# Print Minimum Requirements
-print_requirements() {
-    printf "\n\033[1;33mMinimum System Requirements:\033[0m\n"
-    printf "\n\033[1;33m1. Docker:\033[0m\n"
-    printf "   - Engine Version: %s or higher\n" "$DOCKER_ENGINE_MIN_VERSION"
-    printf "   - CPU: %s cores\n" "$DOCKER_MIN_CPU_CORES"
-    printf "   - Memory: %s GB\n" "$DOCKER_MIN_MEMORY_GB"
-    printf "   - Virtual Disk: %s GB\n" "$DOCKER_MIN_DISK_GB"
-}
-
 # Main Deployment Check Script
 main() {
     printf "\n\033[1;36m╔═════════════════════════════════╗\033[0m\n"
@@ -66,7 +56,6 @@ main() {
     # Check Docker CLI installation
     if ! command -v docker >/dev/null 2>&1; then
         printf "\n\033[1;31mError:\033[0m Docker is not installed\033[0m\n"
-        print_requirements
         exit 1
     fi
 
@@ -75,7 +64,10 @@ main() {
     # Check Docker Engine version
     if ! version_check "$DOCKER_ENGINE_MIN_VERSION" "$ENGINE_VERSION"; then
         printf "\n\033[1;31mError:\033[0m Docker Engine version %s does not meet minimum requirement of %s\033[0m\n" "$ENGINE_VERSION" "$DOCKER_ENGINE_MIN_VERSION"
-        print_requirements
+        printf "\n\033[1;33mHow to update Docker:\033[0m\n"
+        printf "   1. Visit https://docs.docker.com/get-docker/ to download the latest version\n"
+        printf "   2. Or update via Docker Desktop: Settings → Software Updates → Check for updates\n"
+        printf "   3. Restart Docker Desktop after updating\n"
         exit 1
     fi
     printf "\033[1;36mInfo:\033[0m Docker Engine version %s detected\033[0m\n" "$ENGINE_VERSION"
@@ -92,11 +84,28 @@ main() {
     DOCKER_INFO=$(docker info 2>/dev/null)
     
     # CPU Cores Check
-    CPU_CORES=$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || echo "0")
+    CPU_CORES=$(docker info 2>/dev/null | grep "CPUs:" | awk '{print $2}' || echo "0")
+    if [ "$CPU_CORES" = "0" ]; then
+        # Fallback to system CPU if Docker info doesn't show CPU allocation
+        CPU_CORES=$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || echo "0")
+    fi
     if ! safe_compare -lt "$CPU_CORES" "$DOCKER_MIN_CPU_CORES"; then
         printf "\033[1;36mInfo:\033[0m Docker CPU allocation meets minimum requirements (%s cores)\033[0m\n" "$CPU_CORES"
     else
         printf "\033[1;33m⚠ Docker CPU cores (%s) are less than recommended (%s)\033[0m\n" "$CPU_CORES" "$DOCKER_MIN_CPU_CORES"
+        printf "\n\033[1;33mRecommendation:\033[0m Please increase Docker CPU allocation to %s cores for Docker.\n" "$DOCKER_MIN_CPU_CORES"
+        printf "This will improve build performance and container execution speed.\n"
+        printf "\nDo you want to continue anyway? [y/N] "
+        read -r response
+        case "$response" in
+            [yY]|[yY][eE][sS])
+                printf "Continuing with current CPU allocation...\n"
+                ;;
+            *)
+                printf "\nDeployment cancelled. Please increase Docker CPU allocation and try again.\n"
+                exit 1
+                ;;
+        esac
     fi
 
     # Memory Check
@@ -106,6 +115,19 @@ main() {
         printf "\033[1;36mInfo:\033[0m Docker memory allocation meets minimum requirements (%s GB)\033[0m\n" "$MEMORY_GB"
     else
         printf "\033[1;33m⚠ Docker memory (%s GB) is less than recommended (%s GB)\033[0m\n" "$MEMORY_GB" "$DOCKER_MIN_MEMORY_GB"
+        printf "\n\033[1;33mRecommendation:\033[0m Please increase Docker memory allocation to %s GB for Docker.\n" "$DOCKER_MIN_MEMORY_GB"
+        printf "This will improve performance and prevent potential out-of-memory issues.\n"
+        printf "\nDo you want to continue anyway? [y/N] "
+        read -r response
+        case "$response" in
+            [yY]|[yY][eE][sS])
+                printf "Continuing with current memory allocation...\n"
+                ;;
+            *)
+                printf "\nDeployment cancelled. Please increase Docker memory allocation and try again.\n"
+                exit 1
+                ;;
+        esac
     fi
 
     # Disk Space Check
@@ -116,6 +138,19 @@ main() {
         printf "\033[1;36mInfo:\033[0m Docker virtual disk space meets minimum requirements (%s GB)\033[0m\n" "$DISK_GB"
     else
         printf "\033[1;33m⚠ Docker virtual disk space (%s GB) is less than recommended (%s GB)\033[0m\n" "$DISK_GB" "$DOCKER_MIN_DISK_GB"
+        printf "\n\033[1;33mRecommendation:\033[0m Please increase Docker virtual disk allocation to %s GB for Docker.\n" "$DOCKER_MIN_DISK_GB"
+        printf "This will prevent disk space issues during container operations and data storage.\n"
+        printf "\nDo you want to continue anyway? [y/N] "
+        read -r response
+        case "$response" in
+            [yY]|[yY][eE][sS])
+                printf "Continuing with current disk allocation...\n"
+                ;;
+            *)
+                printf "\nDeployment cancelled. Please increase Docker disk allocation and try again.\n"
+                exit 1
+                ;;
+        esac
     fi
     
     # System info summary
@@ -127,14 +162,7 @@ main() {
     printf "Disk Space:   \033[0;32m%s GB\033[0m\n" "$DISK_GB"
     printf "─────────────────────────────"
     # Success message + system info
-    printf "\n\033[1;32mSuccess, 🚀 ready to deploy! \033[0m\n"
-
-    # Next step
-    printf "\033[1;32m\033[0m\n"
-    printf "Next step run:\n\n"
-    printf "  \033[1;33mmake demo\033[0m\n"
-
-
+    printf "\n\033[1;32mSuccess, 🚀 ready to deploy \033[0m\n"
 }
 
 # Run the main function
