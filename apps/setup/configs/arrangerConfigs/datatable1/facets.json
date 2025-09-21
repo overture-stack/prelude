@@ -118,37 +118,37 @@
       },
       {
         "active": false,
-        "fieldName": "data__submission_metadata__submitter_id",
+        "fieldName": "submission_metadata__submitter_id",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "data__submission_metadata__processing_started",
+        "fieldName": "submission_metadata__processing_started",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "data__submission_metadata__processed_at",
+        "fieldName": "submission_metadata__processed_at",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "data__submission_metadata__source_file",
+        "fieldName": "submission_metadata__source_file",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "data__submission_metadata__record_number",
+        "fieldName": "submission_metadata__record_number",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "data__submission_metadata__hostname",
+        "fieldName": "submission_metadata__hostname",
         "show": false
       },
       {
         "active": false,
-        "fieldName": "data__submission_metadata__username",
+        "fieldName": "submission_metadata__username",
         "show": false
       }
     ]

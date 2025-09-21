@@ -204,6 +204,7 @@ services:
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
+      NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submitter_id
       # Auth Variables
       NEXTAUTH_SECRET: your-secure-secret-here
       # File Arranger Variables

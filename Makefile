@@ -38,9 +38,9 @@ demo:
 		while IFS= read -r line; do \
 			line1="$$line2"; line2="$$line3"; line3="$$line"; \
 			printf "\033[4A\033[2K\r\033[1;33mBuilding portal UI (stage) image (this may take a minute)....\033[0m\n"; \
-			[ -n "$$line1" ] && echo "$$line1" || echo ""; \
-			[ -n "$$line2" ] && echo "$$line2" || echo ""; \
-			[ -n "$$line3" ] && echo "$$line3" || echo ""; \
+			[ -n "$$line1" ] && echo "$${line1:0:64}" || echo ""; \
+			[ -n "$$line2" ] && echo "$${line2:0:64}" || echo ""; \
+			[ -n "$$line3" ] && echo "$${line3:0:64}" || echo ""; \
 		done; \
 	}
 	@echo ""
@@ -61,9 +61,9 @@ phase1:
 		while IFS= read -r line; do \
 			line1="$$line2"; line2="$$line3"; line3="$$line"; \
 			printf "\033[4A\033[2K\r\033[1;33mBuilding docker image...\033[0m\n"; \
-			[ -n "$$line1" ] && echo "$$line1" || echo ""; \
-			[ -n "$$line2" ] && echo "$$line2" || echo ""; \
-			[ -n "$$line3" ] && echo "$$line3" || echo ""; \
+			[ -n "$$line1" ] && echo "$${line1:0:24}" || echo ""; \
+			[ -n "$$line2" ] && echo "$${line2:0:24}" || echo ""; \
+			[ -n "$$line3" ] && echo "$${line3:0:24}" || echo ""; \
 		done; \
 	}
 	@echo ""

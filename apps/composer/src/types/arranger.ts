@@ -32,6 +32,7 @@ export interface TableColumn {
 
 export interface ArrangerTableConfig {
   table: {
+    rowIdFieldName: string;
     columns: TableColumn[];
   };
 }

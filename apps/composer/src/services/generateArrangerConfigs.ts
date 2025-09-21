@@ -362,38 +362,56 @@ export function ArrangerConfigs(
     // Track field types for the entire mapping
     recursivelyTrackFieldTypes(mappingProperties);
 
-    // Detect if we have a top-level container field like 'data'
-    // and set up the base path accordingly
+    // Process all root-level fields, handling both data container and submission_metadata
+    Logger.info`Processing all root-level fields including data and submission_metadata`;
+
+    // Combine results from processing all root-level fields
+    let allExtendedFields: ExtendedField[] = [];
+    let allTableColumns: TableColumn[] = [];
+    let allFacetAggregations: FacetAggregation[] = [];
+
+    // Process each top-level field separately
     for (const [topFieldName, topField] of Object.entries(mappingProperties)) {
       if (topField.type === "object" && topField.properties) {
-        Logger.info`Found top-level object field '${topFieldName}', will use as base path`;
-        basePath = [topFieldName];
-        break;
+        Logger.info`Processing top-level object field '${topFieldName}'`;
+
+        // For container fields like 'data', process their nested properties with the container as base path
+        if (isContainerField(topFieldName)) {
+          const { extendedFields, tableColumns, facetAggregations } = processFields(
+            topField.properties,
+            [topFieldName],
+            fieldTypeMap
+          );
+          allExtendedFields.push(...extendedFields);
+          allTableColumns.push(...tableColumns);
+          allFacetAggregations.push(...facetAggregations);
+        } else {
+          // For non-container object fields (like submission_metadata), process them as root-level fields
+          const { extendedFields, tableColumns, facetAggregations } = processFields(
+            { [topFieldName]: topField },
+            [],
+            fieldTypeMap
+          );
+          allExtendedFields.push(...extendedFields);
+          allTableColumns.push(...tableColumns);
+          allFacetAggregations.push(...facetAggregations);
+        }
+      } else {
+        // Process primitive root-level fields
+        const { extendedFields, tableColumns, facetAggregations } = processFields(
+          { [topFieldName]: topField },
+          [],
+          fieldTypeMap
+        );
+        allExtendedFields.push(...extendedFields);
+        allTableColumns.push(...tableColumns);
+        allFacetAggregations.push(...facetAggregations);
       }
     }
 
-    // Process fields with or without a base path
-    Logger.info`Using base path: ${
-      basePath.length ? basePath.join(".") : "(none)"
-    }`;
-
-    // Extract fields to process - if we have a base path, use properties from that field
-    const fieldsToProcess =
-      basePath.length > 0
-        ? (mappingProperties[basePath[0]] as ElasticsearchField).properties ||
-          {}
-        : mappingProperties;
-
-    // Process the fields, passing along the field type map
-    const { extendedFields, tableColumns, facetAggregations } = processFields(
-      fieldsToProcess,
-      basePath,
-      fieldTypeMap
-    );
-
-    Logger.info`Generated ${extendedFields.length} extended fields`;
-    Logger.info`Generated ${tableColumns.length} table columns`;
-    Logger.info`Generated ${facetAggregations.length} facet aggregations`;
+    Logger.info`Generated ${allExtendedFields.length} extended fields`;
+    Logger.info`Generated ${allTableColumns.length} table columns`;
+    Logger.info`Generated ${allFacetAggregations.length} facet aggregations`;
 
     // Create configurations
     const configs = {
@@ -402,16 +420,17 @@ export function ArrangerConfigs(
         index: indexName,
       },
       extended: {
-        extended: extendedFields,
+        extended: allExtendedFields,
       },
       table: {
         table: {
-          columns: tableColumns,
+          rowIdFieldName: "submission_metadata.submitter_id",
+          columns: allTableColumns,
         },
       },
       facets: {
         facets: {
-          aggregations: facetAggregations,
+          aggregations: allFacetAggregations,
         },
       },
     };

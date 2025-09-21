@@ -35,15 +35,18 @@ import urlJoin from 'url-join';
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
 import { INTERNAL_API_PROXY } from '@/global/utils/constants';
+import { getConfig } from '@/global/config';
 
 const getTableConfigs = ({
 	apiHost,
 	customExporters,
 	theme,
+	exportSelectedRowsField,
 }: {
 	apiHost: string;
 	customExporters?: CustomExporterInput;
 	theme: StageThemeInterface;
+	exportSelectedRowsField: string;
 }): UseThemeContextProps => ({
 	callerName: 'RepoTable',
 	components: {
@@ -82,7 +85,7 @@ const getTableConfigs = ({
 			},
 			DownloadButton: {
 				customExporters,
-				exportSelectedRowsField: 'submission_metadata.submitter_id',
+				exportSelectedRowsField,
 				downloadUrl: urlJoin(apiHost, 'download'),
 				label: () => (
 					<>
@@ -159,12 +162,18 @@ const getTableConfigs = ({
 
 const RepoTable = () => {
 	const theme = useTheme();
+	const config = getConfig();
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 	const customExporters = [
 		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
 	];
 
-	useArrangerTheme(getTableConfigs({ apiHost: INTERNAL_API_PROXY.DATATABLE_2_ARRANGER, customExporters, theme }));
+	useArrangerTheme(getTableConfigs({
+		apiHost: INTERNAL_API_PROXY.DATATABLE_2_ARRANGER,
+		customExporters,
+		theme,
+		exportSelectedRowsField: config.NEXT_PUBLIC_DATATABLE_2_EXPORT_ROW_ID_FIELD,
+	}));
 
 	return useMemo(
 		() => (

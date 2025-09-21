@@ -204,24 +204,32 @@ export function generateMappingFromCSV(
       Logger.debug`Complex fields: ${complexFieldCount}`;
     }
 
-    // Create data properties with or without submission metadata
-    const dataProperties = skipMetadata
-      ? { ...properties }
-      : {
-          ...properties,
-          submission_metadata: {
-            type: "object" as const,
-            properties: {
-              submitter_id: { type: "keyword" as const, null_value: "No Data" },
-              processing_started: { type: "date" as const },
-              processed_at: { type: "date" as const },
-              source_file: { type: "keyword" as const, null_value: "No Data" },
-              record_number: { type: "integer" as const },
-              hostname: { type: "keyword" as const, null_value: "No Data" },
-              username: { type: "keyword" as const, null_value: "No Data" },
-            },
-          },
-        };
+    // Create data properties (only the CSV fields)
+    const dataProperties = { ...properties };
+
+    // Create root-level properties with data and optionally submission_metadata
+    const rootProperties: Record<string, ElasticsearchField> = {
+      data: {
+        type: "object" as const,
+        properties: dataProperties,
+      },
+    };
+
+    // Add submission_metadata at root level if not skipped
+    if (!skipMetadata) {
+      rootProperties.submission_metadata = {
+        type: "object" as const,
+        properties: {
+          submitter_id: { type: "keyword" as const, null_value: "No Data" },
+          processing_started: { type: "date" as const },
+          processed_at: { type: "date" as const },
+          source_file: { type: "keyword" as const, null_value: "No Data" },
+          record_number: { type: "integer" as const },
+          hostname: { type: "keyword" as const, null_value: "No Data" },
+          username: { type: "keyword" as const, null_value: "No Data" },
+        },
+      };
+    }
 
     const mapping: ElasticsearchMapping = {
       index_patterns: [`${indexName}-*`],
@@ -229,12 +237,7 @@ export function generateMappingFromCSV(
         [`${indexName}_centric`]: {},
       },
       mappings: {
-        properties: {
-          data: {
-            type: "object" as const,
-            properties: dataProperties,
-          },
-        },
+        properties: rootProperties,
       },
       settings: {
         number_of_shards: 1,

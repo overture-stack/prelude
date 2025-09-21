@@ -259,24 +259,32 @@ export function generateMappingFromLectern(
 
     Logger.info`Generated mapping for ${totalFieldCount} unique fields`;
 
-    // Create the data object structure
-    const dataProperties = skipMetadata
-      ? { ...allProperties }
-      : {
-          ...allProperties,
-          submission_metadata: {
-            type: "object" as const,
-            properties: {
-              submitter_id: { type: "keyword" as const, null_value: "No Data" },
-              processing_started: { type: "date" as const },
-              processed_at: { type: "date" as const },
-              source_file: { type: "keyword" as const, null_value: "No Data" },
-              record_number: { type: "integer" as const },
-              hostname: { type: "keyword" as const, null_value: "No Data" },
-              username: { type: "keyword" as const, null_value: "No Data" },
-            },
-          },
-        };
+    // Create data properties (only the Lectern fields)
+    const dataProperties = { ...allProperties };
+
+    // Create root-level properties with data and optionally submission_metadata
+    const rootProperties: Record<string, ElasticsearchField> = {
+      data: {
+        type: "object" as const,
+        properties: dataProperties,
+      },
+    };
+
+    // Add submission_metadata at root level if not skipped
+    if (!skipMetadata) {
+      rootProperties.submission_metadata = {
+        type: "object" as const,
+        properties: {
+          submitter_id: { type: "keyword" as const, null_value: "No Data" },
+          processing_started: { type: "date" as const },
+          processed_at: { type: "date" as const },
+          source_file: { type: "keyword" as const, null_value: "No Data" },
+          record_number: { type: "integer" as const },
+          hostname: { type: "keyword" as const, null_value: "No Data" },
+          username: { type: "keyword" as const, null_value: "No Data" },
+        },
+      };
+    }
 
     // Build the final mapping
     const mapping: ElasticsearchMapping = {
@@ -285,12 +293,7 @@ export function generateMappingFromLectern(
         [`${indexName}_centric`]: {},
       },
       mappings: {
-        properties: {
-          data: {
-            type: "object" as const,
-            properties: dataProperties,
-          },
-        },
+        properties: rootProperties,
       },
       settings: {
         number_of_shards: 1,
