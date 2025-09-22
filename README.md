@@ -18,7 +18,8 @@ An interactive demo environment showcasing Overture's search and exploration ser
    make demo
    ```
 
-> [!IMPORTANT] > **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.
+> [!IMPORTANT]
+> **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.
 
 ## Architecture
 
