@@ -5,7 +5,7 @@ import { createRef, ReactElement } from 'react';
 
 import { getConfig } from '../../global/config';
 import useAuthContext from '../../global/hooks/useAuthContext';
-import { ARRANGER_GQL, INTERNAL_PATHS, LOGIN_PATH, USER_PATH } from '../../global/utils/constants';
+import { ARRANGER_GQL, ELASTICVUE_DOCS, INTERNAL_PATHS, LOGIN_PATH, USER_PATH } from '../../global/utils/constants';
 import { InternalLink, StyledLinkAsButton } from '../Link';
 import defaultTheme from '../theme';
 import UserDropdown from '../UserDropdown';
@@ -197,7 +197,7 @@ const NavBar = (): ReactElement => {
 								<a href={ARRANGER_GQL} target="_blank" rel="noopener noreferrer">
 									<StyledListLink>GraphQL API</StyledListLink>
 								</a>,
-								<a href={INTERNAL_PATHS.ELASTICVUE} target="_blank" rel="noopener noreferrer">
+								<a href={ELASTICVUE_DOCS} target="_blank" rel="noopener noreferrer">
 									<StyledListLink>ElasticVue</StyledListLink>
 								</a>,
 							]}
