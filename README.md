@@ -18,8 +18,7 @@ An interactive demo environment showcasing Overture's search and exploration ser
    make demo
    ```
 
-> [!IMPORTANT]
-> **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.
+> [!IMPORTANT] > **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.
 
 ## Architecture
 
@@ -41,7 +40,7 @@ This architecture can be built on top of existing databases using a simple index
 > [!NOTE]
 > If you have any questions reach out via the [community support channels](https://docs.overture.bio/community/support) or email us at [contact@overture.bio](mailto:contact@overture.bio) we are happy to provide support.
 
-## Chart Filters
+## Future Release
 
 We're actively developing enhanced data visualization capabilities for Arranger, including interactive charts. This will extend the current search and filtering functionality with visual representations of data.
 
