@@ -18,11 +18,10 @@ An interactive demo environment showcasing Overture's search and exploration ser
    make demo
    ```
 
-> [!IMPORTANT] > **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.
+> [!IMPORTANT]
+> **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.
 
 ## Architecture
-
-The demo follows four main components:
 
 1. **Demo Data ETL**: CSV files with demo data are processed by Conductor
 2. **Indexing**: Data is indexed in Elasticsearch
@@ -33,7 +32,7 @@ The demo follows four main components:
 
 ### Custom Integrations
 
-This architecture can be built on top of existing databases using a simple indexing script that extracts, transforms, and loads your data into Elasticsearch.
+This architecture can be built on top of any existing databases with a relatively simple indexing script that extracts, transforms, and loads your data into Elasticsearch.
 
 ![Custom Build](/apps/stage/public/docs/images/platformintegration.png)
 
