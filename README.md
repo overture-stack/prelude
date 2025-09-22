@@ -40,6 +40,15 @@ This architecture can be built on top of existing databases using a simple index
 
 > [!NOTE] If you have any questions reach out via the [community support channels](https://docs.overture.bio/community/support) or email us at [contact@overture.bio](mailto:contact@overture.bio) we are happy to provide support.
 
+## Chart Filters
+
+We're actively developing enhanced data visualization capabilities for Arranger, including interactive charts. This will extend the current search and filtering functionality with visual representations of data.
+
+![Arranger Charts](/apps/stage/public/docs/images/charts.png)
+
+> [!IMPORTANT]
+> This is a mockup of features currently under development and subject to change.
+
 ## Windows Support
 
 Prelude is designed for Linux/macOS environments. Windows users should use WSL2:
