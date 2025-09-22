@@ -4,6 +4,10 @@ Welcome to our search and exploration demo environment! If you want to get start
 
 ## Overture's Search and Exploration Architecture
 
+<p align="center">
+   <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Search & Explore Demo" width="800">
+</p>
+
 We arbitrarily split our Overture platform across three main areas:
 
 | Area                  | Component              | Function                     |
