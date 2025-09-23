@@ -48,7 +48,7 @@ export interface EnvConfig {
   esShards?: number;
   esReplicas?: number;
   esIgnoredFields?: string[];
-  esIgnoredSchemas?: string[]; // NEW: Environment support for ignored schemas
+  esIgnoredSchemas?: string[];
   esSkipMetadata?: boolean;
 
   // CSV options
