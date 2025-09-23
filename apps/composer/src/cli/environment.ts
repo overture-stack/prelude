@@ -37,6 +37,9 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
 
   // Arranger options
   arrangerDocType: "ARRANGER_DOC_TYPE",
+
+  // PostgreSQL options
+  postgresTableName: "POSTGRES_TABLE_NAME",
 };
 
 /**
@@ -74,6 +77,9 @@ export function loadEnvironmentConfig(): EnvConfig {
 
       // Arranger options
       arrangerDocType: process.env.ARRANGER_DOC_TYPE || "file",
+
+      // PostgreSQL options
+      postgresTableName: process.env.POSTGRES_TABLE_NAME,
     };
 
     // Log overridden defaults

@@ -1,6 +1,6 @@
 {
   "table": {
-    "rowIdFieldName": "submission_metadata.submitter_id",
+    "rowIdFieldName": "submission_metadata.submission_id",
     "columns": [
       {
         "canChangeShow": true,
@@ -188,19 +188,19 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.submitter_id",
+        "fieldName": "submission_metadata.submission_id",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metadata.submitter_id",
-        "query": "submission_metadata { submitter_id }"
+        "jsonPath": "$.submission_metadata.submission_id",
+        "query": "submission_metadata { submission_id }"
       },
       {
         "canChangeShow": true,
-        "fieldName": "submission_metadata.processing_started",
+        "fieldName": "submission_metadata.source_file_hash",
         "show": false,
         "sortable": true,
-        "jsonPath": "$.submission_metadata.processing_started",
-        "query": "submission_metadata { processing_started }"
+        "jsonPath": "$.submission_metadata.source_file_hash",
+        "query": "submission_metadata { source_file_hash }"
       },
       {
         "canChangeShow": true,
@@ -209,38 +209,6 @@
         "sortable": true,
         "jsonPath": "$.submission_metadata.processed_at",
         "query": "submission_metadata { processed_at }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.source_file",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.source_file",
-        "query": "submission_metadata { source_file }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.record_number",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.record_number",
-        "query": "submission_metadata { record_number }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.hostname",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.hostname",
-        "query": "submission_metadata { hostname }"
-      },
-      {
-        "canChangeShow": true,
-        "fieldName": "submission_metadata.username",
-        "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.username",
-        "query": "submission_metadata { username }"
       }
     ]
   }

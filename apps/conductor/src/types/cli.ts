@@ -16,6 +16,21 @@ interface Config {
     templateName?: string;
     alias?: string;
   };
+  postgresql?: {
+    connectionString?: string;
+    host?: string;
+    port?: number;
+    database?: string;
+    user?: string;
+    username?: string;
+    password?: string;
+    ssl?: boolean;
+    table?: string;
+    addMetadata?: boolean;
+    maxConnections?: number;
+    idleTimeoutMillis?: number;
+    connectionTimeoutMillis?: number;
+  };
   lectern?: {
     url?: string;
     authToken?: string;

@@ -18,6 +18,9 @@ import { SongCreateStudyCommand } from "./songCreateStudyCommand";
 import { SongSubmitAnalysisCommand } from "./songSubmitAnalysisCommand";
 import { SongPublishAnalysisCommand } from "./songPublishAnalysisCommand";
 import { MaestroIndexCommand } from "./maestroIndexCommand";
+import { PostgresUploadCommand } from "./postgresUploadCommand";
+import { PostgresIndexCommand } from "./postgresIndexCommand";
+import { PostgresFullPipelineCommand } from "./postgresFullPipelineCommand";
 
 // Only export what's actually needed externally
 type CommandConstructor = new () => Command;
@@ -38,9 +41,9 @@ export class CommandRegistry {
       "upload",
       {
         name: "upload",
-        description: "Upload CSV data to Elasticsearch",
-        category: "Data Upload",
-        constructor: UploadCommand,
+        description: "Complete workflow: CSV → PostgreSQL → Elasticsearch",
+        category: "Data Pipeline",
+        constructor: PostgresFullPipelineCommand,
       },
     ],
     [
@@ -113,6 +116,33 @@ export class CommandRegistry {
         description: "Index data using Maestro",
         category: "Data Indexing",
         constructor: MaestroIndexCommand,
+      },
+    ],
+    [
+      "esupload",
+      {
+        name: "esupload",
+        description: "Upload CSV data directly to Elasticsearch",
+        category: "Data Upload",
+        constructor: UploadCommand,
+      },
+    ],
+    [
+      "dbupload",
+      {
+        name: "dbupload",
+        description: "Upload CSV data to PostgreSQL database",
+        category: "Data Upload",
+        constructor: PostgresUploadCommand,
+      },
+    ],
+    [
+      "indexDb",
+      {
+        name: "indexDb",
+        description: "Index PostgreSQL table data to Elasticsearch",
+        category: "Data Indexing",
+        constructor: PostgresIndexCommand,
       },
     ],
   ]);

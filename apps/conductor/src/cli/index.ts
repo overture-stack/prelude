@@ -20,6 +20,9 @@ type CLIprofile =
   | "lyricRegister"
   | "lyricUpload"
   | "maestroIndex"
+  | "esupload"
+  | "dbupload"
+  | "indexDb"
   | "songUploadSchema"
   | "songCreateStudy"
   | "songSubmitAnalysis"
@@ -122,6 +125,15 @@ export async function setupCLI(): Promise<CLIOutput> {
       case "songPublishAnalysis":
         profile = "songPublishAnalysis";
         break;
+      case "esupload":
+        profile = "esupload";
+        break;
+      case "dbupload":
+        profile = "dbupload";
+        break;
+      case "indexDb":
+        profile = "indexDb";
+        break;
       default:
         throw ErrorFactory.args(`Unsupported command: ${commandName}`, [
           "This command is not yet implemented",
@@ -140,6 +152,7 @@ export async function setupCLI(): Promise<CLIOutput> {
       "songCreateStudy",
       "songSubmitAnalysis",
       "songPublishAnalysis",
+      "dbupload",  // PostgreSQL upload doesn't require Elasticsearch
     ];
 
     if (!skipElasticsearchValidation.includes(profile)) {
@@ -287,6 +300,16 @@ function createSimplifiedConfig(options: any): Config {
         repositoryCode: options.repositoryCode,
         organization: options.organization,
         id: options.id,
+      },
+      postgresql: {
+        host: options.dbHost?.split(':')[0] || options.pgHost || "localhost",
+        port: parseInt(options.dbHost?.split(':')[1] || options.pgPort || "5435"),
+        database: options.dbName || options.pgDatabase || "overtureDb",
+        user: options.dbUser || options.pgUsername || "admin",
+        username: options.dbUser || options.pgUsername || "admin",
+        password: options.dbPass || options.pgPassword || "admin123",
+        table: options.table || options.pgTable || "data",
+        addMetadata: true,
       },
       batchSize: esConfig.batchSize,
       delimiter: esConfig.delimiter,

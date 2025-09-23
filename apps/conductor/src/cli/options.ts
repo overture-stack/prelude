@@ -31,23 +31,73 @@ export function configureCommandOptions(program: Command): void {
       process.exit(0);
     });
 
-  // Upload command - the only visible command
+  // Main commands - visible in help
   program
     .command("upload")
-    .description("Upload data to Elasticsearch")
+    .description("Complete workflow: CSV → PostgreSQL → Elasticsearch")
     .option("-f, --file <files...>", "Input files to process")
-    .option("-i, --index <name>", "Elasticsearch index name")
-    .option("-b, --batch-size <size>", "Batch size for uploads")
-    .option("--delimiter <char>", "CSV delimiter character")
-    .option("-o, --output <path>", "Output directory for generated files")
+    .option("-t, --table <name>", "Database table name", "data")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("-b, --batch-size <size>", "Batch size for operations", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--db-host <host>", "PostgreSQL host:port", "localhost:5435")
+    .option("--db-name <name>", "PostgreSQL database name", "overtureDb")
+    .option("--db-user <user>", "PostgreSQL username", "admin")
+    .option("--db-pass <password>", "PostgreSQL password", "admin123")
+    .option("--es-host <host>", "Elasticsearch host:port", "localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option("--es-pass <password>", "Elasticsearch password", "myelasticpassword")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("esupload")
+    .description("Upload CSV data directly to Elasticsearch")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--es-host <host>", "Elasticsearch host:port", "localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option("--es-pass <password>", "Elasticsearch password", "myelasticpassword")
     .option("--force", "Force overwrite of existing files")
-    .option("--url <url>", "Elasticsearch URL")
-    .option("--user <username>", "Elasticsearch username", "elastic")
-    .option(
-      "--password <password>",
-      "Elasticsearch password",
-      "myelasticpassword"
-    )
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("dbupload")
+    .description("Upload CSV data to PostgreSQL database")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-t, --table <name>", "Database table name", "data")
+    .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--db-host <host>", "PostgreSQL host:port", "localhost:5435")
+    .option("--db-name <name>", "PostgreSQL database name", "overtureDb")
+    .option("--db-user <user>", "PostgreSQL username", "admin")
+    .option("--db-pass <password>", "PostgreSQL password", "admin123")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("indexDb")
+    .description("Index PostgreSQL table data to Elasticsearch")
+    .option("-t, --table <name>", "Database table name", "data")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("-b, --batch-size <size>", "Batch size for operations", "1000")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--db-host <host>", "PostgreSQL host:port", "localhost:5435")
+    .option("--db-name <name>", "PostgreSQL database name", "overtureDb")
+    .option("--db-user <user>", "PostgreSQL username", "admin")
+    .option("--db-pass <password>", "PostgreSQL password", "admin123")
+    .option("--es-host <host>", "Elasticsearch host:port", "localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option("--es-pass <password>", "Elasticsearch password", "myelasticpassword")
     .action(() => {
       /* Handled by main.ts */
     });
@@ -280,6 +330,7 @@ export function configureCommandOptions(program: Command): void {
     .action(() => {
       /* Handled by main.ts */
     });
+
 }
 
 /**
@@ -377,16 +428,41 @@ export function parseCommandLineArgs(options: any): CLIOutput {
       );
     }
 
+    // Parse host:port combinations for new standardized format
+    const parseHostPort = (hostPort: string, defaultHost: string, defaultPort: string) => {
+      if (hostPort.includes(':')) {
+        const [host, port] = hostPort.split(':');
+        return { host, port: parseInt(port) || parseInt(defaultPort) };
+      }
+      return { host: hostPort, port: parseInt(defaultPort) };
+    };
+
+    // Parse database connection
+    const dbHostPort = parseHostPort(
+      options.dbHost || process.env.DB_HOST || "localhost:5435",
+      "localhost",
+      "5435"
+    );
+
+    // Parse Elasticsearch connection
+    const esHostPort = parseHostPort(
+      options.esHost || process.env.ES_HOST || "localhost:9200",
+      "localhost",
+      "9200"
+    );
+
+    // Build Elasticsearch URL
+    const esUrl = esHostPort.port === 443 || esHostPort.port === 9243
+      ? `https://${esHostPort.host}:${esHostPort.port}`
+      : `http://${esHostPort.host}:${esHostPort.port}`;
+
     // Create config object with support for all services
     const config = {
       elasticsearch: {
-        url:
-          options.url ||
-          process.env.ELASTICSEARCH_URL ||
-          "http://localhost:9200",
-        user: options.user || process.env.ELASTICSEARCH_USER,
-        password: options.password || process.env.ELASTICSEARCH_PASSWORD,
-        index: options.index || options.indexName || "conductor-data",
+        url: options.url || process.env.ELASTICSEARCH_URL || esUrl,
+        user: options.esUser || options.user || process.env.ELASTICSEARCH_USER || "elastic",
+        password: options.esPass || options.password || process.env.ELASTICSEARCH_PASSWORD || "myelasticpassword",
+        index: options.index || options.indexName || "data",
         templateFile: options.templateFile,
         templateName: options.templateName,
         alias: options.aliasName,
@@ -445,6 +521,16 @@ export function parseCommandLineArgs(options: any): CLIOutput {
         repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
         organization: options.organization || process.env.ORGANIZATION,
         id: options.id || process.env.ID,
+      },
+      postgresql: {
+        host: dbHostPort.host,
+        port: dbHostPort.port,
+        database: options.dbName || options.pgDatabase || process.env.POSTGRES_DATABASE || "overtureDb",
+        user: options.dbUser || options.pgUsername || process.env.POSTGRES_USERNAME || "admin",
+        username: options.dbUser || options.pgUsername || process.env.POSTGRES_USERNAME || "admin",
+        password: options.dbPass || options.pgPassword || process.env.POSTGRES_PASSWORD || "admin123",
+        table: options.table || options.pgTable || process.env.POSTGRES_TABLE || "data",
+        addMetadata: true,
       },
       batchSize,
       delimiter: options.delimiter || ",",

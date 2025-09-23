@@ -10,7 +10,7 @@ services:
     #  Update the enviorment variables here according to your specific project           #
     #  More information can be found within the docs folder                              #
     # ================================================================================== #
-    profiles: ["demo", "phase1", "stageDev", "default"]
+    profiles: ["demo", "demopg", "default"]
     image: alpine/curl:8.8.0
     container_name: setup
     ports:
@@ -23,6 +23,14 @@ services:
       # Global Configuration
       PROFILE: ${PROFILE:-default}
       DEBUG: false
+      # PostgreSQL Configuration
+      POSTGRES_CONFIGS_DIR: setup/configs/postgresConfigs
+      # PostgreSQL Connection
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: overtureDb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
       # Elasticsearch Index Configuration
       ES_INDEX_COUNT: 1
       # First index
@@ -48,15 +56,10 @@ services:
             chmod +x setup/scripts/deployments/demo.sh
             setup/scripts/deployments/demo.sh
             ;;
-          "phase1")
-            echo "Running phase1 deployment..."
-            chmod +x setup/scripts/deployments/phase1.sh
-            setup/scripts/deployments/phase1.sh
-            ;;
-          "stageDev")
-            echo "Running Stage Dev deployment..."
-            chmod +x setup/scripts/deployments/stageDev.sh
-            setup/scripts/deployments/stageDev.sh
+          "demopg")
+            echo "Running demopg deployment..."
+            chmod +x setup/scripts/deployments/demopg.sh
+            setup/scripts/deployments/demopg.sh
             ;;
           *)
             echo "Invalid profile specified."
@@ -72,37 +75,64 @@ services:
       retries: 100
       start_period: 30s
     networks:
-      - conductor-network
+      - platform-network
 
   # --------------------------------------------------------------------------------------#
   # Conductor CLI - Data Upload Service                                                  #
   # --------------------------------------------------------------------------------------#
   # Pre-built Node.js container for running conductor CLI operations                     #
   # --------------------------------------------------------------------------------------#
-  conductor-cli:
-    profiles: ["demo", "phase1", "stageDev", "default"]
-    build:
-      context: ./apps/conductor
-      dockerfile: Dockerfile
-    image: conductor-cli:1.0
-    container_name: conductor-cli
+  # conductor-cli:
+  #   profiles: ["demo", "demopg", "default"]
+  #   build:
+  #     context: ./apps/conductor
+  #     dockerfile: Dockerfile
+  #   image: conductor-cli:1.0
+  #   container_name: conductor-cli
+  #   volumes:
+  #     - ./data:/data
+  #   # Environment variables removed - using hardcoded values in command
+  #   command: >
+  #     sh -c '
+  #       echo "Starting conductor CLI - data upload service"
+  #       echo "Available files in /data: $(ls -la /data/ || echo none)"
+  #       node dist/main.js upload \
+  #         --url http://elasticsearch:9200 \
+  #         -f /data/datatable1.csv \
+  #         -i datatable1-index
+  #     '
+  #   depends_on:
+  #     setup:
+  #       condition: service_completed_successfully
+  #   networks:
+  #     - platform-network
+
+  # -----------------------------------------------------------------------------------#
+  # PostgreSQL                                                                         #
+  # -----------------------------------------------------------------------------------#
+  # Persistant storage for data being indexed into elasticsearch.                      #
+  # -----------------------------------------------------------------------------------#
+  postgres:
+    profiles: ["demopg", "default"]
+    image: postgres:15-alpine
+    container_name: postgres
+    platform: linux/amd64
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: admin
+      POSTGRES_DB: overtureDb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
     volumes:
-      - ./data:/data
-    # Environment variables removed - using hardcoded values in command
-    command: >
-      sh -c '
-        echo "Starting conductor CLI - data upload service"
-        echo "Available files in /data: $(ls -la /data/ || echo none)"
-        node dist/main.js upload \
-          --url http://elasticsearch:9200 \
-          -f /data/datatable1.csv \
-          -i datatable1-index
-      '
-    depends_on:
-      setup:
-        condition: service_completed_successfully
+      - postgres-data:/var/lib/postgresql/data
     networks:
-      - conductor-network
+      - platform-network
 
   # --------------------------------------------------------------------------------------#
   # Elasticsearch                                                                         #
@@ -111,7 +141,7 @@ services:
   # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
   # --------------------------------------------------------------------------------------#
   elasticsearch:
-    profiles: ["demo", "phase1", "stageDev", "default"]
+    profiles: ["demo", "demopg", "default"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
     container_name: elasticsearch
     platform: linux/amd64
@@ -140,7 +170,7 @@ services:
       retries: 5
       start_period: 25s
     networks:
-      - conductor-network
+      - platform-network
 
   # ------------------------------------------------------------------------------------#
   # Arranger-Server for our tabular data                                                #
@@ -149,7 +179,7 @@ services:
   # https://docs.overture.bio/docs/core-software/Arranger/overview                      #
   # ------------------------------------------------------------------------------------#
   arranger-datatable1:
-    profiles: ["demo", "phase1", "stageDev", "default"]
+    profiles: ["demo", "demopg", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-datatable1
     platform: linux/amd64
@@ -165,13 +195,13 @@ services:
       ES_HOST: http://elasticsearch:9200
       ES_USER: elastic
       ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: data_arranger_set
+      ES_ARRANGER_SET_INDEX: datatable1_arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
       ENABLE_LOGS: false
     networks:
-      - conductor-network
+      - platform-network
 
   # ------------------------------------------------------------------------------------#
   # Stage                                                                               #
@@ -180,7 +210,7 @@ services:
   # https://docs.overture.bio/docs/core-software/Stage/overview                         #
   # ------------------------------------------------------------------------------------#
   stage:
-    profiles: ["demo", "phase1", "default"]
+    profiles: ["demo", "demopg", "default"]
     build:
       context: ./apps/stage
       dockerfile: Dockerfile
@@ -211,11 +241,12 @@ services:
     volumes:
       - stage-data:/usr/src/public/static/dms_user_assets
     networks:
-      - conductor-network
+      - platform-network
 
 volumes:
   elasticsearch-data:
   stage-data:
+  postgres-data:
 networks:
-  conductor-network:
+  platform-network:
     driver: bridge

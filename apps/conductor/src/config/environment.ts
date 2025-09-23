@@ -15,6 +15,14 @@ interface ServiceEndpoints {
     user: string;
     password: string;
   };
+  postgresql: {
+    host: string;
+    port: number;
+    database: string;
+    username: string;
+    password: string;
+    table: string;
+  };
   lectern: {
     url: string;
     authToken: string;
@@ -68,6 +76,14 @@ export class Environment {
           url: process.env.ELASTICSEARCH_URL || "http://localhost:9200",
           user: process.env.ELASTICSEARCH_USER || "elastic",
           password: process.env.ELASTICSEARCH_PASSWORD || "myelasticpassword",
+        },
+        postgresql: {
+          host: process.env.POSTGRES_HOST || "localhost",
+          port: parseInt(process.env.POSTGRES_PORT || "5432"),
+          database: process.env.POSTGRES_DATABASE || "conductor",
+          username: process.env.POSTGRES_USERNAME || "postgres",
+          password: process.env.POSTGRES_PASSWORD || "password",
+          table: process.env.POSTGRES_TABLE || "data",
         },
         lectern: {
           url: process.env.LECTERN_URL || "http://localhost:3031",

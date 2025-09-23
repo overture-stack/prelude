@@ -1,6 +1,7 @@
 // src/types/cli.ts - Updated to include Lectern dictionary support
 import { Profiles } from "./profiles";
 import { ArrangerConfig } from "./arranger";
+import { PostgresConfig } from "./postgres"; // IMPORT FROM POSTGRES TYPES
 
 export type Profile = (typeof Profiles)[keyof typeof Profiles];
 
@@ -55,9 +56,12 @@ export interface EnvConfig {
 
   // Arranger options
   arrangerDocType?: string;
+
+  // PostgreSQL options
+  postgresTableName?: string;
 }
 
-// Main CLI output interface
+// Main CLI output interface with PostgreSQL support
 export interface CLIOutput {
   profile: Profile;
   debug?: boolean;
@@ -73,5 +77,6 @@ export interface CLIOutput {
   // Command-specific configs (optional)
   dictionaryConfig?: DictionaryConfig;
   songConfig?: SongConfig;
+  postgresConfig?: PostgresConfig; // USES IMPORTED TYPE
   arrangerConfig?: ArrangerConfig;
 }

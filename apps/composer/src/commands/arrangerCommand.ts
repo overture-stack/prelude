@@ -43,15 +43,7 @@ export class ArrangerCommand extends Command {
     Logger.debug`Starting ArrangerCommand validation`;
     await super.validate(cliOutput);
 
-    if (!cliOutput.outputPath) {
-      Logger.debug`Output path validation failed`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
-      throw ErrorFactory.args("Output path is required", [
-        "Use -o or --output to specify where to save the configurations",
-        "Example: -o arranger-configs/",
-        "The output will be multiple JSON configuration files",
-      ]);
-    }
+    // Note: Output path validation is handled by base class which sets defaults
 
     // Ensure only one mapping file is provided
     if (cliOutput.filePaths.length !== 1) {

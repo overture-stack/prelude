@@ -9,9 +9,10 @@ import {
   DictionaryConfig,
   SongConfig,
 } from "../types";
+import { PostgresConfig } from "../types/postgres";
 
-// Profile descriptions integrated here
-const PROFILE_DESCRIPTIONS = new Map([
+// Profile descriptions including PostgreSQL
+export const PROFILE_DESCRIPTIONS = new Map([
   [Profiles.GENERATE_SONG_SCHEMA, "Generate Song schema from JSON metadata"],
   [
     Profiles.GENERATE_LECTERN_DICTIONARY,
@@ -25,6 +26,10 @@ const PROFILE_DESCRIPTIONS = new Map([
     Profiles.GENERATE_ARRANGER_CONFIGS,
     "Generate Arranger configs from Elasticsearch mapping",
   ],
+  [
+    Profiles.GENERATE_POSTGRES_TABLE,
+    "Generate PostgreSQL CREATE TABLE from CSV file",
+  ],
 ]);
 
 /**
@@ -36,13 +41,13 @@ export function configureCommandOptions(program: Command): Command {
   return program
     .name("composer")
     .description(
-      "Generate Dictionary, Song Schema, or Elasticsearch configurations"
+      "Generate Dictionary, Song Schema, Elasticsearch, or PostgreSQL configurations"
     )
+    .argument("[profile]", "Execution profile (optional)")
     .option("--debug", "Enable debug logging")
     .addOption(
-      new Option("-p, --profile <profile>", "Execution profile")
+      new Option("-p, --profile <profile>", "Execution profile (alternative to positional argument)")
         .choices(Object.values(Profiles))
-        .default(Profiles.GENERATE_SONG_SCHEMA)
         .argParser((value) => {
           // Find matching profile (case-insensitive)
           const matchingProfile = Object.values(Profiles).find(
@@ -92,6 +97,8 @@ export function configureCommandOptions(program: Command): Command {
       "--skip-metadata",
       "Skip adding submission metadata to Elasticsearch mapping"
     )
+    // PostgreSQL options
+    .option("--table-name <n>", "PostgreSQL table name")
     .option("--force", "Force overwrite of existing files without prompting")
     .helpOption(false) // Disable default help option
     .option("-h, --help", "display help for command")
@@ -144,6 +151,14 @@ export function parseOptions(opts: any): CLIOutput {
         }
       : undefined;
 
+  // Build postgres config if needed
+  const postgresConfig: PostgresConfig | undefined =
+    opts.tableName
+      ? {
+          tableName: opts.tableName || "generated_table",
+        }
+      : undefined;
+
   const output: CLIOutput = {
     profile: opts.profile,
     debug: opts.debug || false,
@@ -155,6 +170,7 @@ export function parseOptions(opts: any): CLIOutput {
     envConfig: {}, // Will be populated by environment loader
     dictionaryConfig,
     songConfig,
+    postgresConfig,
     arrangerConfig: opts.arrangerDocType
       ? {
           documentType: opts.arrangerDocType,

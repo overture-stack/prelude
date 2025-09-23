@@ -97,32 +97,16 @@
       "fieldName": "submission_metadata"
     },
     {
-      "displayName": "Submission Metadata Submitter Id",
-      "fieldName": "submission_metadata.submitter_id"
+      "displayName": "Submission Metadata Submission Id",
+      "fieldName": "submission_metadata.submission_id"
     },
     {
-      "displayName": "Submission Metadata Processing Started",
-      "fieldName": "submission_metadata.processing_started"
+      "displayName": "Submission Metadata Source File Hash",
+      "fieldName": "submission_metadata.source_file_hash"
     },
     {
       "displayName": "Submission Metadata Processed At",
       "fieldName": "submission_metadata.processed_at"
-    },
-    {
-      "displayName": "Submission Metadata Source File",
-      "fieldName": "submission_metadata.source_file"
-    },
-    {
-      "displayName": "Submission Metadata Record Number",
-      "fieldName": "submission_metadata.record_number"
-    },
-    {
-      "displayName": "Submission Metadata Hostname",
-      "fieldName": "submission_metadata.hostname"
-    },
-    {
-      "displayName": "Submission Metadata Username",
-      "fieldName": "submission_metadata.username"
     }
   ]
 }

@@ -424,7 +424,7 @@ export function ArrangerConfigs(
       },
       table: {
         table: {
-          rowIdFieldName: "submission_metadata.submitter_id",
+          rowIdFieldName: "submission_metadata.submission_id",
           columns: allTableColumns,
         },
       },

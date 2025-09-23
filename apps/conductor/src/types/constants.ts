@@ -36,4 +36,10 @@ export const Profiles = {
 
   /** Publish analysis in SONG server */
   song_publish_analysis: "songPublishAnalysis",
+
+  /** Upload CSV data to PostgreSQL */
+  POSTGRES_UPLOAD: "postgresUpload",
+
+  /** Index PostgreSQL data to Elasticsearch */
+  POSTGRES_INDEX: "postgresIndex",
 } as const;

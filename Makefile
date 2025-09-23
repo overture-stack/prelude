@@ -4,7 +4,7 @@ help:
 	@echo "setup Development Environments:"
 	@echo "  phase0         - Run pre-deployment checks"
 	@echo "  demo           - Start demo deployment (with data)"
-	@echo "  phase1         - Start Phase 1 deployment (without data)"
+	@echo "  demopg          Start demo deployment with postgres (without data)"
 	@echo ""
 	@echo "  stage-dev      - Start Stage development environment"
 	@echo ""
@@ -47,11 +47,10 @@ demo: phase0
 	@echo ""
 	@PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup 
 
-# Start Phase One deployment (you configure the portal for your data)
-phase1:
-	@echo "\033[1;36m\nStarting Phase 1 development environment...\033[0m"
+# Start demo deployment with postgres (No data)
+demopg: phase0
 	@echo ""
-	@echo "\033[1;33mBuilding portal UI image (Stage) (this may take a minute)...\033[0m"
+	@echo "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m"
 	@echo ""
 	@echo ""
 	@echo ""
@@ -59,22 +58,16 @@ phase1:
 		line1=""; line2=""; line3=""; \
 		while IFS= read -r line; do \
 			line1="$$line2"; line2="$$line3"; line3="$$line"; \
-			printf "\033[4A\033[2K\r\033[1;33mBuilding docker image...\033[0m\n"; \
-			[ -n "$$line1" ] && echo "$${line1:0:24}" || echo ""; \
-			[ -n "$$line2" ] && echo "$${line2:0:24}" || echo ""; \
-			[ -n "$$line3" ] && echo "$${line3:0:24}" || echo ""; \
+			printf "\033[4A\033[2K\r\033[1;33mBuilding portal UI (stage) image (this may take a minute)....\033[0m\n"; \
+			[ -n "$$line1" ] && echo "$${line1:0:64}" || echo ""; \
+			[ -n "$$line2" ] && echo "$${line2:0:64}" || echo ""; \
+			[ -n "$$line3" ] && echo "$${line3:0:64}" || echo ""; \
 		done; \
 	}
 	@echo ""
-	@echo "\033[1;32mPortal UI built!\033[0m"
+	@echo "\033[1;32mStage Portal UI built\033[0m"
 	@echo ""
-	@PROFILE=phase1 docker compose -f ./docker-compose.yml --profile phase1 up --attach setup 
-
-
-# Start Stage devepment deployment
-stage-dev:
-	@echo "Starting Stage development environment..."
-	PROFILE=stageDev docker compose -f ./docker-compose.yml --profile stageDev up --attach setup
+	@PROFILE=demopg docker compose -f ./docker-compose.yml --profile demopg up --attach setup 
 
 # Gracefully shutdown all containers while preserving volumes
 down:

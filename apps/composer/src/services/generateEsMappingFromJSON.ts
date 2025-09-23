@@ -267,6 +267,18 @@ export function generateMappingFromJson(
       mappingProperties = processDataStructure(sampleData);
     }
 
+    // Add submission_metadata if not skipped
+    if (!skipMetadata) {
+      mappingProperties.submission_metadata = {
+        type: "object" as const,
+        properties: {
+          submission_id: { type: "keyword" as const, null_value: "No Data" },
+          source_file_hash: { type: "keyword" as const, null_value: "No Data" },
+          processed_at: { type: "date" as const },
+        },
+      };
+    }
+
     const mapping: ElasticsearchMapping = {
       index_patterns: [`${indexName}-*`],
       aliases: {

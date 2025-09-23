@@ -4,7 +4,7 @@ import * as path from "path";
 /**
  * Base directory for all configuration files
  */
-export const BASE_CONFIG_DIR = "generatedConfigs";
+export const BASE_CONFIG_DIR = "configs";
 
 /**
  * Configuration paths organized by type
@@ -27,8 +27,12 @@ export const CONFIG_PATHS = {
     mapping: path.join(BASE_CONFIG_DIR, "elasticsearchConfigs", "mapping.json"),
   },
   arranger: {
-    dir: path.join(BASE_CONFIG_DIR, "arrangerConfigs"),
-    configs: path.join(BASE_CONFIG_DIR, "arrangerConfigs", "configs"),
+    dir: path.join(".", BASE_CONFIG_DIR, "arrangerconfigs"),
+    configs: path.join(".", BASE_CONFIG_DIR, "arrangerconfigs", "configs"),
+  },
+  postgres: {
+    dir: path.join(BASE_CONFIG_DIR, "postgresConfigs"),
+    table: path.join(BASE_CONFIG_DIR, "postgresConfigs", "create_table.sql"),
   },
   samples: {
     fileMetadata: "data/sampleData/fileMetadata.json",

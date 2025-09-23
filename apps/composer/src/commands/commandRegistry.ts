@@ -9,6 +9,7 @@ import { SongCommand } from "./songCommand";
 import { DictionaryCommand } from "./lecternCommand";
 import { MappingCommand } from "./mappingCommands";
 import { ArrangerCommand } from "./arrangerCommand";
+import { PostgresCommand } from "./postgresCommand";
 
 // Simplified command configuration
 interface CommandConfig {
@@ -58,6 +59,15 @@ export class CommandRegistry {
         description: "Generate Arranger configs from Elasticsearch mapping",
         fileTypes: [".json"],
         createCommand: () => new ArrangerCommand(),
+      },
+    ],
+    [
+      Profiles.GENERATE_POSTGRES_TABLE,
+      {
+        name: "PostgresTable",
+        description: "Generate PostgreSQL CREATE TABLE statement from CSV files",
+        fileTypes: [".csv"],
+        createCommand: () => new PostgresCommand(),
       },
     ],
   ]);

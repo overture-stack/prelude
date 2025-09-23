@@ -220,13 +220,9 @@ export function generateMappingFromCSV(
       rootProperties.submission_metadata = {
         type: "object" as const,
         properties: {
-          submitter_id: { type: "keyword" as const, null_value: "No Data" },
-          processing_started: { type: "date" as const },
+          submission_id: { type: "keyword" as const, null_value: "No Data" },
+          source_file_hash: { type: "keyword" as const, null_value: "No Data" },
           processed_at: { type: "date" as const },
-          source_file: { type: "keyword" as const, null_value: "No Data" },
-          record_number: { type: "integer" as const },
-          hostname: { type: "keyword" as const, null_value: "No Data" },
-          username: { type: "keyword" as const, null_value: "No Data" },
         },
       };
     }
