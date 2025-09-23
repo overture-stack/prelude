@@ -18,8 +18,5 @@ RUN npm run build
 # Make the CLI executable
 RUN chmod +x dist/main.js
 
-# Install curl for health checks
-RUN apk add --no-cache curl
-
 # Default command (can be overridden)
 CMD ["node", "dist/main.js"]

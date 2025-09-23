@@ -77,7 +77,7 @@ down:
 # Restart containers and run deployment scripts for a specific profile
 restart:
 	@echo "Restarting containers with fresh deployment..."
-	@read -p "Enter profile to restart (phase1, demo, stageDev): " profile; \
+	@read -p "Enter profile to restart (demo, demopg): " profile; \
 	echo "Shutting down containers..."; \
 	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile down; \
 	echo "Starting containers with profile $$profile..."; \
