@@ -20,6 +20,7 @@
  */
 
 import React from 'react';
+import Head from 'next/head';
 import { ThemeProvider } from '@emotion/react';
 import { AuthProvider } from '../global/hooks/useAuthContext';
 import { PageContext } from '../global/hooks/usePageContext';
@@ -38,6 +39,9 @@ const Root = ({
 }) => {
 	return (
 		<>
+			<Head>
+				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			</Head>
 			<style>
 				{`
         body {

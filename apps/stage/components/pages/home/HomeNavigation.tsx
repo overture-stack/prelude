@@ -2,6 +2,7 @@
 import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
+import { extractTitle, generateSlug, extractOrder } from '../documentation/utils/documentUtils';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
 interface CardItem {
@@ -69,7 +70,7 @@ const HomeNavigation = (): ReactElement => {
 						const content = await contentResponse.text();
 						return {
 							title: extractTitle(content),
-							id: createSlug(filename),
+							id: generateSlug(filename),
 							order: extractOrder(filename),
 						};
 					} catch (error) {
@@ -90,7 +91,7 @@ const HomeNavigation = (): ReactElement => {
 									...card,
 									subItems: sections.map((section) => ({
 										title: section.title,
-										link: `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`,
+										link: `${INTERNAL_PATHS.DOCUMENTATION}#${section.id}`,
 									})),
 							  }
 							: card,
@@ -272,25 +273,5 @@ const HomeNavigation = (): ReactElement => {
 		</div>
 	);
 };
-
-// Helper functions
-function extractTitle(content: string): string {
-	const titleMatch = content.match(/^#\s+(.+?)(?:\s+\{#.+\})?$/m);
-	return titleMatch ? titleMatch[1].trim() : 'Untitled Section';
-}
-
-function createSlug(filename: string): string {
-	return filename
-		.replace(/^\d+[-_]?/, '')
-		.replace(/\.md$/, '')
-		.toLowerCase()
-		.replace(/\s+/g, '-')
-		.replace(/[^\w-]/g, '');
-}
-
-function extractOrder(filename: string): number {
-	const match = filename.match(/^(\d+)/);
-	return match ? parseInt(match[1], 10) : 999;
-}
 
 export default HomeNavigation;

@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../global/utils/constants';
 import { InternalLink } from '../Link';
+import { extractOrder, extractTitle, generateId } from '../pages/documentation/utils/documentUtils';
 import Dropdown from './Dropdown';
 import { StyledListLink } from './styles';
 
@@ -30,9 +31,13 @@ const DocumentationDropdown = () => {
 						if (!contentResponse.ok) throw new Error(`Failed to load ${filename}`);
 
 						const content = await contentResponse.text();
+						const title = extractTitle(content);
+						const dropdownId = generateId(title);
+						console.log(`[DEBUG] Creating dropdown: filename="${filename}", title="${title}", id="${dropdownId}"`);
+
 						return {
-							title: extractTitle(content),
-							id: createSlug(filename),
+							title,
+							id: dropdownId,
 							order: extractOrder(filename),
 						};
 					} catch (error) {
@@ -63,12 +68,14 @@ const DocumentationDropdown = () => {
 		return null;
 	}
 
-	// Generate dropdown items
+	// Generate dropdown items with hash-based navigation
 	const dropdownItems = docSections.map((section) => (
-		<InternalLink key={section.id} path={`${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`}>
+		<InternalLink key={section.id} path={`${INTERNAL_PATHS.DOCUMENTATION}#${section.id}`}>
 			<StyledListLink
 				className={cx({
-					active: router.asPath === `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`,
+					active:
+						router.asPath.includes(`#${section.id}`) ||
+						router.asPath === `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`,
 				})}
 			>
 				{section.title}
@@ -76,8 +83,12 @@ const DocumentationDropdown = () => {
 		</InternalLink>
 	));
 
-	// Generate paths for active state tracking
-	const docPaths = docSections.map((section) => `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}` as INTERNAL_PATHS);
+	// Generate paths for active state tracking (include both hash and legacy paths)
+	const docPaths = [
+		INTERNAL_PATHS.DOCUMENTATION,
+		...docSections.map((section) => `${INTERNAL_PATHS.DOCUMENTATION}#${section.id}` as INTERNAL_PATHS),
+		...docSections.map((section) => `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}` as INTERNAL_PATHS),
+	];
 
 	return (
 		<Dropdown
@@ -97,25 +108,5 @@ const DocumentationDropdown = () => {
 		/>
 	);
 };
-
-// Helper functions
-function extractTitle(content: string): string {
-	const titleMatch = content.match(/^#\s+(.+?)(?:\s+\{#.+\})?$/m);
-	return titleMatch ? titleMatch[1].trim() : 'Untitled Section';
-}
-
-function createSlug(filename: string): string {
-	return filename
-		.replace(/^\d+[-_]?/, '')
-		.replace(/\.md$/, '')
-		.toLowerCase()
-		.replace(/\s+/g, '-')
-		.replace(/[^\w-]/g, '');
-}
-
-function extractOrder(filename: string): number {
-	const match = filename.match(/^(\d+)/);
-	return match ? parseInt(match[1], 10) : 999;
-}
 
 export default DocumentationDropdown;

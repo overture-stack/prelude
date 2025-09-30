@@ -40,7 +40,7 @@ const Footer = () => {
 				align-items: center;
 				padding: 0 18px;
 				${theme.shadow.default};
-				z-index: 10;
+				z-index: 25;
 				position: fixed;
 				bottom: 0px;
 				left: 0px;

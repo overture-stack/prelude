@@ -81,6 +81,7 @@ const NavBar = (): ReactElement => {
 						<span
 							css={css`
 								color: ${theme.colors.black};
+								text: ${theme.typography.button};
 								padding-left: 30px;
 								white-space: nowrap;
 								@media (max-width: 884px) {
