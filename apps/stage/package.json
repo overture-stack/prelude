@@ -19,7 +19,7 @@
 		"@overture-stack/sqon-builder": "^1.1.0",
 		"@types/marked": "^5.0.2",
 		"@types/react-syntax-highlighter": "^15.5.13",
-		"axios": "^0.27.2",
+		"axios": "^0.30.2",
 		"classnames": "^2.5.1",
 		"cryptr": "^6.3.0",
 		"http-proxy": "^1.18.1",
