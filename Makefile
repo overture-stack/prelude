@@ -4,7 +4,6 @@ help:
 	@echo "setup Development Environments:"
 	@echo "  phase0         - Run pre-deployment checks"
 	@echo "  demo           - Start demo deployment (with data)"
-	@echo "  demopg          Start demo deployment with postgres (without data)"
 	@echo ""
 	@echo "  stage-dev      - Start Stage development environment"
 	@echo ""
@@ -47,28 +46,6 @@ demo: phase0
 	@echo ""
 	@PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup 
 
-# Start demo deployment with postgres (No data)
-demopg: phase0
-	@echo ""
-	@echo "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m"
-	@echo ""
-	@echo ""
-	@echo ""
-	@docker compose build stage 2>&1 | { \
-		line1=""; line2=""; line3=""; \
-		while IFS= read -r line; do \
-			line1="$$line2"; line2="$$line3"; line3="$$line"; \
-			printf "\033[4A\033[2K\r\033[1;33mBuilding portal UI (stage) image (this may take a minute)....\033[0m\n"; \
-			[ -n "$$line1" ] && echo "$${line1:0:64}" || echo ""; \
-			[ -n "$$line2" ] && echo "$${line2:0:64}" || echo ""; \
-			[ -n "$$line3" ] && echo "$${line3:0:64}" || echo ""; \
-		done; \
-	}
-	@echo ""
-	@echo "\033[1;32mStage Portal UI built\033[0m"
-	@echo ""
-	@PROFILE=demopg docker compose -f ./docker-compose.yml --profile demopg up --attach setup 
-
 # Gracefully shutdown all containers while preserving volumes
 down:
 	@echo "Shutting down all running containers..."
@@ -77,11 +54,10 @@ down:
 # Restart containers and run deployment scripts for a specific profile
 restart:
 	@echo "Restarting containers with fresh deployment..."
-	@read -p "Enter profile to restart (demo, demopg): " profile; \
 	echo "Shutting down containers..."; \
-	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile down; \
-	echo "Starting containers with profile $$profile..."; \
-	PROFILE=$$profile docker compose -f ./docker-compose.yml --profile $$profile up --attach setup
+	PROFILE=demo docker compose -f ./docker-compose.yml --profile demo down; \
+	echo "Starting containers with profile demo..."; \
+	PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
 
 # Shutdown all containers and remove all volumes (Deletes all data)
 reset:
