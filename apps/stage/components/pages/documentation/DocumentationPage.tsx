@@ -1,23 +1,98 @@
-/**
- * Ultra-simplified Documentation Page Component
- * No async loading, no complex state management - just pure props rendering
- */
-
 import { css } from '@emotion/react';
 import Link from 'next/link';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 import { DocumentationData } from '../../../lib/documentation';
 import FundingStatement from './FundingStatement';
 import theme from './shared/theme';
 
-interface DocumentationPageProps extends DocumentationData {
-	// All data comes from props - no loading states needed
-}
+interface DocumentationPageProps extends DocumentationData {}
+
+// Utility function to copy text to clipboard
+const copyToClipboard = async (text: string): Promise<boolean> => {
+	try {
+		if (navigator.clipboard && window.isSecureContext) {
+			await navigator.clipboard.writeText(text);
+			return true;
+		} else {
+			// Fallback for older browsers or non-secure contexts
+			const textArea = document.createElement('textarea');
+			textArea.value = text;
+			textArea.style.position = 'fixed';
+			textArea.style.opacity = '0';
+			document.body.appendChild(textArea);
+			textArea.focus();
+			textArea.select();
+			const success = document.execCommand('copy');
+			document.body.removeChild(textArea);
+			return success;
+		}
+	} catch (error) {
+		console.error('Failed to copy to clipboard:', error);
+		return false;
+	}
+};
 
 const DocumentationPage = ({ sections, currentSection, headings }: DocumentationPageProps): ReactElement => {
+	const contentRef = useRef<HTMLDivElement>(null);
+
+	// Add heading anchor links after content renders
+	useEffect(() => {
+		if (!contentRef.current || !currentSection) return;
+
+		const headingElements = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		const clickHandlers: Array<() => void> = [];
+
+		headingElements.forEach((heading) => {
+			// Skip if already has a link
+			if (heading.querySelector('.heading-link')) return;
+
+			const id = heading.getAttribute('id');
+			if (!id) return;
+
+			// Create the # link element
+			const linkElement = document.createElement('a');
+			linkElement.className = 'heading-link';
+			linkElement.textContent = '#';
+			linkElement.setAttribute('aria-label', `Copy link to ${heading.textContent}`);
+
+			// Create click handler for entire heading
+			const handleClick = async (e: Event) => {
+				e.preventDefault();
+				const fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
+				const success = await copyToClipboard(fullUrl);
+
+				if (success) {
+					// Update URL without scrolling
+					window.history.pushState(null, '', `#${id}`);
+
+					// Visual feedback
+					linkElement.textContent = '✓';
+					setTimeout(() => {
+						linkElement.textContent = '#';
+					}, 1000);
+				} else {
+					// Fallback: just update URL
+					window.location.hash = id;
+				}
+			};
+
+			// Make the entire heading clickable
+			heading.style.cursor = 'pointer';
+			heading.addEventListener('click', handleClick);
+			clickHandlers.push(() => heading.removeEventListener('click', handleClick));
+
+			// Append the link to the heading
+			heading.appendChild(linkElement);
+		});
+
+		// Cleanup function
+		return () => {
+			clickHandlers.forEach(cleanup => cleanup());
+		};
+	}, [currentSection]);
+
 	return (
 		<div css={containerStyle}>
-			{/* Sidebar Navigation */}
 			<aside css={sidebarStyle}>
 				<nav css={navStyle}>
 					<h3 css={sidebarTitleStyle}>Documentation</h3>
@@ -36,15 +111,14 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 				<FundingStatement />
 			</aside>
 
-			{/* Main Content */}
 			<main css={mainContentStyle}>
 				{currentSection ? (
-					<div css={contentContainerStyle}>
-						{/* Content */}
-						<article css={articleStyle}>
-							<div css={markdownContentStyle} dangerouslySetInnerHTML={{ __html: currentSection.htmlContent }} />
-						</article>
-						{/* Table of Contents */}
+					<>
+						<div css={contentContainerStyle}>
+							<article css={articleStyle}>
+								<div ref={contentRef} css={markdownContentStyle} dangerouslySetInnerHTML={{ __html: currentSection.htmlContent }} />
+							</article>
+						</div>
 						{headings.length > 0 && (
 							<aside css={tocStyle}>
 								<nav css={tocNavStyle}>
@@ -58,10 +132,9 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 										))}
 									</ul>
 								</nav>
-								<div></div>
 							</aside>
 						)}
-					</div>
+					</>
 				) : (
 					<div css={noContentStyle}>
 						<h2>No Content Available</h2>
@@ -73,16 +146,15 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 	);
 };
 
-// Styles - Clean Docusaurus-inspired design
 const containerStyle = css`
 	display: flex;
 	min-height: 100vh;
 	background-color: ${theme.colors.background};
-	padding-bottom: 47px; /* Account for fixed footer */
+	padding-bottom: 47px;
 	width: 100%;
 	max-width: 100vw;
-	overflow-x: hidden; /* Prevent horizontal scrolling */
 	box-sizing: border-box;
+	scroll-behavior: smooth;
 `;
 
 const sidebarStyle = css`
@@ -90,7 +162,7 @@ const sidebarStyle = css`
 	background: ${theme.colors.sidebar};
 	border-right: 1px solid ${theme.colors.sidebarBorder};
 	position: fixed;
-	height: calc(100vh - 97px); /* Account for navbar (50px) + footer (47px) */
+	height: calc(100vh - 97px);
 	overflow-y: auto;
 	top: 50px;
 	left: 0;
@@ -99,13 +171,13 @@ const sidebarStyle = css`
 	flex-direction: column;
 
 	@media (max-width: ${theme.breakpoints.lg}) {
-		display: none; // Hide on mobile for now - can add mobile menu later
+		display: none;
 	}
 `;
 
 const navStyle = css`
 	padding: ${theme.spacing[6]} ${theme.spacing[4]};
-	flex: 1; /* Take up available space */
+	flex: 1;
 `;
 
 const sidebarTitleStyle = css`
@@ -135,7 +207,6 @@ const navLinkStyle = css`
 	font-size: ${theme.fontSize.sm};
 	font-weight: 400;
 	line-height: ${theme.lineHeight.base};
-	border-radius: ${theme.borderRadius.none};
 	transition: ${theme.transitions.fast};
 	border-left: 3px solid transparent;
 
@@ -161,12 +232,14 @@ const navLinkStyle = css`
 const mainContentStyle = css`
 	flex: 1;
 	margin-left: ${theme.sidebarWidth};
-	min-width: 0; // Prevent flex overflow
-	overflow: visible; // Ensure sticky positioning works
+	min-width: 0;
+	overflow-x: hidden;
+	overflow-y: visible;
 	width: 100%;
+	position: relative;
 
 	@media (max-width: ${theme.breakpoints.lg}) {
-		margin-left: 0; // Full width on mobile
+		margin-left: 0;
 	}
 
 	@media (max-width: ${theme.breakpoints.md}) {
@@ -175,42 +248,33 @@ const mainContentStyle = css`
 `;
 
 const contentContainerStyle = css`
-	display: flex;
-	margin: 0 auto;
-	gap: ${theme.spacing[8]};
-	align-items: flex-start; // Prevent TOC from stretching
-	padding: 0 ${theme.spacing[4]}; // Add horizontal padding
+	margin: 0;
+	padding: 0 ${theme.spacing[6]};
 	width: 100%;
 	box-sizing: border-box;
 
-	/* Desktop with TOC - full 1200px */
 	@media (min-width: 1160px) {
-		max-width: 1200px;
+		max-width: calc(100% - 280px);
+		padding-right: ${theme.spacing[8]};
 	}
 
-	/* Desktop with sidebar but no TOC - use full available width */
 	@media (min-width: 993px) and (max-width: 1159px) {
-		max-width: calc(100vw - 300px); /* Account for sidebar width */
-		padding: 0 ${theme.spacing[4]};
+		max-width: 100%;
+		padding: 0 ${theme.spacing[6]};
 	}
 
-	/* No sidebar - full width */
 	@media (max-width: 992px) {
-		flex-direction: column;
-		gap: ${theme.spacing[6]};
 		padding: 0 ${theme.spacing[6]};
 		max-width: 100%;
 	}
 
 	@media (max-width: ${theme.breakpoints.md}) {
-		padding: 0 ${theme.spacing[4]};
-		gap: ${theme.spacing[4]};
+		padding: 0 ${theme.spacing[5]};
 		max-width: 100vw;
 	}
 
 	@media (max-width: ${theme.breakpoints.sm}) {
-		padding: 0 ${theme.spacing[3]};
-		gap: ${theme.spacing[3]};
+		padding: 0 ${theme.spacing[4]};
 		max-width: 100vw;
 	}
 `;
@@ -219,19 +283,16 @@ const articleStyle = css`
 	flex: 1;
 	min-width: 0;
 	padding: ${theme.spacing[8]} 0;
-	width: 100%;
-	max-width: 100%;
 	overflow-x: hidden;
 	box-sizing: border-box;
+	min-height: 100vh;
 
 	@media (max-width: ${theme.breakpoints.md}) {
 		padding: ${theme.spacing[6]} 0;
-		width: 100%;
 	}
 
 	@media (max-width: ${theme.breakpoints.sm}) {
 		padding: ${theme.spacing[4]} 0;
-		width: 100%;
 	}
 `;
 
@@ -243,24 +304,19 @@ const markdownContentStyle = css`
 	overflow-wrap: break-word;
 	hyphens: auto;
 	font-size: ${theme.fontSize.base};
-	width: 100%;
-	max-width: 100%;
 	box-sizing: border-box;
 
 	@media (max-width: ${theme.breakpoints.md}) {
 		font-size: ${theme.fontSize.sm};
 		line-height: 1.5;
-		max-width: 100%;
 	}
 
 	@media (max-width: ${theme.breakpoints.sm}) {
 		font-size: ${theme.fontSize.xs};
 		line-height: 1.5;
-		max-width: 100%;
 		word-break: break-word;
 	}
 
-	/* Heading styles */
 	h1,
 	h2,
 	h3,
@@ -273,13 +329,43 @@ const markdownContentStyle = css`
 		margin-top: ${theme.spacing[12]};
 		margin-bottom: ${theme.spacing[6]};
 		color: ${theme.colors.text};
-		scroll-margin-top: 100px; /* For anchor navigation */
+		scroll-margin-top: 100px;
+		position: relative;
 
 		&:first-child {
 			margin-top: 0;
 		}
 
-		/* Better spacing after headings when followed by other elements */
+		&:hover .heading-link {
+			opacity: 1;
+		}
+
+		.heading-link {
+			opacity: 0;
+			transition: opacity 0.2s ease;
+			color: ${theme.colors.primary};
+			text-decoration: none;
+			font-size: 0.8em;
+			font-weight: normal;
+			cursor: pointer;
+			padding: 4px;
+			border-radius: 4px;
+			margin-left: 8px;
+			display: inline;
+
+			&:hover {
+				background: ${theme.colors.primaryLight};
+			}
+
+			@media (max-width: ${theme.breakpoints.md}) {
+				font-size: 0.7em;
+			}
+
+			@media (max-width: ${theme.breakpoints.sm}) {
+				opacity: 1;
+			}
+		}
+
 		+ p,
 		+ ul,
 		+ ol,
@@ -543,7 +629,7 @@ const markdownContentStyle = css`
 
 		/* Desktop with sidebar */
 		@media (min-width: 1201px) {
-			max-width: calc(1200px - ${theme.spacing[8]} - 163px); /* Account for TOC width */
+			max-width: calc(1200px - ${theme.spacing[8]} - 250px); /* Account for TOC width */
 		}
 
 		/* Desktop without TOC but with sidebar */
@@ -941,12 +1027,15 @@ const markdownContentStyle = css`
 const tocStyle = css`
 	width: 250px;
 	padding: ${theme.spacing[4]} ${theme.spacing[4]};
-	position: sticky;
-	top: 80px;
-	height: fit-content;
-	align-self: flex-start;
+	position: fixed;
+	right: ${theme.spacing[4]};
+	top: 70px;
+	height: calc(100vh - 70px - 47px);
+	overflow-y: auto;
+	z-index: 10;
+
 	@media (max-width: 1159px) {
-		display: none; // Hide TOC at 1159px and below
+		display: none;
 	}
 `;
 
@@ -963,22 +1052,6 @@ const tocListStyle = css`
 
 const tocItemStyle = css`
 	margin: ${theme.spacing[1]} 0;
-
-	&[data-level='3'] {
-		padding-left: ${theme.spacing[3]};
-	}
-
-	&[data-level='4'] {
-		padding-left: ${theme.spacing[6]};
-	}
-
-	&[data-level='5'] {
-		padding-left: ${theme.spacing[8]};
-	}
-
-	&[data-level='6'] {
-		padding-left: ${theme.spacing[10]};
-	}
 `;
 
 const tocLinkStyle = css`
@@ -986,7 +1059,7 @@ const tocLinkStyle = css`
 	color: ${theme.colors.textSecondary};
 	text-decoration: none;
 	font-size: ${theme.fontSize.xs};
-	line-height: ${theme.lineHeight.base};
+	line-height: ${theme.lineHeight.tight};
 	padding: ${theme.spacing[1]} 0;
 	transition: ${theme.transitions.fast};
 

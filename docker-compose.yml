@@ -77,6 +77,39 @@ services:
     networks:
       - platform-network
 
+  # --------------------------------------------------------------------------------------#
+  # Conductor CLI - Data Upload Service                                                  #
+  # --------------------------------------------------------------------------------------#
+  # Pre-built Node.js container for running conductor CLI operations                     #
+  # --------------------------------------------------------------------------------------#
+  conductor-cli:
+    profiles: ["demopg", "default"]
+    build:
+      context: ./apps/conductor
+      dockerfile: Dockerfile
+    image: conductor-cli:1.0
+    container_name: conductor-cli
+    volumes:
+      - ./data:/data
+    command: >
+      sh -c '
+        echo "Starting conductor CLI 4.0 - data upload service"
+        echo "Available files in /data: $(ls -la /data/ || echo none)"
+        node dist/main.js upload \
+        -f /data/datatable1.csv \
+        -t datatable1 \
+        -i datatable1-index \
+        --db-host postgres:5432 \
+        --es-host elasticsearch:9200 \
+        --es-user elastic \
+        --es-pass myelasticpassword \
+      '
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    networks:
+      - platform-network
+
   # -----------------------------------------------------------------------------------#
   # PostgreSQL                                                                         #
   # -----------------------------------------------------------------------------------#

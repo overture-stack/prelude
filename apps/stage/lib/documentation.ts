@@ -7,6 +7,11 @@ import fs from 'fs';
 import path from 'path';
 import { marked } from 'marked';
 
+// Custom ID generation function to match our TOC links
+function generateHeadingId(text: string): string {
+	return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
 export interface DocumentationSection {
 	id: string;
 	title: string;
@@ -57,14 +62,23 @@ export async function loadDocumentationSections(): Promise<DocumentationSection[
 			// Extract order from filename prefix
 			const order = extractOrder(fileName);
 
-			// Convert markdown to HTML
+			// Convert markdown to HTML with custom heading IDs
 			const htmlContent = await marked(fileContent);
+
+			// Post-process to ensure consistent IDs
+			const processedHtml = htmlContent.replace(
+				/<h([1-6])(?:\s+id="[^"]*")?\s*>([^<]+)<\/h[1-6]>/g,
+				(match, level, text) => {
+					const id = generateHeadingId(text);
+					return `<h${level} id="${id}">${text}</h${level}>`;
+				}
+			);
 
 			return {
 				id,
 				title,
 				content: fileContent,
-				htmlContent,
+				htmlContent: processedHtml,
 				order,
 				filePath: fileName,
 			};
@@ -157,13 +171,23 @@ export async function loadSingleSection(sectionId: string): Promise<Documentatio
 	const title = extractTitle(fileContent) || fileName.replace('.md', '');
 	const id = generateId(fileName);
 	const order = extractOrder(fileName);
+	// Convert markdown to HTML with custom heading IDs
 	const htmlContent = await marked(fileContent);
+
+	// Post-process to ensure consistent IDs
+	const processedHtml = htmlContent.replace(
+		/<h([1-6])(?:\s+id="[^"]*")?\s*>([^<]+)<\/h[1-6]>/g,
+		(match, level, text) => {
+			const id = generateHeadingId(text);
+			return `<h${level} id="${id}">${text}</h${level}>`;
+		}
+	);
 
 	return {
 		id,
 		title,
 		content: fileContent,
-		htmlContent,
+		htmlContent: processedHtml,
 		order,
 		filePath: fileName,
 	};
@@ -205,10 +229,10 @@ function extractHeadings(content: string): DocumentationHeading[] {
 	while ((match = headingRegex.exec(content)) !== null) {
 		const level = match[1].length as 1 | 2 | 3 | 4 | 5 | 6;
 		const text = match[2].trim();
-		const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+		const id = generateHeadingId(text); // Use consistent ID generation
 
-		// Skip h1 as it's usually the title
-		if (level > 1) {
+		// Only include h2 headings in TOC
+		if (level === 2) {
 			headings.push({ id, text, level });
 		}
 	}

@@ -142,40 +142,6 @@ export async function setupCLI(): Promise<CLIOutput> {
         ]);
     }
 
-    // Validate environment for services that need it
-    // Skip validation for services that don't use Elasticsearch
-    const skipElasticsearchValidation: CLIprofile[] = [
-      "lecternUpload",
-      "lyricRegister",
-      "lyricUpload",
-      "songUploadSchema",
-      "songCreateStudy",
-      "songSubmitAnalysis",
-      "songPublishAnalysis",
-      "dbupload",  // PostgreSQL upload doesn't require Elasticsearch
-    ];
-
-    if (!skipElasticsearchValidation.includes(profile)) {
-      try {
-        const esConfig = ServiceConfigManager.createElasticsearchConfig({
-          url: options.url || "http://localhost:9200", // Ensure default URL
-        });
-        await validateEnvironment({
-          elasticsearchUrl: esConfig.url,
-        });
-      } catch (error) {
-        throw ErrorFactory.environment(
-          "Environment validation failed",
-          { profile, originalError: error },
-          [
-            "Check Elasticsearch configuration",
-            "Verify service URLs are accessible",
-            "Use --debug for detailed error information",
-          ]
-        );
-      }
-    }
-
     // Create simplified configuration using new system
     const config = createSimplifiedConfig(options);
 
@@ -191,6 +157,37 @@ export async function setupCLI(): Promise<CLIOutput> {
 
     // Override with simplified config
     cliOutput.config = config;
+
+    // Validate environment for services that need it
+    // Skip validation for services that don't use Elasticsearch
+    const skipElasticsearchValidation: CLIprofile[] = [
+      "lecternUpload",
+      "lyricRegister",
+      "lyricUpload",
+      "songUploadSchema",
+      "songCreateStudy",
+      "songSubmitAnalysis",
+      "songPublishAnalysis",
+      "dbupload",  // PostgreSQL upload doesn't require Elasticsearch
+    ];
+
+    if (!skipElasticsearchValidation.includes(profile)) {
+      try {
+        await validateEnvironment({
+          elasticsearchUrl: cliOutput.config.elasticsearch.url,
+        });
+      } catch (error) {
+        throw ErrorFactory.environment(
+          "Environment validation failed",
+          { profile, originalError: error },
+          [
+            "Check Elasticsearch configuration",
+            "Verify service URLs are accessible",
+            "Use --debug for detailed error information",
+          ]
+        );
+      }
+    }
 
     Logger.debug`CLI setup completed successfully`;
     return cliOutput;
@@ -214,11 +211,31 @@ export async function setupCLI(): Promise<CLIOutput> {
  */
 function createSimplifiedConfig(options: any): Config {
   try {
+    // Parse host:port for Elasticsearch
+    const parseHostPort = (hostPort: string, defaultHost: string, defaultPort: string) => {
+      if (hostPort.includes(':')) {
+        const [host, port] = hostPort.split(':');
+        return { host, port: parseInt(port) || parseInt(defaultPort) };
+      }
+      return { host: hostPort, port: parseInt(defaultPort) };
+    };
+
+    const esHostPort = parseHostPort(
+      options.esHost || process.env.ES_HOST || "localhost:9200",
+      "localhost",
+      "9200"
+    );
+
+    // Build Elasticsearch URL
+    const esUrl = esHostPort.port === 443 || esHostPort.port === 9243
+      ? `https://${esHostPort.host}:${esHostPort.port}`
+      : `http://${esHostPort.host}:${esHostPort.port}`;
+
     // Get base configurations from the new system
     const esConfig = ServiceConfigManager.createElasticsearchConfig({
-      url: options.url || "http://localhost:9200", // Ensure default URL
-      user: options.user || "elastic",
-      password: options.password || "myelasticpassword",
+      url: process.env.ELASTICSEARCH_URL || esUrl,
+      user: options.esUser || options.user || "elastic",
+      password: options.esPass || options.password || "myelasticpassword",
       index: options.index || options.indexName || undefined,
       batchSize: options.batchSize ? parseInt(options.batchSize, 10) : 100,
       delimiter: options.delimiter || `,`,

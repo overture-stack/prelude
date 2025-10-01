@@ -15,7 +15,7 @@ An interactive demo environment showcasing Overture's search and exploration ser
 
 2. **Run the automated setup:**
    ```bash
-   make demo
+   make demopg
    ```
 
 > [!IMPORTANT]

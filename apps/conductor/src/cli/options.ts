@@ -459,7 +459,7 @@ export function parseCommandLineArgs(options: any): CLIOutput {
     // Create config object with support for all services
     const config = {
       elasticsearch: {
-        url: options.url || process.env.ELASTICSEARCH_URL || esUrl,
+        url: process.env.ELASTICSEARCH_URL || esUrl,
         user: options.esUser || options.user || process.env.ELASTICSEARCH_USER || "elastic",
         password: options.esPass || options.password || process.env.ELASTICSEARCH_PASSWORD || "myelasticpassword",
         index: options.index || options.indexName || "data",

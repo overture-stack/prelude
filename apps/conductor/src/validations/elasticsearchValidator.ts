@@ -12,6 +12,7 @@ export async function validateElasticsearchConnection(
 ): Promise<ConnectionValidationResult> {
   try {
     Logger.info`Testing connection to Elasticsearch at ${config.elasticsearch.url}`;
+    Logger.debug`Elasticsearch config: ${JSON.stringify(config.elasticsearch, null, 2)}`;
 
     const startTime = Date.now();
     const response = await client.ping();
@@ -26,6 +27,9 @@ export async function validateElasticsearchConnection(
     };
   } catch (error: any) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    Logger.debug`Connection error details: ${JSON.stringify(error, null, 2)}`;
+    Logger.debug`Error message: ${errorMessage}`;
 
     // Don't log error here - let calling code handle it
     Logger.tipString(
