@@ -2,6 +2,7 @@
 import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
+import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
 import { extractTitle, generateSlug, extractOrder } from '../documentation/utils/documentUtils';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
@@ -24,11 +25,13 @@ const HomeNavigation = (): ReactElement => {
 	const theme = useTheme();
 	const [openDropdown, setOpenDropdown] = useState<number | null>(null);
 	const [docSections, setDocSections] = useState<SectionItem[]>([]);
+	const [dataTables, setDataTables] = useState<DataTableInfo[]>([]);
 	const [homeCards, setHomeCards] = useState<CardItem[]>([
 		{
 			title: 'Explore the Data',
-			link: INTERNAL_PATHS.DATATABLE_1,
+			link: '#',
 			description: 'Browse and interact with data',
+			isDynamic: true,
 		},
 		{
 			title: 'Documentation',
@@ -54,14 +57,22 @@ const HomeNavigation = (): ReactElement => {
 		},
 	]);
 
-	// Load documentation sections
+	// Load data tables and documentation sections
 	useEffect(() => {
-		const fetchDocs = async () => {
+		const fetchData = async () => {
 			try {
-				const response = await fetch('/api/docs');
-				if (!response.ok) throw new Error('Failed to fetch documentation list');
+				// Fetch data tables
+				const dataTablesResponse = await fetch('/api/data-tables');
+				if (dataTablesResponse.ok) {
+					const tables = await dataTablesResponse.json();
+					setDataTables(tables);
+				}
 
-				const files = await response.json();
+				// Fetch documentation
+				const docsResponse = await fetch('/api/docs');
+				if (!docsResponse.ok) throw new Error('Failed to fetch documentation list');
+
+				const files = await docsResponse.json();
 				const sectionsPromises = files.map(async (filename: string) => {
 					try {
 						const contentResponse = await fetch(`/docs/${filename}`);
@@ -84,26 +95,49 @@ const HomeNavigation = (): ReactElement => {
 					.sort((a, b) => a.order - b.order);
 
 				setDocSections(sections);
-				setHomeCards((prevCards) =>
-					prevCards.map((card) =>
-						card.isDynamic
-							? {
-									...card,
-									subItems: sections.map((section) => ({
-										title: section.title,
-										link: `${INTERNAL_PATHS.DOCUMENTATION}#${section.id}`,
-									})),
-							  }
-							: card,
-					),
-				);
 			} catch (error) {
-				console.error('Error fetching documentation:', error);
+				console.error('Error fetching data:', error);
 			}
 		};
 
-		fetchDocs();
+		fetchData();
 	}, []);
+
+	// Update cards when data tables or doc sections change
+	useEffect(() => {
+		setHomeCards((prevCards) =>
+			prevCards.map((card) => {
+				if (card.title === 'Explore the Data' && card.isDynamic) {
+					// If only one data table, link directly to it (no dropdown)
+					if (dataTables.length === 1) {
+						return {
+							...card,
+							link: dataTables[0].path,
+							subItems: undefined,
+						};
+					}
+					// If multiple data tables, show as dropdown
+					return {
+						...card,
+						subItems: dataTables.map((table) => ({
+							title: table.title,
+							link: table.path,
+						})),
+					};
+				}
+				if (card.title === 'Documentation' && card.isDynamic) {
+					return {
+						...card,
+						subItems: docSections.map((section) => ({
+							title: section.title,
+							link: `${INTERNAL_PATHS.DOCUMENTATION}#${section.id}`,
+						})),
+					};
+				}
+				return card;
+			}),
+		);
+	}, [dataTables, docSections]);
 
 	const handleCardClick = (card: CardItem, index: number, e: React.MouseEvent) => {
 		if (card.subItems && card.subItems.length > 0) {

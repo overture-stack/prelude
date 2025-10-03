@@ -254,7 +254,6 @@ export const createFacetsTheme = (
 					${theme.typography.data}
 				`,
 			},
-
 		},
 
 		// ========== QUICKSEARCH CONFIGURATION ==========

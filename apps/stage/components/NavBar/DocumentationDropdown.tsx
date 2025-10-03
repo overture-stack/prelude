@@ -70,7 +70,7 @@ const DocumentationDropdown = () => {
 
 	// Generate dropdown items with hash-based navigation
 	const dropdownItems = docSections.map((section) => (
-		<InternalLink key={section.id} path={`${INTERNAL_PATHS.DOCUMENTATION}#${section.id}`}>
+		<InternalLink key={section.id} path={`${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`}>
 			<StyledListLink
 				className={cx({
 					active:
