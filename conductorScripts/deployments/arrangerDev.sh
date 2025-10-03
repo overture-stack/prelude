@@ -12,7 +12,7 @@ rs() {
 
 # Elasticsearch Setup
 echo -e "\033[1;35m[1/2]\033[0m Setting up Elasticsearch"
-rs /scripts/services/elasticSearchSetup.sh
+rs /scripts/services/elasticsearchSetup.sh
 
 # Update Conductor to Healthy Status
 echo "healthy" > /health/conductor_health

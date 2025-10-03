@@ -16,7 +16,7 @@ rs /scripts/services/keycloakDbSetup.sh
 
 # Elasticsearch Setup
 echo -e "\033[1;35m[2/4]\033[0m Setting up Elasticsearch"
-rs /scripts/services/elasticSearchSetup.sh
+rs /scripts/services/elasticsearchSetup.sh
 
 # Update Conductor to Healthy Status
 echo "healthy" > /health/conductor_health

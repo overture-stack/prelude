@@ -32,7 +32,7 @@ rs /scripts/services/songCheck.sh
 
 # Elasticsearch Setup
 echo -e "\033[1;35m[5/9]\033[0m Setting up Elasticsearch"
-rs /scripts/services/elasticSearchSetup.sh
+rs /scripts/services/elasticsearchSetup.sh
 
 # Update Conductor to Healthy Status, this signals search and exploration services (maestro, arranger, stage) to startup
 echo "healthy" > /health/conductor_health
@@ -65,7 +65,7 @@ echo -e "\n"
 echo -e "\033[1m🌐 Front-end Portal:\033[0m"
 echo -e "   \033[1;32mhttp://localhost:3000\033[0m\n"
 echo -e "\033[1m📚 Overture Platform Guides:\033[0m"
-echo -e "   \033[1;32mhttps://www.overture.bio/documentation/guides/\033[0m\n"
+echo -e "   \033[1;32mhttps://docs.overture.bio/guides/user-guides/\033[0m\n"
 echo -e "\033[1m🛠️  QuickStart Information:\033[0m"
 echo -e "   Check the \033[1;33mdocker-compose.yml\033[0m file for details on this QuickStart,"
 echo -e "   including links to relevant sections of our deployment guide.\n"

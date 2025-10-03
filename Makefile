@@ -1,3 +1,8 @@
+deployCheck:
+	@echo "Running Pre-deployment checks..."
+	chmod +x ./conductorScripts/deployments/deployCheck.sh
+	./conductorScripts/deployments/deployCheck.sh 
+
 platform:
 	PROFILE=platform docker compose --profile platform up --attach conductor
 
