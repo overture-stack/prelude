@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2024 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -18,17 +18,40 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-import { StageThemeInterface } from '@/components/theme';
-import { getConfig } from '@/global/config';
-import { css, useTheme } from '@emotion/react';
-import { Aggregations, QuickSearch, useArrangerTheme } from '@overture-stack/arranger-components';
-import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
-import { ReactElement } from 'react';
 
-const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps => ({
-	callerName: 'Data-Table-1-Facets',
+import { StageThemeInterface } from '@/components/theme';
+import { css } from '@emotion/react';
+import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
+import { QuickSearchConfig } from '../types';
+
+/**
+ * Creates theme configuration for Facets and QuickSearch components.
+ *
+ * TypeScript/React Concepts:
+ * - Factory function: Returns a configuration object based on inputs
+ * - Optional parameters: quickSearchConfig uses the ? operator
+ * - Type safety: Return type is UseThemeContextProps from Arranger
+ *
+ * Why this approach?
+ * - Centralizes all styling in one place
+ * - Easy to customize per data table if needed
+ * - Type-safe configuration prevents errors
+ *
+ * @param theme - The application's theme object (colors, fonts, etc.)
+ * @param callerName - Unique identifier for debugging
+ * @param quickSearchConfig - Optional QuickSearch configuration
+ * @returns Theme configuration object for Arranger components
+ */
+export const createFacetsTheme = (
+	theme: StageThemeInterface,
+	callerName: string,
+	quickSearchConfig?: QuickSearchConfig,
+): UseThemeContextProps => ({
+	callerName,
 	components: {
+		// ========== AGGREGATIONS (Filters/Facets) ==========
 		Aggregations: {
+			// Styling for action icons (like download, columns selector)
 			ActionIcon: {
 				fill: theme.colors.secondary,
 				css: css`
@@ -37,11 +60,15 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 					}
 				`,
 			},
+
+			// Styling for each filter group (e.g., "Study", "Gender", etc.)
 			AggsGroup: {
 				collapsedBackground: theme.colors.grey_2,
 				css: css`
+					/* Left border with rotating colors for visual distinction */
 					border-left: 3px solid;
 
+					/* CSS nth-of-type: Repeating pattern of 5 colors */
 					&:nth-of-type(5n + 1) {
 						border-left-color: ${theme.colors.secondary};
 					}
@@ -58,15 +85,18 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 						border-left-color: ${theme.colors.accent3};
 					}
 
+					/* Styling for filter values */
 					.bucket-item {
 						${theme.typography.data}
 					}
 
+					/* Styling for filter group title */
 					.title {
 						${theme.typography.subheading}
 						line-height: 20px;
 					}
 
+					/* Icon styling with hover effects */
 					.sorting-icon,
 					.alphabetic-sorting,
 					[class*="SortAlphaIcon"] {
@@ -132,6 +162,8 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 				headerDividerColor: theme.colors.grey_2,
 				headerFontColor: theme.colors.accent_dark,
 			},
+
+			// Boolean filter styling (Yes/No type filters)
 			BooleanAgg: {
 				BucketCount: {
 					css: css`
@@ -139,6 +171,8 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 					`,
 				},
 			},
+
+			// Count badges showing number of items per filter value
 			BucketCount: {
 				activeBackground: theme.colors.secondary_2,
 				background: theme.colors.grey_2,
@@ -150,6 +184,8 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 				`,
 				fontSize: '10px',
 			},
+
+			// Search input within each filter group
 			FilterInput: {
 				css: css`
 					border-radius: 5px;
@@ -170,28 +206,34 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 					}
 				`,
 			},
+
+			// "Show More" / "Show Less" button styling
 			MoreOrLessButton: {
 				css: css`
 					${theme.typography.label2};
 					color: ${theme.colors.accent};
 
+					/* CSS ::before pseudo-element for icons */
 					&::before {
 						padding-top: 3px;
 						margin-right: 3px;
 					}
 
+					/* SVG icon for "Show More" */
 					&.more::before {
 						content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 11 11'%3E%3Cpath fill='%2304518C' fill-rule='evenodd' d='M7.637 6.029H6.034v1.613c0 .291-.24.53-.534.53-.294 0-.534-.239-.534-.53V6.03H3.363c-.294 0-.534-.238-.534-.529 0-.29.24-.529.534-.529h1.603V3.358c0-.291.24-.53.534-.53.294 0 .534.239.534.53V4.97h1.603c.294 0 .534.238.534.529 0 .29-.24.529-.534.529M5.5 0C2.462 0 0 2.462 0 5.5S2.462 11 5.5 11 11 8.538 11 5.5 8.538 0 5.5 0'/%3E%3C/svg%3E%0A");
 					}
 
+					/* SVG icon for "Show Less" */
 					&.less::before {
 						content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 20 20'%3E%3Cpath fill='%2304518c' fill-rule='evenodd' d='M13.81 10.952H6.19c-.523 0-.952-.428-.952-.952s.429-.952.952-.952h7.62c.523 0 .952.428.952.952s-.429.952-.952.952M10 0C4.476 0 0 4.476 0 10s4.476 10 10 10 10-4.476 10-10S15.524 0 10 0'/%3E%3C/svg%3E%0A");
 					}
 				`,
 			},
+
+			// Range slider filters (for numeric values)
 			RangeAgg: {
 				RangeLabel: {
-					// each of the labels with values
 					borderRadius: '3px',
 					css: css`
 						${theme.typography.label2}
@@ -204,18 +246,18 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 					fontWeight: 'bold',
 				},
 				RangeSlider: {
-					// the knobs you click on to select a value
 					borderColor: theme.colors.grey_5,
 					css: css`
 						${theme.shadow.default}
 					`,
 				},
 				RangeTrack: {
-					// the line behind the component
-					inBackground: theme.colors.secondary, // within the selected range
-					outBackground: theme.colors.accent, // outside the selected range
+					inBackground: theme.colors.secondary,
+					outBackground: theme.colors.accent,
 				},
 			},
+
+			// Toggle buttons (for boolean/categorical filters)
 			ToggleButton: {
 				background: theme.colors.white,
 				activeBackground: theme.colors.secondary_light,
@@ -231,90 +273,76 @@ const getAggregationsStyles = (theme: StageThemeInterface): UseThemeContextProps
 					${theme.typography.data}
 				`,
 			},
+
+			// Tree structure icons (for hierarchical filters)
 			TreeJointIcon: {
 				fill: '#151c3d',
 				size: 8,
 				transition: 'all 0s',
 			},
 		},
-		QuickSearch: {
-			fieldNames: 'donors.specimens.submitter_specimen_id',
-			headerTitle: 'Specimen Collector Sample ID',
-			placeholder: 'e.g. AB-12345',
-			// components
-			DropDownItems: {
-				css: css`
-					border: 1px solid ${theme.colors.secondary};
-					border-radius: 5px;
-				`,
-				entityLogo: {
-					enabled: false,
-				},
-				resultKeyText: {
+
+		// ========== QUICKSEARCH CONFIGURATION ==========
+		...(quickSearchConfig && {
+			QuickSearch: {
+				fieldNames: quickSearchConfig.fieldNames,
+				headerTitle: quickSearchConfig.headerTitle,
+				placeholder: quickSearchConfig.placeholder,
+
+				// Dropdown styling for search results
+				DropDownItems: {
 					css: css`
-						margin-left: 20px;
-						font-weight: bold;
+						border: 1px solid ${theme.colors.secondary};
+						border-radius: 5px;
+					`,
+					entityLogo: {
+						enabled: false,
+					},
+					resultKeyText: {
+						css: css`
+							margin-left: 20px;
+							font-weight: bold;
+						`,
+					},
+					resultValue: {
+						css: css`
+							margin-left: 20px;
+						`,
+					},
+				},
+
+				QuickSearchWrapper: {
+					css: css`
+						.title {
+							${theme.typography.subheading2}
+							line-height: 20px;
+						}
 					`,
 				},
-				resultValue: {
+
+				TreeJointIcon: {
+					fill: theme.colors.primary_dark,
+					size: 8,
+					transition: 'all 0s',
+				},
+
+				// Pinned/selected values styling
+				PinnedValues: {
+					background: theme.colors.primary_dark,
 					css: css`
-						margin-left: 20px;
+						${theme.typography.label}
+						/* SVG X icon for removing pinned values */
+						&::after {
+							content: url(data:image/svg+xml,%3Csvg%20width%3D%228%22%20height%3D%228%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%3E%0A%20%20%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%228%22%20y2%3D%228%22%20/%3E%0A%20%20%3Cline%20x1%3D%228%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%228%22%20/%3E%0A%3C/svg%3E);
+							margin: 0 0 0 0.5rem;
+						}
 					`,
+					fontColor: theme.colors.white,
+					hoverBackground: theme.colors.primary,
+					margin: '0.1rem',
+					padding: '0 0.5rem',
 				},
 			},
-			QuickSearchWrapper: {
-				css: css`
-					.title {
-						${theme.typography.subheading2}
-						line-height: 20px;
-					}
-				`,
-			},
-			TreeJointIcon: {
-				fill: theme.colors.primary_dark,
-				size: 8,
-				transition: 'all 0s',
-			},
-			PinnedValues: {
-				background: theme.colors.primary_dark,
-				css: css`
-					${theme.typography.label}
-					&::after {
-						content: url(data:image/svg+xml,%3Csvg%20width%3D%228%22%20height%3D%228%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%3E%0A%20%20%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%228%22%20y2%3D%228%22%20/%3E%0A%20%20%3Cline%20x1%3D%228%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%228%22%20/%3E%0A%3C/svg%3E);
-						margin: 0 0 0 0.5rem;
-					}
-				`,
-				fontColor: theme.colors.white,
-				hoverBackground: theme.colors.primary,
-				margin: '0.1rem',
-				padding: '0 0.5rem',
-			},
-		},
+		}),
 	},
 });
-const Facets = (): ReactElement => {
-	const { NEXT_PUBLIC_ENABLE_DATATABLE_1_QUICKSEARCH } = getConfig();
-	const theme = useTheme();
-	useArrangerTheme(getAggregationsStyles(theme));
-	return (
-		<div
-			css={css`
-				padding-bottom: 2rem;
-			`}
-		>
-			<h2
-				css={css`
-					${theme.typography.subheading}
-					padding: 6px 0 2px 8px;
-					margin: 0;
-					border-bottom: 1px solid ${theme.colors.grey_3};
-				`}
-			>
-				Filters
-			</h2>
-			{NEXT_PUBLIC_ENABLE_DATATABLE_1_QUICKSEARCH && <QuickSearch />}
-			<Aggregations />
-		</div>
-	);
-};
-export default Facets;

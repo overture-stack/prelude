@@ -11,6 +11,7 @@ import defaultTheme from '../theme';
 import UserDropdown from '../UserDropdown';
 
 import labIcon from '@/public/images/navbar-logo.png';
+import DataTablesDropdown from './DataTablesDropdown';
 import DocumentationDropdown from './DocumentationDropdown';
 import Dropdown from './Dropdown';
 import { StyledListLink } from './styles';
@@ -131,25 +132,7 @@ const NavBar = (): ReactElement => {
 							margin: 0;
 						`}
 					>
-						<InternalLink path="/dataTableOne">
-							<a
-								css={(theme) => css`
-									display: flex;
-									flex: 1;
-									height: 100%;
-									justify-content: center;
-									align-items: center;
-									text-decoration: none;
-									color: ${theme.colors.accent_dark};
-									cursor: pointer;
-									font-size: 14px;
-									font-weight: bold;
-									${router.asPath.startsWith('/dataTableOne') ? activeLinkStyle : ''}
-								`}
-							>
-								Explore Data
-							</a>
-						</InternalLink>
+						<DataTablesDropdown />
 					</div>
 					<div
 						css={(theme) => css`

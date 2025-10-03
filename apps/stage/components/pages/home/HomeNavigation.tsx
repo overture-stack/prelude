@@ -27,7 +27,7 @@ const HomeNavigation = (): ReactElement => {
 	const [homeCards, setHomeCards] = useState<CardItem[]>([
 		{
 			title: 'Explore the Data',
-			link: '/dataTableOne',
+			link: INTERNAL_PATHS.DATATABLE_1,
 			description: 'Browse and interact with data',
 		},
 		{

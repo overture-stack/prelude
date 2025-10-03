@@ -18,18 +18,38 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 import { StageThemeInterface } from '@/components/theme';
-import { css, useTheme } from '@emotion/react';
-import { SQONViewer, useArrangerTheme } from '@overture-stack/arranger-components';
+import { css } from '@emotion/react';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/types';
-import { Row } from 'react-grid-system';
-const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProps => ({
-	callerName: 'DataSetOne-QueryBar',
+
+/**
+ * Creates theme configuration for the QueryBar (SQON Viewer) component.
+ *
+ * What is SQON?
+ * - SQON = Structured Query Object Notation
+ * - It represents the active filters as "bubbles" that users can see and remove
+ * - Example: User filters by "Gender: Female" → shows as a removable bubble
+ *
+ * React/TypeScript Concept: Consistent pattern
+ * - Same structure as createFacetsTheme
+ * - Factory function that returns theme configuration
+ * - Type-safe with UseThemeContextProps
+ *
+ * @param theme - The application's theme object
+ * @param callerName - Unique identifier for debugging
+ * @returns Theme configuration for QueryBar/SQONViewer component
+ */
+export const createQueryBarTheme = (theme: StageThemeInterface, callerName: string): UseThemeContextProps => ({
+	callerName,
 	components: {
 		SQONViewer: {
+			// Message shown when no filters are applied
 			EmptyMessage: {
 				arrowColor: theme.colors.primary_dark,
 			},
+
+			// Individual filter "bubble" styling
 			SQONBubble: {
 				borderRadius: '8px',
 				fontSize: '13px',
@@ -37,6 +57,8 @@ const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProp
 				height: '1.6rem',
 				letterSpacing: '0.2px',
 			},
+
+			// "Reset" / "Clear All" button styling
 			SQONClear: {
 				label: 'Reset',
 				borderColor: theme.colors.grey_5,
@@ -49,14 +71,20 @@ const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProp
 				hoverBackground: theme.colors.primary,
 				padding: '0 12px',
 			},
+
+			// Field name styling (e.g., "GENDER" in "Gender: Female")
 			SQONFieldName: {
 				fontWeight: 'normal',
 				textTransform: 'uppercase',
 			},
+
+			// Container for groups of filter values
 			SQONGroup: {
 				fontColor: theme.colors.grey_6,
 				margin: '0.1rem 0 0',
 			},
+
+			// "Show More" / "Show Less" button for long filter lists
 			SQONLessOrMore: {
 				background: theme.colors.primary_light,
 				css: css`
@@ -69,12 +97,17 @@ const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProp
 				padding: '0 0.4rem',
 				textTransform: 'uppercase',
 			},
+
+			// Individual filter value styling (e.g., "Female" in "Gender: Female")
 			SQONValue: {
 				background: theme.colors.primary_dark,
 				css: css`
 					margin-left: 0;
 					${theme.typography.label}
+
+					/* CSS ::after pseudo-element adds an X icon for removing the filter */
 					&::after {
+						/* SVG data URL - embeds an SVG directly in CSS */
 						content: url(data:image/svg+xml,%3Csvg%20width%3D%228%22%20height%3D%228%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%20%20%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%228%22%20y2%3D%228%22%20/%3E%0A%20%20%3Cline%20x1%3D%228%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%228%22%20/%3E%0A%3C/svg%3E);
 						margin: 0 0 0 0.5rem;
 					}
@@ -84,6 +117,8 @@ const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProp
 				margin: '0.1rem 0.4rem',
 				padding: '0 0.5rem',
 			},
+
+			// Group of related filter values
 			SQONValueGroup: {
 				css: css`
 					&:last-of-type {
@@ -96,22 +131,3 @@ const getThemeCustomisations = (theme: StageThemeInterface): UseThemeContextProp
 		},
 	},
 });
-const QueryBar = () => {
-	const theme = useTheme();
-	useArrangerTheme(getThemeCustomisations(theme));
-	return (
-		<Row
-			gutterWidth={2}
-			css={(theme) => css`
-				min-height: 48px;
-				margin: 10px 0;
-				background-color: ${theme.colors.white};
-				border-radius: 5px;
-				${theme.shadow.default};
-			`}
-		>
-			<SQONViewer />
-		</Row>
-	);
-};
-export default QueryBar;

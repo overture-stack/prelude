@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 The Ontario Institute for Cancer Research. All rights reserved
+ * Copyright (c) 2024 The Ontario Institute for Cancer Research. All rights reserved
  *
  *  This program and the accompanying materials are made available under the terms of
  *  the GNU Affero General Public License v3.0. You should have received a copy of the
@@ -14,54 +14,71 @@
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
  *  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
- *  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING INs
+ *  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-import { css, useTheme } from '@emotion/react';
-import {
-	Pagination,
-	Table,
-	TableContextProvider,
-	Toolbar,
-	useArrangerTheme,
-} from '@overture-stack/arranger-components';
-import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
-import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
-import { useMemo } from 'react';
-import urlJoin from 'url-join';
-
 import { StageThemeInterface } from '@/components/theme';
 import { Download } from '@/components/theme/icons';
-import { getConfig } from '@/global/config';
-import { INTERNAL_API_PROXY } from '@/global/utils/constants';
+import { css } from '@emotion/react';
+import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
+import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
+import urlJoin from 'url-join';
 
-const getTableConfigs = ({
-	apiHost,
-	customExporters,
-	theme,
-	exportSelectedRowsField,
-}: {
+/**
+ * Props for table theme configuration.
+ *
+ * TypeScript Concept: Interface composition
+ * - Breaking down complex configurations into smaller pieces
+ * - Makes the function signature clearer
+ */
+interface TableThemeConfig {
 	apiHost: string;
-	customExporters?: CustomExporterInput;
-	theme: StageThemeInterface;
+	customExporters?: CustomExporterInput[];
 	exportSelectedRowsField: string;
-}): UseThemeContextProps => ({
-	callerName: 'RepoTable',
+}
+
+/**
+ * Creates theme configuration for the Table, Toolbar, and Pagination components.
+ *
+ * The Table is the main data display component showing rows and columns.
+ * React Concept: Render props
+ * - Some config properties accept functions that return JSX
+ * - Allows dynamic rendering based on data
+ *
+ * @param theme - The application's theme object
+ * @param callerName - Unique identifier for debugging
+ * @param config - Table-specific configuration (API, export settings)
+ * @returns Theme configuration for Table components
+ */
+export const createTableTheme = (
+	theme: StageThemeInterface,
+	callerName: string,
+	config: TableThemeConfig,
+): UseThemeContextProps => ({
+	callerName,
 	components: {
 		Table: {
-			// functionality
-			hideLoader: true,
+			// ========== Functionality ==========
+			hideLoader: true, // Don't show default loading spinner
 
-			// appearance
+			// ========== Appearance ==========
 			background: theme.colors.white,
 			borderColor: theme.colors.grey_3,
 			css: css`
 				${theme.shadow.default}
 			`,
 
-			// Child components
+			// ========== Child Components ==========
+
+			/**
+			 * Column Types: Customize how different data types are displayed
+			 *
+			 * React Concept: Render function
+			 * - cellValue receives a getValue() function
+			 * - Returns custom JSX for each cell
+			 */
 			columnTypes: {
 				all: {
 					cellValue: ({ getValue }) => {
@@ -80,6 +97,7 @@ const getTableConfigs = ({
 									}
 								`}
 							>
+								{/* Handle empty/null values with a placeholder */}
 								{['', null, 'null', 'NA', undefined, 'undefined'].includes(value) ? (
 									<span
 										css={css`
@@ -96,13 +114,22 @@ const getTableConfigs = ({
 					},
 				},
 			},
+
+			// Display for total count (e.g., "Showing 1-20 of 500")
 			CountDisplay: {
 				fontColor: 'inherit',
 			},
+
+			// Download/Export button configuration
 			DownloadButton: {
-				customExporters,
-				exportSelectedRowsField,
-				downloadUrl: urlJoin(apiHost, 'download'),
+				customExporters: config.customExporters,
+				exportSelectedRowsField: config.exportSelectedRowsField,
+				downloadUrl: urlJoin(config.apiHost, 'download'),
+				/**
+				 * React Concept: Component as a function
+				 * - label is a function that returns JSX
+				 * - Creates a custom download button with icon
+				 */
 				label: () => (
 					<>
 						<Download
@@ -122,6 +149,8 @@ const getTableConfigs = ({
 					width: '11rem',
 				},
 			},
+
+			// Dropdown menus (for column selection, etc.)
 			DropDown: {
 				arrowColor: '#151c3d',
 				arrowTransition: 'all 0s',
@@ -133,7 +162,7 @@ const getTableConfigs = ({
 				`,
 				fontColor: theme.colors.accent_dark,
 				disabledFontColor: theme.colors.grey_5,
-				hoverBackground: `${theme.colors.secondary_light}20`,
+				hoverBackground: `${theme.colors.secondary_light}20`, // 20 = alpha for transparency
 
 				ListWrapper: {
 					background: theme.colors.white,
@@ -145,6 +174,8 @@ const getTableConfigs = ({
 					hoverBackground: `${theme.colors.secondary_light}20`,
 				},
 			},
+
+			// Table header row styling
 			HeaderRow: {
 				borderColor: theme.colors.grey_3,
 				css: css`
@@ -155,11 +186,16 @@ const getTableConfigs = ({
 				fontWeight: 'bold',
 				lineHeight: '1.7rem',
 			},
+
+			// Rows per page selector
 			MaxRowsSelector: {
 				fontColor: 'inherit',
 			},
+
+			// Individual data row styling
 			Row: {
 				css: css`
+					/* Zebra striping: alternating row colors for readability */
 					&:nth-of-type(2n-1) {
 						background-color: ${theme.colors.grey_1};
 					}
@@ -169,52 +205,11 @@ const getTableConfigs = ({
 				selectedBackground: theme.colors.secondary_pale,
 				verticalBorderColor: theme.colors.grey_3,
 			},
+
+			// Container for the entire table
 			TableWrapper: {
 				margin: '0.5rem 0',
 			},
 		},
 	},
 });
-
-const RepoTable = () => {
-	const theme = useTheme();
-	const config = getConfig();
-	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-	const customExporters = [
-		{ label: 'Download', fileName: `dataset-2-data-export.${today}.tsv` }, // exports a TSV with what is displayed on the table (columns selected, etc.)
-	];
-
-	useArrangerTheme(
-		getTableConfigs({
-			apiHost: INTERNAL_API_PROXY.DATATABLE_1_ARRANGER,
-			customExporters,
-			theme,
-			exportSelectedRowsField: config.NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD,
-		}),
-	);
-
-	return useMemo(
-		() => (
-			<>
-				<article
-					css={css`
-						background-color: ${theme.colors.white};
-						border-radius: 5px;
-						margin-bottom: 12px;
-						padding: 8px;
-						${theme.shadow.default};
-					`}
-				>
-					<TableContextProvider>
-						<Toolbar />
-						<Table />
-						<Pagination />
-					</TableContextProvider>
-				</article>
-			</>
-		),
-		[],
-	);
-};
-
-export default RepoTable;

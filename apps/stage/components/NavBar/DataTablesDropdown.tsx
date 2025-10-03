@@ -36,7 +36,19 @@ const DataTablesDropdown = () => {
 		return null;
 	}
 
-	// Generate dropdown items
+	// If only one data table, render as a simple button instead of dropdown
+	if (dataTables.length === 1) {
+		const table = dataTables[0];
+		return (
+			<InternalLink path={table.path}>
+				<a css={linkStyles} className={cx({ active: router.asPath.startsWith(table.path) })}>
+					Data Explorer
+				</a>
+			</InternalLink>
+		);
+	}
+
+	// Generate dropdown items for multiple tables
 	const dropdownItems = dataTables.map((table) => (
 		<InternalLink key={table.id} path={table.path}>
 			<StyledListLink className={cx({ active: router.asPath.startsWith(table.path) })}>{table.title}</StyledListLink>
