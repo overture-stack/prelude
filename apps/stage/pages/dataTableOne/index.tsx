@@ -19,10 +19,10 @@
  *
  */
 
+import DataExplorerPage from '../../components/pages/dataExplorer';
 import { getConfig } from '../../global/config';
-import { createPage } from '../../global/utils/pages';
 import { INTERNAL_API_PROXY } from '../../global/utils/constants';
-import DataExplorerPage from '../../components/pages/shared/DataExplorer';
+import { createPage } from '../../global/utils/pages';
 
 /**
  * Dataset 1 Data Explorer Page

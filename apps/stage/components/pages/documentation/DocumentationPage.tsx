@@ -77,7 +77,9 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 			};
 
 			// Make the entire heading clickable
-			heading.style.cursor = 'pointer';
+			if (heading instanceof HTMLElement) {
+				heading.style.cursor = 'pointer';
+			}
 			heading.addEventListener('click', handleClick);
 			clickHandlers.push(() => heading.removeEventListener('click', handleClick));
 

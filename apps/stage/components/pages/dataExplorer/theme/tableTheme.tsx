@@ -122,7 +122,7 @@ export const createTableTheme = (
 
 			// Download/Export button configuration
 			DownloadButton: {
-				customExporters: config.customExporters,
+				customExporters: config.customExporters?.[0],
 				exportSelectedRowsField: config.exportSelectedRowsField,
 				downloadUrl: urlJoin(config.apiHost, 'download'),
 				/**

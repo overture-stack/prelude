@@ -19,13 +19,13 @@
  *
  */
 
+import useUrlParamState from '@/global/hooks/useUrlParamsState';
 import { css, useTheme } from '@emotion/react';
 import { useArrangerData } from '@overture-stack/arranger-components';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types.js';
 import stringify from 'fast-json-stable-stringify';
 import { isEqual } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import useUrlParamState from '@/global/hooks/useUrlParamsState';
 import Facets from './Facets';
 import QueryBar from './QueryBar';
 import RepoTable from './RepoTable';

@@ -51,16 +51,6 @@ export const createFacetsTheme = (
 	components: {
 		// ========== AGGREGATIONS (Filters/Facets) ==========
 		Aggregations: {
-			// Styling for action icons (like download, columns selector)
-			ActionIcon: {
-				fill: theme.colors.secondary,
-				css: css`
-					&:hover {
-						fill: ${theme.colors.secondary_light};
-					}
-				`,
-			},
-
 			// Styling for each filter group (e.g., "Study", "Gender", etc.)
 			AggsGroup: {
 				collapsedBackground: theme.colors.grey_2,
@@ -99,7 +89,7 @@ export const createFacetsTheme = (
 					/* Icon styling with hover effects */
 					.sorting-icon,
 					.alphabetic-sorting,
-					[class*="SortAlphaIcon"] {
+					[class*='SortAlphaIcon'] {
 						color: ${theme.colors.grey_5} !important;
 						transition: color 0.2s ease-in-out !important;
 						&:hover {
@@ -109,13 +99,13 @@ export const createFacetsTheme = (
 
 					.title:hover .sorting-icon,
 					.title:hover .alphabetic-sorting,
-					.title:hover [class*="SortAlphaIcon"] {
+					.title:hover [class*='SortAlphaIcon'] {
 						color: ${theme.colors.secondary_light} !important;
 					}
 
 					.search-icon,
-					[class*="SearchIcon"],
-					[class*="search-icon"] {
+					[class*='SearchIcon'],
+					[class*='search-icon'] {
 						color: ${theme.colors.grey_5} !important;
 						transition: color 0.2s ease-in-out !important;
 						&:hover {
@@ -124,20 +114,20 @@ export const createFacetsTheme = (
 					}
 
 					.title:hover .search-icon,
-					.title:hover [class*="SearchIcon"],
-					.title:hover [class*="search-icon"] {
+					.title:hover [class*='SearchIcon'],
+					.title:hover [class*='search-icon'] {
 						color: ${theme.colors.secondary_light} !important;
 					}
 
 					.columns-icon,
 					.download-icon,
-					[class*="ColumnsIcon"],
-					[class*="DownloadIcon"],
-					[class*="columns-icon"],
-					[class*="download-icon"],
+					[class*='ColumnsIcon'],
+					[class*='DownloadIcon'],
+					[class*='columns-icon'],
+					[class*='download-icon'],
 					button svg,
 					.action-icon,
-					[class*="action-icon"] {
+					[class*='action-icon'] {
 						color: ${theme.colors.grey_5} !important;
 						transition: color 0.2s ease-in-out !important;
 						&:hover {
@@ -148,12 +138,12 @@ export const createFacetsTheme = (
 					button:hover svg,
 					.title:hover .columns-icon,
 					.title:hover .download-icon,
-					.title:hover [class*="ColumnsIcon"],
-					.title:hover [class*="DownloadIcon"],
-					.title:hover [class*="columns-icon"],
-					.title:hover [class*="download-icon"],
+					.title:hover [class*='ColumnsIcon'],
+					.title:hover [class*='DownloadIcon'],
+					.title:hover [class*='columns-icon'],
+					.title:hover [class*='download-icon'],
 					.title:hover .action-icon,
-					.title:hover [class*="action-icon"] {
+					.title:hover [class*='action-icon'] {
 						color: ${theme.colors.secondary_light} !important;
 					}
 				`,
@@ -161,15 +151,6 @@ export const createFacetsTheme = (
 				headerBackground: theme.colors.white,
 				headerDividerColor: theme.colors.grey_2,
 				headerFontColor: theme.colors.accent_dark,
-			},
-
-			// Boolean filter styling (Yes/No type filters)
-			BooleanAgg: {
-				BucketCount: {
-					css: css`
-						margin: 0;
-					`,
-				},
 			},
 
 			// Count badges showing number of items per filter value
@@ -232,7 +213,7 @@ export const createFacetsTheme = (
 			},
 
 			// Range slider filters (for numeric values)
-			RangeAgg: {
+			RangeAggs: {
 				RangeLabel: {
 					borderRadius: '3px',
 					css: css`
@@ -274,12 +255,6 @@ export const createFacetsTheme = (
 				`,
 			},
 
-			// Tree structure icons (for hierarchical filters)
-			TreeJointIcon: {
-				fill: '#151c3d',
-				size: 8,
-				transition: 'all 0s',
-			},
 		},
 
 		// ========== QUICKSEARCH CONFIGURATION ==========
