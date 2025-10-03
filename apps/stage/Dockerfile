@@ -19,21 +19,19 @@ RUN chown -R node:node /usr/src
 USER node
 WORKDIR /usr/src
 
-# First copy just the package files
-COPY --chown=node:node package*.json ./
+# Copy package files from stage app
+COPY --chown=node:node apps/stage/package*.json ./
 
-# Install dependencies with plain npm install first to ensure package-lock.json exists
-RUN npm install
+# Install dependencies
+RUN npm ci
 
-# Then copy the rest of the code
-COPY --chown=node:node . .
+# Copy the stage app code
+COPY --chown=node:node apps/stage ./
 
 # Set up volume
 VOLUME [ "/usr/src/public/static/dms_user_assets" ]
 
-# Clean and rebuild with ci
-RUN npm cache clean --force
-RUN npm ci
+# Build the app
 RUN NEXT_TELEMETRY_DISABLED=1 npm run build
 
 EXPOSE 3000

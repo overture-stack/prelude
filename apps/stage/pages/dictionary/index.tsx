@@ -1,12 +1,9 @@
-import { ThemeProvider } from '@overture-stack/lectern-ui';
+import { ThemeProvider, DictionaryTableStateProvider as DictionaryStateProvider } from '@overture-stack/lectern-ui';
 import { ReactElement } from 'react';
-// @ts-ignore - DictionaryTableViewer and providers are available but not exported from main index
+// @ts-ignore - using internal path for components not exported from main index
 import { DictionaryTableViewer } from '@overture-stack/lectern-ui/dist/viewer-table/DictionaryTableViewer';
 // @ts-ignore
-import {
-	DictionaryStateProvider,
-	HostedDictionaryDataProvider,
-} from '@overture-stack/lectern-ui/dist/dictionary-controller/DictionaryDataContext';
+import { HostedDictionaryDataProvider } from '@overture-stack/lectern-ui/dist/dictionary-controller/DictionaryDataContext';
 import PageLayout from '../../components/PageLayout';
 import { createPage } from '../../global/utils/pages';
 

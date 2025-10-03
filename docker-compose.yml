@@ -210,8 +210,8 @@ services:
   stage:
     profiles: ["demo", "demo", "default"]
     build:
-      context: ./apps/stage
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./apps/stage/Dockerfile
     image: stageimage:1.0
     container_name: stage
     platform: linux/arm64/v8
@@ -221,6 +221,8 @@ services:
     ports:
       - "3000:3000"
     environment:
+      # Node Environment
+      NODE_ENV: production
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
       NEXT_PUBLIC_LAB_NAME: Overture Demo Portal
@@ -235,6 +237,7 @@ services:
       NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submitter_id
       # Auth Variables
       NEXTAUTH_SECRET: your-secure-secret-here
+      SECRET: your-secure-secret-here
       # File Arranger Variables
     volumes:
       - stage-data:/usr/src/public/static/dms_user_assets

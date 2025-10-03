@@ -29,6 +29,15 @@ module.exports = withPlugins([withTranspileModules], {
 		config.resolve.alias['@emotion/react'] = path.resolve(__dirname, '.', 'node_modules', '@emotion/react');
 		config.resolve.alias['react'] = path.resolve(__dirname, '.', 'node_modules', 'react');
 
+		// Add aliases for lectern-ui internal paths to bypass exports field restrictions
+		config.resolve.alias['@overture-stack/lectern-ui/dist'] = path.resolve(
+			__dirname,
+			'.',
+			'node_modules',
+			'@overture-stack/lectern-ui',
+			'dist',
+		);
+
 		process.env.NODE_ENV === 'development' && (config.optimization.minimize = false);
 
 		return patchForGlobalCSS(config, options);
