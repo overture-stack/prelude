@@ -45,6 +45,7 @@ export enum INTERNAL_PATHS {
 	LYRIC = '/swaggerDocs/lyric',
 	LECTERN = '/swaggerDocs/lectern',
 	SCORE = '/swaggerDocs/score',
+	DICTIONARY = '/dictionary',
 }
 
 // external Swagger links

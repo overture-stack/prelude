@@ -188,6 +188,40 @@ const NavBar = (): ReactElement => {
 							label="APIs"
 						/>
 					</div>
+					<div
+						css={(theme) => css`
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 144px;
+							background-color: ${theme.colors.white};
+							height: 100%;
+							&:hover {
+								background-color: ${theme.colors.grey_2};
+							}
+							border-right: 2px solid ${theme.colors.white};
+							margin: 0;
+							${router.pathname === INTERNAL_PATHS.DICTIONARY ? activeLinkStyle : ''}
+						`}
+					>
+						<InternalLink path={INTERNAL_PATHS.DICTIONARY}>
+							<a
+								css={css`
+									width: 100%;
+									height: 100%;
+									display: flex;
+									align-items: center;
+									justify-content: center;
+									color: ${theme.colors.accent_dark};
+									font-size: 14px;
+									font-weight: bold;
+									text-decoration: none;
+								`}
+							>
+								Data Dictionary
+							</a>
+						</InternalLink>
+					</div>
 				</div>
 
 				{/* Auth Section */}

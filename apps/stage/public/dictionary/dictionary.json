@@ -1,0 +1,2677 @@
+{
+	"name": "prod_pcgl_schema",
+	"description": "Base clinical schema that incorporates all PCGL base entities",
+	"version": "1.1",
+	"schemas": [
+		{
+			"name": "participant",
+			"description": "The collection of all data related to a specific individual human in the context of a specific study.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "study_id",
+						"mappings": {
+							"ARGO": "studyId",
+							"CQDG": "study_id"
+						}
+					},
+					"name": "study_id",
+					"description": "Unique identifier of the study.",
+					"restrictions": {
+						"required": true
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "disease_specific_modifier",
+						"examples": ["MONDO:0000001"]
+					},
+					"name": "disease_specific_modifier",
+					"description": "If the permission is DUO:0000007 (disease specific research), then MONDO codes must be provided to specify which disease(s) apply.",
+					"valueType": "string",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["duo_permission"],
+									"match": {
+										"value": "DUO:0000007 (disease specific research)"
+									},
+									"case": "all"
+								}
+							]
+						},
+						"then": {
+							"required": true,
+							"regex": "^MONDO:\\d{7}$"
+						},
+						"else": {
+							"required": false,
+							"empty": true
+						}
+					},
+					"isArray": true,
+					"delimiter": "|"
+				},
+				{
+					"meta": {
+						"displayName": "duo_modifier",
+						"mappings": {
+							"CQDG": "duo_modifier"
+						}
+					},
+					"name": "duo_modifier",
+					"description": "Collection of Data Use Ontology (DUO) codes in Compact URI (CURIE) pattern to add requirements, limitations, or prohibitions within the permitted boundary for the Participant data.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"DUO:0000043 (clinical care use)",
+							"DUO:0000029 (return to database or resource)",
+							"DUO:0000028 (institution specific restriction)",
+							"DUO:0000027 (project specific restriction)",
+							"DUO:0000026 (user specific restriction)",
+							"DUO:0000025 (time limit on use)",
+							"DUO:0000024 (publication moratorium)",
+							"DUO:0000022 (geographical restriction)",
+							"DUO:0000021 (ethics approval required)",
+							"DUO:0000020 (collaboration required)",
+							"DUO:0000019 (publication required)",
+							"DUO:0000018 (not for profit, non commercial use only)",
+							"DUO:0000046 (non-commercial use only)",
+							"DUO:0000045 (not for profit organisation use only)",
+							"DUO:0000016 (genetic studies only)",
+							"DUO:0000015 (no general methods research)",
+							"DUO:0000012 (research specific restrictions)",
+							"DUO:00000044 (population origins or ancestry research prohibited)"
+						]
+					},
+					"isArray": true,
+					"delimiter": "|"
+				},
+				{
+					"meta": {
+						"displayName": "duo_permission",
+						"mappings": {
+							"CQDG": "duo_permission"
+						}
+					},
+					"name": "duo_permission",
+					"description": "Select one of the Data Use Ontology (DUO) codes in Compact URI (CURIE) pattern to indicate permitted uses or focused areas of research for the Participant data.",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"DUO:0000042 (general research use)",
+							"DUO:0000006 (health or medical or biomedical research)",
+							"DUO:0000007 (disease specific research)",
+							"DUO:0000011 (population origins or ancestry research only)",
+							"DUO:0000004 (no restriction)"
+						]
+					},
+					"valueType": "string"
+				}
+			]
+		},
+		{
+			"name": "sociodemographic",
+			"description": "Captures sociodemographic characteristics of an individual that may vary over time and can influence health status, access to care, or disease outcomes. These factors are often collected longitudinally and reflect broader social determinants of health. The PCGL requires information on eight key sociodemographic variables defined by the Canadian Institute for Health Information (CIHI).",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_sociodem_id",
+						"examples": ["90234", "BLD_participant_89", "AML-90"]
+					},
+					"name": "submitter_sociodem_id",
+					"description": "Unique identifier for the sociodemographic record, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_sociodem_collection",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "age_at_sociodem_collection",
+					"description": "Age (in days) of the participant at the time of sociodemographic data collection",
+					"restrictions": {
+						"required": true
+					},
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "education",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "education",
+					"description": "The highest level of education attained.",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"No formal education",
+							"Elementary school or equivalent",
+							"High school (secondary school) diploma or equivalency certificate",
+							"Certificate of Apprenticeship, Certificate of Qualification (Journeyperson's designation), or other trades certificate or diploma",
+							"College, CEGEP, or other non-university certificate or diploma",
+							"Bachelor\u2019s degree",
+							"Degree in medicine, dentistry, veterinary medicine or optometry",
+							"Master\u2019s degree",
+							"Doctoral degree",
+							"Post-doctoral fellowship or training",
+							"Prefer not to answer",
+							"Not applicable",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "education_collect_method"
+					},
+					"name": "education_collect_method",
+					"description": "Studies must report how the education data was collected. This is necessary to enable data aggregation, harmonization, and reproducibility. ",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Self-identified",
+							"Derived",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "ethnicity",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						},
+						"required": ["EDI indicator"]
+					},
+					"name": "ethnicity",
+					"description": "Refers to the ethnic or cultural origins of a person's ancestors. The provided values are based on the list of ethnic or cultural origins 2021 defined by Statistics Canada",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Free text input",
+							"Another Ethnic or Cultural Origin",
+							"Do not know",
+							"Prefer not to answer",
+							"Not applicable",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string",
+					"isArray": true,
+					"delimiter": "|"
+				},
+				{
+					"meta": {
+						"displayName": "ethnicity_another_category",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "ethnicity_another_category",
+					"description": "A response which does not fall into any of the previous categories. For example, a response of \u201cOther\u201d from retrospective studies. Prospective projects should instead allow participants to freely self-identify.",
+					"valueType": "string",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["ethnicity"],
+									"match": {
+										"codeList": ["Free text input"]
+									},
+									"case": "any"
+								}
+							]
+						},
+						"then": {
+							"required": true
+						},
+						"else": {
+							"required": false,
+							"empty": true
+						}
+					}
+				},
+				{
+					"meta": {
+						"displayName": "ethnicity_collect_method"
+					},
+					"name": "ethnicity_collect_method",
+					"description": "Studies must report how the ethnicity data was collected. This is necessary to enable data aggregation, harmonization, and reproducibility. ",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Socially assigned",
+							"Self-identified",
+							"Derived",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "gender",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						},
+						"required": ["EDI indicator"]
+					},
+					"name": "gender",
+					"description": "Refers to an individual's personal and social identity as a man, woman or non-binary person (a person who is not exclusively a man or a woman). The provided values are based on the categories defined by Statistics Canada",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Man",
+							"Woman",
+							"Another Gender",
+							"Prefer not to answer",
+							"Not applicable",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "gender_another_gender",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "gender_another_gender",
+					"description": "A response which does not fall into any of the previous gender reporting categories.",
+					"valueType": "string",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["gender"],
+									"match": {
+										"value": "Another Gender"
+									},
+									"case": "all"
+								}
+							]
+						},
+						"then": {
+							"required": true
+						},
+						"else": {
+							"required": false,
+							"empty": true
+						}
+					}
+				},
+				{
+					"meta": {
+						"displayName": "gender_collect_method"
+					},
+					"name": "gender_collect_method",
+					"description": "Studies must report how the gender data was collected. This is necessary to enable data aggregation, harmonization, and reproducibility. ",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Self-identified",
+							"Other",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "geographic_location",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "geographic_location",
+					"description": "A participant\u2019s postal code at their current address of residence. ",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z][0-9][A-Za-z][0-9][A-Za-z][0-9]$|^Missing \\- Unknown$|^Missing \\- Not collected$|^Missing \\- Not provided$|^Missing \\- Restricted access$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "geographic_location_additional"
+					},
+					"name": "geographic_location_additional",
+					"description": "When postal code is less specific, additional information may be reported.",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "geographic_location_collect_method"
+					},
+					"name": "geographic_location_collect_method",
+					"description": "Studies must report how the geographic_location data was collected. This is necessary to enable data aggregation, harmonization, and reproducibility. ",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Self-identified",
+							"Derived",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "personal_income",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "personal_income",
+					"description": "Personal annual income from all sources after taxes.",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Less than $15,000",
+							"$ 15,000 - $ 19,999",
+							"$ 20,000 - $ 29,000",
+							"$ 30,000 - $ 49,999",
+							"$ 50,000 - $ 69,999",
+							"$ 70,000 - $ 84,999",
+							"$ 85,000 - $ 99,999",
+							"$ 100,000 - $ 124,999",
+							"$ 125,000 - $ 149,999",
+							"$ 150,000 or more",
+							"Prefer not to answer",
+							"Not applicable",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "personal_income_collect_method"
+					},
+					"name": "personal_income_collect_method",
+					"description": "Studies must report how the personal_income data was collected. This is necessary to enable data aggregation, harmonization, and reproducibility. ",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Self-identified",
+							"Derived",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "race",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						},
+						"required": ["EDI indicator"]
+					},
+					"name": "race",
+					"description": "A social construct used to judge and categorize people based on perceived differences in physical appearance in ways that create and maintain power differentials within social hierarchies. There is no scientifically supported biological basis for discrete racial groups. The provided values are based on race-based data standard defined by CIHI guidance",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Black",
+							"East Asian",
+							"Indigenous (First Nations, Inuk/Inuit, M\u00e9tis)",
+							"Latin American",
+							"Middle Eastern or North African",
+							"South Asian",
+							"Southeast Asian",
+							"White",
+							"Another Racial Category",
+							"Do not know",
+							"Prefer not to answer",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string",
+					"isArray": true,
+					"delimiter": "|"
+				},
+				{
+					"meta": {
+						"displayName": "race_another_racial_category",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "race_another_racial_category",
+					"description": "A response which does not fall into any of the previous racial reporting categories (e.g., Pacific Islander, Indigenous identities outside of North America, etc.).",
+					"valueType": "string",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["race"],
+									"match": {
+										"codeList": ["Another Racial Category"]
+									},
+									"case": "all"
+								}
+							]
+						},
+						"then": {
+							"required": true
+						},
+						"else": {
+							"required": false,
+							"empty": true
+						}
+					}
+				},
+				{
+					"meta": {
+						"displayName": "race_collect_method"
+					},
+					"name": "race_collect_method",
+					"description": "Studies must report how race data was collected. This is necessary to enable data aggregation, harmonization, and reproducibility. Responses from prospective projects should always be self-identified. To respect participants\u2019 autonomy and right to self-determination, as well as to avoid conflating differences in (genetic) population structure with socially constructed racial categories, responses that were self-identified should not be aggregated with responses that were socially assigned or derived. ",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Socially assigned",
+							"Self-identified",
+							"Derived",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sex_another_category",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "sex_another_category",
+					"description": "A response which does not fall into any of the previous categories. ",
+					"valueType": "string",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["sex_at_birth"],
+									"match": {
+										"value": "Another Sex"
+									},
+									"case": "any"
+								}
+							]
+						},
+						"then": {
+							"required": true
+						},
+						"else": {
+							"required": false,
+							"empty": true
+						}
+					}
+				},
+				{
+					"meta": {
+						"displayName": "sex_at_birth",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						},
+						"required": ["EDI indicator"]
+					},
+					"name": "sex_at_birth",
+					"description": "Refers to sex assigned at birth. Sex at birth is typically assigned based on a person's reproductive system and other physical characteristics. The provided values are based on the categoried defined by Statistics Canada",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Male",
+							"Female",
+							"Intersex",
+							"Another Sex",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sex_collect_method"
+					},
+					"name": "sex_collect_method",
+					"description": "Studies must report how the sex_at_birth data was collected. This is necessary to enable data aggregation, harmonization, and reproducibility. ",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Self-identified",
+							"Clinician-recorded",
+							"Derived",
+							"Other",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sociodem_date_collection",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "sociodem_date_collection",
+					"description": "Many sociodemographic variables are social constructs, and the way participants self-identify may evolve over time. \nPlease indicate the actual date when the data was collected in format: YYYY-MM-DD, if available. \nIf the exact day is unknown, partial dates are acceptable:\n- Use YYYY-MM if the day is unknown but the month and year are known\n- Use YYYY if only the year is known",
+					"restrictions": {
+						"required": true,
+						"regex": "^(?:\\d{4}|\\d{4}-\\d{2}|\\d{4}-\\d{2}-\\d{2})$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sociodem_notes",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						},
+						"examples": [
+							"\n    For example, in the Canadian Census, the order of the provided response options for ethnicity were shown to influence number of received responses per reporting option. \n\nOther examples may include inclusion/exclusion criteria based on sociodemographic variables."
+						]
+					},
+					"name": "sociodem_notes",
+					"description": "Studies may choose to report whether potential bias may exist due to the way reporting categories were defined and handled.",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sociodem_question"
+					},
+					"name": "sociodem_question",
+					"description": "Indicate whether the questions asked for the sociodemographic variable follow the PCGL reference question and standard reporting categories.",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"PCGL reference question",
+							"Another question",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sociodem_question_detail",
+						"mappings": {
+							"PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0": "PCGL.Reference.Survey.v1.0.and.PCGL.Guidance.Document.for.Participant.Sociodemographic.Data.v1.0"
+						}
+					},
+					"name": "sociodem_question_detail",
+					"description": "Report the questions asked for the sociodemographic variable, including the provided response options/reporting categories if it does not follow the PCGL reference question and standard reporting categories.",
+					"valueType": "string",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["sociodem_question"],
+									"match": {
+										"codeList": ["PCGL reference question", "Another question"]
+									},
+									"case": "any"
+								}
+							]
+						},
+						"then": {
+							"required": true
+						},
+						"else": {
+							"required": false,
+							"empty": true
+						}
+					}
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "demographic",
+			"description": "Data for the characterization of the participant by means of segmenting the population (e.g., characterization by age, sex, or race).",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_death"
+					},
+					"name": "age_at_death",
+					"description": "Age of participant (in days) at time of death",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_enrollment"
+					},
+					"name": "age_at_enrollment",
+					"description": "Age (in days) of participant at time of enrollment into the study",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "cause_of_death",
+						"mappings": {
+							"ARGO": "cause_of_death",
+							"MOH": "cause_of_death"
+						}
+					},
+					"name": "cause_of_death",
+					"description": "Indicate the cause of a participant's death.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Died of cancer",
+							"Died of other reasons",
+							"Not Applicable",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "vital_status",
+						"mappings": {
+							"CQDG": "vital_status",
+							"Phenopacket": "individual.vital_status",
+							"BeaconV2": "individual.vital_status"
+						}
+					},
+					"name": "vital_status",
+					"description": "Participant's last known state of living or deceased.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Alive",
+							"Deceased",
+							"Not Applicable",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access"
+						]
+					}
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "diagnosis",
+			"description": "The disease that is inferred to be present in the individual, family or cohort being analyzed.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_diagnosis_id",
+						"mappings": {
+							"mCODE.STU1": "Condition.identifier",
+							"mCODE.STU2": "Condition.identifier",
+							"FHIR": "condition.code",
+							"ARGO": "submitter_diagnosis_id",
+							"MOH": "submitter_diagnosis_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_diagnosis_id",
+					"description": "Unique identifier of the primary diagnosis event, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_diagnosis",
+						"mappings": {
+							"mCODE.STU3": "condition.onset",
+							"FHIR": "condition.onset",
+							"Phenopacket": "disease.onset",
+							"ARGO": "age_at_diagnosis",
+							"MOH": "age_at_diagnosis"
+						}
+					},
+					"name": "age_at_diagnosis",
+					"description": "Age of participant (in days) at time of diagnosis of the condition.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "disease_code",
+						"mappings": {
+							"mCODE.STU3": "condition.code",
+							"FHIR": "condition.code",
+							"Phenopacket": "disease.term",
+							"ARGO": "disease_code",
+							"MOH": "disease_code",
+							"CQDG": "disease_code"
+						},
+						"required": [
+							"Provide code in Compact URI (CURIE) pattern. ICD-10 code: refer to https://icd.who.int/browse10/2019/en MONDO code: refer to https://www.ebi.ac.uk/ols/ontologies/mondo"
+						],
+						"examples": ["MONDO:0000001", "icd10:C34"]
+					},
+					"name": "disease_code",
+					"description": "Use ICD-10 code or Mondo code to represent the disease diagnosed.",
+					"restrictions": {
+						"required": true,
+						"regex": "^icd10:(([XVI]+)|([A-Z][0-9]+((-[A-Z][0-9]+)|(\\.[0-9]))?))$|^MONDO:\\d{7}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "disease_term",
+						"mappings": {
+							"mCODE.STU3": "condition.code",
+							"FHIR": "condition.code",
+							"Phenopacket": "disease.term"
+						}
+					},
+					"name": "disease_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the disease_code",
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "treatment",
+			"description": "Medications, procedures, other actions taken for clinical management",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_treatment_id",
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_treatment_id",
+					"description": "Unique identifier of the treatment, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "submitter_diagnosis_id",
+						"mappings": {
+							"mCODE.STU1": "Condition.identifier",
+							"mCODE.STU2": "Condition.identifier",
+							"FHIR": "condition.code",
+							"ARGO": "submitter_diagnosis_id",
+							"MOH": "submitter_diagnosis_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_diagnosis_id",
+					"description": "Unique identifier of the primary diagnosis event, assigned by the data provider.",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["submitter_treatment_id"],
+									"match": {
+										"exists": false
+									},
+									"case": "all"
+								}
+							]
+						},
+						"then": {
+							"required": false,
+							"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+						}
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_treatment"
+					},
+					"name": "age_at_treatment",
+					"description": "Age (in days) of the participant at the time the treatment was administered.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "treatment_duration"
+					},
+					"name": "treatment_duration",
+					"description": "The length of time (in days) over which the treatment was administered.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "treatment_intent"
+					},
+					"name": "treatment_intent",
+					"description": "The purpose of the treatment or the desired effect or outcome resulting from the treatment.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Curative",
+							"Diagnostic",
+							"Forensic",
+							"Guidance",
+							"Palliative",
+							"Preventative",
+							"Screening",
+							"Supportive",
+							"Other",
+							"Missing - Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Not applicable"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "treatment_response",
+						"mappings": {
+							"ARGO": "treatment_response",
+							"MOH": "treatment_response",
+							"CQDG": "treatment_response"
+						}
+					},
+					"name": "treatment_response",
+					"description": "The outcome of the treatment, indicating how the patient responded to the intervention",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Clinical remission",
+							"Disease Progression",
+							"Improvement of symptoms",
+							"No improvement of symptoms",
+							"No sign of disease",
+							"Partial Response",
+							"Stable Disease",
+							"Treatment cessation due to toxicity",
+							"Worsening of symptoms",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "treatment_status",
+						"mappings": {
+							"ARGO": "treatment_status",
+							"MOH": "treatment_status"
+						}
+					},
+					"name": "treatment_status",
+					"description": "Indicate the donor's status of the prescribed treatment.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Other",
+							"Patient choice (stopped or interrupted treatment)",
+							"Physician decision (stopped or interrupted treatment)",
+							"Treatment completed as prescribed",
+							"Treatment incomplete because patient died",
+							"Treatment incomplete due to technical or organizational problems",
+							"Treatment ongoing",
+							"Treatment stopped due to acute toxicity",
+							"Treatment stopped due to lack of efficacy (disease progression)",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "treatment_type"
+					},
+					"name": "treatment_type",
+					"description": "The category or method of treatment administered",
+					"restrictions": {
+						"required": true,
+						"codeList": ["Medication", "Pharmacotherapy", "Procedure", "Radiation therapy", "Other"]
+					},
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "diagnosis",
+						"mappings": [
+							{
+								"local": "submitter_diagnosis_id",
+								"foreign": "submitter_diagnosis_id"
+							}
+						]
+					},
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "follow_up",
+			"description": "Any point of contact with a patient after primary diagnosis. ",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_followup"
+					},
+					"name": "age_at_followup",
+					"description": "Participant's age (in days) at time of the follow up event",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "disease_status_at_followup"
+					},
+					"name": "disease_status_at_followup",
+					"description": "Indicate the participant's disease status at time of follow-up",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Complete remission",
+							"Distant progression",
+							"Loco-regional progression",
+							"No evidence of disease",
+							"Partial remission",
+							"Progression NOS",
+							"Relapse or recurrence",
+							"Stable"
+						]
+					},
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "procedure",
+			"description": "A clinical procedure performed on a subject. For example a surgical or diagnostic procedure such as a biopsy.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_treatment_id",
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_treatment_id",
+					"description": "Unique identifier of the treatment, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "procedure_body_site_code",
+						"mappings": {
+							"mCODE.STU3": "Specimen.collection.bodySite",
+							"FHIR": "Specimen.collection.bodySite",
+							"ARGO": "procedure_body_site_code",
+							"MOH": "procedure_body_site_code"
+						},
+						"required": [
+							"Refer to the International Classification of Diseases for Oncology, 3rd Edition (WHO ICD-O-3) manual for guidelines at https://apps.who.int/iris/handle/10665/42344"
+						],
+						"examples": ["C50.1", "C18"]
+					},
+					"name": "procedure_body_site_code",
+					"description": "Indicate the ICD-O-3 topography code to describe the site of the surgery if applicable. Please use C80.9 if the site is Unkown.",
+					"restrictions": {
+						"required": true,
+						"regex": "^ICDO3:[C][0-9]{2}(.[0-9]{1})?$|^UBERON:\\d{7,}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "procedure_body_site_term"
+					},
+					"name": "procedure_body_site_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the procedure_body_site_code",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "procedure_code",
+						"required": [
+							"Provide code in Compact URI (CURIE) pattern.  NCIt URL: https://ncit.nci.nih.gov/ncitbrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C<code>  SNOMED-CT URL: http://snomed.info/id/<code>  UMLS URL: https://uts.nlm.nih.gov/uts/umls/concept/<code> CCI URL: https://www.cihi.ca/en/cci-coding-structure"
+						],
+						"examples": ["NCIT:C51894", "snomedct:284196006", "umls:C2584994", "CCI:1CA14STCDR"]
+					},
+					"name": "procedure_code",
+					"description": "Use code from NCIt, SNOMED-CT, UMLS or CCI to represent the procedure performed.",
+					"restrictions": {
+						"required": true,
+						"regex": "^NCIT:C\\d+$|^snomedct:(\\w+)?\\d+$|^umls:C\\d+$|^CCI:[A-Z0-9]([0-9]{2}|[A-Z]{2}){3}(([0-9]{2}|[A-Z]{2})[A-Z0-9]?)?$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "procedure_term"
+					},
+					"name": "procedure_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the procedure_code",
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "treatment",
+						"mappings": [
+							{
+								"local": "submitter_treatment_id",
+								"foreign": "submitter_treatment_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "medication",
+			"description": "An agent such as a drug (pharmaceutical agent), broadly defined as prescription and over-the-counter medicines, vaccines, and large-molecule biologic therapies.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_treatment_id",
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_treatment_id",
+					"description": "Unique identifier of the treatment, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "actual_cumulative_drug_dose"
+					},
+					"name": "actual_cumulative_drug_dose",
+					"description": "Indicate the total actual cumulative drug dose in the same units specified in drug_dose_units.",
+					"valueType": "number"
+				},
+				{
+					"meta": {
+						"displayName": "drug_code",
+						"required": [
+							"Provide code in Compact URI (CURIE) pattern.  RxNorm URL: https://rxnav.nlm.nih.gov/REST/rxcui/{code}  KEGG URL: https://www.kegg.jp/entry/{code}  PubChem URL: https://pubchem.ncbi.nlm.nih.gov/compound/{code}  NCIt URL: https://ncit.nci.nih.gov/ncitbrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C{code}"
+						],
+						"examples": ["rxnorm:221058", "kegg.drug:D00123", "pubchem.compound:100101", "NCIT:C138986"]
+					},
+					"name": "drug_code",
+					"description": "Provide the standardized code from RxNorm, KEGG,  PubChem or NCIt to represent the drug.",
+					"restrictions": {
+						"required": true,
+						"regex": "^rxnorm:\\d{1,8}$|^kegg\\.drug:D\\d+$|^pubchem\\.chem:\\d+$|^NCIT:C\\d{1,7}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "drug_dose_units"
+					},
+					"name": "drug_dose_units",
+					"description": "Indicate units used to record drug dose.",
+					"valueType": "string",
+					"restrictions": {
+						"regex": "^UO:\\d{7}$"
+					}
+				},
+				{
+					"meta": {
+						"displayName": "drug_term"
+					},
+					"name": "drug_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the drug_code",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "prescribed_cumulative_drug_dose"
+					},
+					"name": "prescribed_cumulative_drug_dose",
+					"description": "Indicate the total prescribed cumulative drug dose in the same units specified in drug_dose_units.",
+					"valueType": "number"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "treatment",
+						"mappings": [
+							{
+								"local": "submitter_treatment_id",
+								"foreign": "submitter_treatment_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "radiation",
+			"description": "Uses ionizing radiation, generally as part of cancer treatment to control or kill malignant cells.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_treatment_id",
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_treatment_id",
+					"description": "Unique identifier of the treatment, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "anatomical_site_irradiated_code",
+						"mappings": {
+							"mCODE.STU3": "Specimen.collection.bodySite",
+							"FHIR": "Specimen.collection.bodySite",
+							"MOH": "anatomical_site_irradiated_code",
+							"ARGO": "anatomical_site_irradiated_code"
+						},
+						"required": [
+							"Refer to the International Classification of Diseases for Oncology, 3rd Edition (WHO ICD-O-3) manual for guidelines at https://apps.who.int/iris/handle/10665/42344"
+						],
+						"examples": ["C50.1", "C18"]
+					},
+					"name": "anatomical_site_irradiated_code",
+					"description": "Indicate the ICD-O-3 topography code to describe the irradiated site of radiation if applicable. Please use C80.9 if the site is Unkown.",
+					"valueType": "string",
+					"restrictions": {
+						"regex": "^ICDO3:[C][0-9]{2}(.[0-9]{1})?$|^UBERON:\\d{7,}$"
+					}
+				},
+				{
+					"meta": {
+						"displayName": "anatomical_site_irradiated_term"
+					},
+					"name": "anatomical_site_irradiated_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the anatomical_site_irradiated_code",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "radiation_dosage"
+					},
+					"name": "radiation_dosage",
+					"description": "Indicate the total dose given in units of Gray (Gy).",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "radiation_fractions"
+					},
+					"name": "radiation_fractions",
+					"description": "Indicate the total number of fractions delivered as part of treatment.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "radiation_modality_code",
+						"mappings": {
+							"Phenopacket": "radiation_modality_code"
+						},
+						"examples": ["NCIT:C28039"]
+					},
+					"name": "radiation_modality_code",
+					"description": "Indicate NCIt code to denote the modality of radiation therapy.\nProvide code in Compact URI (CURIE) pattern.",
+					"restrictions": {
+						"required": true,
+						"regex": "^NCIT:C\\d+$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "radiation_modality_term",
+						"examples": ["Electron Beam"]
+					},
+					"name": "radiation_modality_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the radiation modality code.",
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "treatment",
+						"mappings": [
+							{
+								"local": "submitter_treatment_id",
+								"foreign": "submitter_treatment_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "measurement",
+			"description": "Record individual measurements to capture quantitative, ordinal (e.g., absent/present), or categorical measurements.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_measurement"
+					},
+					"name": "age_at_measurement",
+					"description": "Age (in days) of the participant at the time the lab test or measurement was conducted.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "measurement_code",
+						"required": ["Provide code in Compact URI (CURIE) pattern. LOINC URL: https://loinc.org/{code}"]
+					},
+					"name": "measurement_code",
+					"description": "Use standartized LOINC (Logical Observation Identifiers Names and Codes) code to represent quantitative, ordinal, or categorical measurements.",
+					"restrictions": {
+						"required": true,
+						"regex": "^LOINC:[0-9]{1,5}-[0-9]$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "measurement_result_categorical"
+					},
+					"name": "measurement_result_categorical",
+					"description": "The categorical result of the lab test or measurement.",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "measurement_result_numeric"
+					},
+					"name": "measurement_result_numeric",
+					"description": "The numeric result of the lab test or measurement.",
+					"valueType": "number"
+				},
+				{
+					"meta": {
+						"displayName": "measurement_term"
+					},
+					"name": "measurement_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the measurement_code",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "measurement_unit"
+					},
+					"name": "measurement_unit",
+					"description": "Indicate the unit of measurement for the result using LOINC code.",
+					"valueType": "string",
+					"restrictions": {
+						"regex": "^UO:\\d{7}$"
+					}
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "phenotype",
+			"description": "Individual phenotypic features, observed as either present or absent (excluded), with possible onset, modifiers and frequency",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_phenotype"
+					},
+					"name": "age_at_phenotype",
+					"description": "Participant's age (in days) when phenotype was observed",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "phenotype_code",
+						"required": [
+							"Provide code in Compact URI (CURIE) pattern.  HPO URL: https://hpo.jax.org/app/browse/term/HP:<code>"
+						]
+					},
+					"name": "phenotype_code",
+					"description": "Use standardized HPO (Human Phenotype Ontology) codes to represent the phenotype.",
+					"restrictions": {
+						"required": true,
+						"regex": "^HP:[0-9]{7}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "phenotype_duration"
+					},
+					"name": "phenotype_duration",
+					"description": "Indicate the length of time (in days) over which the phenotype was observed in the participant.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "phenotype_observed"
+					},
+					"name": "phenotype_observed",
+					"description": "Indicate whether the phenotype was observed in the participant.",
+					"restrictions": {
+						"required": true,
+						"codeList": ["No", "Unknown", "Yes"]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "phenotype_severity",
+						"required": ["Permissible values from https://hpo.jax.org/browse/term/HP:0012824"]
+					},
+					"name": "phenotype_severity",
+					"description": "The degree or severity of the observed phenotype.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": ["Borderline", "Mild", "Moderate", "Profound", "Severe"]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "phenotype_term"
+					},
+					"name": "phenotype_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the phenotype_code.",
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "comorbidity",
+			"description": "Any medical conditions (e.g diabetes, prior cancer malignancies) that have existed or may occur during the clinical course of the participant who has the index disease under study.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_comorbidity_diagnosis"
+					},
+					"name": "age_at_comorbidity_diagnosis",
+					"description": "Indicate the age (in days) of comorbidity diagnosis.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "comorbidity_code",
+						"required": [
+							"Provide code in Compact URI (CURIE) pattern. ICD-10 code: refer to https://icd.who.int/browse10/2019/en MONDO code: refer to https://www.ebi.ac.uk/ols/ontologies/mondo"
+						],
+						"examples": ["MONDO:0000001", "icd10:C34"]
+					},
+					"name": "comorbidity_code",
+					"description": "Use ICD-10 code or Mondo code to indicate the comorbidity diagnosed. Provide code in Compact URI (CURIE) pattern.",
+					"restrictions": {
+						"required": true,
+						"regex": "^icd10:(([XVI]+)|([A-Z][0-9]+((-[A-Z][0-9]+)|(\\.[0-9]))?))$|^MONDO:\\d{7}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "comorbidity_status"
+					},
+					"name": "comorbidity_status",
+					"description": "Indicate the current state or activity of the comorbid condition.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Active",
+							"In Remission",
+							"Resolved",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "comorbidity_term",
+						"mappings": {
+							"mCODE.STU3": "condition.code",
+							"FHIR": "condition.code",
+							"Phenopacket": "disease.term"
+						}
+					},
+					"name": "comorbidity_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the comorbidity_code",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "comorbidity_treatment_status"
+					},
+					"name": "comorbidity_treatment_status",
+					"description": "Indicate whether the comorbid condition is currently being treated or not.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Treated and resolved",
+							"Under treatment",
+							"Untreated",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					}
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "exposure",
+			"description": "Capture information about external factors, agents, or conditions an individual has encountered that may influence health or disease outcomes.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_exposure"
+					},
+					"name": "age_at_exposure",
+					"description": "Age (in days) when the participant was exposed (or first exposed)        ",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "exposure_amount"
+					},
+					"name": "exposure_amount",
+					"description": "Provide intensity, quantity or frequency of the exposure",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "exposure_code",
+						"examples": ["LOINC:43164-0"]
+					},
+					"name": "exposure_code",
+					"description": "Provide the standardized codes from SNOMED CT, ExO, LOINC to represent the type of exposure.\nProvide code in Compact URI (CURIE) pattern.\n",
+					"restrictions": {
+						"required": true,
+						"regex": "^snomedct:(\\w+)?\\d+$|^ExO:\\d{7}$|^LOINC:[0-9]{1,5}-[0-9]$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "exposure_duration"
+					},
+					"name": "exposure_duration",
+					"description": "Duration of exposure period",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "exposure_status"
+					},
+					"name": "exposure_status",
+					"description": "Provide the status of the exposure",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"Current",
+							"Former",
+							"Never",
+							"Exposed - Current Unknown",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "exposure_term",
+						"examples": ["Alcohol use"]
+					},
+					"name": "exposure_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the exposure_code",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "exposure_unit",
+						"examples": ["drinks/day"]
+					},
+					"name": "exposure_unit",
+					"description": "Unit associated with exposure_amount",
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "specimen",
+			"description": "Any material sample taken from a biological entity, living or dead, from physical object or the environment",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_specimen_id",
+						"mappings": {
+							"CQDG": "submitter_biospecimen_id",
+							"mCODE.STU3": "Specimen.Identifier",
+							"FHIR": "Specimen.Identifier",
+							"Phenopacket": "biosample.id",
+							"BeaconV2": "biosample.id",
+							"ARGO": "submitter_specimen_id",
+							"MOH": "submitter_specimen_id"
+						},
+						"examples": ["LAML_PO", "00445", "THY_099-tumour"]
+					},
+					"name": "submitter_specimen_id",
+					"description": "Unique identifier of the specimen within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "submitter_participant_id",
+						"mappings": {
+							"CQDG": "submitter_participant_id",
+							"mCODE.STU3": "Patient.Identifier",
+							"FHIR": "Patient.Identifier",
+							"Phenopacket": "individual.id",
+							"BeaconV2": "individual.id",
+							"ARGO": "submitter_participant_id",
+							"MOH": "submitter_participant_id"
+						},
+						"examples": ["90234", "BLD_donor_89", "AML-90"]
+					},
+					"name": "submitter_participant_id",
+					"description": "Unique identifier of the participant within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "age_at_specimen_collection"
+					},
+					"name": "age_at_specimen_collection",
+					"description": "Indicate participant's age( in days) when specimen was collected.",
+					"valueType": "integer"
+				},
+				{
+					"meta": {
+						"displayName": "specimen_anatomic_location_code",
+						"mappings": {
+							"mCODE.STU3": "Specimen.collection.bodySite",
+							"FHIR": "Specimen.collection.bodySite",
+							"ARGO": "specimen_anatomic_location_code",
+							"MOH": "specimen_anatomic_location_code"
+						},
+						"required": [
+							"Refer to the International Classification of Diseases for Oncology, 3rd Edition (WHO ICD-O-3) manual for guidelines at https://apps.who.int/iris/handle/10665/42344."
+						],
+						"examples": ["C50.1", "C18"]
+					},
+					"name": "specimen_anatomic_location_code",
+					"description": "Indicate the ICD-O-3 topography code for the anatomic location of a specimen when it was collected. Please use C80.9 if the primary site of a specimen is Unkown.",
+					"valueType": "string",
+					"restrictions": {
+						"regex": "^ICDO3:[C][0-9]{2}(.[0-9]{1})?$|^UBERON:\\d{7,}$"
+					}
+				},
+				{
+					"meta": {
+						"displayName": "specimen_anatomic_location_term",
+						"examples": ["placental basal plate"]
+					},
+					"name": "specimen_anatomic_location_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the specimen anatomic location code.",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "specimen_laterality",
+						"mappings": {
+							"mCODE.STU3": "Specimen.collection.bodySite.extension.lateralityQualifier",
+							"FHIR": "Specimen.collection.bodySite.extension.lateralityQualifier"
+						},
+						"required": [
+							"Reference caDSR CDE ID 2007875 https://cdebrowser.nci.nih.gov/cdebrowserClient/cdeBrowser.html#/search?publicId=2007875&version=2.0"
+						]
+					},
+					"name": "specimen_laterality",
+					"description": "For cancer in a paired organ, indicate the side on which the specimen was obtained.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Left",
+							"Right",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "specimen_processing",
+						"mappings": {
+							"Phenopacket": "biosample.sample_processing",
+							"BeaconV2": "biosample.sample_processing",
+							"ARGO": "specimen_processing",
+							"MOH": "specimen_processing"
+						}
+					},
+					"name": "specimen_processing",
+					"description": "Indicate the technique used to process specimen.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Cryopreservation - other",
+							"Cryopreservation in dry ice (dead tissue)",
+							"Cryopreservation in liquid nitrogen (dead tissue)",
+							"Cryopreservation of live cells in liquid nitrogen",
+							"Formalin fixed & paraffin embedded",
+							"Formalin fixed - buffered",
+							"Formalin fixed - unbuffered",
+							"Fresh",
+							"Other",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "specimen_storage",
+						"mappings": {
+							"Phenopacket": "biosample.sample_storage",
+							"BeaconV2": "biosample.sample_storage",
+							"ARGO": "specimen_storage",
+							"MOH": "specimen_storage"
+						}
+					},
+					"name": "specimen_storage",
+					"description": "Indicate the method of long term storage for specimen that were not extracted freshly or immediately cultured.",
+					"valueType": "string",
+					"restrictions": {
+						"codeList": [
+							"Cut slide",
+							"Frozen in -70 freezer",
+							"Frozen in liquid nitrogen",
+							"Frozen in vapour phase",
+							"Not Applicable",
+							"Other",
+							"Paraffin block",
+							"RNA later frozen",
+							"Missing - Not collected",
+							"Missing - Not provided",
+							"Missing - Restricted access",
+							"Missing - Unknown",
+							"Not applicable"
+						]
+					}
+				},
+				{
+					"meta": {
+						"displayName": "specimen_tissue_source_code",
+						"mappings": {
+							"CQDG": "biospecimen_tissue_source",
+							"mCODE.STU3": "Specimen.type",
+							"FHIR": "Specimen.type",
+							"Phenopacket": "biosample.sampled_tissue",
+							"BeaconV2": "biosample.sampled_tissue"
+						}
+					},
+					"name": "specimen_tissue_source_code",
+					"description": "Indicate the tissue source of the specimen from which a biopsy or other tissue specimen was obtained.  Use codes from NCIt (NCI Thesaurus) or SNOMED-CT (SNOMED Clinical Terms) in Compact URI (CURIE) pattern.",
+					"restrictions": {
+						"required": true,
+						"regex": "^NCIT:C[0-9]+$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "specimen_tissue_source_term"
+					},
+					"name": "specimen_tissue_source_term",
+					"description": "Indicate the human readable label for the specimen tissue source code.",
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "participant",
+						"mappings": [
+							{
+								"local": "submitter_participant_id",
+								"foreign": "submitter_participant_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "sample",
+			"description": "Refers to the molecular material (e.g., DNA, RNA, protein) extracted from the specimen and used for experiments or analysis.",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_sample_id",
+						"mappings": {
+							"FHIR": "submitter_sample_id",
+							"mCODE": "submitter_sample_id",
+							"MOH": "submitter_sample_id",
+							"ARGO": "submitter_sample_id"
+						},
+						"examples": ["hnc_12", "CCG_34_94583", "BRCA47832-3239"]
+					},
+					"name": "submitter_sample_id",
+					"description": "Unique identifier of the sample within the study, assigned by the data provider.\n",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "submitter_specimen_id",
+						"mappings": {
+							"CQDG": "submitter_biospecimen_id",
+							"mCODE.STU3": "Specimen.Identifier",
+							"FHIR": "Specimen.Identifier",
+							"Phenopacket": "biosample.id",
+							"BeaconV2": "biosample.id",
+							"ARGO": "submitter_specimen_id",
+							"MOH": "submitter_specimen_id"
+						},
+						"examples": ["LAML_PO", "00445", "THY_099-tumour"]
+					},
+					"name": "submitter_specimen_id",
+					"description": "Unique identifier of the specimen within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "molecule_type_code",
+						"mappings": {
+							"CQDG": "sample_type",
+							"Phenopacket": "sample_type",
+							"BeaconV2": "biosample.sample_type",
+							"GA4GH.Experiment.Metadata.Checklist": "molecule_type"
+						},
+						"examples": ["NCIT:C449", "NCIT:C812", "NNCIT:C80376", "SO:0000991", "SO:0000234", "SO:0001877"]
+					},
+					"name": "molecule_type_code",
+					"description": "Indicate NCIT or SO code to denote the type of source material used for sequencing and analysis.\nProvide code in Compact URI (CURIE) pattern.",
+					"restrictions": {
+						"required": true,
+						"regex": "^NCIT:C[0-9]+$|^SO:\\d{7}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "molecule_type_term",
+						"examples": ["DNA"]
+					},
+					"name": "molecule_type_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with molecule type code.",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sample_status",
+						"mappings": {
+							"Phenopacket": "sample_status"
+						}
+					},
+					"name": "sample_status",
+					"description": "Indicate the status of the sample for data analysis.",
+					"restrictions": {
+						"required": true,
+						"codeList": ["Case", "Control", "Not applicable"]
+					},
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "specimen",
+						"mappings": [
+							{
+								"local": "submitter_specimen_id",
+								"foreign": "submitter_specimen_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "experiment",
+			"description": "Contains information about the experimental design of the sequencing",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_experiment_id",
+						"mappings": {
+							"ARGO": "submitter_experiment_id"
+						}
+					},
+					"name": "submitter_experiment_id",
+					"description": "Unique identifier of the experiment within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "submitter_sample_id",
+						"mappings": {
+							"FHIR": "submitter_sample_id",
+							"mCODE": "submitter_sample_id",
+							"MOH": "submitter_sample_id",
+							"ARGO": "submitter_sample_id"
+						},
+						"examples": ["hnc_12", "CCG_34_94583", "BRCA47832-3239"]
+					},
+					"name": "submitter_sample_id",
+					"description": "Unique identifier of the sample within the study, assigned by the data provider.\n",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "assay_type_code",
+						"mappings": {
+							"GA4GH.Experiment.Metadata.Checklist": "assay_type",
+							"BeaconV2": "runs.libraryStrategy"
+						},
+						"examples": ["OBI:0002117"]
+					},
+					"name": "assay_type_code",
+					"description": "Indicate OBI code to provide the sequencing technique intented for the library for sequencing data.\nProvide code in Compact URI (CURIE) pattern.",
+					"restrictions": {
+						"required": true,
+						"regex": "^OBI:\\d{7}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "assay_type_term",
+						"examples": ["whole genome sequencing assay"]
+					},
+					"name": "assay_type_term",
+					"description": "Provide the standardized and human readable term derived from the coding system associated with the assay type code.",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "experiment_design",
+						"mappings": {
+							"GA4GH.Experiment.Metadata.Checklist": "design_description"
+						}
+					},
+					"name": "experiment_design",
+					"description": "The high-level experiment design including layout, protocol.",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "experiment_type",
+						"mappings": {
+							"GA4GHExperimentMetadataChecklist": "experiment_type"
+						}
+					},
+					"name": "experiment_type",
+					"description": "The broad type of sequencing experiment performed. A mixture of library strategy and source",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"NCIT:C84343 (Genomics)",
+							"NCIT:C153189 (Transcriptomics)",
+							"NCIT:C20085 (Proteomics)",
+							"NCIT:C153191 (Metagenomics)",
+							"NCIT:C153190 (Epigenomics)"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "instrument",
+						"mappings": {
+							"GA4GH.Experiment.Metadata.Checklist": "instrument"
+						},
+						"examples": [
+							"OBI:0002752 (Oxford Nanopore PromethION)",
+							"OBI:0000759 (Illumina)",
+							"OBI:0002630 (Illumina NovaSeq 6000)",
+							"OBI:0002012 (PacBio RS II)"
+						]
+					},
+					"name": "instrument",
+					"description": "Provide detailed information about the sequencing platform or technology used, including the name and/or model number of the specific instrument. Whenever possible, specify the exact model or revision rather than the general manufacturer name. It is recommended to use standardized terminology by including the appropriate OBI (Ontology for Biomedical Investigations) code and term to ensure precision.\n\nUse the format: OBI code in CURIE format (OBI term)\n\nExample values:\nOBI:0002752 (Oxford Nanopore PromethION)\nOBI:0000759 (Illumina)\nOBI:0002630 (Illumina NovaSeq 6000)\nOBI:0002012 (PacBio RS II)",
+					"restrictions": {
+						"required": true,
+						"regex": "^OBI:\\d{7} \\(.*\\)$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "instrument_metadata",
+						"mappings": {
+							"GA4GH.Experiment.Metadata.Checklist": "instrument_metadata"
+						}
+					},
+					"name": "instrument_metadata",
+					"description": "Captures metadata about sequencing instrument usage (e.g. instruments parameters and usage conditions)",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "platform",
+						"mappings": {
+							"BeaconV2": "runs.platform",
+							"ARGO": "platform"
+						}
+					},
+					"name": "platform",
+					"description": "The sequencing platform type used in data generation.",
+					"restrictions": {
+						"required": true,
+						"codeList": [
+							"CAPILLARY",
+							"DNBSEQ",
+							"ELEMENT",
+							"HELICOS",
+							"ILLUMINA",
+							"IONTORRENT",
+							"LS454",
+							"ONT",
+							"PACBIO",
+							"SINGULAR",
+							"SOLID",
+							"ULTIMA"
+						]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "sequencing_protocol",
+						"mappings": {
+							"GA4GH.Experiment.Metadata.Checklist": "sequencing_protocol"
+						}
+					},
+					"name": "sequencing_protocol",
+					"description": "Set of rules which guides how the sequencing protocol was followed. Change-tracking services such as Protocol.io or GitHub are encouraged instead of dumping free text in this field.\nE.g, https://www.protocols.io/view/environmental-dna-edna-metabarcoding-protocol-for-rm7vzy3q2lx1/v1",
+					"valueType": "string"
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "sample",
+						"mappings": [
+							{
+								"local": "submitter_sample_id",
+								"foreign": "submitter_sample_id"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"name": "read_group",
+			"description": "Holds the readgroup information about the raw reads generated in a run of sequencing",
+			"fields": [
+				{
+					"meta": {
+						"displayName": "submitter_read_group_id",
+						"mappings": {
+							"ARGO": "submitter_read_group_id",
+							"BeaconV2": "runs.id"
+						}
+					},
+					"name": "submitter_read_group_id",
+					"description": "The identifier of a read group; must be unique within each payload.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[a-zA-Z0-9\\-_:\\.']+$"
+					},
+					"valueType": "string",
+					"unique": true
+				},
+				{
+					"meta": {
+						"displayName": "submitter_experiment_id",
+						"mappings": {
+							"ARGO": "submitter_experiment_id"
+						}
+					},
+					"name": "submitter_experiment_id",
+					"description": "Unique identifier of the experiment within the study, assigned by the data provider.",
+					"restrictions": {
+						"required": true,
+						"regex": "^[A-Za-z0-9\\-\\._]{1,64}$"
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "file_r1",
+						"mappings": {
+							"ARGO": "file_r1"
+						}
+					},
+					"name": "file_r1",
+					"description": "Name of the sequencing file containing reads from the first end of a sequencing run.",
+					"restrictions": {
+						"required": true
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "file_r2",
+						"mappings": {
+							"ARGO": "file_r2"
+						}
+					},
+					"name": "file_r2",
+					"description": "Name of the sequencing file containing reads from the second end of a paired-end sequencing run. Required if and only if paired-end sequencing was done.",
+					"valueType": "string",
+					"restrictions": {
+						"if": {
+							"conditions": [
+								{
+									"fields": ["library_layout"],
+									"match": {
+										"value": "OBI:0000722 (paired-end library)"
+									},
+									"case": "all"
+								}
+							]
+						},
+						"then": {
+							"required": true
+						},
+						"else": {
+							"required": false,
+							"empty": true
+						}
+					}
+				},
+				{
+					"meta": {
+						"displayName": "insert_size",
+						"mappings": {
+							"ARGO": "insert_size",
+							"GA4GH.Experiment.Metadata.Checklist": "insert_size"
+						}
+					},
+					"name": "insert_size",
+					"description": "For paired-end sequencing, the average size of sequences between two sequencing ends. Required only for paired-end sequencing.",
+					"valueType": "integer",
+					"restrictions": {
+						"range": {
+							"min": 0
+						}
+					}
+				},
+				{
+					"meta": {
+						"displayName": "library_description",
+						"mappings": {
+							"GA4GH.Experiment.Metadata.Checklist": "library_description"
+						}
+					},
+					"name": "library_description",
+					"description": "Description of the nucleotide sequencing library, including targeting information, spot, gap descriptors, and any other information relevant to its construction",
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "library_layout",
+						"mappings": {
+							"GA4GH.Experiment.Metadata.Checklist": "library_layout",
+							"BeaconV2": "runs.libraryLayout"
+						}
+					},
+					"name": "library_layout",
+					"description": "Indicate whether the library was built as paired-end or single-end if applicable.",
+					"restrictions": {
+						"required": true,
+						"codeList": ["OBI:0000722 (paired-end library)", "OBI:0000736 (single fragment library)", "Not applicable"]
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "library_name",
+						"mappings": {
+							"ARGO.library_name": "ARGO.library_name",
+							"GA4GH.Experiment.Metadata.Checklist": "library_extra_id"
+						}
+					},
+					"name": "library_name",
+					"description": "Name of a sequencing library made from a molecular sample or a sample pool (multiplex sequencing).",
+					"restrictions": {
+						"required": true
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "platform_unit",
+						"mappings": {
+							"ARGO.platform_unit": "ARGO.platform_unit"
+						}
+					},
+					"name": "platform_unit",
+					"description": "Unique identifier for each read group. For example, Illumina has format {FLOWCELL_BARCODE}.{LANE}.{SAMPLE_BARCODE}. The {FLOWCELL_BARCODE} refers to the unique identifier for a particular flow cell. The {LANE} indicates the lane of the flow cell and the {SAMPLE_BARCODE} is a sample/library-specific identifier. For non-multiplex sequencing, platform unit and read group have a one-to-one relationship.",
+					"restrictions": {
+						"required": true
+					},
+					"valueType": "string"
+				},
+				{
+					"meta": {
+						"displayName": "read_group_id_in_bam",
+						"mappings": {
+							"ARGO": "read_group_id_in_bam"
+						}
+					},
+					"name": "read_group_id_in_bam",
+					"description": "Optional field indicating the @RD ID in the BAM. If submitted, this will be used to map the @RG ID in the BAM header to the submitter_read_group_id in the payload. After submission, the @RG ID in the payload will be used for all future headers. This cannot be submitted for FASTQ files.",
+					"valueType": "string",
+					"restrictions": {
+						"regex": "^[a-zA-Z0-9\\-_:\\.']+$"
+					}
+				},
+				{
+					"meta": {
+						"displayName": "read_length_r1",
+						"mappings": {
+							"ARGO": "read_length_r1"
+						}
+					},
+					"name": "read_length_r1",
+					"description": "Length of sequencing reads in file_r1; this corresponds to the number of sequencing cycles of the first end.",
+					"valueType": "integer",
+					"restrictions": {
+						"range": {
+							"min": 20
+						}
+					}
+				},
+				{
+					"meta": {
+						"displayName": "read_length_r2",
+						"mappings": {
+							"ARGO": "read_length_r2"
+						}
+					},
+					"name": "read_length_r2",
+					"description": "Length of sequencing reads in file_r2; this corresponds to the number of sequencing cycles of the second end.",
+					"valueType": "integer",
+					"restrictions": {
+						"range": {
+							"min": 20
+						}
+					}
+				}
+			],
+			"restrictions": {
+				"foreignKey": [
+					{
+						"schema": "experiment",
+						"mappings": [
+							{
+								"local": "submitter_experiment_id",
+								"foreign": "submitter_experiment_id"
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}

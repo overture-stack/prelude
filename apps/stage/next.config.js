@@ -2,7 +2,11 @@ const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const withPlugins = require('next-compose-plugins');
 const { patchWebpackConfig: patchForGlobalCSS } = require('next-global-css');
-const withTranspileModules = require('next-transpile-modules')(['swagger-ui-react', 'swagger-ui-dist']);
+const withTranspileModules = require('next-transpile-modules')([
+	'swagger-ui-react',
+	'swagger-ui-dist',
+	'@overture-stack/lectern-ui',
+]);
 const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 
 module.exports = withPlugins([withTranspileModules], {
