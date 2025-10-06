@@ -1,44 +1,53 @@
-import { css } from '@emotion/react';
-import React from 'react';
-import theme from './shared/theme';
+import { css, useTheme } from '@emotion/react';
+import React, { useMemo } from 'react';
+import { createDocumentationTheme } from '../../theme/adapters/documentation';
+import { StageThemeInterface } from '../../theme';
 
-const FundingStatement: React.FC = () => (
-	<div css={fundingStatementStyle}>
-		<div css={fundingStatementInnerStyle}>
-			<h4 css={fundingStatementTitleStyle}>Supported by</h4>
-			<p css={fundingStatementTextStyle}>
-				Grant #U24CA253529 from the National Cancer Institute at the US National Institutes of Health
-			</p>
+const FundingStatement: React.FC = () => {
+	const stageTheme = useTheme() as StageThemeInterface;
+	const theme = createDocumentationTheme(stageTheme);
+	const styles = useMemo(() => getStyles(theme), [theme]);
+
+	return (
+		<div css={styles.container}>
+			<div css={styles.inner}>
+				<h4 css={styles.title}>Supported by</h4>
+				<p css={styles.text}>
+					Grant #U24CA253529 from the National Cancer Institute at the US National Institutes of Health
+				</p>
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
-const fundingStatementStyle = css`
-	padding: ${theme.spacing[4]};
-	background: linear-gradient(145deg, ${theme.colors.backgroundSecondary}, ${theme.colors.backgroundTertiary});
-	border-top: 1px solid ${theme.colors.border};
-	margin-top: auto; /* Push to bottom */
-`;
+const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
+	container: css`
+		padding: ${theme.spacing[4]};
+		background: linear-gradient(145deg, ${theme.colors.backgroundSecondary}, ${theme.colors.backgroundTertiary});
+		border-top: 1px solid ${theme.colors.border};
+		margin-top: auto;
+	`,
 
-const fundingStatementInnerStyle = css`
-	position: relative;
-`;
+	inner: css`
+		position: relative;
+	`,
 
-const fundingStatementTitleStyle = css`
-	font-size: ${theme.fontSize.xs};
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	margin-bottom: ${theme.spacing[2]};
-	color: ${theme.colors.primary};
-	margin-top: 0;
-`;
+	title: css`
+		font-size: ${theme.fontSize.xs};
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: ${theme.spacing[2]};
+		color: ${theme.colors.primary};
+		margin-top: 0;
+	`,
 
-const fundingStatementTextStyle = css`
-	font-size: ${theme.fontSize.xs};
-	line-height: ${theme.lineHeight.base};
-	margin: 0;
-	color: ${theme.colors.textSecondary};
-`;
+	text: css`
+		font-size: ${theme.fontSize.xs};
+		line-height: ${theme.lineHeight.base};
+		margin: 0;
+		color: ${theme.colors.textSecondary};
+	`,
+});
 
 export default FundingStatement;

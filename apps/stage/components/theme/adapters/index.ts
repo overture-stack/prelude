@@ -19,39 +19,22 @@
  *
  */
 
-import { css } from '@emotion/react';
-import { ReactElement } from 'react';
-import PageLayout from '../../components/PageLayout';
-import { DictionaryViewer } from '../../components/pages/dictionary';
-import { createPage } from '../../global/utils/pages';
-
 /**
- * Dictionary Page
+ * Theme Adapters
  *
- * Displays a data dictionary from a static JSON file hosted in the public directory.
+ * This directory contains theme adapter functions that transform the Stage global theme
+ * into context-specific theme structures for different parts of the application.
  *
- * Architecture:
- * - Page component handles layout and routing
- * - DictionaryViewer component handles Lectern integration
+ * Purpose:
+ * - Maintain a single source of truth for colors (components/theme/colors.ts)
+ * - Enable each context to use its preferred theme structure
+ * - Ensure visual consistency across the application
+ * - Simplify theme maintenance and updates
  *
+ * Available Adapters:
+ * - documentation: Transforms Stage theme -> Documentation theme (Docusaurus-inspired)
+ * - lectern: Transforms Stage theme -> Lectern-compatible theme (Data Dictionary viewer)
  */
-const DictionaryPage = (): ReactElement => {
-	return (
-		<PageLayout>
-			<div
-				css={css`
-					margin: 0 auto;
-					padding-top: 
-					padding-bottom: 20rem;
-				`}
-			>
-				<DictionaryViewer dictionaryUrl="/dictionary/dictionary.json" />
-			</div>
-		</PageLayout>
-	);
-};
 
-export default createPage({
-	isPublic: true,
-	getInitialProps: async () => null,
-})(DictionaryPage);
+export { createDocumentationTheme } from './documentation';
+export { createLecternTheme } from './lectern';
