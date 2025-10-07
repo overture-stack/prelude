@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { ReactElement } from 'react';
 import defaultTheme from '../../theme';
 import HomeNavigation from './HomeNavigation';
+import WelcomeBanner from './WelcomeBanner';
 
 const HomeContent = (): ReactElement => {
 	return (
@@ -12,6 +13,7 @@ const HomeContent = (): ReactElement => {
 				min-height: 100vh;
 			`}
 		>
+			<WelcomeBanner />
 			<HeroBanner
 				title="Search & Exploration Demo"
 				description="Version 1-beta"
