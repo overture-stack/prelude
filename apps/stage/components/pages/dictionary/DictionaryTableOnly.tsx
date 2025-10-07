@@ -19,54 +19,44 @@
  *
  */
 
-import { DictionaryTableStateProvider, ThemeProvider } from '@overture-stack/lectern-ui';
-// Note: DictionaryStaticDataProvider and DictionaryTableViewer are not exported from main index
-// Using internal imports for static dictionary support
-// @ts-ignore - using internal path
-import { DictionaryTableViewer } from '@overture-stack/lectern-ui/dist/viewer-table/DictionaryTableViewer';
-import { DictionaryStaticDataProvider } from '@overture-stack/lectern-ui/dist/dictionary-controller/DictionaryDataContext';
+import { ThemeProvider } from '@overture-stack/lectern-ui';
+// @ts-ignore - using internal path for SchemaTable
+import SchemaTable from '@overture-stack/lectern-ui/dist/viewer-table/DataTable/SchemaTable';
 import { ReactElement } from 'react';
 import { createLecternTheme } from '../../theme/adapters/lectern';
 import { useDictionary, useStageTheme } from './hooks';
 
 /**
- * Props for DictionaryViewer component
+ * Props for DictionaryTableOnly component
  */
-interface DictionaryViewerProps {
+interface DictionaryTableOnlyProps {
 	/** URL to the static dictionary JSON file */
 	dictionaryUrl: string;
+	/** Optional: Show schema name as header above each table (default: true) */
+	showSchemaNames?: boolean;
 	/** Optional: CSS class for custom styling */
 	className?: string;
 }
 
 /**
- * DictionaryViewer Component
+ * DictionaryTableOnly Component
  *
- * Displays a full-featured data dictionary using the Lectern UI library.
- * This component follows the same pattern as the Arranger data explorer,
- * providing a clean separation between the page and the viewer logic.
+ * A simplified dictionary viewer that renders only the schema tables without:
+ * - Dictionary header (name, version, description)
+ * - Toolbar (expand/collapse, filters, download buttons)
+ * - Accordions (tables are always visible)
  *
- * Features:
- * - Dictionary header with name, version, and description
- * - Interactive toolbar with expand/collapse, filters, and download
- * - Collapsible accordion sections for each schema
- * - Full conditional logic and validation display
- *
- * Architecture:
- * - Fetches dictionary JSON via useDictionary hook
- * - Integrates with Stage global theme (with fallback for embedded contexts)
- * - Provides all necessary context providers for Lectern UI
- *
- * Usage:
- * - In pages: Wrapped in theme context automatically
- * - In documentation: Falls back to default theme when hydrated
- *
- * Similar to: components/pages/dataExplorer/PageContent.tsx (Arranger pattern)
+ * Perfect for embedding dictionary tables in documentation or when you just
+ * want to display field definitions without the full viewer UI.
  *
  * @param props - Component properties
  * @returns ReactElement
  */
-export const DictionaryViewer = ({ dictionaryUrl, className }: DictionaryViewerProps): ReactElement => {
+export const DictionaryTableOnly = ({
+	dictionaryUrl,
+	showSchemaNames = true,
+	className,
+}: DictionaryTableOnlyProps): ReactElement => {
 	// Use shared hooks for dictionary loading and theme handling
 	const { dictionary, loading, error } = useDictionary(dictionaryUrl);
 	const stageTheme = useStageTheme();
@@ -84,12 +74,17 @@ export const DictionaryViewer = ({ dictionaryUrl, className }: DictionaryViewerP
 
 	return (
 		<ThemeProvider theme={lecternTheme}>
-			<div className={className}>
-				<DictionaryStaticDataProvider staticDictionaries={[dictionary]}>
-					<DictionaryTableStateProvider>
-						<DictionaryTableViewer />
-					</DictionaryTableStateProvider>
-				</DictionaryStaticDataProvider>
+			<div className={className} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+				{dictionary.schemas.map((schema) => (
+					<div key={schema.name}>
+						{showSchemaNames && (
+							<h3 style={{ marginBottom: '16px', fontSize: '20px', fontWeight: 'bold' }}>
+								{schema.name}
+							</h3>
+						)}
+						<SchemaTable schema={schema} />
+					</div>
+				))}
 			</div>
 		</ThemeProvider>
 	);

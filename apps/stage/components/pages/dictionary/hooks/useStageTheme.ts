@@ -19,5 +19,31 @@
  *
  */
 
-export { DictionaryViewer } from './DictionaryViewer';
-export { DictionaryTableOnly } from './DictionaryTableOnly';
+import { useTheme } from '@emotion/react';
+import defaultTheme, { StageThemeInterface } from '../../../theme';
+
+/**
+ * Custom hook to get Stage theme with fallback for components rendered outside theme context
+ *
+ * This hook is useful for components that may be:
+ * - Rendered normally within the app's theme provider
+ * - Hydrated client-side via ReactDOM.render (e.g., in documentation pages)
+ *
+ * @returns Stage theme (from context or default)
+ *
+ * @example
+ * ```tsx
+ * const stageTheme = useStageTheme();
+ * const lecternTheme = createLecternTheme(stageTheme);
+ * ```
+ */
+export const useStageTheme = (): StageThemeInterface => {
+	const contextTheme = useTheme();
+
+	// If theme context exists and has content, use it; otherwise fall back to default
+	const stageTheme = (contextTheme && Object.keys(contextTheme).length > 0
+		? contextTheme
+		: defaultTheme) as StageThemeInterface;
+
+	return stageTheme;
+};

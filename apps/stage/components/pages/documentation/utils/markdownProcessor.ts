@@ -14,6 +14,7 @@ export function configureMarked(): void {
 	marked.setOptions({
 		breaks: true,
 		gfm: true,
+		// Note: marked allows HTML by default, which is needed for custom components
 	});
 }
 
@@ -27,6 +28,9 @@ export function renderMarkdown(content: string = ''): { __html: string } {
 
 		// Process the content to add IDs to headings properly
 		let processedContent = processHeadings(content);
+
+		// Process custom components before markdown rendering
+		processedContent = processCustomComponents(processedContent);
 
 		// Render the markdown
 		let renderedHTML = marked(processedContent);
@@ -96,6 +100,34 @@ export function extractHeadings(content: string): Heading[] {
 	}
 
 	return headings;
+}
+
+/**
+ * Process custom component tags in markdown
+ * Converts custom tags like <DictionaryTable> and <DictionaryViewerFull> into placeholders that will be hydrated client-side
+ */
+function processCustomComponents(content: string): string {
+	// Process DictionaryTable components (table-only view)
+	let processedContent = content.replace(
+		/<DictionaryTable\s+url="([^"]+)"\s+showSchemaNames="([^"]+)"\s*\/?>/g,
+		(_, url, showSchemaNames) => {
+			// Create a marker that will be replaced client-side
+			const componentId = `dictionary-table-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+			return `<div class="dictionary-table-container" data-component="DictionaryTable" data-url="${url}" data-show-schema-names="${showSchemaNames}" id="${componentId}"></div>`;
+		},
+	);
+
+	// Process DictionaryViewerFull components (full viewer with header, toolbar, accordions)
+	processedContent = processedContent.replace(
+		/<DictionaryViewerFull\s+url="([^"]+)"\s*\/?>/g,
+		(_, url) => {
+			// Create a marker that will be replaced client-side
+			const componentId = `dictionary-viewer-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+			return `<div class="dictionary-viewer-container" data-component="DictionaryViewerFull" data-url="${url}" id="${componentId}"></div>`;
+		},
+	);
+
+	return processedContent;
 }
 
 /**

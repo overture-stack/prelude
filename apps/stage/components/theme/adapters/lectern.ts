@@ -25,65 +25,86 @@ import { StageThemeInterface } from '../index';
 /**
  * Lectern Theme Adapter
  *
- * Transforms Stage theme into Lectern-compatible theme structure.
- * This ensures the Data Dictionary viewer uses the same color palette,
- * typography, and sizing as the rest of the application.
+ * Transforms Stage theme into Lectern-compatible theme structure for the Data Dictionary viewer.
  *
- * Note: Lectern uses RecursivePartial<Theme>, so we can override specific
- * properties while using Lectern's defaults for the rest.
+ * KEY UI MAPPINGS:
+ *
+ * COLORS (most used):
+ * - accent_dark → Dictionary header text, button text, icons
+ * - accent_1 → Button hover states, conditional block backgrounds
+ * - background_light → Button backgrounds
+ * - background_alternate → Alternating table rows
+ * - border_light → Table borders
+ * - border_button → Button borders
+ * - white/black → Base backgrounds and text
+ *
+ * TYPOGRAPHY (most used):
+ * - subtitleBold → Dictionary title
+ * - paragraphSmall → Table cells, field descriptions
+ * - paragraphSmallBold → Attribute headers, labels
+ * - body/bodyBold → Description text
+ * - data/dataBold → Monospace field values
+ * - buttonText → All buttons
+ * - fieldBlock → Field names in monospace blocks
+ * - tableHeader → Table column headers
+ *
+ * SHADOW: subtle (table scrolling), accordion (dropdown shadows)
+ * DIMENSIONS: Available for layout calculations
+ * ICONS: Can be overridden by adding an `icons` property
  */
 export const createLecternTheme = (stageTheme: StageThemeInterface) => {
-	const { colors, typography } = stageTheme;
+	const { colors, typography, shadow, dimensions } = stageTheme;
 
 	return {
 		colors: {
-			// Interactive elements - Links, active states, hover states
-			accent: colors.primary,
-			accent_light: colors.primary_light,
-			accent_dark: colors.primary_dark,
-			accent_1: colors.primary_palest, // Subtle accent backgrounds
+			gradients: {
+				skeleton: (accentColor: string) =>
+					`linear-gradient(90deg, ${colors.grey_1} 0%, ${accentColor} 50%, ${colors.grey_1} 100%)`,
+			},
 
-			// Additional accent colors - Supplementary interactive elements
+			// Accent colors - Primary interactive elements
+			accent: colors.primary, // Loading spinner
+			accent_light: colors.primary_light,
+			accent_dark: colors.primary_dark, // Header text, button text, icons
+			accent_1: colors.primary_palest, // Button hover states
+
+			// Secondary accents
 			accent2: colors.accent2,
 			accent2_dark: colors.accent2_dark,
 			accent2_light: colors.accent2_light,
 			accent3: colors.accent3_dark,
 
-			// Primary brand colors - Headers, buttons, key UI elements
+			// Brand colors
 			primary: colors.primary,
 			primary_dark: colors.primary_dark,
-
-			// Secondary brand colors - Table headers, toolbar, navigation
 			secondary: colors.secondary,
 			secondary_light: colors.secondary_light,
 			secondary_dark: colors.secondary_dark,
-			secondary_accessible: colors.secondary, // High contrast version
-			secondary_1: colors.secondary_lightest, // Lightest variant for backgrounds
-			secondary_2: colors.secondary_light, // Light variant for hover states
+			secondary_accessible: colors.secondary,
+			secondary_1: colors.secondary_lightest,
+			secondary_2: colors.secondary_light,
 
-			// Background colors
-			background_light: colors.white, // Button background
-			background_muted: colors.grayscale_lighter, // Disabled states, inactive areas
-			background_alternate: colors.grayscale_lightest, // Alternating rows, cards
-			background_overlay: colors.black, // Modal overlays
-			background_pill: colors.grayscale_lightest, // Tag/pill background
-			background_pill_hover: colors.secondary_palest, // Tag/pill hover state
+			// Backgrounds
+			background_light: colors.white, // Buttons, dropdowns
+			background_muted: colors.grayscale_lighter,
+			background_alternate: colors.grayscale_lightest, // Alternating table rows
+			background_overlay: colors.black, // Modal overlay
+			background_pill: colors.grayscale_lightest,
+			background_pill_hover: colors.secondary_palest,
 
-			// Border colors
-			border_light: colors.grayscale_lighter, // Subtle dividers
-			border_medium: colors.grayscale_lighter, // Standard borders
-			border_subtle: colors.grey_2, // Very subtle separators
-			border_muted: colors.grayscale_lightest, // Barely visible borders
-			border_button: colors.primary, // Button outlines
+			// Borders
+			border_light: colors.grayscale_lighter, // Table borders
+			border_medium: colors.grayscale_lighter, // Table header border
+			border_subtle: colors.grey_2,
+			border_muted: colors.grayscale_lightest, // Toolbar borders
+			border_button: colors.primary, // Button borders
 
-			// Semantic colors - Error states, validation messages
-			error: colors.accent2_dark, // Primary error color
+			// Semantic colors
+			error: colors.accent2_dark,
 			error_dark: colors.error_dark, // Error text
-			error_1: colors.error_1, // Error backgrounds
-			error_2: colors.error_2, // Error borders
+			error_1: colors.error_1,
+			error_2: colors.error_2,
 			error_modal_bg: colors.error_light, // Error modal background
-
-			// Warning states - Cautionary messages, alerts
 			warning: colors.accent3_dark,
 			warning_dark: colors.warning_dark,
 
@@ -91,77 +112,143 @@ export const createLecternTheme = (stageTheme: StageThemeInterface) => {
 			white: colors.white,
 			black: colors.black,
 
-			// Greyscale - Text, icons, disabled states
-			grey_1: colors.grey_1, // Lightest grey
-			grey_2: colors.grey_2, // Light grey
-			grey_3: colors.grey_3, // Medium grey
-			grey_4: colors.grey_3, // Medium-dark grey
-			grey_5: colors.grey_5, // Dark grey
-			grey_6: colors.black, // Darkest grey/black
-			grey_highlight: colors.grey_highlight, // Highlighted grey backgrounds
+			// Greyscale
+			grey_1: colors.grey_1,
+			grey_2: colors.grey_2,
+			grey_3: colors.grey_3, // Table container border
+			grey_4: colors.grey_3,
+			grey_5: colors.grey_5,
+			grey_6: colors.black,
+			grey_highlight: colors.grey_highlight,
 		},
 
-		// Typography - Using Stage's font families with Lectern's size/weight system
 		typography: {
-			// main title: 30px Bold
-			subtitleBold: css`
-				font-family: ${typography.regular};
-				font-size: 30px;
-				line-height: 100%;
-			`,
-
-			headingSmall: css`
-				font-size: 22px;
-			`,
-
-			// body: 18px - Standard body text
-			body: css`
-				font-family: ${typography.regular};
-				line-height: 150%;
-			`,
-
-			// paragraphBold: 26px Bold
-			paragraphBold: css`
+			hero: css`
 				font-family: ${typography.heading};
-				font-size: 260px;
+				font-size: 36px;
+				font-weight: bold;
+				line-height: 120%;
+			`,
+			title: css`
+				font-family: ${typography.heading};
+				font-size: 32px;
+				font-weight: bold;
+				line-height: 120%;
+			`,
+			subtitle: css`
+				font-family: ${typography.regular};
+				font-size: 28px;
 				line-height: 130%;
 			`,
-
-			// paragraphSmall: 16px - Smaller text blocks
+			subtitleBold: css`
+				font-family: ${typography.heading};
+				font-size: 30px;
+				font-weight: bold;
+				line-height: 100%;
+			`, // Dictionary title
+			subtitleSecondary: css`
+				font-family: ${typography.subheading};
+				font-size: 24px;
+				line-height: 130%;
+			`,
+			headingSmall: css`
+				font-family: ${typography.subheading};
+				font-size: 22px;
+				font-weight: bold;
+				line-height: 120%;
+			`,
+			introText: css`
+				font-family: ${typography.regular};
+				font-size: 20px;
+				line-height: 150%;
+			`,
+			introTextBold: css`
+				font-family: ${typography.heading};
+				font-size: 20px;
+				font-weight: bold;
+				line-height: 150%;
+			`,
+			regular: typography.regular,
+			paragraph: css`
+				font-family: ${typography.regular};
+				font-size: 18px;
+				line-height: 150%;
+			`,
+			paragraphBold: css`
+				font-family: ${typography.heading};
+				font-size: 18px;
+				font-weight: bold;
+				line-height: 130%;
+			`,
 			paragraphSmall: css`
 				font-family: ${typography.regular};
 				font-size: 14px;
 				line-height: 140%;
-			`,
-
-			// paragraphSmallBold: 16px Bold
+			`, // Table cells, descriptions
 			paragraphSmallBold: css`
 				font-family: ${typography.label};
 				font-size: 16px;
+				font-weight: bold;
+				line-height: 140%;
+			`, // Attribute headers, labels
+			body: css`
+				font-family: ${typography.regular};
+				font-size: 16px;
+				line-height: 150%;
+			`, // Description text
+			bodyBold: css`
+				font-family: ${typography.heading};
+				font-size: 16px;
+				font-weight: bold;
+				line-height: 150%;
+			`,
+			data: typography.data, // Monospace field values
+			dataBold: css`
+				${typography.data}
+				font-weight: bold;
+			`,
+			caption: css`
+				font-family: ${typography.label2};
+				font-size: 12px;
 				line-height: 140%;
 			`,
-			// buttonText: 20px Bold - Button labels
+			captionBold: css`
+				font-family: ${typography.label};
+				font-size: 12px;
+				font-weight: bold;
+				line-height: 140%;
+			`, // Small pills
 			buttonText: css`
-				font-family: ${typography.regular};
+				font-family: ${typography.button};
 				font-size: 16px;
 				line-height: 1.5;
 				vertical-align: middle;
-			`,
-			// fieldBlock: 16px Monospace - Code blocks, field names
+			`, // All buttons
 			fieldBlock: css`
 				font-family: ${typography.data};
 				font-size: 14px;
 				line-height: 100%;
 				text-align: center;
 				vertical-align: middle;
-			`,
-
-			// tableHeader: 14px Bold - Table column headers
+			`, // Field name blocks
 			tableHeader: css`
 				font-family: ${typography.subheading};
 				font-size: 16px;
+				font-weight: bold;
 				line-height: 100%;
-			`,
+			`, // Table column headers
 		},
+
+		shadow, // subtle: table scrolling, accordion: dropdown shadows
+		// Map dimensions but only include properties Lectern expects
+		dimensions: {
+			navbar: dimensions.navbar,
+			footer: dimensions.footer,
+			facets: dimensions.facets,
+			labIcon: {
+				height: dimensions.labIcon.height,
+			},
+		},
+		// icons: Can be overridden with custom icon components
 	};
 };

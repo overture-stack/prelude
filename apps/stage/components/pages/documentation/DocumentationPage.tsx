@@ -1,9 +1,11 @@
 import { css, useTheme } from '@emotion/react';
 import Link from 'next/link';
 import { ReactElement, useEffect, useMemo, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { DocumentationData } from '../../../lib/documentation';
 import { StageThemeInterface } from '../../theme';
 import { createDocumentationTheme } from '../../theme/adapters/documentation';
+import { DictionaryTableOnly, DictionaryViewer } from '../dictionary';
 import FundingStatement from './FundingStatement';
 
 interface DocumentationPageProps extends DocumentationData {}
@@ -43,9 +45,41 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 	// Memoize styles to avoid recreation on every render
 	const styles = useMemo(() => getStyles(theme), [theme]);
 
-	// Add heading anchor links after content renders
+	// Add heading anchor links and hydrate custom components after content renders
 	useEffect(() => {
 		if (!contentRef.current || !currentSection) return;
+
+		// Hydrate custom components (DictionaryTable and DictionaryViewerFull)
+		const dictionaryTableContainers = contentRef.current.querySelectorAll(
+			'[data-component="DictionaryTable"]',
+		);
+		dictionaryTableContainers.forEach((container) => {
+			const url = container.getAttribute('data-url') || '';
+			const showSchemaNames = container.getAttribute('data-show-schema-names') === 'true';
+
+			// Render the DictionaryTableOnly component
+			ReactDOM.render(
+				<div>
+					<DictionaryTableOnly dictionaryUrl={url} showSchemaNames={showSchemaNames} />
+				</div>,
+				container,
+			);
+		});
+
+		const dictionaryViewerContainers = contentRef.current.querySelectorAll(
+			'[data-component="DictionaryViewerFull"]',
+		);
+		dictionaryViewerContainers.forEach((container) => {
+			const url = container.getAttribute('data-url') || '';
+
+			// Render the full DictionaryViewer component
+			ReactDOM.render(
+				<div>
+					<DictionaryViewer dictionaryUrl={url} />
+				</div>,
+				container,
+			);
+		});
 
 		const headingElements = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
 		const clickHandlers: Array<() => void> = [];
@@ -98,6 +132,13 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 		// Cleanup function
 		return () => {
 			clickHandlers.forEach((cleanup) => cleanup());
+			// Unmount dictionary components
+			dictionaryTableContainers.forEach((container) => {
+				ReactDOM.unmountComponentAtNode(container);
+			});
+			dictionaryViewerContainers.forEach((container) => {
+				ReactDOM.unmountComponentAtNode(container);
+			});
 		};
 	}, [currentSection]);
 

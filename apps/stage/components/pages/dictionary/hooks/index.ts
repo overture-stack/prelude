@@ -19,5 +19,5 @@
  *
  */
 
-export { DictionaryViewer } from './DictionaryViewer';
-export { DictionaryTableOnly } from './DictionaryTableOnly';
+export { useDictionary } from './useDictionary';
+export { useStageTheme } from './useStageTheme';

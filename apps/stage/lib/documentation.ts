@@ -62,13 +62,16 @@ export async function loadDocumentationSections(): Promise<DocumentationSection[
 			// Extract order from filename prefix
 			const order = extractOrder(fileName);
 
+			// Process custom components before markdown rendering
+			const processedContent = processCustomComponents(fileContent);
+
 			// Convert markdown to HTML with custom heading IDs
-			const htmlContent = await marked(fileContent);
+			const htmlContent = await marked(processedContent);
 
 			// Post-process to ensure consistent IDs
 			const processedHtml = htmlContent.replace(
 				/<h([1-6])(?:\s+id="[^"]*")?\s*>([^<]+)<\/h[1-6]>/g,
-				(match, level, text) => {
+				(_match, level, text) => {
 					const id = generateHeadingId(text);
 					return `<h${level} id="${id}">${text}</h${level}>`;
 				}
@@ -171,13 +174,16 @@ export async function loadSingleSection(sectionId: string): Promise<Documentatio
 	const title = extractTitle(fileContent) || fileName.replace('.md', '');
 	const id = generateId(fileName);
 	const order = extractOrder(fileName);
+	// Process custom components before markdown rendering
+	const processedContent = processCustomComponents(fileContent);
+
 	// Convert markdown to HTML with custom heading IDs
-	const htmlContent = await marked(fileContent);
+	const htmlContent = await marked(processedContent);
 
 	// Post-process to ensure consistent IDs
 	const processedHtml = htmlContent.replace(
 		/<h([1-6])(?:\s+id="[^"]*")?\s*>([^<]+)<\/h[1-6]>/g,
-		(match, level, text) => {
+		(_match, level, text) => {
 			const id = generateHeadingId(text);
 			return `<h${level} id="${id}">${text}</h${level}>`;
 		}
@@ -238,4 +244,50 @@ function extractHeadings(content: string): DocumentationHeading[] {
 	}
 
 	return headings;
+}
+
+/**
+ * Process custom component tags in markdown
+ * Converts custom tags like <DictionaryTable> and <DictionaryViewerFull> into placeholders that will be hydrated client-side
+ * IMPORTANT: Skips content inside code blocks (```) to avoid replacing examples
+ */
+function processCustomComponents(content: string): string {
+	// Split content by code blocks to protect them from replacement
+	const codeBlockRegex = /```[\s\S]*?```/g;
+	const codeBlocks: string[] = [];
+	const placeholder = '___CODE_BLOCK_PLACEHOLDER___';
+
+	// Extract and protect code blocks
+	let protectedContent = content.replace(codeBlockRegex, (match) => {
+		codeBlocks.push(match);
+		return `${placeholder}${codeBlocks.length - 1}${placeholder}`;
+	});
+
+	// Process DictionaryTable components (table-only view)
+	protectedContent = protectedContent.replace(
+		/<DictionaryTable\s+url="([^"]+)"\s+showSchemaNames="([^"]+)"\s*\/?>/g,
+		(_, url, showSchemaNames) => {
+			// Create a marker that will be replaced client-side
+			const componentId = `dictionary-table-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+			return `<div class="dictionary-table-container" data-component="DictionaryTable" data-url="${url}" data-show-schema-names="${showSchemaNames}" id="${componentId}"></div>`;
+		},
+	);
+
+	// Process DictionaryViewerFull components (full viewer with header, toolbar, accordions)
+	protectedContent = protectedContent.replace(
+		/<DictionaryViewerFull\s+url="([^"]+)"\s*\/?>/g,
+		(_, url) => {
+			// Create a marker that will be replaced client-side
+			const componentId = `dictionary-viewer-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+			return `<div class="dictionary-viewer-container" data-component="DictionaryViewerFull" data-url="${url}" id="${componentId}"></div>`;
+		},
+	);
+
+	// Restore code blocks
+	const restoredContent = protectedContent.replace(
+		new RegExp(`${placeholder}(\\d+)${placeholder}`, 'g'),
+		(_, index) => codeBlocks[parseInt(index)]
+	);
+
+	return restoredContent;
 }
