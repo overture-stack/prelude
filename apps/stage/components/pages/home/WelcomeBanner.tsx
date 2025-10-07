@@ -25,25 +25,42 @@ import { StageThemeInterface } from '../../theme';
 
 const STORAGE_KEY = 'stage-welcome-banner-dismissed';
 
+interface WelcomeBannerProps {
+	/** Disable the banner entirely (useful for specific deployments) */
+	disabled?: boolean;
+}
+
 /**
  * WelcomeBanner Component
  *
  * Displays a welcome message to first-time visitors on the homepage.
  * The banner can be dismissed and won't show again (stored in localStorage).
+ *
+ * Can be disabled via:
+ * - Component prop: <WelcomeBanner disabled={true} />
+ * - Environment variable: NEXT_PUBLIC_DISABLE_WELCOME_BANNER=true
  */
-const WelcomeBanner = (): ReactElement | null => {
+const WelcomeBanner = ({ disabled = false }: WelcomeBannerProps = {}): ReactElement | null => {
 	const theme = useTheme() as StageThemeInterface;
 	const [isVisible, setIsVisible] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
 
+	// Check if banner is disabled via environment variable
+	const isDisabledViaEnv = process.env.NEXT_PUBLIC_DISABLE_WELCOME_BANNER === 'true';
+
 	useEffect(() => {
+		// Don't show if disabled via prop or environment variable
+		if (disabled || isDisabledViaEnv) {
+			return;
+		}
+
 		// Check if banner was previously dismissed
 		const wasDismissed = localStorage.getItem(STORAGE_KEY);
 		if (!wasDismissed) {
 			// Small delay for smoother appearance
 			setTimeout(() => setIsVisible(true), 500);
 		}
-	}, []);
+	}, [disabled, isDisabledViaEnv]);
 
 	const handleDismiss = () => {
 		setIsClosing(true);
@@ -54,6 +71,11 @@ const WelcomeBanner = (): ReactElement | null => {
 			setIsClosing(false);
 		}, 300);
 	};
+
+	// Don't render if disabled
+	if (disabled || isDisabledViaEnv) {
+		return null;
+	}
 
 	if (!isVisible) {
 		return null;
