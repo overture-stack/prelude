@@ -22,6 +22,7 @@ services:
       - ./health:/health
     environment:
       - PROFILE=${PROFILE:-platform}
+      - MAESTRO_URL=http://maestro:11235
     command: >
       sh -c '
         set -e
@@ -402,52 +403,49 @@ services:
       retries: 5
       start_period: 25s
 
-  # ======================================
-  # Maestro
-  # ======================================
-  # Indexing service that transforms metadata in Song into Elasticsearch documents
-  # Documentation Link: https://www.overture.bio/documentation/guides/deployment/dataportal/#running-maestro
-  # --------------------------------------
+  # -----------------------------------------------------------------------------------#
+  # Maestro                                                                            #
+  # -----------------------------------------------------------------------------------#
+  # Indexs data into Elasticsearch on publication                                      #
+  # https://docs.overture.bio/docs/core-software/Maestro/overview                      #
+  # -----------------------------------------------------------------------------------#
   maestro:
-    profiles: ["platform"]
-    image: ghcr.io/overture-stack/maestro:4.3.0
+    profiles: ["platform", "default"]
+    image: ghcr.io/overture-stack/maestro:e868d03
     container_name: maestro
     platform: linux/amd64
     depends_on:
-      song:
-        condition: service_started
-      kafka:
-        condition: service_started
       conductor:
         condition: service_healthy
     ports:
       - "11235:11235"
     environment:
-      # Maestro Variables
+      # Maestro Base Variables
       MAESTRO_FAILURELOG_ENABLED: true
       MAESTRO_FAILURELOG_DIR: app/logs/maestro
       MAESTRO_LOGGING_LEVEL_ROOT: INFO
-      MAESTRO_NOTIFICATIONS_SLACK_ENABLED: false
-      # Song Variables
-      MAESTRO_REPOSITORIES_0_CODE: song.overture
-      MAESTRO_REPOSITORIES_0_URL: http://song:8080
-      MAESTRO_REPOSITORIES_0_NAME: Overture
-      MAESTRO_REPOSITORIES_0_ORGANIZATION: OICR
-      MAESTRO_REPOSITORIES_0_COUNTRY: CA
-      # Elasticsearch Variables
-      MAESTRO_ELASTICSEARCH_CLUSTER_NODES: http://elasticsearch:9200
+      MAESTRO_DISABLEEVENTINDEXING: true
+      # Elasticsearch Settings (Required)
+      MAESTRO_ELASTICSEARCH_NODES: http://elasticsearch:9200
+      MAESTRO_ELASTICSEARCH_VERSION: 7
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
       MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
-      MAESTRO_ELASTICSEARCH_CLIENT_TRUSTSELFSIGNCERT: true
-      MAESTRO_ELASTICSEARCH_INDEXES_ANALYSISCENTRIC_ENABLED: false
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ENABLED: true
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_NAME: overture-quickstart-index
-      MAESTRO_ELASTICSEARCH_INDEXES_FILECENTRIC_ALIAS: file_centric
-      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
-      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
-      # Spring Variables
-      SPRING_MVC_ASYNC_REQUESTTIMEOUT: -1
-      SPRINGDOC_SWAGGERUI_PATH: /swagger-api
+      MAESTRO_ELASTICSEARCH_CLIENT_RETRY_MAX_ATTEMPTS: 3
+      MAESTRO_ELASTICSEARCH_CLIENT_RETRY_WAIT_DURATION_MILLIS: 500
+      MAESTRO_ELASTICSEARCH_CLIENT_DOCS_PER_BULK_REQ_MAX: 5000
+      MAESTRO_ELASTICSEARCH_CLIENT_CONNECTION_TIMEOUT: 5000
+      # Repository Configuration - Song
+      MAESTRO_REPOSITORIES_0_BASE_URL: http://song:8080
+      MAESTRO_REPOSITORIES_0_CODE: song.overture
+      MAESTRO_REPOSITORIES_0_NAME: Overture Song
+      MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: overture-quickstart-index
+      MAESTRO_REPOSITORIES_0_TYPE: SONG
+      MAESTRO_REPOSITORIES_0_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
+      MAESTRO_REPOSITORIES_0_SONG_ANALYSIS_CENTRIC_ENABLED: false
+      MAESTRO_REPOSITORIES_0_SONG_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_0_SONG_COUNTRY: CA
       # Kafka Variables
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka:9092
       SPRING_CLOUD_STREAM_BINDINGS_SONGINPUT_DESTINATION: song-analysis
