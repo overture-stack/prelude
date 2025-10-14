@@ -72,11 +72,12 @@ rs "$SCRIPT_DIR/arranger/arranger_check.sh"
 rs "${SCRIPT_DIR}/utils/healthcheck_cleanup.sh"
 
 # Success and Next Steps
+# Signal to open browser on host machine
+echo "OPEN_BROWSER:http://localhost:3000" > /health/open_browser_signal
 echo -e "\n\033[1;36m╔══════════════════════════════════════════╗\033[0m"
 echo -e "\033[1;36m║   Demo Portal now running on localhost   ║\033[0m"
 echo -e "\033[1;36m╚══════════════════════════════════════════╝\033[0m\n"
-echo -e "\033[1m🌐 Development Portal should now be available at:\033[0m"
+echo -e "\033[1m🌐 Demo Portal should now be available at:\033[0m"
 echo -e "   \033[1;32mhttp://localhost:3000\033[0m"
 echo -e "   \033[0;90m(unless configured to use a different port)\033[0m\n"
-echo -e "\033[1m📚 Documentation can be found within the portal at:\033[0m"
-echo -e "   \033[1;32mhttp://localhost:3000/documentation/phaseone\033[0m\n"
+

@@ -21,8 +21,8 @@ help:
 # Run pre-deployment checks
 phase0:
 	@echo "Running Pre-deployment checks..."
-	chmod +x ./apps/setup/scripts/deployments/phase0.sh
-	./apps/setup/scripts/deployments/phase0.sh 
+	chmod +x ./setup/scripts/deployments/phase0.sh
+	./setup/scripts/deployments/phase0.sh 
 
 # Start demo deployment (populates portal with data for you)
 demo: phase0
@@ -44,7 +44,7 @@ demo: phase0
 	@echo ""
 	@echo "\033[1;32mStage Portal UI built\033[0m"
 	@echo ""
-	@PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup 
+	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup 
 
 # Gracefully shutdown all containers while preserving volumes
 down:
@@ -57,7 +57,7 @@ restart:
 	echo "Shutting down containers..."; \
 	PROFILE=demo docker compose -f ./docker-compose.yml --profile demo down; \
 	echo "Starting containers with profile demo..."; \
-	PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
+	./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
 
 # Shutdown all containers and remove all volumes (Deletes all data)
 reset:

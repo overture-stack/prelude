@@ -17,6 +17,7 @@ An interactive demo environment showcasing Overture's search and exploration ser
    ```bash
    make demo
    ```
+   The portal will automatically open in your browser once deployment is complete.
 
 > [!IMPORTANT]
 > **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.

@@ -28,6 +28,10 @@ RUN npm ci
 # Copy the stage app code
 COPY --chown=node:node apps/stage ./
 
+# Remove the docs symlink and copy actual docs directory
+RUN rm -f ./public/docs
+COPY --chown=node:node docs ./public/docs
+
 # Set up volume
 VOLUME [ "/usr/src/public/static/dms_user_assets" ]
 

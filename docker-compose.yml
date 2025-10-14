@@ -17,8 +17,8 @@ services:
       - "9204:9204"
     volumes:
       - ./data:/data
-      - ./apps/setup:/setup
-      - ./apps/setup/volumes/health:/health
+      - ./setup:/setup
+      - ./setup/volumes/health:/health
     environment:
       # Global Configuration
       PROFILE: ${PROFILE:-default}
@@ -187,7 +187,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./apps/setup/configs/arrangerConfigs/datatable1:/app/modules/server/configs
+      - ./setup/configs/arrangerConfigs/datatable1:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -221,8 +221,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Node Environment
-      NODE_ENV: production
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
       NEXT_PUBLIC_LAB_NAME: Overture Demo Portal
@@ -230,6 +228,7 @@ services:
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
+      NEXT_PUBLIC_DISABLE_WELCOME_BANNER: false
       # Datatable1 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
