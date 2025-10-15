@@ -76,27 +76,27 @@ HEALTH_URL=$(clean_url "$HEALTH_URL")
 debug "Using ES_URL: $ES_URL"
 debug "Constructed health URL: $HEALTH_URL"
 
-printf "\033[1;36mSetup:\033[0m Checking Elasticsearch cluster health\n"
+printf "   └─ \033[1;36mSetup:\033[0m Checking Elasticsearch cluster health\n"
 
 until response=$(curl -s --max-time "$TIMEOUT" -u "${ES_USER}:${ES_PASS}" "$HEALTH_URL" -H "accept: application/json" 2>/dev/null); do
     debug "Curl command: curl -s --max-time $TIMEOUT -u ${ES_USER}:${ES_PASS} $HEALTH_URL -H 'accept: application/json'"
     RETRY_COUNT=$((RETRY_COUNT + 1))
-    
+
     if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
-        printf "\n\033[1;31mError:\033[0m Failed to connect to Elasticsearch after %d attempts\n" "$MAX_RETRIES"
-        
+        printf "   └─ \033[1;31mError:\033[0m Failed to connect to Elasticsearch after %d attempts\n" "$MAX_RETRIES"
+
         # Print troubleshooting tips
         printf "\n%s\n" "$TROUBLESHOOTING_TIPS"
-        
+
         # Additional debug information
         printf "\n\033[1;33mAdditional Debug Information:\033[0m\n"
         printf "Elasticsearch URL: %s\n" "$ES_URL"
         printf "Health URL: %s\n" "$HEALTH_URL"
-        
+
         exit 1
     fi
-    
-    printf "\033[1;36mElasticsearch:\033[0m Not reachable, retrying in %d seconds (Attempt %d/%d)\n" "$RETRY_DELAY" "$RETRY_COUNT" "$MAX_RETRIES"
+
+    printf "   └─ \033[1;36mElasticsearch:\033[0m Not reachable, retrying in %d seconds (Attempt %d/%d)\n" "$RETRY_DELAY" "$RETRY_COUNT" "$MAX_RETRIES"
     debug "Attempt $RETRY_COUNT failed. Retrying in $RETRY_DELAY seconds"
     sleep "$RETRY_DELAY"
 done
@@ -106,19 +106,19 @@ debug "Received response: $response"
 # Check cluster status
 cluster_status=$(echo "$response" | grep -o '"status":"[^"]*' | cut -d'"' -f4)
 if [ "$cluster_status" = "green" ] || [ "$cluster_status" = "yellow" ]; then
-    printf "\033[1;32mSuccess:\033[0m Elasticsearch cluster is healthy (Status: %s)\n" "$cluster_status"
+    printf "   └─ \033[1;32mSuccess:\033[0m Elasticsearch cluster is healthy (Status: %s)\n" "$cluster_status"
 else
-    printf "\n\033[1;31mError:\033[0m Elasticsearch cluster has unhealthy status\n"
-    
+    printf "   └─ \033[1;31mError:\033[0m Elasticsearch cluster has unhealthy status\n"
+
     # Print troubleshooting tips
     printf "\n%s\n" "$TROUBLESHOOTING_TIPS"
-    
+
     # Additional debug information
     printf "\n\033[1;33mAdditional Debug Information:\033[0m\n"
     printf "Elasticsearch URL: %s\n" "$ES_URL"
     printf "Health URL: %s\n" "$HEALTH_URL"
     printf "Health Response: %s\n" "$response"
-    
+
     debug "Cluster status is not green or yellow"
     exit 1
 fi

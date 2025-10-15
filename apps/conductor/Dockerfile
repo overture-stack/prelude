@@ -19,7 +19,7 @@ RUN npm run build
 RUN chmod +x dist/main.js
 
 # Install curl for health checks
-RUN apk add --no-cache curl
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Default command (can be overridden)
 CMD ["node", "dist/main.js"]

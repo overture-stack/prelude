@@ -84,6 +84,7 @@ services:
       dockerfile: Dockerfile
     image: conductor-cli:1.0
     container_name: conductor-cli
+    pull_policy: never
     volumes:
       - ./data:/data
     command: >

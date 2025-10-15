@@ -42,10 +42,10 @@ check_arranger_functionality() {
     
     # Check if we got a valid GraphQL response (no errors)
     if [ -n "$graphql_response" ] && ! echo "$graphql_response" | grep -q "error"; then
-        printf "\033[1;32mSuccess:\033[0m Arranger GraphQL endpoint is functioning correctly\n"
+        printf "   └─ \033[1;32mSuccess:\033[0m Arranger GraphQL endpoint is functioning correctly\n"
         return 0
     else
-        printf "\033[1;33mWarning:\033[0m Arranger is running but GraphQL endpoint has errors\n"
+        printf "   └─ \033[1;33mWarning:\033[0m Arranger is running but GraphQL endpoint has errors\n"
         
         # Check for the documentType error in Docker logs
         local container_name="arranger-clinical"
@@ -67,8 +67,8 @@ check_arranger_functionality() {
 check_docker_logs() {
     local instance="$1"
     local container_name="arranger-clinical"
-    
-    printf "\033[1;36mInfo:\033[0m Checking Docker logs for errors\n"
+
+    printf "   └─ \033[1;36mInfo:\033[0m Checking Docker logs for errors\n"
     
     # Get recent logs from Docker container
     recent_logs=$(docker logs --tail 50 "$container_name" 2>/dev/null)
@@ -97,47 +97,47 @@ check_docker_logs() {
 check_arrangers() {
     # Get the number of Arranger instances to check
     arranger_count=${ARRANGER_COUNT:-0}
-    
-    printf "\033[1;36mSetup:\033[0m Checking %d Arranger instances\n" "$arranger_count"
-    
+
+    printf "   └─ \033[1;36mSetup:\033[0m Checking %d Arranger instances\n" "$arranger_count"
+
     all_healthy=true
     i=0
     while [ "$i" -lt "$arranger_count" ]; do
         # Dynamically retrieve the URL for this instance
         arranger_url_var="ARRANGER_${i}_URL"
         arranger_url=$(eval "echo \$$arranger_url_var")
-        
+
         # Skip if no URL
         if [ -z "$arranger_url" ]; then
-            printf "\033[1;31mError:\033[0m No URL found for Arranger instance %d\n" "$i"
+            printf "   └─ \033[1;31mError:\033[0m No URL found for Arranger instance %d\n" "$i"
             exit 1
         fi
-        
+
         # Parse URL
         if ! parse_url "$arranger_url"; then
             exit 1
         fi
-        
-        printf "\033[1;36mChecking Arranger:\033[0m Instance %d at %s\n" "$i" "$arranger_url"
-        
+
+        printf "   └─ \033[1;36mChecking Arranger:\033[0m Instance %d at %s\n" "$i" "$arranger_url"
+
         # Check if Arranger is responsive with multiple retries
         RETRY_COUNT=0
         is_responsive=false
-        
+
         until [ "$is_responsive" = true ] || [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; do
             response=$(curl -s --max-time "$TIMEOUT" "${arranger_url}" 2>/dev/null)
-            
+
             if [ -n "$response" ]; then
                 is_responsive=true
             else
                 RETRY_COUNT=$((RETRY_COUNT + 1))
-                printf "\033[1;36mInfo:\033[0m Attempt %d: Arranger instance %d not ready, retrying in %d seconds\n" "$RETRY_COUNT" "$i" "$RETRY_DELAY"
+                printf "   └─ \033[1;36mInfo:\033[0m Attempt %d: Arranger instance %d not ready, retrying in %d seconds\n" "$RETRY_COUNT" "$i" "$RETRY_DELAY"
                 sleep "$RETRY_DELAY"
             fi
         done
-        
+
         if [ "$is_responsive" = true ]; then
-            printf "\033[1;36mInfo:\033[0m Arranger instance %d is responsive\n" "$i"
+            printf "   └─ \033[1;36mInfo:\033[0m Arranger instance %d is responsive\n" "$i"
             
             # Now check if Arranger is properly functioning
             if ! check_arranger_functionality "$arranger_url" "$i"; then
@@ -149,19 +149,19 @@ check_arrangers() {
                 all_healthy=false
             fi
         else
-            printf "\033[1;31mError:\033[0m Arranger instance %d is not available after %d attempts\n" "$i" "$MAX_RETRIES"
+            printf "   └─ \033[1;31mError:\033[0m Arranger instance %d is not available after %d attempts\n" "$i" "$MAX_RETRIES"
             printf "\n%s\n" "$TROUBLESHOOTING_TIPS"
             all_healthy=false
         fi
-        
+
         i=$((i + 1))
     done
-    
+
     if [ "$all_healthy" = true ]; then
-        printf "\033[1;32mSuccess:\033[0m All Arranger instances are available and healthy\n"
+        printf "   └─ \033[1;32mSuccess:\033[0m All Arranger instances are available and healthy\n"
         exit 0
     else
-        printf "\033[1;33mWarning:\033[0m Arranger is responding but has configuration issues\n"
+        printf "   └─ \033[1;33mWarning:\033[0m Arranger is responding but has configuration issues\n"
         printf "\n%s\n" "$TROUBLESHOOTING_TIPS"
         exit 1
     fi

@@ -39,9 +39,9 @@ echo -e "Cleaning up any existing health check files"
 rs "$SCRIPT_DIR/utils/healthcheck_cleanup.sh"
 
 # Welcome
-echo -e "\n\033[1;36m╔═════════════════════════════════════════════════════════╗\033[0m"
-echo -e "\033[1;36m║   Spinning up the Search & Exploration Demo Portal      ║\033[0m"
-echo -e "\033[1;36m╚═════════════════════════════════════════════════════════╝\033[0m\n"
+echo -e "\n\033[1;36m╔══════════════════════════════════════════════════════╗\033[0m"
+echo -e "\033[1;36m║   Spinning up the Search & Exploration Demo Portal   ║\033[0m"
+echo -e "\033[1;36m╚══════════════════════════════════════════════════════╝\033[0m\n"
 
 # PostgreSQL Setup (NEW - Step 1)
 echo -e "\033[1;35m[1/6]\033[0m Setting up PostgreSQL Schemas"
@@ -58,7 +58,7 @@ rs "$SCRIPT_DIR/elasticsearch/setup_indices.sh"
 # Update Conductor to Healthy Status
 echo -e "\n\033[1;35m[4/6]\033[0m Updating Conductor health status"
 echo "healthy" > setup/volumes/health/setup_health
-echo -e "\033[1;36mSetup:\033[0m Updating Container Status. Health check file created"
+echo -e "   └─ \033[1;36mSetup:\033[0m Updating Container Status. Health check file created"
 
 # Check Stage
 echo -e "\n\033[1;35m[5/6]\033[0m Checking Stage"

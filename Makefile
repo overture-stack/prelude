@@ -7,10 +7,11 @@ help:
 	@echo ""
 	@echo "  stage-dev      - Start Stage development environment"
 	@echo ""
-	@echo "setup System Management:"
+	@echo "System Management:"
 	@echo "  down           - Gracefully shutdown all containers"
-	@echo "  reset          - DANGER: Remove all containers and volumes (DATA LOSS)"
 	@echo "  restart        - Restart containers for a specific profile"
+	@echo "  reset          - DANGER: Remove all containers and volumes (DATA LOSS)"
+	@echo "  nuke           - DANGER: Complete cleanup including images"
 	@echo ""
 	@echo "General Usage:"
 	@echo "  make help      - Show this help message"
@@ -64,7 +65,22 @@ reset:
 	@echo "\033[1;33mWarning:\033[0m This will remove all containers AND their volumes. Data will be lost."
 	@read -p "Are you sure you want to continue? [y/N] " confirm; \
 	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
-		PROFILE=default docker compose -f ./docker-compose.yml --profile default down -v ; \
+		echo "Stopping containers and removing volumes..."; \
+		PROFILE=default docker compose -f ./docker-compose.yml --profile default down -v; \
+		echo "\033[1;32m\nReset complete.\033[0m"; \
+	else \
+		echo "Operation cancelled"; \
+	fi
+
+# Complete cleanup: remove containers, volumes, AND images
+nuke:
+	@echo "\033[1;31mDANGER:\033[0m This will remove all containers, volumes, AND Docker images."
+	@echo "This is the most destructive option and will require a full rebuild on next start."
+	@read -p "Are you absolutely sure? [y/N] " confirm; \
+	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
+		echo "Nuking everything..."; \
+		PROFILE=default docker compose -f ./docker-compose.yml --profile default down -v --rmi all; \
+		echo "\033[1;32m\nCleanup finished. All Docker resources removed.\033[0m"; \
 	else \
 		echo "Operation cancelled"; \
 	fi
