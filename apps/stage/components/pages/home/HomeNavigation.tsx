@@ -3,7 +3,7 @@ import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
 import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
-import { extractTitle, generateSlug, extractOrder } from '../documentation/utils/documentUtils';
+import { extractOrder, extractTitle, generateSlug } from '../documentation/utils/documentUtils';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
 interface CardItem {
@@ -130,7 +130,7 @@ const HomeNavigation = (): ReactElement => {
 						...card,
 						subItems: docSections.map((section) => ({
 							title: section.title,
-							link: `${INTERNAL_PATHS.DOCUMENTATION}#${section.id}`,
+							link: `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`,
 						})),
 					};
 				}

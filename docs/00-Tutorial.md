@@ -2,16 +2,16 @@
 
 ## Overview
 
-**This guide is for** those using the Overture search and exploration demo environment. The primary goal is to guide users who want to input there data into the portal UI for search and exploration. 
+**This guide is for** those using the Overture search and exploration demo environment. The primary goal is to guide users who want to input there data into the portal UI for search and exploration.
 
-> **Note:** For a more comprehensive end-to-end platorm deployment guide see our [prelude documentation](https://docs.overture.bio/docs/platform-tools/prelude). 
+> **Note:** For a more comprehensive end-to-end platorm deployment guide see our [prelude documentation](https://docs.overture.bio/docs/platform-tools/prelude).
 
 **By the end of this guide you will be able to:**
 
 1. Generate and configure Elasticsearch mappings
 2. Generate and configure Arranger UI configs
 3. Transform and load your CSV data into Elasticsearch and onto the data table
-4. Create multiple data exploration pages for independent datasets 
+4. Create multiple data exploration pages for independent datasets
 5. Theme your Stage UI to match your organization's branding
 
 ## Prerequisites and Requirements
@@ -29,7 +29,7 @@
 
 The architecture is diagramed below and detailed in the following table:
 
-![Phase 1 Architecture Diagram](/docs/images/phase1.png "Phase 1 Architecture Diagram")
+![Phase 1 Architecture Diagram](/docs/images/arch-overview.png "Phase 1 Architecture Diagram")
 
 | Component                                                                                                  | Description                                                                                                  |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -152,7 +152,7 @@ npm start --  -p ElasticsearchMapping -f data.csv -i my-index
 1. Run the following Composer command to generate Elasticsearch index mappings using your data files:
 
    ```
-   composer -p elasticsearchmapping -f ./data/datatable1.csv -i datatable1 -o ./configs/elasticsearchConfigs/datatable1-mapping.json
+   composer -p elasticsearchmapping -f ./data/datatable1.csv -i datatable1 -o ./setup/configs/elasticsearchConfigs/datatable1-mapping.json
    ```
 
     <details>
@@ -163,7 +163,7 @@ npm start --  -p ElasticsearchMapping -f data.csv -i my-index
    - `-p ElasticsearchMapping`: Specifies the operation to generate an Elasticsearch mapping schema
    - `-f ./data/datatable1.csv`: Specifies the input data file to analyze
    - `-i datatable1`: Sets the Elasticsearch index name to "datatable1"
-   - `-o ./configs/elasticsearchConfigs/datatable1-mapping.json`: Sets the output path for the generated mapping file
+   - `-o ./setup/configs/elasticsearchConfigs/datatable1-mapping.json`: Sets the output path for the generated mapping file
 
    The command analyzes the structure of datatable1.csv and creates an appropriate Elasticsearch mapping configuration, which defines how the data will be indexed and searched in Elasticsearch.
 
@@ -173,11 +173,11 @@ npm start --  -p ElasticsearchMapping -f data.csv -i my-index
 
    ![Output](/docs/images/ElasticsearchMapping.png "Terminal output from ElasticsearchMapping")
 
-   > **Note:** The `configs/elasticsearchConfigs/` directory is located at the root of the repository and is symbolically linked to the `./apps/conductor/configs/` directory. In the docker-compose configuration, this directory is mounted as a volume to the conductor service, which uses these files to automatically initialize your Elasticsearch indices. This automation process is explained in greater detail in the following sections.
+   > **Note:** The `setup/configs/elasticsearchConfigs/` directory contains your Elasticsearch mapping templates. In the docker-compose configuration, this directory is mounted as a volume to the setup service, which uses these files to automatically initialize your Elasticsearch indices. This automation process is explained in greater detail in the following sections.
 
 2. Validate and review the generated mapping template(s):
 
-   After running the command, examine the generated index mapping in the `configs/elasticsearchConfigs` directory. The mapping contains several critical components:
+   After running the command, examine the generated index mapping in the `setup/configs/elasticsearchConfigs` directory. The mapping contains several critical components:
 
    - **Index Pattern:** `"index_patterns": ["datatable1-*"]` - This template will apply to all indices that start with "datatable1-"
    - **Aliases:** `"datatable1_centric": {}` - An alias that can be used to reference all matching indices as one
@@ -224,7 +224,7 @@ Composer can also be used to generate the Arranger configuration files that defi
 1.  Run the following Composer command to generate Arranger configuration files using your index mapping templates:
 
     ```
-    composer -p ArrangerConfigs -f ./configs/elasticsearchConfigs/datatable1-mapping.json -o ./configs/arrangerConfigs/datatable1/
+    composer -p ArrangerConfigs -f ./setup/configs/elasticsearchConfigs/datatable1-mapping.json -o ./setup/configs/arrangerConfigs/datatable1/
     ```
 
     <details>
@@ -233,8 +233,8 @@ Composer can also be used to generate the Arranger configuration files that defi
     In this command:
 
     - `-p arrangerconfigs`: Specifies the operation to generate Arranger configuration files
-    - `-f ./configs/elasticsearchConfigs/datatable1-mapping.json`: Specifies the input Elasticsearch mapping file to use as a template
-    - `-o ./configs/arrangerConfigs/datatable1/`: Sets the output directory for the generated Arranger configuration files
+    - `-f ./setup/configs/elasticsearchConfigs/datatable1-mapping.json`: Specifies the input Elasticsearch mapping file to use as a template
+    - `-o ./setup/configs/arrangerConfigs/datatable1/`: Sets the output directory for the generated Arranger configuration files
 
     The command analyzes the Elasticsearch mapping structure and creates appropriate Arranger configuration files, which define how data will be displayed, filtered, and queried in the Arranger UI.
 
@@ -249,7 +249,7 @@ Composer can also be used to generate the Arranger configuration files that defi
     - **Directory structure:** should now look like the following:
 
       ```
-      configs
+      setup/configs
       ├── arrangerConfigs
       │ └── datatable1
       │   ├── base.json # Core configuration
@@ -280,11 +280,11 @@ Composer can also be used to generate the Arranger configuration files that defi
 
 ## Step 3: Updating the docker-compose
 
-With Conductor, the `docker-compose.yml` automates all our deployments including index management. Here you'll update environment variables and service configurations to reflect your dataset(s) and update your deployment with the configuration files generated in the previous steps.
+The `docker-compose.yml` automates all deployments including index management through the setup service. Here you'll update environment variables and service configurations to reflect your dataset(s) and connect them with the configuration files generated in the previous steps.
 
-### A) Update the conductor service
+### A) Update the setup service
 
-From the docker-composer update the following environment variables within the conductor image:
+From the docker-compose file, update the following environment variables within the setup service:
 
 ```
 Elasticsearch Index Configuration
@@ -292,13 +292,13 @@ ES_INDEX_COUNT: 1 # Update this if you have multiple datasets (Each data table s
 
 First Index
 ES_INDEX_0_NAME: datatable1-index
-ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable1-mapping.json
+ES_INDEX_0_TEMPLATE_FILE: setup/configs/elasticsearchConfigs/datatable1-mapping.json
 ES_INDEX_0_TEMPLATE_NAME: datatable1_template
 ES_INDEX_0_ALIAS_NAME: datatable1_centric
 
 Add more indices if needed
 ES_INDEX_1_NAME: datatable2-index
-ES_INDEX_1_TEMPLATE_FILE: configs/elasticsearchConfigs/datatable2-mapping.json
+ES_INDEX_1_TEMPLATE_FILE: setup/configs/elasticsearchConfigs/datatable2-mapping.json
 ES_INDEX_1_TEMPLATE_NAME: datatable2_template
 ES_INDEX_1_ALIAS_NAME: datatable2_centric
 ```
@@ -309,34 +309,34 @@ ES_INDEX_1_ALIAS_NAME: datatable2_centric
 
    ```yaml
    arranger-datatable1:
-   profiles: ["phase1", "phase2", "phase3", "stageDev", "default"]
-   image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-   container_name: arranger-datatable1
-   platform: linux/amd64
-   depends_on:
-     conductor:
-       condition: service_healthy
-   ports:
-     - "5050:5050" # External port : Internal port
-   volumes:
-     - ./apps/conductor/configs/arrangerConfigs/datatable1:/app/modules/server/configs
-   environment:
-     # Elasticsearch Variables
-     ES_HOST: http://elasticsearch:9200
-     ES_USER: elastic
-     ES_PASS: myelasticpassword
-     ES_ARRANGER_SET_INDEX: datatable1_arranger_set # Unique set index name
-     # Arranger Variables
-     PORT: 5050 # Must match the internal port defined above
-     DEBUG: false
-     ENABLE_LOGS: false
-   networks:
-     - conductor-network
+     profiles: ["demo", "default"]
+     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+     container_name: arranger-datatable1
+     platform: linux/amd64
+     depends_on:
+       setup:
+         condition: service_healthy
+     ports:
+       - "5050:5050" # External port : Internal port
+     volumes:
+       - ./setup/configs/arrangerConfigs/datatable1:/app/modules/server/configs
+     environment:
+       # Elasticsearch Variables
+       ES_HOST: http://elasticsearch:9200
+       ES_USER: elastic
+       ES_PASS: myelasticpassword
+       ES_ARRANGER_SET_INDEX: datatable1_arranger_set # Unique set index name
+       # Arranger Variables
+       PORT: 5050 # Must match the internal port defined above
+       DEBUG: false
+       ENABLE_LOGS: false
+     networks:
+       - platform-network
    ```
 
    > **Note:** For each additional dataset, you can copy or uncomment an existing Arranger service block in the docker-compose file. If creating a new Arranger service, ensure you are using a unique port in both the `ports` mapping (`"5051:5051"`) and the `PORT` environment variable. Also update the container name, volume path, and Arranger set index to match your new dataset.
 
-2. Update the Arranger Count in the Conductor service: If you have multiple datasets/Arranger instances, update the `ARRANGER_COUNT` and add envs with URLs for each. In the example below `ARRANGER_1_URL` is commented. Make sure to uncomment any additionally added Arranger URLs.
+2. Update the Arranger Count in the setup service: If you have multiple datasets/Arranger instances, update the `ARRANGER_COUNT` and add environment variables with URLs for each. In the example below `ARRANGER_1_URL` is commented. Make sure to uncomment any additionally added Arranger URLs.
 
    ```yaml
    # Arranger Services Configuration
@@ -392,7 +392,7 @@ This restart process ensures that all your configuration changes are properly ap
 
 ## Step 4: Updating Stage (Optional)
 
-This follow information is provided to guide and support you through customizing the base portal UI (Stage).
+This section guides you through customizing the base portal UI (Stage), including setting up your development environment, adding additional data tables, and theming your portal.
 
 <details>
 <summary>Setting up the local Stage development environment</summary>
@@ -403,9 +403,6 @@ To run Stage locally for development and customization:
    # Navigate to the Stage directory
    cd apps/stage
 
-   # Copy and update the following environment file
-   cp .env.stageDev .env
-
    # Install dependencies
    npm ci
 
@@ -413,131 +410,430 @@ To run Stage locally for development and customization:
    npm run dev
 ```
 
-Depending on port availability your development server will either be accessible at: http://localhost:3001 or http://localhost:3000
+> **Note:** Stage uses the existing `.env` file in the stage directory. If you need to customize environment variables for local development, edit the `/apps/stage/.env` file directly.
+
+Your development server will be accessible at:
+
+- Primary: http://localhost:3000
+- Fallback: http://localhost:3001 (if 3000 is occupied)
+
+**Development Tips:**
+
+- Hot reload is enabled - changes will automatically reflect in your browser
+- Check the terminal for compilation errors
+- Use browser DevTools to inspect React components and styling
 
 </details>
 
 <details>
-<summary>Creating New Data Exploration Pages</summary>
+<summary>Adding Additional Data Tables (Multi-Table Setup)</summary>
 
-1. **Activate a pre-configured data table**: Move the desired template from `components/inactiveDataTables/` to `components/pages/activeDataTables/`. These components are already configured with variable declarations and definitions found in the following key files:
+The portal supports up to 5 independent data tables. By default, `dataTableOne` is active. Follow these steps to add additional tables:
 
-   - `./next.config.js`
-   - `./global/config.ts`
-   - `./global/utils/constants.ts`
-   - `./pages/api/[...proxy].ts`
+### Step 1: Prepare Your Data Table Configuration
 
-2. **Enable the page route**: Move the corresponding folder from `./inactivePages/` to `./pages/` directory. Open the `index.tsx` file within this folder and uncomment the code. Save the changes.
+Before adding a new table (e.g., `dataTableTwo`), ensure you've completed Step 2 of this tutorial and have:
 
-3. **Update environment configurations**: Add the corresponding variables to your `.env` file. Update the `docker-compose.yml` with the appropriate service configurations.
+1. **Elasticsearch Index Mapping**: Created mapping file at `setup/configs/elasticsearchConfigs/datatable2-mapping.json`
+2. **Arranger Configurations**: Created configuration files in `setup/configs/arrangerConfigs/datatable2/`:
+   - `extended.json` - Field display configurations
+   - `facets.json` - Facet/filter configurations
+   - `table.json` - Table column configurations
+   - `base.json` - Base index configuration
 
-4. **Access your data table**: The new data table will automatically appear in the navigation menu. It will also be accessible from the homepage data tables section
-</details>
+### Step 2: Update Docker Compose Configuration
 
-> **Note:** We support multiple tables and set this up on a fairly regular basis, however we are working on improving this process to make it easier on developers and new users. 
+This step was covered in Step 3 of this tutorial. Ensure you have:
 
-<details>
-<summary>Theming</summary>
+1. **Added Arranger service** for datatable2 in `docker-compose.yml`:
 
-Stage is built using React and provides extensive theming options to help you customize the look and feel of your data portal. This section outlines the key files and directories to modify for theming.
+   ```yaml
+   arranger-datatable2:
+     profiles: ["demo", "default"]
+     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+     container_name: arranger-datatable2
+     platform: linux/amd64
+     depends_on:
+       setup:
+         condition: service_healthy
+     ports:
+       - "5051:5051" # Unique external port
+     volumes:
+       - ./setup/configs/arrangerConfigs/datatable2:/app/modules/server/configs
+     environment:
+       ES_HOST: http://elasticsearch:9200
+       ES_USER: elastic
+       ES_PASS: myelasticpassword
+       ES_ARRANGER_SET_INDEX: datatable2_arranger_set # Unique set index
+       PORT: 5051 # Must match internal port above
+       DEBUG: false
+       ENABLE_LOGS: false
+     networks:
+       - platform-network
+   ```
 
-**Core Theme Assets**
+2. **Updated Stage environment variables** in `docker-compose.yml`:
 
-- **Logo**: Replace `/public/images/logo.svg` with your organization's logo to update the navbar branding
-- **Favicon**: Update `/public/favicon.ico` to change the browser tab icon
+   ```yaml
+   # Data Table 2
+   NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
+   NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
+   NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
+   NEXT_PUBLIC_DATATABLE_2_EXPORT_ROW_ID_FIELD: submission_metadata.submitter_id
+   ```
 
-**Theme Configuration Files:** the theming system is organized into several key files:
+3. **Updated setup service configuration** with the new index in `docker-compose.yml`:
 
-- **Main Theme**: `/apps/stage/components/theme/` contains files that define the global color palette, typography, spacing, and other fundamental design elements
-- **Documentation Theme**: the `/components/pages/documentation/DocContainer/` directory contains a `theme.ts` and a `style.ts` which controls the documentation section styling including colors, fonts, and spacing
+   ```yaml
+   # In setup service environment:
+   ES_INDEX_COUNT: 2 # Increment count
+   # ... existing ES_INDEX_0_* variables ...
+   ES_INDEX_1_NAME: datatable2-index
+   ES_INDEX_1_TEMPLATE_FILE: setup/configs/elasticsearchConfigs/datatable2-mapping.json
+   ES_INDEX_1_TEMPLATE_NAME: datatable2-index
+   ES_INDEX_1_ALIAS_NAME: datatable2_centric
 
-**Color Customization:** to update the color palette to match your organization's branding:
+   # Update Arranger count
+   ARRANGER_COUNT: 2
+   ARRANGER_0_URL: http://arranger-datatable1:5050
+   ARRANGER_1_URL: http://arranger-datatable2:5051
+   ```
+
+**Important**: Each Arranger service requires:
+
+- Unique external port (5050, 5051, 5052, etc.)
+- Unique container name
+- Unique `ES_ARRANGER_SET_INDEX` value
+- Matching `PORT` environment variable with the internal port
+
+### Step 3: Create the Stage Page Route
+
+Navigate to the Stage directory and create a new page by copying the existing dataTableOne structure:
+
+```bash
+cd apps/stage
+cp -r pages/dataTableOne pages/dataTableTwo
+```
+
+### Step 4: Update the Page Configuration
+
+Edit `pages/dataTableTwo/index.tsx` and update the configuration to reference datatable2:
+
+```tsx
+// Update the environment variable references
+const {
+  NEXT_PUBLIC_ARRANGER_DATATABLE_2_ADMIN_UI,
+  NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
+  NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
+  NEXT_PUBLIC_DATATABLE_2_EXPORT_ROW_ID_FIELD,
+  NEXT_PUBLIC_ENABLE_DATATABLE_2_QUICKSEARCH,
+} = getConfig();
+
+// Update the DataExplorerPage config
+<DataExplorerPage
+  config={{
+    // Update API proxy reference
+    arrangerApi: INTERNAL_API_PROXY.DATATABLE_2_ARRANGER,
+    arrangerDocumentType: NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE,
+    arrangerIndex: NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX,
+    arrangerAdminUI: NEXT_PUBLIC_ARRANGER_DATATABLE_2_ADMIN_UI,
+    exportRowIdField: NEXT_PUBLIC_DATATABLE_2_EXPORT_ROW_ID_FIELD,
+
+    // Update page metadata
+    pageSubtitle: "Dataset 2 Data Explorer",
+    callerName: "DataTableTwo",
+
+    // Update feature flags
+    enableQuickSearch: NEXT_PUBLIC_ENABLE_DATATABLE_2_QUICKSEARCH,
+
+    // Update export config
+    exportConfig: {
+      fileName: `dataset-2-data-export.${today}.tsv`,
+      customExporters: [
+        {
+          label: "Download",
+          fileName: `dataset-2-data-export.${today}.tsv`,
+        },
+      ],
+    },
+  }}
+/>;
+```
+
+### Step 5: Update API Proxy Configuration
+
+Edit `apps/stage/global/utils/constants.ts` to add the proxy constant for datatable2:
 
 ```typescript
-// In /apps/stage/components/theme/theme.ts
-const theme = {
-  colors: {
-    primary: "#0B75A2", // Main brand color
-    primary_green: "#00A88F", // Secondary brand color
-    sidebar: "#f5f6f7", // Sidebar background
-    text: "#2d3748", // Main text color
-    textSecondary: "#4a5568", // Secondary text color
-    // Additional color settings...
-  },
-  // Other theme properties...
+export const INTERNAL_API_PROXY = {
+  DATATABLE_1_ARRANGER: "/api/dataset_1_arranger",
+  DATATABLE_2_ARRANGER: "/api/dataset_2_arranger", // Add this line
+  // ... other proxies
 };
 ```
 
-> **Note:** We are working on improving the Stage developer experience, as such we will have planned updates for our theming system. Updates will be documented and linked here once available.
-
-**Component Customization:** notable component directories for customization:
-
-- **Home Page**: `/components/pages/home/` contains all components for the landing page
-- **Documentation Pages**: `/components/pages/documentation/` documentation-specific components
-- **Data Tables**: `/components/pages/activeDataTables/` data exploration page components
-- **Navigation**: `/components/Navbar/NavBar.tsx` customizes the top navigation bar
-
-**Responsive Design:** breakpoint settings can be customized in the theme files:
+Then create the API proxy route at `apps/stage/pages/api/dataset_2_arranger/[...proxy].ts`:
 
 ```typescript
-// In theme.ts
+import { getConfig } from "../../../global/config";
+import { createProxyMiddleware } from "http-proxy-middleware";
+
+const { NEXT_PUBLIC_ARRANGER_DATATABLE_2_API } = getConfig();
+
+export const config = {
+  api: {
+    bodyParser: false,
+    externalResolver: true,
+  },
+};
+
+export default createProxyMiddleware({
+  target: NEXT_PUBLIC_ARRANGER_DATATABLE_2_API,
+  changeOrigin: true,
+  pathRewrite: {
+    "^/api/dataset_2_arranger": "",
+  },
+});
+```
+
+### Step 6: Update Navigation (Optional)
+
+The data tables automatically appear in the navigation dropdown. To customize the display name, edit `apps/stage/components/NavBar/DataTablesDropdown.tsx` and add your table configuration.
+
+### Step 7: Rebuild and Restart
+
+1. **Stop existing services**:
+
+   ```bash
+   docker compose --profile demo down
+   ```
+
+2. **Rebuild Stage** (required for code changes):
+
+   ```bash
+   docker compose build stage
+   ```
+
+3. **Start services**:
+
+   ```bash
+   docker compose --profile demo up -d
+   ```
+
+4. **Verify the new page**:
+   - Navigate to http://localhost:3000/dataTableTwo
+   - Check the navigation menu for the new data table link
+   - Verify data loads correctly from Elasticsearch
+
+### Repeat for Additional Tables
+
+To add `dataTableThree`, `dataTableFour`, or `dataTableFive`, repeat the above steps with the corresponding table number. The configuration files (`next.config.js` and `global/config.ts`) already support up to 5 data tables.
+
+</details>
+
+> **Note:** We support multiple tables and are continuously improving this activation process. Future updates will streamline multi-table setup with automated scaffolding tools.
+
+<details>
+<summary>Theming and Visual Customization</summary>
+
+Stage uses React with Emotion CSS-in-JS, providing extensive theming options to match your organization's brand.
+
+### Core Theme Assets
+
+**Logo and Icons:**
+
+- **Logo**: Replace `/apps/stage/public/images/logo.svg` with your logo (recommended: SVG format, max height 40px)
+- **Favicon**: Update `/apps/stage/public/favicon.ico` (16x16 or 32x32 pixels)
+
+### Color Palette Customization
+
+Update your brand colors in `/apps/stage/components/theme/colors.ts`:
+
+```typescript
+export const colors = {
+  // Primary brand colors
+  primary: "#0B75A2", // Main CTAs, links, active states
+  primary_green: "#00A88F", // Secondary actions, success states
+
+  // Background colors
+  sidebar: "#f5f6f7", // Sidebar and navigation backgrounds
+  background: "#ffffff", // Main content background
+
+  // Text colors
+  text: "#2d3748", // Primary text
+  textSecondary: "#4a5568", // Secondary/muted text
+
+  // UI element colors
+  border: "#e2e8f0", // Borders and dividers
+  hover: "#edf2f7", // Hover states
+
+  // Semantic colors
+  error: "#e53e3e",
+  warning: "#dd6b20",
+  success: "#38a169",
+  info: "#3182ce",
+};
+```
+
+**Testing your colors:**
+
+1. Update the color values
+2. Restart the dev server (`npm run dev`)
+3. Check primary buttons, navigation, and data table elements
+4. Ensure sufficient contrast for accessibility (use a contrast checker)
+
+### Typography Customization
+
+**1. Font Family**
+
+Update base fonts in `/apps/stage/components/theme/typography.ts`:
+
+```typescript
+const baseFont = css`
+  font-family: "Lato", sans-serif;
+`;
+```
+
+**2. Typography Scale**
+
+Predefined text styles available in `typography.ts`:
+
+```typescript
+const heading = css`...`; // 18px bold - Section titles
+const subheading = css`...`; // 16px bold - Subsections
+const paragraph = css`...`; // 14px normal - Body text
+const data = css`...`; // 13px normal - Data display
+const small = css`...`; // 12px normal - Metadata, captions
+```
+
+**3. Component-Specific Typography**
+
+Typography is consistently applied across components through the theme system. For documentation-specific styling, refer to `/apps/stage/components/pages/documentation/THEMING.md` for detailed guidelines on customizing documentation page typography and styles.
+
+### Component-Level Customization
+
+**Key directories for component styling:**
+
+| Directory                                       | Purpose                                 |
+| ----------------------------------------------- | --------------------------------------- |
+| `/apps/stage/components/pages/home/`            | Homepage components (hero, cards, CTAs) |
+| `/apps/stage/components/pages/documentation/`   | Documentation page components           |
+| `/apps/stage/components/pages/dataExplorer/`    | Data exploration UI components          |
+| `/apps/stage/components/NavBar/`                | Navigation bar components               |
+| `/apps/stage/components/theme/`                 | Global theme definitions                |
+
+**Example: Customizing the navigation bar**
+
+Edit `/apps/stage/components/NavBar/NavBar.tsx`:
+
+```tsx
+const navStyles = css`
+  background: ${theme.colors.primary};
+  height: 60px;
+  padding: 0 2rem;
+  /* Add your custom styles */
+`;
+```
+
+### Responsive Design Breakpoints
+
+Customize breakpoints in theme files for different screen sizes:
+
+```typescript
 breakpoints: {
-  xs: '480px',
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
-  xl: '1280px',
-  xxl: '1536px',
+  xs: '480px',   // Mobile phones
+  sm: '640px',   // Large phones
+  md: '768px',   // Tablets
+  lg: '1024px',  // Small laptops
+  xl: '1280px',  // Desktop
+  xxl: '1536px', // Large screens
 },
 ```
 
-**Typography Customization:** the application's typography is controlled through two main systems:
+**Using breakpoints in components:**
 
-1. **Base Font Family** - Set in `/components/theme/typography.ts`:
+```tsx
+const ResponsiveComponent = styled.div`
+  padding: 1rem;
 
-   ```typescript
-   const baseFont = css`
-     font-family: "Lato", sans-serif;
-   `;
-   ```
+  @media (min-width: ${theme.breakpoints.md}) {
+    padding: 2rem;
+  }
 
-2. **Typography Variants** - Predefined styles for different text elements:
+  @media (min-width: ${theme.breakpoints.lg}) {
+    padding: 3rem;
+  }
+`;
+```
 
-   ```typescript
-   // Examples from typography.ts
-   const heading = css`...`; // 18px bold for section titles
-   const subheading = css`...`; // 16px bold for secondary headings
-   const data = css`...`; // 13px normal for general text content
-   ```
+### Testing Your Theme Changes
 
-3. **Documentation Theme** - Typography settings specific to documentation pages in `/components/pages/documentation/DocContainer/theme.ts`:
-   ```typescript
-   // In theme.ts
-   fonts: {
-     base: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif',
-     mono: 'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-     heading: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif',
-   },
-   ```
-   </details>
+**Checklist:**
 
-<details>
-<summary>Automatic Navigation Updates</summary>
- Using next.js we automatically handle updates to certain components and navigation elements:
+- [ ] Test on multiple screen sizes (mobile, tablet, desktop)
+- [ ] Verify color contrast meets WCAG AA standards
+- [ ] Check hover and active states on interactive elements
+- [ ] Test data table readability with your color scheme
+- [ ] Verify navigation menu appearance
+- [ ] Check documentation page styling
+- [ ] Test dark/light mode if implemented
 
-- **Documentation Pages**: Files in the `/public/docs/` directory are automatically listed in the documentation sidebar in order defined by their numeric prefix (e.g., `00-` appears first)
-- **Data Tables**: Components within `/components/pages/activeDataTables/` are automatically included in navigation menus
+**Browser DevTools:**
+
+- Use React DevTools to inspect component props and state
+- Use CSS inspector to debug styling issues
+- Test responsive breakpoints with device emulation
 
 </details>
 
 <details>
-<summary>Other considerations</summary>
+<summary>Automatic Navigation Updates</summary>
 
-- Use the `@emotion/react` CSS-in-JS library that's already integrated
-- Modify component-specific styles found within each component file
-- Consider creating custom theme extensions in `/components/theme/` for specialized styling needs
+Stage uses Next.js file-based routing with automatic navigation generation:
 
-By focusing on these key areas, you can quickly theme the portal to match your organization's visual identity while maintaining the portal's functionality.
+**Documentation Pages:**
+
+- Files in `/apps/stage/public/docs/` automatically appear in the documentation sidebar
+- Ordering is controlled by numeric prefixes (e.g., `00-Tutorial.md`, `01-FAQ.md`)
+- Markdown files are automatically rendered with syntax highlighting
+
+**Data Table Pages:**
+
+- Pages in `/apps/stage/pages/dataTableOne/`, `/apps/stage/pages/dataTableTwo/`, etc. are file-based routes
+- Navigation menu items are managed via `/apps/stage/components/NavBar/DataTablesDropdown.tsx`
+- Each data table page uses the shared `DataExplorerPage` component from `/apps/stage/components/pages/dataExplorer/`
+
+**Manual Navigation Configuration:**
+If you need to manually configure navigation, edit `/apps/stage/components/NavBar/NavBar.tsx` to add custom menu items or modify the navigation structure.
+
+</details>
+
+<details>
+<summary>Development Best Practices</summary>
+
+**Using Emotion CSS-in-JS:**
+
+- Leverage the `@emotion/react` library already integrated in Stage
+- Use the `css` prop for inline styles or create styled components
+- Import theme values to maintain consistency
+
+**Component Styling:**
+
+- Keep component-specific styles within component files
+- Use theme variables instead of hard-coded values
+- Create reusable styled components in `/apps/stage/components/theme/` for common patterns
+
+**Creating Custom Theme Extensions:**
+
+- Add new theme modules in `/apps/stage/components/theme/` for specialized needs
+- Export theme functions and utilities for reuse across components
+- Document custom theme additions for team members
+
+**Version Control:**
+
+- Commit theme changes separately from functionality changes
+- Test theme changes across all pages before committing
+- Document breaking changes in theme structure
 
 </details>
 
@@ -646,4 +942,3 @@ With Arranger, Stage, and Elasticsearch configured we are ready to load our data
 For support, feature requests, and bug reports, please see our [Support Guide](/documentation/support).
 
 For detailed information on how to contribute to this project, please see our [Contributing Guide](/documentation/contribution).
-

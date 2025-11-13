@@ -1,14 +1,14 @@
-# Data Dictionary Table
+# Data Dictionary
 
 ## Overview
 
 Here is our dictionary table component rendered within our documentation page. The data table below is called within the markdown as follows:
+
 ```
 <DictionaryTable url="/dictionary/dictionary.json" showSchemaNames="false" />
 ```
 
 <DictionaryTable url="/dictionary/dictionary.json" showSchemaNames="false" />
-
 
 ## Need Help?
 

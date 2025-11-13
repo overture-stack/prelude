@@ -134,7 +134,7 @@ const NavBar = (): ReactElement => {
 					>
 						<DataTablesDropdown />
 					</div>
-					<div
+					{/* <div
 						css={(theme) => css`
 							display: flex;
 							align-items: center;
@@ -167,7 +167,7 @@ const NavBar = (): ReactElement => {
 								Data Dictionary
 							</a>
 						</InternalLink>
-					</div>
+					</div> */}
 					<div
 						css={(theme) => css`
 							display: flex;
