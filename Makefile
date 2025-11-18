@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 help:
 	@echo "================ Prelude Makefile Commands ================"
 	@echo ""
