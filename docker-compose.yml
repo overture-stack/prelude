@@ -215,7 +215,6 @@ services:
       dockerfile: ./apps/stage/Dockerfile
     image: stageimage:1.0
     container_name: stage
-    platform: linux/arm64/v8
     depends_on:
       setup:
         condition: service_healthy
