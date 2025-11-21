@@ -29,13 +29,13 @@ An interactive demo environment showcasing Overture's search and exploration ser
 3. **Querying**: Arranger queries Elasticsearch via GraphQL
 4. **Portal UI**: Arranger search components in the Stage portal UI provide real-time filtering and exploration
 
-![Search & Exploration Architecture](/apps/stage/public/docs/images/search&exploration.png)
+![Search & Exploration Architecture](/docs/images/search&exploration.png)
 
 ### Custom Integrations
 
 This architecture can be built on top of any existing databases with a relatively simple indexing script that extracts, transforms, and loads your data into Elasticsearch.
 
-![Custom Build](/apps/stage/public/docs/images/platformintegration.png)
+![Custom Build](/docs/images/platformintegration.png)
 
 > [!NOTE]
 > If you have any questions reach out via the [community support channels](https://docs.overture.bio/community/support) or email us at [contact@overture.bio](mailto:contact@overture.bio) we are happy to provide support.
@@ -44,7 +44,7 @@ This architecture can be built on top of any existing databases with a relativel
 
 We're actively developing enhanced data visualization capabilities for Arranger, including interactive charts. This will extend the current search and filtering functionality with visual representations of data.
 
-![Arranger Charts](/apps/stage/public/docs/images/charts.png)
+![Arranger Charts](/docs/images/charts.png)
 
 > [!IMPORTANT]
 > This is a mockup of features currently under development and subject to change.
