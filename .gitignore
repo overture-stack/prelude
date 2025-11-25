@@ -1,5 +1,15 @@
+# Node modules
+node_modules/
+
+# Environment files
 .env
+.env.local
+
+# macOS
 .DS_Store
-node_modules
-__MACOSX
-dist
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

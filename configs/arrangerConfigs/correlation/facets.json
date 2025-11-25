@@ -1,0 +1,112 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "hugo_symbol_autocomplete",
+        "show": false,
+        "type": "Aggregations"
+      },
+      {
+        "active": true,
+        "fieldName": "data__n",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__entrez_gene_id_a",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__entrez_gene_id_b",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__spearmancorr",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__spearmanp",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__pearsoncorr",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__pearsonp",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__spearmancorrsquare",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__pearsoncorrsquare",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__cancer_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dataset_name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_oncogene_a",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_tumor_suppressor_gene_a",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_oncogene_b",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_tumor_suppressor_gene_b",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_wdr_a",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_wdr_b",
+        "show": true
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__submission_id",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__source_file_hash",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processed_at",
+        "show": false
+      }
+    ]
+  }
+}

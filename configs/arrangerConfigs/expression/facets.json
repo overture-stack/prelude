@@ -1,0 +1,67 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "hugo_symbol_autocomplete",
+        "show": false,
+        "type": "Aggregations"
+      },
+      {
+        "active": true,
+        "fieldName": "data__entrez_gene_id",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__average_expression",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__number_of_tumour_samples",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__cancer_type",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__dataset_name",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_oncogene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_tumor_suppressor_gene",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__is_wdr",
+        "show": true
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__submission_id",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__source_file_hash",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processed_at",
+        "show": false
+      }
+    ]
+  }
+}

@@ -24,7 +24,9 @@ import { Download } from '@/components/theme/icons';
 import { css } from '@emotion/react';
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
+import { ColumnsSelectButton, DownloadButton } from '@overture-stack/arranger-components';
 import urlJoin from 'url-join';
+import { CrossTableFilterButton } from '../CrossTableFilterButton';
 
 /**
  * Props for table theme configuration.
@@ -37,6 +39,7 @@ interface TableThemeConfig {
 	apiHost: string;
 	customExporters?: CustomExporterInput[];
 	exportSelectedRowsField: string;
+	currentTableName: string;
 }
 
 /**
@@ -209,6 +212,16 @@ export const createTableTheme = (
 			// Container for the entire table
 			TableWrapper: {
 				margin: '0.5rem 0',
+			},
+
+			// Toolbar configuration with custom tools
+			Toolbar: {
+				tools: [
+					// CrossTableFilterButton as first tool
+					CrossTableFilterButton as any,
+					ColumnsSelectButton as any,
+					DownloadButton as any,
+				],
 			},
 		},
 	},

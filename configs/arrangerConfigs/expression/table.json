@@ -1,0 +1,103 @@
+{
+  "table": {
+    "rowIdFieldName": "submission_metadata.submission_id",
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "data.entrez_gene_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.entrez_gene_id",
+        "query": "data { entrez_gene_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.hugo_symbol",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.hugo_symbol",
+        "query": "data { hugo_symbol }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.average_expression",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.average_expression",
+        "query": "data { average_expression }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.number_of_tumour_samples",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.number_of_tumour_samples",
+        "query": "data { number_of_tumour_samples }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.cancer_type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.cancer_type",
+        "query": "data { cancer_type }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.dataset_name",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.dataset_name",
+        "query": "data { dataset_name }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.is_oncogene",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.is_oncogene",
+        "query": "data { is_oncogene }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.is_tumor_suppressor_gene",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.is_tumor_suppressor_gene",
+        "query": "data { is_tumor_suppressor_gene }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.is_wdr",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.is_wdr",
+        "query": "data { is_wdr }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission_metadata.submission_id",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission_metadata.submission_id",
+        "query": "submission_metadata { submission_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission_metadata.source_file_hash",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission_metadata.source_file_hash",
+        "query": "submission_metadata { source_file_hash }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission_metadata.processed_at",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission_metadata.processed_at",
+        "query": "submission_metadata { processed_at }"
+      }
+    ]
+  }
+}

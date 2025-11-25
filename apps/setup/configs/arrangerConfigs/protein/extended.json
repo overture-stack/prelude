@@ -1,0 +1,120 @@
+{
+  "extended": [
+    {
+      "fieldName": "hugo_symbol_autocomplete",
+      "displayName": "Hugo Symbol Autocomplete"
+    },
+    {
+      "displayName": "Hugo Symbol A",
+      "fieldName": "data.hugo_symbol_a",
+      "primaryKey": true,
+      "quickSearchEnabled": true
+    },
+    {
+      "displayName": "Hugo Symbol B",
+      "fieldName": "data.hugo_symbol_b",
+      "primaryKey": true,
+      "quickSearchEnabled": true
+    },
+    {
+      "displayName": "Neighborhood",
+      "fieldName": "data.neighborhood"
+    },
+    {
+      "displayName": "Neighborhood Transferred",
+      "fieldName": "data.neighborhood_transferred"
+    },
+    {
+      "displayName": "Fusion",
+      "fieldName": "data.fusion"
+    },
+    {
+      "displayName": "Cooccurence",
+      "fieldName": "data.cooccurence"
+    },
+    {
+      "displayName": "Homology",
+      "fieldName": "data.homology"
+    },
+    {
+      "displayName": "Coexpression",
+      "fieldName": "data.coexpression"
+    },
+    {
+      "displayName": "Coexpression Transferred",
+      "fieldName": "data.coexpression_transferred"
+    },
+    {
+      "displayName": "Experiments",
+      "fieldName": "data.experiments"
+    },
+    {
+      "displayName": "Experiments Transferred",
+      "fieldName": "data.experiments_transferred"
+    },
+    {
+      "displayName": "Database",
+      "fieldName": "data.database"
+    },
+    {
+      "displayName": "Database Transferred",
+      "fieldName": "data.database_transferred"
+    },
+    {
+      "displayName": "Textmining",
+      "fieldName": "data.textmining"
+    },
+    {
+      "displayName": "Textmining Transferred",
+      "fieldName": "data.textmining_transferred"
+    },
+    {
+      "displayName": "Combined Score",
+      "fieldName": "data.combined_score"
+    },
+    {
+      "displayName": "Dataset Name",
+      "fieldName": "data.dataset_name"
+    },
+    {
+      "displayName": "Is Oncogene A",
+      "fieldName": "data.is_oncogene_a"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene A",
+      "fieldName": "data.is_tumor_suppressor_gene_a"
+    },
+    {
+      "displayName": "Is Oncogene B",
+      "fieldName": "data.is_oncogene_b"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene B",
+      "fieldName": "data.is_tumor_suppressor_gene_b"
+    },
+    {
+      "displayName": "Is Wdr A",
+      "fieldName": "data.is_wdr_a"
+    },
+    {
+      "displayName": "Is Wdr B",
+      "fieldName": "data.is_wdr_b"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submission Id",
+      "fieldName": "submission_metadata.submission_id"
+    },
+    {
+      "displayName": "Submission Metadata Source File Hash",
+      "fieldName": "submission_metadata.source_file_hash"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "submission_metadata.processed_at"
+    }
+  ]
+}

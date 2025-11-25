@@ -1,15 +1,18 @@
-FROM node:lts-alpine
+FROM --platform=$BUILDPLATFORM node:lts-alpine
 
 ARG ASSET_PREFIX
 ENV ASSET_PREFIX=$ASSET_PREFIX
+
+ARG NEXT_PUBLIC_DISABLE_WELCOME_BANNER
+ENV NEXT_PUBLIC_DISABLE_WELCOME_BANNER=$NEXT_PUBLIC_DISABLE_WELCOME_BANNER
 
 ENV APP_UID=9999
 ENV APP_GID=9999
 
 # Install dependencies and modify user/group
-RUN apk --no-cache add shadow && \
-    groupmod -g $APP_GID node && \
-    usermod -u $APP_UID -g $APP_GID node
+RUN apk --no-cache add shadow
+RUN groupmod -g $APP_GID node
+RUN usermod -u $APP_UID -g $APP_GID node
 
 # Create and set permissions for /usr/src
 RUN mkdir -p /usr/src
@@ -28,8 +31,7 @@ RUN npm ci
 # Copy the stage app code
 COPY --chown=node:node apps/stage ./
 
-# Remove the docs symlink and copy actual docs directory
-RUN rm -f ./public/docs
+# Copy root docs folder to public/docs (overrides symlink)
 COPY --chown=node:node docs ./public/docs
 
 # Set up volume

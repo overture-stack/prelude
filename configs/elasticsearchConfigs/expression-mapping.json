@@ -1,0 +1,66 @@
+{
+  "index_patterns": [
+    "expression-*"
+  ],
+  "aliases": {
+    "expression_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "entrez_gene_id": {
+            "type": "integer"
+          },
+          "hugo_symbol": {
+            "type": "keyword"
+          },
+          "average_expression": {
+            "type": "float"
+          },
+          "number_of_tumour_samples": {
+            "type": "integer"
+          },
+          "cancer_type": {
+            "type": "keyword"
+          },
+          "dataset_name": {
+            "type": "keyword"
+          },
+          "is_oncogene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_tumor_suppressor_gene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_wdr": {
+            "type": "keyword"
+          }
+        }
+      },
+      "submission_metadata": {
+        "type": "object",
+        "properties": {
+          "submission_id": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "source_file_hash": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "processed_at": {
+            "type": "date"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

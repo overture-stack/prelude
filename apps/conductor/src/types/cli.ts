@@ -71,6 +71,7 @@ interface Config {
   };
   batchSize: number;
   delimiter: string;
+  pgReadChunkSize?: number; // PostgreSQL cursor chunk size for streaming (default: 10000)
 }
 
 // Keep this as it's used in CLI setup

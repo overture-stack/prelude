@@ -64,6 +64,7 @@ export async function sendBulkInsertRequest(
         })
         .join(", ");
 
+      // Simple INSERT - no upsert behavior
       const insertQuery = `
         INSERT INTO ${tableName} (${headers.map((h) => `"${h}"`).join(", ")})
         VALUES ${placeholders}
@@ -130,7 +131,7 @@ export async function sendBulkInsertRequest(
           [
             "Check for duplicate primary key or unique constraint values",
             "Remove duplicates from your CSV data",
-            "Use INSERT ... ON CONFLICT if you want to handle duplicates",
+            "Drop and recreate the table if you want to reload data",
           ]
         );
       }

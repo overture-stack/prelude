@@ -205,23 +205,21 @@ export class CSVProcessingErrorHandler {
       } else if (processed === 0) {
         Logger.warnString(`No records were processed`);
       } else {
-        Logger.successString(`Transfer to elasticsearch complete`);
-        Logger.generic("");
+        // Success message handled by postgresFullPipelineCommand
+        Logger.debug`Transfer to elasticsearch complete`;
       }
 
-      // Print detailed summary
-      Logger.generic(`  ▸ Total Records processed: ${processed}`);
-      Logger.generic(
-        `  ▸ Records Successfully transferred: ${successfulRecords}`
-      );
+      // Print detailed summary - simplified for postgresFullPipelineCommand
+      Logger.debug`Total Records processed: ${processed}`;
+      Logger.debug`Records Successfully transferred: ${successfulRecords}`;
 
       if (failed > 0) {
-        Logger.generic(`  ▸ Records Failed to transfer: ${failed}`);
-        Logger.generic(`  ▸ Error logs available in debug output`);
+        Logger.debug`Records Failed to transfer: ${failed}`;
+        Logger.debug`Error logs available in debug output`;
 
         // Calculate failure rate
         const failureRate = ((failed / processed) * 100).toFixed(1);
-        Logger.generic(`  ▸ Failure rate: ${failureRate}%`);
+        Logger.debug`Failure rate: ${failureRate}%`;
 
         if (parseFloat(failureRate) > 10) {
           Logger.tipString(
@@ -230,10 +228,8 @@ export class CSVProcessingErrorHandler {
         }
       }
 
-      Logger.generic(
-        `  ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec`
-      );
-      Logger.debug` ⏱ Total processing time: ${formatDuration(elapsedMs)}`;
+      Logger.debug`Processing speed: ${Math.round(recordsPerSecond)} rows/sec`;
+      Logger.debug`Total processing time: ${formatDuration(elapsedMs)}`;
 
       // Success rate insights
       if (processed > 0) {

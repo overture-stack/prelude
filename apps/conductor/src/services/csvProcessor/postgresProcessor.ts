@@ -448,7 +448,7 @@ function updateProgressDisplay(
   // Use \r to overwrite previous line
   process.stdout.write("\r");
   process.stdout.write(
-    ` ${progressBar} | ` +
+    `   └─ ${progressBar} | ` +
       `${processed}/${total} | ` +
       `⏱ ${formatDuration(elapsedMs)} | ` +
       `🏁 ${eta} | ` +

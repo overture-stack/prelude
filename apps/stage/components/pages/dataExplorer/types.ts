@@ -26,8 +26,8 @@ import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Ta
  * QuickSearch allows users to quickly filter data by searching specific fields.
  */
 export interface QuickSearchConfig {
-	/** The field name(s) to search against (e.g., 'donors.specimens.submitter_specimen_id') */
-	fieldNames: string;
+	/** The field name(s) to search against. Can be a single field or array of fields (e.g., 'data.hugo_symbol' or ['data.hugo_symbol_a', 'data.hugo_symbol_b']) */
+	fieldNames: string | string[];
 	/** Title displayed in the QuickSearch header */
 	headerTitle: string;
 	/** Placeholder text shown in the search input */

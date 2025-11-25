@@ -287,16 +287,35 @@ export const createFacetsTheme = (
 
 				QuickSearchWrapper: {
 					css: css`
-						.title {
-							${theme.typography.subheading2}
+						border-left: 3px solid ${theme.colors.accent2_dark} !important;
+
+						.title,
+						.quicksearch-title {
+							${theme.typography.subheading};
 							line-height: 20px;
+							color: ${theme.colors.accent_dark};
+						}
+						/* Force chevron size and color to match facets */
+						.arrow-icon {
+							width: 9px !important;
+							height: 9px !important;
+							min-width: 9px !important;
+							min-height: 9px !important;
+							fill: ${theme.colors.grey_5} !important;
+							transition: fill 0.2s ease-in-out !important;
+						}
+
+						/* Hover color same as facet titles */
+						.title:hover .arrow-icon,
+						.quicksearch-title:hover .arrow-icon {
+							fill: ${theme.colors.secondary_light} !important;
 						}
 					`,
 				},
 
 				TreeJointIcon: {
 					fill: theme.colors.primary_dark,
-					size: 8,
+					size: 10,
 					transition: 'all 0s',
 				},
 

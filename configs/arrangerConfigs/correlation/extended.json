@@ -1,0 +1,104 @@
+{
+  "extended": [
+    {
+      "fieldName": "hugo_symbol_autocomplete",
+      "displayName": "Hugo Symbol Autocomplete"
+    },
+    {
+      "displayName": "N",
+      "fieldName": "data.n"
+    },
+    {
+      "displayName": "Hugo Symbol A",
+      "fieldName": "data.hugo_symbol_a",
+      "primaryKey": true,
+      "quickSearchEnabled": true
+    },
+    {
+      "displayName": "Entrez Gene Id A",
+      "fieldName": "data.entrez_gene_id_a"
+    },
+    {
+      "displayName": "Hugo Symbol B",
+      "fieldName": "data.hugo_symbol_b",
+      "primaryKey": true,
+      "quickSearchEnabled": true
+    },
+    {
+      "displayName": "Entrez Gene Id B",
+      "fieldName": "data.entrez_gene_id_b"
+    },
+    {
+      "displayName": "Spearmancorr",
+      "fieldName": "data.spearmancorr"
+    },
+    {
+      "displayName": "Spearmanp",
+      "fieldName": "data.spearmanp"
+    },
+    {
+      "displayName": "Pearsoncorr",
+      "fieldName": "data.pearsoncorr"
+    },
+    {
+      "displayName": "Pearsonp",
+      "fieldName": "data.pearsonp"
+    },
+    {
+      "displayName": "Spearmancorrsquare",
+      "fieldName": "data.spearmancorrsquare"
+    },
+    {
+      "displayName": "Pearsoncorrsquare",
+      "fieldName": "data.pearsoncorrsquare"
+    },
+    {
+      "displayName": "Cancer Type",
+      "fieldName": "data.cancer_type"
+    },
+    {
+      "displayName": "Dataset Name",
+      "fieldName": "data.dataset_name"
+    },
+    {
+      "displayName": "Is Oncogene A",
+      "fieldName": "data.is_oncogene_a"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene A",
+      "fieldName": "data.is_tumor_suppressor_gene_a"
+    },
+    {
+      "displayName": "Is Oncogene B",
+      "fieldName": "data.is_oncogene_b"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene B",
+      "fieldName": "data.is_tumor_suppressor_gene_b"
+    },
+    {
+      "displayName": "Is Wdr A",
+      "fieldName": "data.is_wdr_a"
+    },
+    {
+      "displayName": "Is Wdr B",
+      "fieldName": "data.is_wdr_b"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submission Id",
+      "fieldName": "submission_metadata.submission_id"
+    },
+    {
+      "displayName": "Submission Metadata Source File Hash",
+      "fieldName": "submission_metadata.source_file_hash"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "submission_metadata.processed_at"
+    }
+  ]
+}

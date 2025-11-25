@@ -127,8 +127,9 @@ const Dropdown = ({
 						color: ${theme.colors.grey_6};
 						list-style: none;
 						margin: 0;
-						max-width: 300px;
-						min-width: 100%;
+						min-width: 200px;
+						width: max-content;
+						max-width: 400px;
 						padding: 0;
 						position: absolute;
 						left: 0;

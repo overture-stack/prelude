@@ -1,0 +1,87 @@
+{
+  "index_patterns": [
+    "mutation-*"
+  ],
+  "aliases": {
+    "mutation_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "hugo_symbol": {
+            "type": "keyword"
+          },
+          "entrez_gene_id": {
+            "type": "integer"
+          },
+          "hotspot": {
+            "type": "integer"
+          },
+          "number_of_samples_mutated_at_gene": {
+            "type": "integer"
+          },
+          "total_number_of_mutated_samples": {
+            "type": "integer"
+          },
+          "overall_mutation_frequency": {
+            "type": "float"
+          },
+          "cancer_type": {
+            "type": "keyword"
+          },
+          "number_of_samples_with_gains": {
+            "type": "integer"
+          },
+          "number_of_samples_with_losses": {
+            "type": "integer"
+          },
+          "total_number_of_samples": {
+            "type": "integer"
+          },
+          "percent_of_samples_with_gains": {
+            "type": "float"
+          },
+          "percent_of_samples_with_losses": {
+            "type": "float"
+          },
+          "dataset_name": {
+            "type": "keyword"
+          },
+          "is_oncogene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_tumor_suppressor_gene": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_wdr": {
+            "type": "keyword"
+          }
+        }
+      },
+      "submission_metadata": {
+        "type": "object",
+        "properties": {
+          "submission_id": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "source_file_hash": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "processed_at": {
+            "type": "date"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

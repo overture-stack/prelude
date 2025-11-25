@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../global/utils/constants';
 import { InternalLink } from '../Link';
-import { extractOrder, extractTitle, generateId } from '../pages/documentation/utils/documentUtils';
 import Dropdown from './Dropdown';
 import { StyledListLink } from './styles';
 
@@ -22,39 +21,21 @@ const DocumentationDropdown = () => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch('/api/docs')
-			.then((response) => response.json())
-			.then(async (files) => {
-				const sectionsPromises = files.map(async (filename: string) => {
-					try {
-						const contentResponse = await fetch(`/docs/${filename}`);
-						if (!contentResponse.ok) throw new Error(`Failed to load ${filename}`);
-
-						const content = await contentResponse.text();
-						const title = extractTitle(content);
-						const dropdownId = generateId(title);
-						console.log(`[DEBUG] Creating dropdown: filename="${filename}", title="${title}", id="${dropdownId}"`);
-
-						return {
-							title,
-							id: dropdownId,
-							order: extractOrder(filename),
-						};
-					} catch (error) {
-						console.error(`Error processing file ${filename}:`, error);
-						return null;
-					}
-				});
-
-				const sections = (await Promise.all(sectionsPromises))
-					.filter((section): section is DocSection => section !== null)
-					.sort((a, b) => a.order - b.order);
-
-				setDocSections(sections);
+		// Fetch pre-generated manifest instead of fetching markdown files
+		// This prevents loading markdown content on every page
+		fetch('/docs-manifest.json')
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Failed to load documentation manifest');
+				}
+				return response.json();
+			})
+			.then((manifest: DocSection[]) => {
+				setDocSections(manifest);
 				setLoading(false);
 			})
 			.catch((error) => {
-				console.error('Error fetching documentation:', error);
+				console.error('Error loading documentation manifest:', error);
 				setLoading(false);
 			});
 	}, []);

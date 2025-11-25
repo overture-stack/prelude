@@ -4,7 +4,7 @@
 	"scripts": {
 		"clearNextTemp": "rm -rf ./.next",
 		"dev": "npm run clearNextTemp && next dev",
-		"build": "npm run clearNextTemp && next build",
+		"build": "npm run clearNextTemp && node scripts/generate-docs-manifest.js && next build",
 		"linkArranger": "npm link @overture-stack/arranger-components --ignore-scripts",
 		"patchTS": "ts-patch install -s",
 		"prepare": "npm run patchTS",

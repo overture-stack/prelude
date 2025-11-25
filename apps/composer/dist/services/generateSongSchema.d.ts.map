@@ -1,0 +1,1 @@
+{"version":3,"file":"generateSongSchema.d.ts","sourceRoot":"","sources":["../../src/services/generateSongSchema.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,UAAU,EAAa,WAAW,EAAE,MAAM,UAAU,CAAC;AAmFnE,wBAAgB,UAAU,CACxB,UAAU,EAAE,MAAM,CAAC,MAAM,EAAE,GAAG,CAAC,EAC/B,UAAU,EAAE,MAAM,EAClB,OAAO,CAAC,EAAE,WAAW,GACpB,UAAU,CAyDZ;AAED,wBAAgB,kBAAkB,CAAC,MAAM,EAAE,UAAU,GAAG,OAAO,CAyC9D"}

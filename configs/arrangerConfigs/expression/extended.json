@@ -1,0 +1,62 @@
+{
+  "extended": [
+    {
+      "fieldName": "hugo_symbol_autocomplete",
+      "displayName": "Hugo Symbol Autocomplete"
+    },
+    {
+      "displayName": "Entrez Gene Id",
+      "fieldName": "data.entrez_gene_id"
+    },
+    {
+      "displayName": "Hugo Symbol",
+      "fieldName": "data.hugo_symbol",
+      "primaryKey": true,
+      "quickSearchEnabled": true
+    },
+    {
+      "displayName": "Average Expression",
+      "fieldName": "data.average_expression"
+    },
+    {
+      "displayName": "Number Of Tumour Samples",
+      "fieldName": "data.number_of_tumour_samples"
+    },
+    {
+      "displayName": "Cancer Type",
+      "fieldName": "data.cancer_type"
+    },
+    {
+      "displayName": "Dataset Name",
+      "fieldName": "data.dataset_name"
+    },
+    {
+      "displayName": "Is Oncogene",
+      "fieldName": "data.is_oncogene"
+    },
+    {
+      "displayName": "Is Tumor Suppressor Gene",
+      "fieldName": "data.is_tumor_suppressor_gene"
+    },
+    {
+      "displayName": "Is Wdr",
+      "fieldName": "data.is_wdr"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submission Id",
+      "fieldName": "submission_metadata.submission_id"
+    },
+    {
+      "displayName": "Submission Metadata Source File Hash",
+      "fieldName": "submission_metadata.source_file_hash"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "submission_metadata.processed_at"
+    }
+  ]
+}

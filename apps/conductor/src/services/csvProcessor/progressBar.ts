@@ -53,11 +53,21 @@ export function calculateETA(
 
 export function createProgressBar(
   progress: number,
-  width: number = 30
+  widthOrColor: number | string = 30
 ): string {
   try {
+    // Determine if second parameter is width or color
+    let width = 30;
+    let color = 'green';
+
+    if (typeof widthOrColor === 'number') {
+      width = widthOrColor;
+    } else if (typeof widthOrColor === 'string') {
+      color = widthOrColor;
+    }
+
     // Validate and normalize inputs
-    if (!isFinite(progress) || !isFinite(width)) {
+    if (!isFinite(progress)) {
       return chalk.yellow("[Invalid progress value]");
     }
 
@@ -72,12 +82,15 @@ export function createProgressBar(
     );
     const emptyWidth = normalizedWidth - filledWidth;
 
+    // Select color function
+    const colorFn = color === 'blue' ? chalk.cyan : chalk.green;
+
     // Create bar segments with boundary checks
-    const filledBar = chalk.green("█").repeat(Math.max(0, filledWidth));
+    const filledBar = colorFn("█").repeat(Math.max(0, filledWidth));
     const emptyBar = chalk.gray("░").repeat(Math.max(0, emptyWidth));
 
     // Return formatted progress bar
-    return `${filledBar}${emptyBar} ${chalk.green(
+    return `${filledBar}${emptyBar} ${colorFn(
       normalizedProgress.toFixed(1) + "%"
     )}`;
   } catch (error) {

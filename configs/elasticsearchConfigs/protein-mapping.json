@@ -1,0 +1,110 @@
+{
+  "index_patterns": [
+    "protein-*"
+  ],
+  "aliases": {
+    "protein_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "hugo_symbol_a": {
+            "type": "keyword"
+          },
+          "hugo_symbol_b": {
+            "type": "keyword"
+          },
+          "neighborhood": {
+            "type": "integer"
+          },
+          "neighborhood_transferred": {
+            "type": "integer"
+          },
+          "fusion": {
+            "type": "integer"
+          },
+          "cooccurence": {
+            "type": "integer"
+          },
+          "homology": {
+            "type": "integer"
+          },
+          "coexpression": {
+            "type": "integer"
+          },
+          "coexpression_transferred": {
+            "type": "integer"
+          },
+          "experiments": {
+            "type": "integer"
+          },
+          "experiments_transferred": {
+            "type": "integer"
+          },
+          "database": {
+            "type": "integer"
+          },
+          "database_transferred": {
+            "type": "integer"
+          },
+          "textmining": {
+            "type": "integer"
+          },
+          "textmining_transferred": {
+            "type": "integer"
+          },
+          "combined_score": {
+            "type": "integer"
+          },
+          "dataset_name": {
+            "type": "keyword"
+          },
+          "is_oncogene_a": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_tumor_suppressor_gene_a": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_oncogene_b": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_tumor_suppressor_gene_b": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "is_wdr_a": {
+            "type": "keyword"
+          },
+          "is_wdr_b": {
+            "type": "keyword"
+          }
+        }
+      },
+      "submission_metadata": {
+        "type": "object",
+        "properties": {
+          "submission_id": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "source_file_hash": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "processed_at": {
+            "type": "date"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

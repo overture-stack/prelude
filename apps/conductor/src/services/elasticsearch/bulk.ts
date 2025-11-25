@@ -32,6 +32,14 @@ interface BulkOptions {
 }
 
 /**
+ * Interface for documents with optional IDs for upsert behavior
+ */
+interface DocumentWithId {
+  _id?: string | number;
+  [key: string]: any;
+}
+
+/**
  * Interface for tracking error patterns
  */
 interface ErrorPattern {
@@ -45,9 +53,10 @@ interface ErrorPattern {
 
 /**
  * Sends a bulk write request to Elasticsearch.
+ * Supports upsert behavior by including document IDs when available.
  *
  * @param client - The Elasticsearch client instance
- * @param records - An array of records to be indexed
+ * @param records - An array of records to be indexed (can include _id field for upserts)
  * @param indexName - The name of the Elasticsearch index
  * @param onFailure - Callback function to handle failed records
  * @param options - Optional configuration for bulk operations
@@ -55,7 +64,7 @@ interface ErrorPattern {
  */
 export async function sendBulkWriteRequest(
   client: Client,
-  records: object[],
+  records: DocumentWithId[],
   indexName: string,
   onFailure: (count: number) => void,
   options: BulkOptions = {}
@@ -72,10 +81,17 @@ export async function sendBulkWriteRequest(
 
   while (attempt < maxRetries && !success) {
     try {
-      const body = records.flatMap((doc) => [
-        { index: { _index: indexName } },
-        doc,
-      ]);
+      const body = records.flatMap((doc) => {
+        // Extract _id if present, remove from document body
+        const { _id, ...docBody } = doc;
+
+        // Include _id in index action if available (enables upsert behavior)
+        const indexAction = _id
+          ? { index: { _index: indexName, _id: String(_id) } }
+          : { index: { _index: indexName } };
+
+        return [indexAction, docBody];
+      });
 
       const { body: result } = await client.bulk({
         body,

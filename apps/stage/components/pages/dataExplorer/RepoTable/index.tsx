@@ -29,6 +29,7 @@ import {
 } from '@overture-stack/arranger-components';
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { useMemo } from 'react';
+import { useRouter } from 'next/router';
 import { ExportConfig } from '../types';
 import { createTableTheme } from '../theme/tableTheme';
 
@@ -72,6 +73,8 @@ interface RepoTableProps {
  */
 const RepoTable = ({ callerName, apiHost, exportRowIdField, exportConfig }: RepoTableProps) => {
 	const theme = useTheme();
+	const router = useRouter();
+	const currentTableName = router.pathname.replace('/', '') || 'unknown';
 
 	/**
 	 * Create default export configuration.
@@ -113,6 +116,7 @@ const RepoTable = ({ callerName, apiHost, exportRowIdField, exportConfig }: Repo
 			apiHost,
 			customExporters,
 			exportSelectedRowsField: exportRowIdField,
+			currentTableName,
 		}),
 	);
 
@@ -165,9 +169,8 @@ const RepoTable = ({ callerName, apiHost, exportRowIdField, exportConfig }: Repo
 					<TableContextProvider>
 						{/**
 						 * Toolbar Component
-						 * - Column selector (show/hide columns)
-						 * - Download button
-						 * - Other table controls
+						 * - Now includes CrossTableFilterButton, Columns, and Download buttons
+						 * - Custom tools configured via theme
 						 */}
 						<Toolbar />
 
