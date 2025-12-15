@@ -114,7 +114,7 @@ services:
   postgres:
     profiles: ["demo", "default"]
     image: postgres:15-alpine
-    container_name: postgres
+    container_name: postgres-prelude
     platform: linux/amd64
     ports:
       - "5435:5432"
