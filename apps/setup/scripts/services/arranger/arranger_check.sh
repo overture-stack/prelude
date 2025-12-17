@@ -11,7 +11,7 @@ TIMEOUT=10
 TROUBLESHOOTING_TIPS="
 Troubleshooting Tips:
 1. Verify Arranger configuration includes the required 'documentType' property
-2. Check if Elasticsearch indices are properly configured
+2. Check if OpenSearch indices are properly configured
 3. Review Arranger logs for detailed error messages
 4. Ensure environment variables for Arranger are correctly set
 "

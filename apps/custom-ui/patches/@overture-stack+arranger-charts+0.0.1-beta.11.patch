@@ -1,0 +1,13 @@
+diff --git a/node_modules/@overture-stack/arranger-charts/dist/main.js b/node_modules/@overture-stack/arranger-charts/dist/main.js
+index 02d860d..1c8f80a 100755
+--- a/node_modules/@overture-stack/arranger-charts/dist/main.js
++++ b/node_modules/@overture-stack/arranger-charts/dist/main.js
+@@ -20704,7 +20704,7 @@ const BarChart = ({ fieldName, ranges, handlers, theme, maxBars }) => {
+     const result = validateQueryProps({ fieldName, variables, extendedMapping });
+     if (!validationResult.success) {
+       logger.log(validationResult.message);
+-      return null;
++      return;
+     }
+     registerChart(result.data);
+     return () => deregisterChart(validationResult.data.fieldName);

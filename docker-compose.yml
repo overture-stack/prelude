@@ -1,6 +1,6 @@
 services:
   setup:
-    profiles: ["platform", "stageDev", "default"]
+    profiles: ["demo", "dev", "default"]
     image: alpine/curl:8.8.0
     container_name: setup
     ports:
@@ -12,65 +12,39 @@ services:
       # Global Configuration
       PROFILE: ${PROFILE:-default}
       DEBUG: false
-      # PostgreSQL Configuration (SIMPLIFIED)
-      POSTGRES_CONFIGS_DIR: setup/configs/postgresConfigs
-      # PostgreSQL Connection
-      POSTGRES_HOST: postgres-platform
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: overtureDb
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
-      # Elasticsearch Index Configuration
+      # Index Configuration
       # Dynamic indices are configured with a count and indexed variables
-      ES_INDEX_COUNT: 4
-      # Correlation index
-      ES_INDEX_0_NAME: correlation-index
-      ES_INDEX_0_TEMPLATE_FILE: setup/configs/elasticsearchConfigs/correlation-mapping.json
-      ES_INDEX_0_TEMPLATE_NAME: correlation-index
-      ES_INDEX_0_ALIAS_NAME: correlation_centric
-      # mRNA index
-      ES_INDEX_1_NAME: expression-index
-      ES_INDEX_1_TEMPLATE_FILE: setup/configs/elasticsearchConfigs/expression-mapping.json
-      ES_INDEX_1_TEMPLATE_NAME: expression-index
-      ES_INDEX_1_ALIAS_NAME: expression_centric
-      # Mutation index
-      ES_INDEX_2_NAME: mutation-index
-      ES_INDEX_2_TEMPLATE_FILE: setup/configs/elasticsearchConfigs/mutation-mapping.json
-      ES_INDEX_2_TEMPLATE_NAME: mutation-index
-      ES_INDEX_2_ALIAS_NAME: mutation_centric
-      # Protein index
-      ES_INDEX_3_NAME: protein-index
-      ES_INDEX_3_TEMPLATE_FILE: setup/configs/elasticsearchConfigs/protein-mapping.json
-      ES_INDEX_3_TEMPLATE_NAME: protein-index
-      ES_INDEX_3_ALIAS_NAME: protein_centric
+      INDEX_COUNT: 1
+      # OHCRN sample data index
+      INDEX_0_NAME: demo-index
+      INDEX_0_TEMPLATE_FILE: setup/configs/indexConfigs/demo-mapping.json
+      INDEX_0_TEMPLATE_NAME: demo-index
+      INDEX_0_ALIAS_NAME: demo_centric
       # Arranger Services Configuration
       # Dynamically configurable number of Arranger instances
-      ARRANGER_COUNT: 4
+      ARRANGER_COUNT: 1
       ARRANGER_0_URL: http://arranger-datatable1:5050
-      ARRANGER_1_URL: http://arranger-datatable2:5051
-      ARRANGER_2_URL: http://arranger-datatable3:5052
-      ARRANGER_3_URL: http://arranger-datatable4:5053
       # Add more ARRANGER_X_URL as needed, matching ARRANGER_COUNT
       # ARRANGER_X_URL: http://arranger-x:505X
       # Service Connections
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_URL: http://elasticsearch:9200
-      STAGE_URL: http://stage:3000
+      ELASTICSEARCH_USER: elastic
+      ELASTICSEARCH_PASS: myelasticpassword
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      CUSTOM_UI_URL: http://custom-ui:80
     command: >
       sh -c '
         set -e
         echo "Profile is set to: $PROFILE"
         case "$PROFILE" in
-          "platform")
-            echo "Running platform deployment..."
-            chmod +x setup/scripts/deployments/platform.sh
-            setup/scripts/deployments/platform.sh
+          "demo")
+            echo "Running demo deployment..."
+            chmod +x setup/scripts/deployments/demo.sh
+            setup/scripts/deployments/demo.sh
             ;;
-          "stageDev")
-            echo "Running Stage Dev deployment..."
-            chmod +x setup/scripts/deployments/stageDev.sh
-            setup/scripts/deployments/stageDev.sh
+          "dev")
+            echo "Running dev deployment..."
+            chmod +x setup/scripts/deployments/dev.sh
+            setup/scripts/deployments/dev.sh
             ;;
           *)
             echo "Invalid profile specified."
@@ -86,60 +60,61 @@ services:
       retries: 100
       start_period: 30s
     networks:
-      - platform-network
+      - demo-network
 
-  # -----------------------------------------------------------------------------------#
-  # PostgreSQL                                                                         #
-  # -----------------------------------------------------------------------------------#
-  # Database for storing data uploaded via conductor                                   #
-  # -----------------------------------------------------------------------------------#
-  postgres-platform:
-    profiles: ["platform", "stageDev", "default"]
-    image: postgres:15-alpine
-    container_name: postgres-platform
-    platform: linux/amd64
-    ports:
-      - "5435:5432"
-    environment:
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_USER: admin
-      POSTGRES_DB: overtureDb
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
-      interval: 20s
-      timeout: 10s
-      retries: 10
-      start_period: 20s
+  # --------------------------------------------------------------------------------------#
+  # Conductor CLI - Data Upload Service                                                  #
+  # --------------------------------------------------------------------------------------#
+  # Pre-built Node.js container for running conductor CLI operations                     #
+  # --------------------------------------------------------------------------------------#
+  conductor-cli:
+    profiles: ["demo", "dev", "default"]
+    build:
+      context: ./apps/conductor
+      dockerfile: Dockerfile
+    image: conductor-cli:1.0
+    container_name: conductor-cli
+    pull_policy: never
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./data:/data
+    command: >
+      sh -c '
+        echo "Starting conductor CLI - data upload service"
+        echo "Available files in /data: $(ls -la /data/ || echo none)"
+        node dist/main.js esupload \
+        -f /data/demodata.csv \
+        -i demo-index \
+        --es-host elasticsearch:9200 \
+        --es-user elastic \
+        --es-pass myelasticpassword \
+      '
+    depends_on:
+      setup:
+        condition: service_completed_successfully
     networks:
-      - platform-network
+      - demo-network
 
   # --------------------------------------------------------------------------------------#
-  # Elasticsearch                                                                         #
+  # Elasticsearch                                                                          #
   # --------------------------------------------------------------------------------------#
-  # A search and analytics engine used to help query massive datatables.                    #
-  # Documentation Link:                                                                   #
-  # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
+  # Search and analytics engine for querying large datatables                             #
+  # Documentation Link: https://www.elastic.co/guide/en/elasticsearch/reference/7.17/    #
   # --------------------------------------------------------------------------------------#
   elasticsearch:
-    profiles: ["platform", "stageDev", "default"]
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
+    profiles: ["demo", "dev", "default"]
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
     container_name: elasticsearch
     platform: linux/amd64
     ports:
       - "9200:9200"
+      - "9300:9300"
     environment:
-      PUID: 3381
-      PGID: 100
-      discovery.type: single-node
-      cluster.name: workflow.elasticsearch
-      ES_JAVA_OPTS: -Xms8g -Xmx8g
-      ELASTIC_PASSWORD: myelasticpassword
-      xpack.security.enabled: "true"
-      MANAGE_INDEX_TEMPLATES: "true"
-      NETWORK_HOST: http://localhost:9200
-      bootstrap.memory_lock: "true"
+      - discovery.type=single-node
+      - cluster.name=elasticsearch-cluster
+      - node.name=elasticsearch-node1
+      - "ES_JAVA_OPTS=-Xms8g -Xmx8g"
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
     ulimits:
       memlock:
         soft: -1
@@ -156,7 +131,7 @@ services:
           cpus: "2"
           memory: 8G
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - index-data:/usr/share/elasticsearch/data
     healthcheck:
       test:
         "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
@@ -166,7 +141,65 @@ services:
       retries: 5
       start_period: 25s
     networks:
-      - platform-network
+      - demo-network
+
+  # --------------------------------------------------------------------------------------#
+  # OpenSearch (COMMENTED OUT - Reserved for future Arranger support)                    #
+  # --------------------------------------------------------------------------------------#
+  # NOTE: Arranger does not currently support OpenSearch. This configuration is          #
+  # preserved for when OpenSearch support is added to Arranger in the future.            #
+  # To use OpenSearch instead of Elasticsearch:                                           #
+  #   1. Uncomment this service                                                           #
+  #   2. Comment out the elasticsearch service above                                      #
+  #   3. Update arranger-datatable1 ES_HOST to point to OpenSearch                       #
+  #   4. Update setup environment variables to use OPENSEARCH_* instead of ELASTICSEARCH_*#
+  #   5. Update deployment script to use opensearch scripts                              #
+  # --------------------------------------------------------------------------------------#
+  # opensearch:
+  #   profiles: ["demo", "default"]
+  #   image: opensearchproject/opensearch:2.11.1
+  #   container_name: opensearch
+  #   platform: linux/amd64
+  #   ports:
+  #     - "9200:9200"
+  #     - "9600:9600"
+  #   environment:
+  #     PUID: 3381
+  #     PGID: 100
+  #     discovery.type: single-node
+  #     cluster.name: opensearch-cluster
+  #     node.name: opensearch-node1
+  #     OPENSEARCH_JAVA_OPTS: -Xms8g -Xmx8g
+  #     bootstrap.memory_lock: "true"
+  #     DISABLE_INSTALL_DEMO_CONFIG: "true"
+  #     DISABLE_SECURITY_PLUGIN: "true"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "6"
+  #         memory: 16G
+  #       reservations:
+  #         cpus: "2"
+  #         memory: 8G
+  #   volumes:
+  #     - index-data:/usr/share/opensearch/data
+  #   healthcheck:
+  #     test:
+  #       "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
+  #       exit 1"
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 25s
+  #   networks:
+  #     - demo-network
 
   # ------------------------------------------------------------------------------------#
   # Arranger-Server for our tabular data                                                #
@@ -175,8 +208,8 @@ services:
   # Documentation Link: https://docs.overture.bio/docs/core-software/Arranger/overview  #
   # ------------------------------------------------------------------------------------#
   arranger-datatable1:
-    profiles: ["platform", "stageDev", "default"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    profiles: ["demo", "dev", "default"]
+    image: ghcr.io/overture-stack/arranger-server:ce3be7ff
     container_name: arranger-datatable1
     platform: linux/amd64
     depends_on:
@@ -185,182 +218,44 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - ./apps/setup/configs/arrangerConfigs/correlation:/app/modules/server/configs
+      - ./apps/setup/configs/arrangerConfigs:/app/modules/server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: correlation_arranger_set
+      ES_ARRANGER_SET_INDEX: demo_arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
       ENABLE_LOGS: false
     networks:
-      - platform-network
-
-  arranger-datatable2:
-    profiles: ["platform", "stageDev", "default"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-datatable2
-    platform: linux/amd64
-    depends_on:
-      setup:
-        condition: service_healthy
-    ports:
-      - "5051:5051" # Use unique ports for each Arranger instance
-    volumes:
-      - ./apps/setup/configs/arrangerConfigs/mutation:/app/modules/server/configs # Point to the relevant generated config
-    environment:
-      ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: mutation_arranger_set
-      # Arranger Variables
-      PORT: 5051 # Required
-      DEBUG: false
-      ENABLE_LOGS: false
-    networks:
-      - platform-network
-
-  arranger-datatable3:
-    profiles: ["platform", "stageDev", "default"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-datatable3
-    platform: linux/amd64
-    depends_on:
-      setup:
-        condition: service_healthy
-    ports:
-      - "5052:5052" # Use unique ports for each Arranger instance
-    volumes:
-      - ./apps/setup/configs/arrangerConfigs/expression:/app/modules/server/configs # Point to the relevant generated config
-    environment:
-      # Elasticsearch Variables
-      ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: expression_arranger_set
-      # Arranger Variables
-      PORT: 5052 # Required
-      DEBUG: false
-      ENABLE_LOGS: false
-    networks:
-      - platform-network
-
-  arranger-datatable4:
-    profiles: ["platform", "stageDev", "default"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
-    container_name: arranger-datatable4
-    platform: linux/amd64
-    depends_on:
-      setup:
-        condition: service_healthy
-    ports:
-      - "5053:5053" # Use unique ports for each Arranger instance
-    volumes:
-      - ./apps/setup/configs/arrangerConfigs/protein:/app/modules/server/configs # Point to the relevant generated config
-    environment:
-      # Elasticsearch Variables
-      ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
-      ES_ARRANGER_SET_INDEX: protein_arranger_set
-      # Arranger Variables
-      PORT: 5053 # Required
-      DEBUG: false
-      ENABLE_LOGS: false
-    networks:
-      - platform-network
+      - demo-network
 
   # ------------------------------------------------------------------------------------#
-  # Stage                                                                               #
+  # Custom UI - React/Vite Frontend                                                     #
   # ------------------------------------------------------------------------------------#
-  # The react-based, front end UI scaffolding for Overture                              #
-  # Documentation Link: https://docs.overture.bio/docs/core-software/Stage/overview     #
+  # Custom user interface for data exploration                                          #
   # ------------------------------------------------------------------------------------#
-  stage:
-    profiles: ["platform", "default"]
-    image: stageimage:1.0
-    container_name: stage
+  custom-ui:
+    profiles: ["demo", "default"]
     build:
-      context: .
-      dockerfile: ./apps/stage/Dockerfile
+      context: ./apps/custom-ui
+      dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_DISABLE_WELCOME_BANNER=true
+        VITE_ARRANGER_API: http://localhost:5050
+        VITE_DOCUMENT_TYPE: file
+        VITE_INDEX_NAME: demo_centric
+    container_name: custom-ui
+    platform: linux/amd64
     depends_on:
       setup:
         condition: service_healthy
     ports:
-      - "3000:3000"
-    environment:
-      # Node Environment
-      NODE_ENV: production
-      # Stage Variables
-      NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Drug Discovery
-      NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
-      NEXT_PUBLIC_DEBUG: false
-      NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
-      NEXT_PUBLIC_ENABLE_DOWNLOADS: true
-      # Datatable1 Arranger Variables
-      # For server
-      # NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://drugdiscovery.oicr.on.ca/correlation-api
-      # For local
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: correlation_centric
-      NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_1_QUICKSEARCH: "true"
-      # Datatable2 Arranger Variables
-      # For server
-      # NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://drugdiscovery.oicr.on.ca/mutation-api
-      # For local
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: mutation_centric
-      NEXT_PUBLIC_DATATABLE_2_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_2_QUICKSEARCH: "true"
-      # Datatable3 Arranger Variables
-      # For server
-      # NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://drugdiscovery.oicr.on.ca/mrna-api
-      # For local
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger-datatable3:5052
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: expression_centric
-      NEXT_PUBLIC_DATATABLE_3_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_3_QUICKSEARCH: "true"
-      # Datatable4 Arranger Variables
-      # For server
-      # NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://drugdiscovery.oicr.on.ca/protein-api
-      # For local
-      NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger-datatable4:5053
-      NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: file
-      NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: protein_centric
-      NEXT_PUBLIC_DATATABLE_4_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_4_QUICKSEARCH: "true"
-      # Data Table Display Names (Optional - overrides tableConfig.ts)
-      # Uncomment and customize these to set custom names for each data table
-      NEXT_PUBLIC_DATATABLE_ONE_NAME: "Correlation Table"
-      NEXT_PUBLIC_DATATABLE_TWO_NAME: "Mutation Table"
-      NEXT_PUBLIC_DATATABLE_THREE_NAME: "Expression Table"
-      NEXT_PUBLIC_DATATABLE_FOUR_NAME: "Protein Table"
-      # Auth Variables
-      NEXTAUTH_SECRET: your-secure-secret-here
-      # System Alerts
-      # NEXT_PUBLIC_SYSTEM_ALERTS: '[{"level":"info","title":"API Documentation Available","message":"Swagger documentation for Song, Lyric, Lectern, and Score APIs is now available in the Documentation section.","dismissable":true,"id":"api-docs-available"}]'
-      # CORS Configuration
-      NEXT_PUBLIC_CORS_ENABLED: "true"
-      NEXT_PUBLIC_CORS_ALLOWED_ORIGINS: "*"
-    volumes:
-      - stage-data:/usr/src/public/static/dms_user_assets
+      - "3000:80"
     networks:
-      - platform-network
+      - demo-network
 
 volumes:
-  elasticsearch-data:
-  stage-data:
-  postgres-data:
+  index-data:
 networks:
-  platform-network:
+  demo-network:
     driver: bridge

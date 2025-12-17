@@ -1,0 +1,151 @@
+{
+  "table": {
+    "rowIdFieldName": "submission_metadata.submission_id",
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "data.participantId",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.participantId",
+        "query": "data { participantId }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.birthSex",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.birthSex",
+        "query": "data { birthSex }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.gender",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.gender",
+        "query": "data { gender }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.selfIdentifiedGender",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.selfIdentifiedGender",
+        "query": "data { selfIdentifiedGender }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.transgenderIdentity",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.transgenderIdentity",
+        "query": "data { transgenderIdentity }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.ancestry",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.ancestry",
+        "query": "data { ancestry }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.selfReportedGeneticsClinicVisited",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.selfReportedGeneticsClinicVisited",
+        "query": "data { selfReportedGeneticsClinicVisited }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.selfReportedMolecularLabVisited",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.selfReportedMolecularLabVisited",
+        "query": "data { selfReportedMolecularLabVisited }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.historyOfCancer",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.historyOfCancer",
+        "query": "data { historyOfCancer }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.selfReportedPrimaryCancerDiagnosis",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.selfReportedPrimaryCancerDiagnosis",
+        "query": "data { selfReportedPrimaryCancerDiagnosis }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.familyHistoryOfCancer",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.familyHistoryOfCancer",
+        "query": "data { familyHistoryOfCancer }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.vitalStatus",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.vitalStatus",
+        "query": "data { vitalStatus }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.selfReportedClinicianFirstName",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.selfReportedClinicianFirstName",
+        "query": "data { selfReportedClinicianFirstName }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.selfReportedClinicianLastName",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.selfReportedClinicianLastName",
+        "query": "data { selfReportedClinicianLastName }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.selfReportedClinicianTitleOrRole",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.data.selfReportedClinicianTitleOrRole",
+        "query": "data { selfReportedClinicianTitleOrRole }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission_metadata.submission_id",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission_metadata.submission_id",
+        "query": "submission_metadata { submission_id }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission_metadata.source_file_hash",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission_metadata.source_file_hash",
+        "query": "submission_metadata { source_file_hash }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submission_metadata.processed_at",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.submission_metadata.processed_at",
+        "query": "submission_metadata { processed_at }"
+      }
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "index_patterns": ["demo-*"],
+  "aliases": {
+    "demo_centric": {}
+  },
+  "mappings": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "participantid": {
+            "type": "keyword"
+          },
+          "birthsex": {
+            "type": "keyword"
+          },
+          "gender": {
+            "type": "keyword"
+          },
+          "selfidentifiedgender": {
+            "type": "keyword"
+          },
+          "transgenderidentity": {
+            "type": "keyword"
+          },
+          "ancestry": {
+            "type": "keyword"
+          },
+          "selfreportedgeneticsclinicvisited": {
+            "type": "keyword"
+          },
+          "selfreportedmolecularlabvisited": {
+            "type": "keyword"
+          },
+          "historyofcancer": {
+            "type": "keyword"
+          },
+          "selfreportedprimarycancerdiagnosis": {
+            "type": "keyword"
+          },
+          "familyhistoryofcancer": {
+            "type": "keyword"
+          },
+          "vitalstatus": {
+            "type": "keyword"
+          },
+          "selfreportedclinicianfirstname": {
+            "type": "keyword"
+          },
+          "selfreportedclinicianlastname": {
+            "type": "keyword"
+          },
+          "selfreportedcliniciantitleorrole": {
+            "type": "keyword"
+          }
+        }
+      },
+      "submission_metadata": {
+        "type": "object",
+        "properties": {
+          "submission_id": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "source_file_hash": {
+            "type": "keyword",
+            "null_value": "No Data"
+          },
+          "processed_at": {
+            "type": "date"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "facets": {
+    "aggregations": [
+      {
+        "active": true,
+        "fieldName": "data__participantid",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__birthsex",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__gender",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__selfidentifiedgender",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__transgenderidentity",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__ancestry",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__selfreportedgeneticsclinicvisited",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__selfreportedmolecularlabvisited",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__historyofcancer",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__selfreportedprimarycancerdiagnosis",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__familyhistoryofcancer",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__vitalstatus",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__selfreportedclinicianfirstname",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__selfreportedclinicianlastname",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__selfreportedcliniciantitleorrole",
+        "show": true
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__submission_id",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__source_file_hash",
+        "show": false
+      },
+      {
+        "active": false,
+        "fieldName": "submission_metadata__processed_at",
+        "show": false
+      }
+    ]
+  }
+}

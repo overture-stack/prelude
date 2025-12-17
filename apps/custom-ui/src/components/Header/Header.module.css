@@ -1,0 +1,17 @@
+.header {
+	background: #ffffff;
+	/* grayscale.100 - white */
+	height: 5.625rem;
+	position: relative;
+}
+
+.logo {
+	position: absolute;
+	top: 0.8rem;
+	left: 1.75rem;
+}
+
+.logo img {
+	height: 64px;
+	width: auto;
+}

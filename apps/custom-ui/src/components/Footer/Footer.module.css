@@ -1,0 +1,65 @@
+.footer {
+	background: #1f2937; /* grayscale.800 equivalent */
+	display: flex;
+	color: #f3f4f6; /* grayscale.100 equivalent */
+	font-size: 0.6875rem;
+	justify-content: space-between;
+}
+
+.left {
+	padding: 1rem 1rem 0.625rem;
+}
+
+.right {
+	padding: 0.5rem 1.375rem 0.5rem 0;
+	display: flex;
+	align-items: center;
+	gap: 3.625rem;
+}
+
+.links {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.links li {
+	position: relative;
+	display: inline-block;
+	padding-right: 1.5rem;
+	margin-right: 1rem;
+}
+
+.links li::after {
+	position: absolute;
+	top: 0.18rem;
+	right: 0;
+	width: 0.5rem;
+	height: 0.75rem;
+	display: block;
+	content: '';
+	background: center center transparent url('/assets/images/slash.svg') no-repeat;
+}
+
+.links li:last-of-type {
+	padding-right: 0;
+	margin-right: 0;
+}
+
+.links li:last-of-type::after {
+	display: none;
+}
+
+.links li a {
+	color: #f3f4f6;
+	text-decoration: none;
+}
+
+.links li a:hover {
+	text-decoration: underline;
+}
+
+.versions {
+	margin-top: 0.5rem;
+}
+

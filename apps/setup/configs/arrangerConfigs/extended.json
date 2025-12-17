@@ -1,0 +1,80 @@
+{
+  "extended": [
+    {
+      "displayName": "Participant Id",
+      "fieldName": "data.participantid"
+    },
+    {
+      "displayName": "Birth Sex",
+      "fieldName": "data.birthsex"
+    },
+    {
+      "displayName": "Gender",
+      "fieldName": "data.gender"
+    },
+    {
+      "displayName": "Self Identified Gender",
+      "fieldName": "data.selfidentifiedgender"
+    },
+    {
+      "displayName": "Transgender Identity",
+      "fieldName": "data.transgenderidentity"
+    },
+    {
+      "displayName": "Ancestry",
+      "fieldName": "data.ancestry"
+    },
+    {
+      "displayName": "Self Reported Genetics Clinic Visited",
+      "fieldName": "data.selfreportedgeneticsclinicvisited"
+    },
+    {
+      "displayName": "Self Reported Molecular Lab Visited",
+      "fieldName": "data.selfreportedmolecularlabvisited"
+    },
+    {
+      "displayName": "History Of Cancer",
+      "fieldName": "data.historyofcancer"
+    },
+    {
+      "displayName": "Self Reported Primary Cancer Diagnosis",
+      "fieldName": "data.selfreportedprimarycancerdiagnosis"
+    },
+    {
+      "displayName": "Family History Of Cancer",
+      "fieldName": "data.familyhistoryofcancer"
+    },
+    {
+      "displayName": "Vital Status",
+      "fieldName": "data.vitalstatus"
+    },
+    {
+      "displayName": "Self Reported Clinician First Name",
+      "fieldName": "data.selfreportedclinicianfirstname"
+    },
+    {
+      "displayName": "Self Reported Clinician Last Name",
+      "fieldName": "data.selfreportedclinicianlastname"
+    },
+    {
+      "displayName": "Self Reported Clinician Title Or Role",
+      "fieldName": "data.selfreportedcliniciantitleorrole"
+    },
+    {
+      "displayName": "Submission Metadata",
+      "fieldName": "submission_metadata"
+    },
+    {
+      "displayName": "Submission Metadata Submission Id",
+      "fieldName": "submission_metadata.submission_id"
+    },
+    {
+      "displayName": "Submission Metadata Source File Hash",
+      "fieldName": "submission_metadata.source_file_hash"
+    },
+    {
+      "displayName": "Submission Metadata Processed At",
+      "fieldName": "submission_metadata.processed_at"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+participantid,birthsex,gender,selfidentifiedgender,transgenderidentity,ancestry,selfreportedgeneticsclinicvisited,selfreportedmolecularlabvisited,historyofcancer,selfreportedprimarycancerdiagnosis,familyhistoryofcancer,vitalstatus,selfreportedclinicianfirstname,selfreportedclinicianlastname,selfreportedcliniciantitleorrole
+P1A2B3C4D5E6F7G8H9I0J,Female,Woman,,No,"European, East Asian","Toronto Genetics Clinic, Princess Margaret Cancer Centre",Ontario Molecular Pathology Research Network,Yes,Breast cancer,Yes,Alive,Sarah,Johnson,Medical Oncologist
+P2B3C4D5E6F7G8H9I0J1K,Male,Man,,Prefer not to answer,"African, Caribbean",Mount Sinai Hospital Genetics,,Yes,Colorectal cancer,Yes,Alive,Michael,Chen,Genetic Counselor
+P3C4D5E6F7G8H9I0J1K2L,Female,Woman,,No,South Asian,Sunnybrook Health Sciences Centre,The Hospital for Sick Children,Yes,Ovarian cancer,Yes,Alive,Priya,Sharma,Gynecologic Oncologist
+P4D5E6F7G8H9I0J1K2L3M,Male,Man,,No,European,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Prostate cancer,No,Alive,David,Anderson,Medical Oncologist
+P5E6F7G8H9I0J1K2L3M4N,Female,Woman,,No,East Asian,Sunnybrook Health Sciences Centre,The Hospital for Sick Children,Yes,Lung cancer,Yes,Alive,Lisa,Wang,Medical Oncologist
+P6F7G8H9I0J1K2L3M4N5O,Male,Man,,No,Hispanic,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,No,None,Yes,Alive,Carlos,Rodriguez,Genetic Counselor
+P7G8H9I0J1K2L3M4N5O6P,Female,Woman,,No,"European, East Asian","Toronto Genetics Clinic, Princess Margaret Cancer Centre",,No,Breast cancer,No,Deceased,Emily,Taylor,Medical Oncologist
+P8H9I0J1K2L3M4N5O6P7Q,Male,Man,,No,African,Mount Sinai Hospital Genetics,,Yes,Prostate cancer,Yes,Alive,James,Wilson,Medical Oncologist
+P9I0J1K2L3M4N5O6P7Q8R,Female,Woman,,No,South Asian,Sunnybrook Health Sciences Centre,Ontario Molecular Pathology Research Network,Yes,Ovarian cancer,Yes,Alive,Anita,Patel,Gynecologic Oncologist
+P10J1K2L3M4N5O6P7Q8R9S,Male,Man,,No,European,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Colorectal cancer,No,Alive,Robert,Martinez,Medical Oncologist
+P11K2L3M4N5O6P7Q8R9S0T,Female,Woman,,No,East Asian,The Hospital for Sick Children,Toronto General Hospital Molecular Lab,Yes,Breast cancer,Yes,Alive,Michelle,Lee,Medical Oncologist
+P12L3M4N5O6P7Q8R9S0T1U,Male,Man,,Prefer not to answer,Caribbean,Mount Sinai Hospital Genetics,,No,None,No,Alive,Thomas,Brown,Genetic Counselor
+P13M4N5O6P7Q8R9S0T1U2V,Female,Woman,,No,European,Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Breast cancer,Yes,Alive,Jennifer,White,Medical Oncologist
+P14N5O6P7Q8R9S0T1U2V3W,Male,Man,,No,African,Sunnybrook Health Sciences Centre,Ontario Molecular Pathology Research Network,Yes,Prostate cancer,Yes,Alive,Daniel,Harris,Medical Oncologist
+P15O6P7Q8R9S0T1U2V3W4X,Female,Woman,,No,South Asian,Princess Margaret Cancer Centre,The Hospital for Sick Children,Yes,Ovarian cancer,No,Deceased,Sunita,Kumar,Gynecologic Oncologist
+P16P7Q8R9S0T1U2V3W4X5Y,Male,Man,,No,Hispanic,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,Yes,Colorectal cancer,Yes,Alive,Miguel,Garcia,Medical Oncologist
+P17Q8R9S0T1U2V3W4X5Y6Z,Female,Woman,,No,"European, East Asian",Toronto Genetics Clinic,Ontario Institute for Cancer Research,Yes,Breast cancer,Yes,Deceased,Amanda,Clark,Medical Oncologist
+P18R9S0T1U2V3W4X5Y6Z7A,Male,Man,,No,East Asian,Sunnybrook Health Sciences Centre,Princess Margaret Cancer Centre,No,None,Yes,Deceased,Kevin,Kim,Genetic Counselor
+P19S0T1U2V3W4X5Y6Z7A8B,Female,Woman,,No,European,Princess Margaret Cancer Centre,Ontario Molecular Pathology Research Network,Yes,Lung cancer,No,Deceased,Rachel,Green,Medical Oncologist
+P20T1U2V3W4X5Y6Z7A8B9C,Male,Man,,No,"African, Caribbean",Mount Sinai Hospital Genetics,,Yes,Prostate cancer,Yes,Deceased,Christopher,Moore,Medical Oncologist
+P21U2V3W4X5Y6Z7A8B9C0D,Female,Woman,,No,South Asian,The Hospital for Sick Children,Toronto General Hospital Molecular Lab,Yes,Breast cancer,Yes,Deceased,Nisha,Singh,Medical Oncologist
+P22V3W4X5Y6Z7A8B9C0D1E,Male,Man,,No,Hispanic,Sunnybrook Health Sciences Centre,Ontario Institute for Cancer Research,Yes,Colorectal cancer,Yes,Deceased,Luis,Hernandez,Medical Oncologist
+P23W4X5Y6Z7A8B9C0D1E2F,Female,Woman,,No,European,Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Ovarian cancer,Yes,Alive,Stephanie,Adams,Gynecologic Oncologist
+P24X5Y6Z7A8B9C0D1E2F3G,Male,Man,,No,East Asian,Princess Margaret Cancer Centre,The Hospital for Sick Children,No,None,No,Alive,Andrew,Nguyen,Genetic Counselor
+P25Y6Z7A8B9C0D1E2F3G4H,Female,Woman,,No,African,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,Yes,Breast cancer,No,Alive,Patricia,Jackson,Medical Oncologist
+P26Z7A8B9C0D1E2F3G4H5I,Male,Man,,No,European,Sunnybrook Health Sciences Centre,Ontario Molecular Pathology Research Network,Yes,Prostate cancer,Yes,Alive,Mark,Thompson,Medical Oncologist
+P27A8B9C0D1E2F3G4H5I6J,Female,Woman,,No,"South Asian, East Asian",Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Lung cancer,Yes,Deceased,Deepa,Sharma,Medical Oncologist
+P28B9C0D1E2F3G4H5I6J7K,Male,Man,,No,Caribbean,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Colorectal cancer,Yes,Deceased,Anthony,Williams,Medical Oncologist
+P29C0D1E2F3G4H5I6J7K8L,Female,Woman,,No,Hispanic,The Hospital for Sick Children,Toronto General Hospital Molecular Lab,Yes,Breast cancer,Yes,Deceased,Isabella,Lopez,Medical Oncologist
+P30D1E2F3G4H5I6J7K8L9M,Male,Man,,No,European,Mount Sinai Hospital Genetics,,No,None,Yes,Alive,Benjamin,Scott,Genetic Counselor
+P31E2F3G4H5I6J7K8L9M0N,Female,Woman,,No,East Asian,Sunnybrook Health Sciences Centre,Princess Margaret Cancer Centre,Yes,Ovarian cancer,No,Alive,Yuki,Tanaka,Medical Oncologist
+P32F3G4H5I6J7K8L9M0N1O,Male,Man,,No,African,Toronto Genetics Clinic,Ontario Molecular Pathology Research Network,Yes,Prostate cancer,Yes,Alive,Joseph,Young,Medical Oncologist
+P33G4H5I6J7K8L9M0N1O2P,Female,Woman,,No,South Asian,Princess Margaret Cancer Centre,The Hospital for Sick Children,Yes,Breast cancer,Yes,Deceased,Meera,Patel,Medical Oncologist
+P34H5I6J7K8L9M0N1O2P3Q,Male,Man,,Prefer not to answer,European,Sunnybrook Health Sciences Centre,Ontario Institute for Cancer Research,Yes,Colorectal cancer,No,Alive,William,King,Medical Oncologist
+P35I6J7K8L9M0N1O2P3Q4R,Female,Woman,,No,Hispanic,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,Yes,Lung cancer,Yes,Alive,Sofia,Ramirez,Medical Oncologist
+P36J7K8L9M0N1O2P3Q4R5S,Male,Man,,No,Caribbean,Toronto Genetics Clinic,Princess Margaret Cancer Centre,No,None,No,Alive,Richard,Baker,Genetic Counselor
+P37K8L9M0N1O2P3Q4R5S6T,Female,Woman,,No,"European, East Asian",The Hospital for Sick Children,Ontario Molecular Pathology Research Network,Yes,Breast cancer,Yes,Alive,Victoria,Hill,Medical Oncologist
+P38L9M0N1O2P3Q4R5S6T7U,Male,Man,,No,East Asian,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Prostate cancer,Yes,Alive,Jonathan,Evans,Medical Oncologist
+P39M0N1O2P3Q4R5S6T7U8V,Female,Woman,,No,South Asian,Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,Yes,Ovarian cancer,Yes,Alive,Anjali,Desai,Gynecologic Oncologist
+P40N1O2P3Q4R5S6T7U8V9W,Male,Man,,No,African,Mount Sinai Hospital Genetics,,Yes,Colorectal cancer,No,Alive,Matthew,Turner,Medical Oncologist
+P41O2P3Q4R5S6T7U8V9W0X,Female,Woman,,No,European,Princess Margaret Cancer Centre,The Hospital for Sick Children,Yes,Breast cancer,Yes,Alive,Lauren,Phillips,Medical Oncologist
+P42P3Q4R5S6T7U8V9W0X1Y,Male,Man,,No,Hispanic,Toronto Genetics Clinic,Ontario Molecular Pathology Research Network,Yes,Prostate cancer,Yes,Alive,Ryan,Campbell,Medical Oncologist
+P43Q4R5S6T7U8V9W0X1Y2Z,Female,Woman,,No,Caribbean,Sunnybrook Health Sciences Centre,Princess Margaret Cancer Centre,No,None,Yes,Alive,Nicole,Parker,Genetic Counselor
+P44R5S6T7U8V9W0X1Y2Z3A,Male,Man,,No,"European, East Asian",The Hospital for Sick Children,Ontario Institute for Cancer Research,Yes,Lung cancer,No,Alive,Alexander,Stewart,Medical Oncologist
+P45S6T7U8V9W0X1Y2Z3A4B,Female,Woman,,No,South Asian,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,Yes,Breast cancer,Yes,Alive,Priya,Gupta,Medical Oncologist
+P46T7U8V9W0X1Y2Z3A4B5C,Male,Man,,No,East Asian,Princess Margaret Cancer Centre,Princess Margaret Cancer Centre,Yes,Colorectal cancer,Yes,Alive,Justin,Morris,Medical Oncologist
+P47U8V9W0X1Y2Z3A4B5C6D,Female,Woman,,No,African,Sunnybrook Health Sciences Centre,Ontario Molecular Pathology Research Network,Yes,Ovarian cancer,Yes,Alive,Ashley,Reed,Gynecologic Oncologist
+P48V9W0X1Y2Z3A4B5C6D7E,Male,Man,,No,European,Toronto Genetics Clinic,The Hospital for Sick Children,Yes,Prostate cancer,No,Alive,Nicholas,Cook,Medical Oncologist
+P49W0X1Y2Z3A4B5C6D7E8F,Female,Woman,,No,Hispanic,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Breast cancer,Yes,Alive,Emma,Bailey,Medical Oncologist
+P50X1Y2Z3A4B5C6D7E8F9G,Male,Man,,No,Caribbean,Mount Sinai Hospital Genetics,,No,None,No,Alive,Tyler,Rivera,Genetic Counselor
+P51Y2Z3A4B5C6D7E8F9G0H,Female,Woman,,No,"European, East Asian",Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,Yes,Lung cancer,Yes,Alive,Hannah,Cooper,Medical Oncologist
+P52Z3A4B5C6D7E8F9G0H1I,Male,Man,,No,South Asian,Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Colorectal cancer,Yes,Alive,Brandon,Richardson,Medical Oncologist
+P53A4B5C6D7E8F9G0H1I2J,Female,Woman,,No,East Asian,Princess Margaret Cancer Centre,Ontario Molecular Pathology Research Network,Yes,Breast cancer,No,Alive,Maya,Cox,Medical Oncologist
+P54B5C6D7E8F9G0H1I2J3K,Male,Man,,No,African,The Hospital for Sick Children,Ontario Institute for Cancer Research,Yes,Prostate cancer,Yes,Alive,Jordan,Howard,Medical Oncologist
+P55C6D7E8F9G0H1I2J3K4L,Female,Woman,,No,European,Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,Yes,Ovarian cancer,Yes,Alive,Chloe,Ward,Gynecologic Oncologist
+P56D7E8F9G0H1I2J3K4L5M,Male,Man,,Prefer not to answer,Hispanic,Mount Sinai Hospital Genetics,Princess Margaret Cancer Centre,No,None,Yes,Alive,Austin,Torres,Genetic Counselor
+P57E8F9G0H1I2J3K4L5M6N,Female,Woman,,No,Caribbean,Toronto Genetics Clinic,The Hospital for Sick Children,Yes,Breast cancer,Yes,Alive,Olivia,Peterson,Medical Oncologist
+P58F9G0H1I2J3K4L5M6N7O,Male,Man,,No,European,Princess Margaret Cancer Centre,Ontario Molecular Pathology Research Network,Yes,Lung cancer,No,Alive,Logan,Gray,Medical Oncologist
+P59G0H1I2J3K4L5M6N7O8P,Female,Woman,,No,"South Asian, East Asian",Sunnybrook Health Sciences Centre,Ontario Institute for Cancer Research,Yes,Colorectal cancer,Yes,Alive,Zara,Ali,Medical Oncologist
+P60H1I2J3K4L5M6N7O8P9Q,Male,Man,,No,East Asian,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,Yes,Prostate cancer,Yes,Alive,Connor,Hughes,Medical Oncologist
+P61I2J3K4L5M6N7O8P9Q0R,Female,Woman,,No,African,Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Breast cancer,Yes,Alive,Lily,Watson,Medical Oncologist
+P62J3K4L5M6N7O8P9Q0R1S,Male,Man,,No,European,The Hospital for Sick Children,Ontario Molecular Pathology Research Network,Yes,Colorectal cancer,No,Alive,Caleb,Butler,Medical Oncologist
+P63K4L5M6N7O8P9Q0R1S2T,Female,Woman,,No,Hispanic,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Ovarian cancer,Yes,Alive,Sophia,Sanders,Gynecologic Oncologist
+P64L5M6N7O8P9Q0R1S2T3U,Male,Man,,No,Caribbean,Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,No,None,No,Alive,Ethan,Perry,Genetic Counselor
+P65M6N7O8P9Q0R1S2T3U4V,Female,Woman,,No,"European, East Asian",Mount Sinai Hospital Genetics,Princess Margaret Cancer Centre,Yes,Lung cancer,Yes,Alive,Madison,Powell,Medical Oncologist
+P66N7O8P9Q0R1S2T3U4V5W,Male,Man,,No,South Asian,Toronto Genetics Clinic,The Hospital for Sick Children,Yes,Prostate cancer,Yes,Alive,Noah,Long,Medical Oncologist
+P67O8P9Q0R1S2T3U4V5W6X,Female,Woman,,No,East Asian,Princess Margaret Cancer Centre,Ontario Molecular Pathology Research Network,Yes,Breast cancer,Yes,Alive,Ava,Patterson,Medical Oncologist
+P68P9Q0R1S2T3U4V5W6X7Y,Male,Man,,No,African,Sunnybrook Health Sciences Centre,Ontario Institute for Cancer Research,Yes,Colorectal cancer,Yes,Alive,Lucas,Hughes,Medical Oncologist
+P69Q0R1S2T3U4V5W6X7Y8Z,Female,Woman,,No,European,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,Yes,Ovarian cancer,No,Alive,Isabella,Flores,Gynecologic Oncologist
+P70R1S2T3U4V5W6X7Y8Z9A,Male,Man,,No,Hispanic,Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Prostate cancer,Yes,Alive,Mason,Washington,Medical Oncologist
+P71S2T3U4V5W6X7Y8Z9A0B,Female,Woman,,No,Caribbean,The Hospital for Sick Children,Ontario Molecular Pathology Research Network,No,None,Yes,Alive,Charlotte,Barnes,Genetic Counselor
+P72T3U4V5W6X7Y8Z9A0B1C,Male,Man,,No,"European, East Asian",Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Lung cancer,Yes,Alive,Jackson,Ross,Medical Oncologist
+P73U4V5W6X7Y8Z9A0B1C2D,Female,Woman,,No,South Asian,Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,Yes,Breast cancer,Yes,Alive,Amelia,Henderson,Medical Oncologist
+P74V5W6X7Y8Z9A0B1C2D3E,Male,Man,,No,East Asian,Mount Sinai Hospital Genetics,Princess Margaret Cancer Centre,Yes,Colorectal cancer,No,Alive,Aiden,Coleman,Medical Oncologist
+P75W6X7Y8Z9A0B1C2D3E4F,Female,Woman,,No,African,Toronto Genetics Clinic,The Hospital for Sick Children,Yes,Ovarian cancer,Yes,Alive,Harper,Jenkins,Gynecologic Oncologist
+P76X7Y8Z9A0B1C2D3E4F5G,Male,Man,,Prefer not to answer,European,Princess Margaret Cancer Centre,Ontario Molecular Pathology Research Network,Yes,Prostate cancer,Yes,Alive,Elijah,Perry,Medical Oncologist
+P77Y8Z9A0B1C2D3E4F5G6H,Female,Woman,,No,Hispanic,Sunnybrook Health Sciences Centre,Ontario Institute for Cancer Research,Yes,Breast cancer,Yes,Alive,Abigail,Perez,Medical Oncologist
+P78Z9A0B1C2D3E4F5G6H7I,Male,Man,,No,Caribbean,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,No,None,No,Alive,Gabriel,Roberts,Genetic Counselor
+P79A0B1C2D3E4F5G6H7I8J,Female,Woman,,No,"European, East Asian",Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Lung cancer,Yes,Alive,Evelyn,Turner,Medical Oncologist
+P80B1C2D3E4F5G6H7I8J9K,Male,Man,,No,South Asian,The Hospital for Sick Children,Ontario Molecular Pathology Research Network,Yes,Colorectal cancer,Yes,Alive,Julian,Phillips,Medical Oncologist
+P81C2D3E4F5G6H7I8J9K0L,Female,Woman,,No,East Asian,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Breast cancer,No,Alive,Scarlett,Campbell,Medical Oncologist
+P82D3E4F5G6H7I8J9K0L1M,Male,Man,,No,African,Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,Yes,Prostate cancer,Yes,Alive,Levi,Parker,Medical Oncologist
+P83E4F5G6H7I8J9K0L1M2N,Female,Woman,,No,European,Mount Sinai Hospital Genetics,Princess Margaret Cancer Centre,Yes,Ovarian cancer,Yes,Alive,Penelope,Evans,Gynecologic Oncologist
+P84F5G6H7I8J9K0L1M2N3O,Male,Man,,No,Hispanic,Toronto Genetics Clinic,The Hospital for Sick Children,Yes,Colorectal cancer,Yes,Alive,Henry,Edwards,Medical Oncologist
+P85G6H7I8J9K0L1M2N3O4P,Female,Woman,,No,Caribbean,Princess Margaret Cancer Centre,Ontario Molecular Pathology Research Network,No,None,Yes,Alive,Luna,Collins,Genetic Counselor
+P86H7I8J9K0L1M2N3O4P5Q,Male,Man,,No,"European, East Asian",Sunnybrook Health Sciences Centre,Ontario Institute for Cancer Research,Yes,Lung cancer,No,Alive,Owen,Stewart,Medical Oncologist
+P87I8J9K0L1M2N3O4P5Q6R,Female,Woman,,No,South Asian,Mount Sinai Hospital Genetics,Toronto General Hospital Molecular Lab,Yes,Breast cancer,Yes,Alive,Nora,Sanchez,Medical Oncologist
+P88J9K0L1M2N3O4P5Q6R7S,Male,Man,,No,East Asian,Toronto Genetics Clinic,Princess Margaret Cancer Centre,Yes,Colorectal cancer,Yes,Alive,Lincoln,Morris,Medical Oncologist
+P89K0L1M2N3O4P5Q6R7S8T,Female,Woman,,No,African,The Hospital for Sick Children,Ontario Molecular Pathology Research Network,Yes,Ovarian cancer,Yes,Alive,Stella,Rogers,Gynecologic Oncologist
+P90L1M2N3O4P5Q6R7S8T9U,Male,Man,,No,European,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Prostate cancer,No,Alive,Jack,Reed,Medical Oncologist
+P91M2N3O4P5Q6R7S8T9U0V,Female,Woman,,No,Hispanic,Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,Yes,Breast cancer,Yes,Alive,Violet,Cook,Medical Oncologist
+P92N3O4P5Q6R7S8T9U0V1W,Male,Man,,No,Caribbean,Mount Sinai Hospital Genetics,Princess Margaret Cancer Centre,Yes,Colorectal cancer,Yes,Alive,Leo,Morgan,Medical Oncologist
+P93O4P5Q6R7S8T9U0V1W2X,Female,Woman,,No,"European, East Asian",Toronto Genetics Clinic,The Hospital for Sick Children,No,None,No,Alive,Aria,Bell,Genetic Counselor
+P94P5Q6R7S8T9U0V1W2X3Y,Male,Man,,No,South Asian,Princess Margaret Cancer Centre,Ontario Molecular Pathology Research Network,Yes,Lung cancer,Yes,Alive,Theo,Murphy,Medical Oncologist
+P95Q6R7S8T9U0V1W2X3Y4Z,Female,Woman,,No,East Asian,Sunnybrook Health Sciences Centre,Ontario Institute for Cancer Research,Yes,Breast cancer,Yes,Alive,Layla,Bailey,Medical Oncologist
+P96R7S8T9U0V1W2X3Y4Z5A,Male,Man,,No,African,Toronto Genetics Clinic,Toronto General Hospital Molecular Lab,Yes,Prostate cancer,Yes,Alive,Max,Rivera,Medical Oncologist
+P97S8T9U0V1W2X3Y4Z5A6B,Female,Woman,,No,European,Mount Sinai Hospital Genetics,Princess Margaret Cancer Centre,Yes,Ovarian cancer,Yes,Alive,Zoe,Cooper,Gynecologic Oncologist
+P98T9U0V1W2X3Y4Z5A6B7C,Male,Man,,Prefer not to answer,Hispanic,The Hospital for Sick Children,Ontario Molecular Pathology Research Network,Yes,Colorectal cancer,No,Alive,Finn,Richardson,Medical Oncologist
+P99U0V1W2X3Y4Z5A6B7C8D,Female,Woman,,No,Caribbean,Princess Margaret Cancer Centre,Ontario Institute for Cancer Research,Yes,Breast cancer,Yes,Alive,Maya,Cox,Medical Oncologist
+P100V1W2X3Y4Z5A6B7C8D9E,Male,Man,,No,"European, East Asian",Sunnybrook Health Sciences Centre,Toronto General Hospital Molecular Lab,Yes,Lung cancer,Yes,Alive,Kai,Howard,Medical Oncologist
