@@ -36,7 +36,7 @@ rs "$SCRIPT_DIR/utils/healthcheck_cleanup.sh"
 
 # Welcome
 echo -e "\n\033[1;36m╔════════════════════════════════════╗\033[0m"
-echo -e "\033[1;36m║   Spinning up Development Backend   ║\033[0m"
+echo -e "\033[1;36m║   Spinning up Development Backend  ║\033[0m"
 echo -e "\033[1;36m╚════════════════════════════════════╝\033[0m\n"
 
 # Elasticsearch Check

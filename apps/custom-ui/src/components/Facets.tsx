@@ -349,7 +349,7 @@ const Facets = (): ReactElement => {
 		};
 
 		const addSelectAllButtons = () => {
-			const groups = root.querySelectorAll<HTMLElement>('[class*="AggsGroup"]');
+			const groups = root.querySelectorAll<HTMLElement>('.aggregation-group');
 
 			groups.forEach(group => {
 				// Need at least one bucket for this group

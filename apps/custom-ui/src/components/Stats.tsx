@@ -19,17 +19,17 @@ const statsQuery = `
 	query ($sqon: JSON) {
 		file {
 			aggregations(filters: $sqon) {
-				data__selfreportedprimarycancerdiagnosis {
+				data__selfReportedPrimaryCancerDiagnosis {
 					buckets {
 						key
 					}
 				}
-				data__selfreportedgeneticsclinicvisited {
+				data__selfReportedGeneticsClinicVisited {
 					buckets {
 						key
 					}
 				}
-				data__participantid {
+				data__participantId {
 					buckets {
 						key
 					}
@@ -67,12 +67,12 @@ const Stats = (): ReactElement => {
 				const data = response?.data?.file || response?.file;
 				if (data) {
 					// Count unique participants using aggregation
-					const participantAggs = data.aggregations?.data__participantid?.buckets || [];
+					const participantAggs = data.aggregations?.data__participantId?.buckets || [];
 					const totalParticipants = participantAggs.length;
-
-					const primaryCancerAggs = data.aggregations?.data__selfreportedprimarycancerdiagnosis?.buckets || [];
+					
+					const primaryCancerAggs = data.aggregations?.data__selfReportedPrimaryCancerDiagnosis?.buckets || [];
 					const uniqueVariants = primaryCancerAggs.length;
-					const geneticsClinicAggs = data.aggregations?.data__selfreportedgeneticsclinicvisited?.buckets || [];
+					const geneticsClinicAggs = data.aggregations?.data__selfReportedGeneticsClinicVisited?.buckets || [];
 					const primarySites = geneticsClinicAggs.length;
 
 					console.log('Parsed stats:', { totalParticipants, uniqueVariants, primarySites, participantAggs, primaryCancerAggs, geneticsClinicAggs });
@@ -236,4 +236,3 @@ const Stats = (): ReactElement => {
 };
 
 export default Stats;
-
