@@ -8,49 +8,49 @@
       "data": {
         "type": "object",
         "properties": {
-          "participantid": {
+          "participantId": {
             "type": "keyword"
           },
-          "birthsex": {
+          "birthSex": {
             "type": "keyword"
           },
           "gender": {
             "type": "keyword"
           },
-          "selfidentifiedgender": {
+          "selfIdentifiedGender": {
             "type": "keyword"
           },
-          "transgenderidentity": {
+          "transgenderIdentity": {
             "type": "keyword"
           },
           "ancestry": {
             "type": "keyword"
           },
-          "selfreportedgeneticsclinicvisited": {
+          "selfReportedGeneticsClinicVisited": {
             "type": "keyword"
           },
-          "selfreportedmolecularlabvisited": {
+          "selfReportedMolecularLabVisited": {
             "type": "keyword"
           },
-          "historyofcancer": {
+          "historyOfCancer": {
             "type": "keyword"
           },
-          "selfreportedprimarycancerdiagnosis": {
+          "selfReportedPrimaryCancerDiagnosis": {
             "type": "keyword"
           },
-          "familyhistoryofcancer": {
+          "familyHistoryOfCancer": {
             "type": "keyword"
           },
-          "vitalstatus": {
+          "vitalStatus": {
             "type": "keyword"
           },
-          "selfreportedclinicianfirstname": {
+          "selfReportedClinicianFirstName": {
             "type": "keyword"
           },
-          "selfreportedclinicianlastname": {
+          "selfReportedClinicianLastName": {
             "type": "keyword"
           },
-          "selfreportedcliniciantitleorrole": {
+          "selfReportedClinicianTitleOrRole": {
             "type": "keyword"
           }
         }

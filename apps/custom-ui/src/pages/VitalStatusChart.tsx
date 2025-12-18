@@ -13,7 +13,7 @@ const VitalStatusChart = (): ReactElement => {
     const { sqon, setSQON } = useArrangerData({ callerName: 'VitalStatusChart' });
 
     const chartFilters = useMemo(() => ({
-        vitalStatus: chartFilter('data__vitalstatus', sqon, setSQON),
+        vitalStatus: chartFilter('data__vitalStatus', sqon, setSQON),
     }), [sqon, setSQON]);
 
     const shuffledPalette = useMemo(() => shuffleArray(theme.colors.chartPalette), []);
@@ -45,7 +45,7 @@ const VitalStatusChart = (): ReactElement => {
                     <ChartsProvider debugMode={false} loadingDelay={0}>
                         <ChartsThemeProvider colors={shuffledPalette}>
                             <BarChart
-                                fieldName="data__vitalstatus"
+                                fieldName="data__vitalStatus"
                                 maxBars={15}
                                 handlers={{
                                     onClick: (config) => {

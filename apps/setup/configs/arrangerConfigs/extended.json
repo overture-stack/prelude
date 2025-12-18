@@ -2,11 +2,11 @@
   "extended": [
     {
       "displayName": "Participant Id",
-      "fieldName": "data.participantid"
+      "fieldName": "data.participantId"
     },
     {
       "displayName": "Birth Sex",
-      "fieldName": "data.birthsex"
+      "fieldName": "data.birthSex"
     },
     {
       "displayName": "Gender",
@@ -14,11 +14,11 @@
     },
     {
       "displayName": "Self Identified Gender",
-      "fieldName": "data.selfidentifiedgender"
+      "fieldName": "data.selfIdentifiedGender"
     },
     {
       "displayName": "Transgender Identity",
-      "fieldName": "data.transgenderidentity"
+      "fieldName": "data.transgenderIdentity"
     },
     {
       "displayName": "Ancestry",
@@ -26,39 +26,39 @@
     },
     {
       "displayName": "Self Reported Genetics Clinic Visited",
-      "fieldName": "data.selfreportedgeneticsclinicvisited"
+      "fieldName": "data.selfReportedGeneticsClinicVisited"
     },
     {
       "displayName": "Self Reported Molecular Lab Visited",
-      "fieldName": "data.selfreportedmolecularlabvisited"
+      "fieldName": "data.selfReportedMolecularLabVisited"
     },
     {
       "displayName": "History Of Cancer",
-      "fieldName": "data.historyofcancer"
+      "fieldName": "data.historyOfCancer"
     },
     {
       "displayName": "Self Reported Primary Cancer Diagnosis",
-      "fieldName": "data.selfreportedprimarycancerdiagnosis"
+      "fieldName": "data.selfReportedPrimaryCancerDiagnosis"
     },
     {
       "displayName": "Family History Of Cancer",
-      "fieldName": "data.familyhistoryofcancer"
+      "fieldName": "data.familyHistoryOfCancer"
     },
     {
       "displayName": "Vital Status",
-      "fieldName": "data.vitalstatus"
+      "fieldName": "data.vitalStatus"
     },
     {
       "displayName": "Self Reported Clinician First Name",
-      "fieldName": "data.selfreportedclinicianfirstname"
+      "fieldName": "data.selfReportedClinicianFirstName"
     },
     {
       "displayName": "Self Reported Clinician Last Name",
-      "fieldName": "data.selfreportedclinicianlastname"
+      "fieldName": "data.selfReportedClinicianLastName"
     },
     {
       "displayName": "Self Reported Clinician Title Or Role",
-      "fieldName": "data.selfreportedcliniciantitleorrole"
+      "fieldName": "data.selfReportedClinicianTitleOrRole"
     },
     {
       "displayName": "Submission Metadata",

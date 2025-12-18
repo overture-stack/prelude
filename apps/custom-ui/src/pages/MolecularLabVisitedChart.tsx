@@ -13,7 +13,7 @@ const MolecularLabVisitedChart = (): ReactElement => {
     const { sqon, setSQON } = useArrangerData({ callerName: 'MolecularLabVisitedChart' });
 
     const chartFilters = useMemo(() => ({
-        selfReportedMolecularLabVisited: chartFilter('data__selfreportedmolecularlabvisited', sqon, setSQON),
+        selfReportedMolecularLabVisited: chartFilter('data__selfReportedMolecularLabVisited', sqon, setSQON),
     }), [sqon, setSQON]);
 
     const shuffledPalette = useMemo(() => shuffleArray(theme.colors.chartPalette), []);
@@ -45,7 +45,7 @@ const MolecularLabVisitedChart = (): ReactElement => {
                     <ChartsProvider debugMode={false} loadingDelay={0}>
                         <ChartsThemeProvider colors={shuffledPalette}>
                             <BarChart
-                                fieldName="data__selfreportedmolecularlabvisited"
+                                fieldName="data__selfReportedMolecularLabVisited"
                                 maxBars={15}
                                 handlers={{
                                     onClick: (config) => {

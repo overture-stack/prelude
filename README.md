@@ -181,20 +181,12 @@ prelude/
 └── Makefile                    # Build commands
 ```
 
-### Local Development Workflow
-
-1. **Make code changes** in `apps/custom-ui/src/`
-2. **Changes auto-reload** in browser (dev mode only)
-3. **Test with real data** from backend services
-4. **Commit changes** when ready
-
 ### Backend Configuration Changes
 
-After modifying Arranger configs or Elasticsearch mappings:
+After modifying Arranger configs or Elasticsearch mappings run:
 
 ```bash
-make down    # Stop services
-make dev     # Restart with new configs
+make restart    # Restarts all servicess
 ```
 
 ### Adding a New Chart
@@ -224,8 +216,6 @@ const MyChart = () => {
 3. Add field to Elasticsearch mapping (`apps/setup/configs/indexConfigs/demo-mapping.json`)
 4. Restart services to apply config changes
 
----
-
 ## Data Management
 
 ### Uploading Data
@@ -246,24 +236,6 @@ conductor-cli:
 
 - **CSV Files**: `data/demodata.csv`
 - **Elasticsearch**: Docker volume `index-data`
-
-### Field Name Requirements
-
-**IMPORTANT**: All field names must be lowercase for consistency.
-
-```json
-// Correct - lowercase
-{
-  "participantid": { "type": "keyword" },
-  "birthsex": { "type": "keyword" }
-}
-
-// Incorrect - camelCase
-{
-  "participantId": { "type": "keyword" },
-  "birthSex": { "type": "keyword" }
-}
-```
 
 ### Accessing Data Directly
 
@@ -315,8 +287,8 @@ Located in `apps/setup/configs/indexConfigs/demo-mapping.json`:
     "properties": {
       "data": {
         "properties": {
-          "participantid": { "type": "keyword" },
-          "birthsex": { "type": "keyword" }
+          "participantId": { "type": "keyword" },
+          "birthSex": { "type": "keyword" }
           // ... more fields
         }
       }
@@ -349,8 +321,8 @@ The platform is currently configured for Elasticsearch 7.17.10. When Arranger ad
 
 1. Uncommenting OpenSearch service in `docker-compose.yml`
 2. Updating environment variables to use `OPENSEARCH_*` instead of `ELASTICSEARCH_*`
-3. Updating Arranger `ES_HOST` to point to OpenSearch
-4. Updating deployment scripts to use OpenSearch service scripts (these have already be made)
+3. Updating Arranger `ES_HOST` to point to OpenSearch (These variables will be renamed for the Arranger update)
+4. Updating deployment scripts to use OpenSearch service scripts (these have already be made and can be found in the service script folder)
 5. Rebuilding: `make reset && make demo`
 
 Both services use identical resource allocation and the same `index-data` volume name for easy migration.

@@ -13,7 +13,7 @@ const IdentifiedGenderChart = (): ReactElement => {
     const { sqon, setSQON } = useArrangerData({ callerName: 'IdentifiedGenderChart' });
 
     const chartFilters = useMemo(() => ({
-        selfIdentifiedGender: chartFilter('data__selfidentifiedgender', sqon, setSQON),
+        selfIdentifiedGender: chartFilter('data__selfIdentifiedGender', sqon, setSQON),
     }), [sqon, setSQON]);
 
     const shuffledPalette = useMemo(() => shuffleArray(theme.colors.chartPalette), []);
@@ -45,7 +45,7 @@ const IdentifiedGenderChart = (): ReactElement => {
                     <ChartsProvider debugMode={false} loadingDelay={0}>
                         <ChartsThemeProvider colors={shuffledPalette}>
                             <BarChart
-                                fieldName="data__selfidentifiedgender"
+                                fieldName="data__selfIdentifiedGender"
                                 maxBars={15}
                                 handlers={{
                                     onClick: (config) => {

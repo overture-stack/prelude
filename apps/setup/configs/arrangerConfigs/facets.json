@@ -3,12 +3,12 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "data__participantid",
+        "fieldName": "data__participantId",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__birthsex",
+        "fieldName": "data__birthSex",
         "show": true
       },
       {
@@ -18,12 +18,12 @@
       },
       {
         "active": true,
-        "fieldName": "data__selfidentifiedgender",
+        "fieldName": "data__selfIdentifiedGender",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__transgenderidentity",
+        "fieldName": "data__transgenderIdentity",
         "show": true
       },
       {
@@ -33,47 +33,47 @@
       },
       {
         "active": true,
-        "fieldName": "data__selfreportedgeneticsclinicvisited",
+        "fieldName": "data__selfReportedGeneticsClinicVisited",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__selfreportedmolecularlabvisited",
+        "fieldName": "data__selfReportedMolecularLabVisited",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__historyofcancer",
+        "fieldName": "data__historyOfCancer",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__selfreportedprimarycancerdiagnosis",
+        "fieldName": "data__selfReportedPrimaryCancerDiagnosis",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__familyhistoryofcancer",
+        "fieldName": "data__familyHistoryOfCancer",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__vitalstatus",
+        "fieldName": "data__vitalStatus",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__selfreportedclinicianfirstname",
+        "fieldName": "data__selfReportedClinicianFirstName",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__selfreportedclinicianlastname",
+        "fieldName": "data__selfReportedClinicianLastName",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__selfreportedcliniciantitleorrole",
+        "fieldName": "data__selfReportedClinicianTitleOrRole",
         "show": true
       },
       {

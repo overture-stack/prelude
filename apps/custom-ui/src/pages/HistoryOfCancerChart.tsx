@@ -13,7 +13,7 @@ const HistoryOfCancerChart = (): ReactElement => {
     const { sqon, setSQON } = useArrangerData({ callerName: 'HistoryOfCancerChart' });
 
     const chartFilters = useMemo(() => ({
-        historyOfCancer: chartFilter('data__historyofcancer', sqon, setSQON),
+        historyOfCancer: chartFilter('data__historyOfCancer', sqon, setSQON),
     }), [sqon, setSQON]);
 
     const shuffledPalette = useMemo(() => shuffleArray(theme.colors.chartPalette), []);
@@ -45,7 +45,7 @@ const HistoryOfCancerChart = (): ReactElement => {
                     <ChartsProvider debugMode={false} loadingDelay={0}>
                         <ChartsThemeProvider colors={shuffledPalette}>
                             <BarChart
-                                fieldName="data__historyofcancer"
+                                fieldName="data__historyOfCancer"
                                 maxBars={15}
                                 handlers={{
                                     onClick: (config) => {

@@ -13,7 +13,7 @@ const BirthSexChart = (): ReactElement => {
     const { sqon, setSQON } = useArrangerData({ callerName: 'BirthSexChart' });
 
     const chartFilters = useMemo(() => ({
-        birthSex: chartFilter('data__birthsex', sqon, setSQON),
+        birthSex: chartFilter('data__birthSex', sqon, setSQON),
     }), [sqon, setSQON]);
 
     const shuffledPalette = useMemo(() => shuffleArray(theme.colors.chartPalette), []);
@@ -45,7 +45,7 @@ const BirthSexChart = (): ReactElement => {
                     <ChartsProvider debugMode={false} loadingDelay={0}>
                         <ChartsThemeProvider colors={shuffledPalette}>
                             <BarChart
-                                fieldName="data__birthsex"
+                                fieldName="data__birthSex"
                                 maxBars={15}
                                 handlers={{
                                     onClick: (config) => {

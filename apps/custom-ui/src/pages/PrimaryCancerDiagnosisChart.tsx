@@ -13,7 +13,7 @@ const PrimaryCancerDiagnosisChart = (): ReactElement => {
     const { sqon, setSQON } = useArrangerData({ callerName: 'PrimaryCancerDiagnosisChart' });
 
     const chartFilters = useMemo(() => ({
-        selfReportedPrimaryCancerDiagnosis: chartFilter('data__selfreportedprimarycancerdiagnosis', sqon, setSQON),
+        selfReportedPrimaryCancerDiagnosis: chartFilter('data__selfReportedPrimaryCancerDiagnosis', sqon, setSQON),
     }), [sqon, setSQON]);
 
     const shuffledPalette = useMemo(() => shuffleArray(theme.colors.chartPalette), []);
@@ -45,7 +45,7 @@ const PrimaryCancerDiagnosisChart = (): ReactElement => {
                     <ChartsProvider debugMode={false} loadingDelay={0}>
                         <ChartsThemeProvider colors={shuffledPalette}>
                             <BarChart
-                                fieldName="data__selfreportedprimarycancerdiagnosis"
+                                fieldName="data__selfReportedPrimaryCancerDiagnosis"
                                 maxBars={15}
                                 handlers={{
                                     onClick: (config) => {
