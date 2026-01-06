@@ -1,0 +1,576 @@
+/**
+ * CLI Options Module - Complete Updated Version
+ *
+ * This module configures the command-line options for the Conductor CLI.
+ * Updated to reflect the refactored SONG/Score services and removed commands.
+ * Enhanced with error factory pattern for consistent error handling.
+ */
+
+import { Command } from "commander";
+import { Profiles } from "../types/constants";
+import { CLIOutput } from "../types/cli";
+import { Logger } from "../utils/logger";
+import { ErrorFactory } from "../utils/errors";
+
+/**
+ * Configures the command-line options for the Conductor CLI
+ * @param program - The Commander.js program instance
+ */
+export function configureCommandOptions(program: Command): void {
+  // Global options
+  program
+    .version("1.0.0")
+    .description("Conductor: Data Processing Pipeline")
+    .option("--debug", "Enable debug mode")
+    // Override the default help to only show our custom reference commands
+    .helpOption(false) // Disable default help option
+    .option("-h, --help", "display help for command")
+    .on("option:help", () => {
+      // Show only our custom reference commands
+      Logger.showReferenceCommands();
+      process.exit(0);
+    });
+
+  // Main commands - visible in help
+  program
+    .command("upload")
+    .description("Complete workflow: CSV → PostgreSQL → Elasticsearch")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-t, --table <name>", "Database table name", "data")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("-b, --batch-size <size>", "Batch size for operations", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--db-host <host>", "PostgreSQL host:port", "localhost:5435")
+    .option("--db-name <name>", "PostgreSQL database name", "overtureDb")
+    .option("--db-user <user>", "PostgreSQL username", "admin")
+    .option("--db-pass <password>", "PostgreSQL password", "admin123")
+    .option("--es-host <host>", "Elasticsearch host:port", "localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option("--es-pass <password>", "Elasticsearch password", "myelasticpassword")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("esupload")
+    .description("Upload CSV data directly to Elasticsearch")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--es-host <host>", "Elasticsearch host:port", "localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option("--es-pass <password>", "Elasticsearch password", "myelasticpassword")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("dbupload")
+    .description("Upload CSV data to PostgreSQL database")
+    .option("-f, --file <files...>", "Input files to process")
+    .option("-t, --table <name>", "Database table name", "data")
+    .option("-b, --batch-size <size>", "Batch size for uploads", "1000")
+    .option("--delimiter <char>", "CSV delimiter character", ",")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--db-host <host>", "PostgreSQL host:port", "localhost:5435")
+    .option("--db-name <name>", "PostgreSQL database name", "overtureDb")
+    .option("--db-user <user>", "PostgreSQL username", "admin")
+    .option("--db-pass <password>", "PostgreSQL password", "admin123")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("indexDb")
+    .description("Index PostgreSQL table data to Elasticsearch")
+    .option("-t, --table <name>", "Database table name", "data")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("-b, --batch-size <size>", "Batch size for operations", "1000")
+    .option("-o, --output <path>", "Output directory for logs")
+    .option("--db-host <host>", "PostgreSQL host:port", "localhost:5435")
+    .option("--db-name <name>", "PostgreSQL database name", "overtureDb")
+    .option("--db-user <user>", "PostgreSQL username", "admin")
+    .option("--db-pass <password>", "PostgreSQL password", "admin123")
+    .option("--es-host <host>", "Elasticsearch host:port", "localhost:9200")
+    .option("--es-user <username>", "Elasticsearch username", "elastic")
+    .option("--es-pass <password>", "Elasticsearch password", "myelasticpassword")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  // Hidden commands - still functional but not shown in help
+  // These are registered without descriptions to hide them from help output
+  program
+    .command("lecternUpload", { hidden: true })
+    .option("-s, --schema-file <path>", "Schema JSON file to upload")
+    .option(
+      "-u, --lectern-url <url>",
+      "Lectern server URL",
+      process.env.LECTERN_URL || "http://localhost:3031"
+    )
+    .option("-t, --auth-token <token>", "Authentication token", "")
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("lyricRegister", { hidden: true })
+    .option(
+      "-u, --lyric-url <url>",
+      "Lyric server URL",
+      process.env.LYRIC_URL || "http://localhost:3030"
+    )
+    .option("-c, --category-name <name>", "Category name")
+    .option("--dict-name <name>", "Dictionary name")
+    .option("-v, --dictionary-version <version>", "Dictionary version")
+    .option("-e, --default-centric-entity <entity>", "Default centric entity")
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("lyricUpload", { hidden: true })
+    .option(
+      "-u, --lyric-url <url>",
+      "Lyric server URL",
+      process.env.LYRIC_URL || "http://localhost:3030"
+    )
+    .option(
+      "-l, --lectern-url <url>",
+      "Lectern server URL",
+      process.env.LECTERN_URL || "http://localhost:3031"
+    )
+    .option(
+      "-d, --data-directory <path>",
+      "Directory containing CSV data files",
+      process.env.LYRIC_DATA
+    )
+    .option(
+      "-c, --category-id <id>",
+      "Category ID",
+      process.env.CATEGORY_ID || "1"
+    )
+    .option(
+      "-g, --organization <name>",
+      "Organization name",
+      process.env.ORGANIZATION || "OICR"
+    )
+    .option(
+      "-m, --max-retries <number>",
+      "Maximum number of retry attempts",
+      process.env.MAX_RETRIES || "10"
+    )
+    .option(
+      "-r, --retry-delay <milliseconds>",
+      "Delay between retry attempts in milliseconds",
+      process.env.RETRY_DELAY || "1000"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("maestroIndex", { hidden: true })
+    .option(
+      "--index-url <url>",
+      "Indexing service URL",
+      process.env.INDEX_URL || "http://localhost:11235"
+    )
+    .option(
+      "--repository-code <code>",
+      "Repository code to index",
+      process.env.REPOSITORY_CODE
+    )
+    .option(
+      "--organization <name>",
+      "Organization name filter",
+      process.env.ORGANIZATION
+    )
+    .option("--id <id>", "Specific ID to index", process.env.ID)
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Skip confirmation prompts")
+    .option("--debug", "Enable detailed debug logging")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("songUploadSchema", { hidden: true })
+    .option("-s, --schema-file <path>", "Schema JSON file to upload")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force overwrite of existing files")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("songCreateStudy", { hidden: true })
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option("-i, --study-id <id>", "Study ID (required)", process.env.STUDY_ID)
+    .option(
+      "--name <name>",
+      "Study display name (defaults to study ID)",
+      process.env.STUDY_NAME
+    )
+    .option(
+      "-g, --organization <name>",
+      "Organization name",
+      process.env.ORGANIZATION || "OICR"
+    )
+    .option(
+      "--description <text>",
+      "Study description",
+      process.env.DESCRIPTION || "string"
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option("--force", "Force creation even if study exists", false)
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("songSubmitAnalysis", { hidden: true })
+    .option("-a, --analysis-file <path>", "Analysis JSON file to submit")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option(
+      "-s, --score-url <url>",
+      "Score server URL",
+      process.env.SCORE_URL || "http://localhost:8087"
+    )
+    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
+    .option("--allow-duplicates", "Allow duplicate analysis submissions", false)
+    .option(
+      "-d, --data-dir <path>",
+      "Directory containing data files",
+      process.env.DATA_DIR || "./data"
+    )
+    .option(
+      "--output-dir <path>",
+      "Directory for manifest file output",
+      process.env.OUTPUT_DIR || "./output"
+    )
+    .option(
+      "-m, --manifest-file <path>",
+      "Path for manifest file",
+      process.env.MANIFEST_FILE
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option(
+      "--ignore-undefined-md5",
+      "Ignore files with undefined MD5 checksums",
+      false
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .option(
+      "--force",
+      "Force studyId from command line instead of from file",
+      false
+    )
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+  program
+    .command("songPublishAnalysis", { hidden: true })
+    .option("-a, --analysis-id <id>", "Analysis ID to publish")
+    .option("-i, --study-id <id>", "Study ID", process.env.STUDY_ID || "demo")
+    .option(
+      "-u, --song-url <url>",
+      "SONG server URL",
+      process.env.SONG_URL || "http://localhost:8080"
+    )
+    .option(
+      "-t, --auth-token <token>",
+      "Authentication token",
+      process.env.AUTH_TOKEN || "123"
+    )
+    .option(
+      "--ignore-undefined-md5",
+      "Ignore files with undefined MD5 checksums",
+      false
+    )
+    .option("-o, --output <path>", "Output directory for response logs")
+    .action(() => {
+      /* Handled by main.ts */
+    });
+
+}
+
+/**
+ * Parses command-line arguments into a standardized CLIOutput object
+ * Updated to handle the combined SONG/Score workflow with enhanced error handling
+ *
+ * @param options - Parsed command-line options
+ * @returns A CLIOutput object for command execution
+ */
+export function parseCommandLineArgs(options: any): CLIOutput {
+  try {
+    // Log raw options for debugging
+    Logger.debug`Raw options: ${JSON.stringify(options)}`;
+    Logger.debug`Process argv: ${process.argv.join(" ")}`;
+
+    // Determine the profile from options
+    let profile = options.profile || Profiles.UPLOAD;
+
+    // Special handling for lyricData command to ensure data directory is captured
+    if (profile === Profiles.LYRIC_DATA) {
+      // Check for a positional argument that might be the data directory
+      const positionalArgs = process.argv
+        .slice(3)
+        .filter((arg) => !arg.startsWith("-"));
+
+      if (positionalArgs.length > 0 && !options.dataDirectory) {
+        options.dataDirectory = positionalArgs[0];
+        Logger.debug`Captured data directory from positional argument: ${options.dataDirectory}`;
+      }
+    }
+
+    // Parse file paths with better error handling
+    let filePaths: string[] = [];
+
+    if (Array.isArray(options.file)) {
+      filePaths = options.file;
+    } else if (options.file) {
+      filePaths = [options.file];
+    }
+
+    // Add template file to filePaths if present
+    if (options.templateFile && !filePaths.includes(options.templateFile)) {
+      filePaths.push(options.templateFile);
+    }
+
+    // Add schema file to filePaths if present for Lectern or SONG upload
+    if (options.schemaFile && !filePaths.includes(options.schemaFile)) {
+      filePaths.push(options.schemaFile);
+    }
+
+    // Add analysis file to filePaths if present for SONG analysis submission
+    if (options.analysisFile && !filePaths.includes(options.analysisFile)) {
+      filePaths.push(options.analysisFile);
+    }
+
+    Logger.debug`Parsed profile: ${profile}`;
+    Logger.debug`Parsed file paths: ${filePaths.join(", ")}`;
+
+    // Validate numeric options
+    const batchSize = options.batchSize
+      ? parseInt(options.batchSize, 10)
+      : 1000;
+    const maxRetries = options.maxRetries ? parseInt(options.maxRetries) : 10;
+    const retryDelay = options.retryDelay
+      ? parseInt(options.retryDelay)
+      : 20000;
+
+    if (isNaN(batchSize) || batchSize <= 0) {
+      throw ErrorFactory.validation(
+        "Invalid batch size",
+        { batchSize: options.batchSize },
+        ["Batch size must be a positive number", "Example: --batch-size 1000"]
+      );
+    }
+
+    if (isNaN(maxRetries) || maxRetries < 0) {
+      throw ErrorFactory.validation(
+        "Invalid max retries",
+        { maxRetries: options.maxRetries },
+        [
+          "Max retries must be a non-negative number",
+          "Example: --max-retries 3",
+        ]
+      );
+    }
+
+    if (isNaN(retryDelay) || retryDelay < 0) {
+      throw ErrorFactory.validation(
+        "Invalid retry delay",
+        { retryDelay: options.retryDelay },
+        [
+          "Retry delay must be a non-negative number in milliseconds",
+          "Example: --retry-delay 1000",
+        ]
+      );
+    }
+
+    // Parse host:port combinations for new standardized format
+    const parseHostPort = (hostPort: string, defaultHost: string, defaultPort: string) => {
+      if (hostPort.includes(':')) {
+        const [host, port] = hostPort.split(':');
+        return { host, port: parseInt(port) || parseInt(defaultPort) };
+      }
+      return { host: hostPort, port: parseInt(defaultPort) };
+    };
+
+    // Parse database connection
+    const dbHostPort = parseHostPort(
+      options.dbHost || process.env.DB_HOST || "localhost:5435",
+      "localhost",
+      "5435"
+    );
+
+    // Parse Elasticsearch connection
+    const esHostPort = parseHostPort(
+      options.esHost || process.env.ES_HOST || "localhost:9200",
+      "localhost",
+      "9200"
+    );
+
+    // Build Elasticsearch URL
+    const esUrl = esHostPort.port === 443 || esHostPort.port === 9243
+      ? `https://${esHostPort.host}:${esHostPort.port}`
+      : `http://${esHostPort.host}:${esHostPort.port}`;
+
+    // Create config object with support for all services
+    const config = {
+      elasticsearch: {
+        url: process.env.ELASTICSEARCH_URL || esUrl,
+        user: options.esUser || options.user || process.env.ELASTICSEARCH_USER || "elastic",
+        password: options.esPass || options.password || process.env.ELASTICSEARCH_PASSWORD || "myelasticpassword",
+        index: options.index || options.indexName || "data",
+        templateFile: options.templateFile,
+        templateName: options.templateName,
+        alias: options.aliasName,
+      },
+      lectern: {
+        url:
+          options.lecternUrl ||
+          process.env.LECTERN_URL ||
+          "http://localhost:3031",
+        authToken: options.authToken || process.env.LECTERN_AUTH_TOKEN || "",
+      },
+      lyric: {
+        url:
+          options.lyricUrl || process.env.LYRIC_URL || "http://localhost:3030",
+        categoryName: options.categoryName || process.env.CATEGORY_NAME,
+        dictionaryName: options.dictName || process.env.DICTIONARY_NAME,
+        dictionaryVersion:
+          options.dictionaryVersion || process.env.DICTIONARY_VERSION,
+        defaultCentricEntity:
+          options.defaultCentricEntity || process.env.DEFAULT_CENTRIC_ENTITY,
+        // Data loading specific options
+        dataDirectory: options.dataDirectory || process.env.LYRIC_DATA,
+        categoryId: options.categoryId || process.env.CATEGORY_ID,
+        organization: options.organization || process.env.ORGANIZATION,
+        maxRetries,
+        retryDelay,
+      },
+      song: {
+        url: options.songUrl || process.env.SONG_URL || "http://localhost:8080",
+        authToken: options.authToken || process.env.AUTH_TOKEN || "123",
+        schemaFile: options.schemaFile || process.env.SONG_SCHEMA,
+        studyId: options.studyId || process.env.STUDY_ID || "demo",
+        studyName: options.studyName || process.env.STUDY_NAME || "string",
+        organization:
+          options.organization || process.env.ORGANIZATION || "string",
+        description: options.description || process.env.DESCRIPTION || "string",
+        analysisFile: options.analysisFile || process.env.ANALYSIS_FILE,
+        allowDuplicates:
+          options.allowDuplicates ||
+          process.env.ALLOW_DUPLICATES === "true" ||
+          false,
+        ignoreUndefinedMd5:
+          options.ignoreUndefinedMd5 ||
+          process.env.IGNORE_UNDEFINED_MD5 === "true" ||
+          false,
+        // Combined Score functionality (now part of song config)
+        scoreUrl:
+          options.scoreUrl || process.env.SCORE_URL || "http://localhost:8087",
+        dataDir: options.dataDir || process.env.DATA_DIR || "./data",
+        outputDir: options.outputDir || process.env.OUTPUT_DIR || "./output",
+        manifestFile: options.manifestFile || process.env.MANIFEST_FILE,
+      },
+      maestroIndex: {
+        url:
+          options.indexUrl || process.env.INDEX_URL || "http://localhost:11235",
+        repositoryCode: options.repositoryCode || process.env.REPOSITORY_CODE,
+        organization: options.organization || process.env.ORGANIZATION,
+        id: options.id || process.env.ID,
+      },
+      postgresql: {
+        host: dbHostPort.host,
+        port: dbHostPort.port,
+        database: options.dbName || options.pgDatabase || process.env.POSTGRES_DATABASE || "overtureDb",
+        user: options.dbUser || options.pgUsername || process.env.POSTGRES_USERNAME || "admin",
+        username: options.dbUser || options.pgUsername || process.env.POSTGRES_USERNAME || "admin",
+        password: options.dbPass || options.pgPassword || process.env.POSTGRES_PASSWORD || "admin123",
+        table: options.table || options.pgTable || process.env.POSTGRES_TABLE || "data",
+        addMetadata: true,
+      },
+      batchSize,
+      delimiter: options.delimiter || ",",
+    };
+
+    // Build the standardized CLI output
+    return {
+      profile,
+      filePaths,
+      outputPath: options.output,
+      config,
+      options,
+      envConfig: {
+        elasticsearchUrl: config.elasticsearch.url,
+        esUser: config.elasticsearch.user,
+        esPassword: config.elasticsearch.password,
+        indexName: config.elasticsearch.index,
+        lecternUrl: config.lectern.url,
+        lyricUrl: config.lyric.url,
+        songUrl: config.song.url,
+        lyricData: config.lyric.dataDirectory,
+        categoryId: config.lyric.categoryId,
+        organization: config.lyric.organization,
+      },
+    };
+  } catch (error) {
+    // If it's already a ConductorError, rethrow it
+    if (error instanceof Error && error.name === "ConductorError") {
+      throw error;
+    }
+
+    // Wrap unexpected parsing errors
+    throw ErrorFactory.parsing(
+      "Failed to parse command line arguments",
+      { options, originalError: error },
+      [
+        "Check command line argument syntax",
+        "Use --help for usage information",
+        "Verify all required parameters are provided",
+      ]
+    );
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "table": {
+    "columns": [
+      {
+        "canChangeShow": true,
+        "displayType": "string",
+        "fieldName": "donor.submitterDonorId",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "samples.sampleType",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "samples.specimen.tumourNormalDesignation",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "donor.primaryDiagnosis.clinicalStageGroup",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "samples.specimen.specimenTissueSource",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "samples.specimen.specimenType",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "samples.donor.gender",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "files.file_type",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "files.file_access",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "files.data_type",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "donor.primarySite",
+        "show": true
+      },
+      {
+        "canChangeShow": true,
+        "displayType": "list",
+        "fieldName": "donor.vitalStatus",
+        "show": true
+      }
+    ],
+    "defaultSorting": [
+      {
+        "fieldName": "donor.submitterDonorId"
+      }
+    ],
+    "maxResultsWindow": 10000,
+    "rowIdFieldName": "analysis_id"
+  }
+}

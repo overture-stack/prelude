@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "composer",
+  "version": "1.0.0",
+  "description": "Data processing utilities for generating configurations",
+  "main": "dist/main.js",
+  "bin": {
+    "composer": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts",
+    "test": "echo 'No tests configured'",
+    "lint": "echo 'No linting configured'",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "csv-parse": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "data",
+    "elasticsearch",
+    "schema",
+    "configuration"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

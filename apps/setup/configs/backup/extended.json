@@ -1,0 +1,316 @@
+{
+  "extended": [
+    {
+      "fieldName": "samples.subitterSampleId",
+      "displayName": "Submitter Sample ID"
+    },
+    {
+      "fieldName": "samples.sampleType",
+      "displayName": "Sample Type"
+    },
+    {
+      "fieldName": "samples.matchedNormalSubmitterSampleId",
+      "displayName": "Matched Normal Sample ID"
+    },
+    {
+      "fieldName": "samples.specimen.submitterSpecimenId",
+      "displayName": "Submitter Specimen ID"
+    },
+    {
+      "fieldName": "samples.specimen.specimenType",
+      "displayName": "Specimen Type"
+    },
+    {
+      "fieldName": "samples.specimen.tumourNormalDesignation",
+      "displayName": "Tumour Normal Designation"
+    },
+    {
+      "fieldName": "samples.specimen.specimenTissueSource",
+      "displayName": "Tissue Source"
+    },
+    {
+      "fieldName": "samples.donor.submitterDonorId",
+      "displayName": "Submitter Donor ID"
+    },
+    {
+      "fieldName": "samples.donor.gender",
+      "displayName": "Gender"
+    },
+    {
+      "fieldName": "samples.donor.submitterDonorId",
+      "displayName": "Sample Submitter Donor ID"
+    },
+    {
+      "fieldName": "donor.submitterDonorId",
+      "displayName": "Donor ID"
+    },
+    {
+      "fieldName": "donor.primarySite",
+      "displayName": "Primary Site"
+    },
+    {
+      "fieldName": "donor.vitalStatus",
+      "displayName": "Vital Status"
+    },
+    {
+      "fieldName": "donor.survivalTime",
+      "displayName": "Survival Time"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.ageAtDiagnosis",
+      "displayName": "Age At Diagnosis"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.cancerTypeCode",
+      "displayName": "Cancer Type Code"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.laterality",
+      "displayName": "Laterality"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.clinicalTumourStagingSystem",
+      "displayName": "Tumour Staging System"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.clinicalStageGroup",
+      "displayName": "Staging Group"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.lymphNodesExaminedStatus",
+      "displayName": "Examination Status"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.performanceStatus",
+      "displayName": "Performance Status"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.treatmentType",
+      "displayName": "Treatment"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.treatmentIntent",
+      "displayName": "Treatment Intent"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.treatmentStartInterval",
+      "displayName": "Treatment Start Interval"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.treatmentDuration",
+      "displayName": "Treatment Duration"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.responseToTreatment",
+      "displayName": "Response To Treatment"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.surgery.surgeryType",
+      "displayName": "Surgery Type"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.surgery.surgerySite",
+      "displayName": "Surgery Site"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.surgery.surgeryLocation",
+      "displayName": "Surgery Location"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.surgery.residualTumourClassification",
+      "displayName": "Residual Tumour Classification"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.hormoneTherapy.drugName",
+      "displayName": "Hormone Therapy"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.hormoneTherapy.drugRxnormcui",
+      "displayName": "RxNorm"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.hormoneTherapy.cumulativeDrugDosage",
+      "displayName": "Hormone Dosage"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.hormoneTherapy.hormoneDrugDosageUnits",
+      "displayName": "Dosage Units"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.chemotherapy.drugName",
+      "displayName": "Chemotherapy"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.chemotherapy.drugRxnormcui",
+      "displayName": "RxNorm"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.chemotherapy.cumulativeDrugDosage",
+      "displayName": "Chemotherapy Dosage"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.chemotherapy.chemotherapyDosageUnits",
+      "displayName": "Chemotherapy Dosage Units"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.immunotherapy.drugName",
+      "displayName": "Immunotherapy"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.immunotherapy.drugRxnormcui",
+      "displayName": "Immunotherapy RxNorm"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.immunotherapy.immunotherapyType",
+      "displayName": "Immunotherapy Type"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.radiation.radiationTherapyModality",
+      "displayName": "Radiation Modality"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.radiation.radiationTherapyType",
+      "displayName": "Radiation Therapy Type"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.radiation.anatomicalSiteIrradiated",
+      "displayName": "Radiation Site"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.radiation.radiationTherapyDosage",
+      "displayName": "Radiation Dosage"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.treatment.radiation.radiationTherapyFractions",
+      "displayName": "Radiation Therapy Fractions"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.followUp.intervalOfFollowup",
+      "displayName": "Follow Up Interval (Days)"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.followUp.diseaseStatusAtFollowup",
+      "displayName": "Status At Followup"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.ageAtDiagnosis",
+      "displayName": "Age At Diagnosis"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.cancerTypeCode",
+      "displayName": "Cancer Type Code"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.comorbidity.ageAtComorbidityDiagnosis",
+      "displayName": "Age at Comorbidity Diagnosis"
+    },
+    {
+      "fieldName": "donor.primaryDiagnosis.comorbidity.comorbidityTypeCode",
+      "displayName": "Comorbidity Type Code"
+    },
+    {
+      "fieldName": "specimen.specimenAcquisitionInterval",
+      "displayName": "Specimen Acquisition Interval"
+    },
+    {
+      "fieldName": "specimen.specimenAnatomicLocation",
+      "displayName": "Specimen Anatomic Location"
+    },
+    {
+      "fieldName": "specimen.specimenLaterality",
+      "displayName": "Specimen Laterality"
+    },
+    {
+      "fieldName": "specimen.tumourHistologicalType",
+      "displayName": "Tumour Histological Type"
+    },
+    {
+      "fieldName": "specimen.pathologicalTumourStagingSystem",
+      "displayName": "Pathological Tumour Staging System"
+    },
+    {
+      "fieldName": "specimen.pathologicalStageGroup",
+      "displayName": "Pathological Stage Group"
+    },
+    {
+      "fieldName": "specimen.tumourGradingSystem",
+      "displayName": "Tumour Grading System"
+    },
+    {
+      "fieldName": "specimen.tumourGrade",
+      "displayName": "Tumour Grade"
+    },
+    {
+      "fieldName": "specimen.percentTumourCells",
+      "displayName": "Percent Tumour Cells"
+    },
+    {
+      "fieldName": "specimen.referencePathologyConfirmed",
+      "displayName": "Refernce Pathology Confirmed"
+    },
+    {
+      "fieldName": "files.data_type",
+      "displayName": "Data Type"
+    },
+    {
+      "fieldName": "files.name",
+      "displayName": "File Name"
+    },
+    {
+      "fieldName": "files.size",
+      "displayName": "File Size"
+    },
+    {
+      "fieldName": "files.md5_sum",
+      "displayName": "File Md5sum"
+    },
+    {
+      "fieldName": "files.file_access",
+      "displayName": "File Access"
+    },
+    {
+      "fieldName": "files.file_type",
+      "displayName": "File Type"
+    },
+    {
+      "fieldName": "files.dataCategory",
+      "displayName": "Data Category"
+    },
+    {
+      "fieldName": "files.info.jbrowseCoordinates",
+      "displayName": "jbrowse Coordinate"
+    },
+    {
+      "fieldName": "collaborator.contactEmail",
+      "displayName": "Contact Email"
+    },
+    {
+      "fieldName": "collaborator.name",
+      "displayName": "Collaborator"
+    },
+    {
+      "fieldName": "collaborator.affiliation",
+      "displayName": "Affiliation"
+    },
+    {
+      "fieldName": "experiment.platform",
+      "displayName": "Sequencing Platform"
+    },
+    {
+      "fieldName": "experiment.experimentalStrategy",
+      "displayName": "Experimental Strategy"
+    },
+    {
+      "fieldName": "experiment.submitterSequencingExperimentId",
+      "displayName": "Experiment Id"
+    },
+    {
+      "fieldName": "workflow.workflowName",
+      "displayName": "Workflow"
+    },
+    {
+      "fieldName": "workflow.genomeBuild",
+      "displayName": "Genome Build"
+    }
+  ]
+}

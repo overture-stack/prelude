@@ -1,0 +1,1 @@
+//# sourceMappingURL=baseCommand.d.ts.map

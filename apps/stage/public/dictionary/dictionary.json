@@ -1,0 +1,584 @@
+{
+  "name": "Drug Discovery Dictionary",
+  "description": "Data model used for this drug discovery platform",
+  "version": "1.0.0",
+  "meta": {},
+  "schemas": [
+    {
+      "name": "correlationTable",
+      "description": "Schema generated from correlationExample.csv",
+      "fields": [
+        {
+          "name": "n",
+          "description": "Field containing n data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "n"
+          }
+        },
+        {
+          "name": "hugo_symbol_a",
+          "description": "Field containing hugo_symbol_a data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hugo_symbol_a"
+          }
+        },
+        {
+          "name": "entrez_gene_id_a",
+          "description": "Field containing entrez_gene_id_a data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "entrez_gene_id_a"
+          }
+        },
+        {
+          "name": "hugo_symbol_b",
+          "description": "Field containing hugo_symbol_b data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hugo_symbol_b"
+          }
+        },
+        {
+          "name": "entrez_gene_id_b",
+          "description": "Field containing entrez_gene_id_b data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "entrez_gene_id_b"
+          }
+        },
+        {
+          "name": "spearmancorr",
+          "description": "Field containing spearmancorr data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "spearmancorr"
+          }
+        },
+        {
+          "name": "spearmanp",
+          "description": "Field containing spearmanp data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "spearmanp"
+          }
+        },
+        {
+          "name": "pearsoncorr",
+          "description": "Field containing pearsoncorr data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "pearsoncorr"
+          }
+        },
+        {
+          "name": "pearsonp",
+          "description": "Field containing pearsonp data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "pearsonp"
+          }
+        },
+        {
+          "name": "spearmancorrsquare",
+          "description": "Field containing spearmancorrsquare data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "spearmancorrsquare"
+          }
+        },
+        {
+          "name": "pearsoncorrsquare",
+          "description": "Field containing pearsoncorrsquare data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "pearsoncorrsquare"
+          }
+        },
+        {
+          "name": "cancer_type",
+          "description": "Field containing cancer_type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "cancer_type"
+          }
+        },
+        {
+          "name": "dataset_name",
+          "description": "Field containing dataset_name data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dataset_name"
+          }
+        },
+        {
+          "name": "is_oncogene_a",
+          "description": "Field containing is_oncogene_a data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_oncogene_a"
+          }
+        },
+        {
+          "name": "is_tumor_suppressor_gene_a",
+          "description": "Field containing is_tumor_suppressor_gene_a data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_tumor_suppressor_gene_a"
+          }
+        },
+        {
+          "name": "is_oncogene_b",
+          "description": "Field containing is_oncogene_b data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_oncogene_b"
+          }
+        },
+        {
+          "name": "is_tumor_suppressor_gene_b",
+          "description": "Field containing is_tumor_suppressor_gene_b data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_tumor_suppressor_gene_b"
+          }
+        },
+        {
+          "name": "is_wdr_a",
+          "description": "Field containing is_wdr_a data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "is_wdr_a"
+          }
+        },
+        {
+          "name": "is_wdr_b",
+          "description": "Field containing is_wdr_b data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "is_wdr_b"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-10-08T23:57:01.763Z",
+        "sourceFile": "correlationExample.csv"
+      }
+    },
+    {
+      "name": "expressionTable",
+      "description": "Schema generated from expressionExample.csv",
+      "fields": [
+        {
+          "name": "entrez_gene_id",
+          "description": "Field containing entrez_gene_id data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "entrez_gene_id"
+          }
+        },
+        {
+          "name": "hugo_symbol",
+          "description": "Field containing hugo_symbol data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hugo_symbol"
+          }
+        },
+        {
+          "name": "average_expression",
+          "description": "Field containing average_expression data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "average_expression"
+          }
+        },
+        {
+          "name": "number_of_tumour_samples",
+          "description": "Field containing number_of_tumour_samples data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "number_of_tumour_samples"
+          }
+        },
+        {
+          "name": "cancer_type",
+          "description": "Field containing cancer_type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "cancer_type"
+          }
+        },
+        {
+          "name": "dataset_name",
+          "description": "Field containing dataset_name data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dataset_name"
+          }
+        },
+        {
+          "name": "is_oncogene",
+          "description": "Field containing is_oncogene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_oncogene"
+          }
+        },
+        {
+          "name": "is_tumor_suppressor_gene",
+          "description": "Field containing is_tumor_suppressor_gene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_tumor_suppressor_gene"
+          }
+        },
+        {
+          "name": "is_wdr",
+          "description": "Field containing is_wdr data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "is_wdr"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-10-08T23:57:01.764Z",
+        "sourceFile": "expressionExample.csv"
+      }
+    },
+    {
+      "name": "mutationTable",
+      "description": "Schema generated from mutationExample.csv",
+      "fields": [
+        {
+          "name": "hugo_symbol",
+          "description": "Field containing hugo_symbol data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hugo_symbol"
+          }
+        },
+        {
+          "name": "entrez_gene_id",
+          "description": "Field containing entrez_gene_id data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "entrez_gene_id"
+          }
+        },
+        {
+          "name": "hotspot",
+          "description": "Field containing hotspot data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "hotspot"
+          }
+        },
+        {
+          "name": "number_of_samples_mutated_at_gene",
+          "description": "Field containing number_of_samples_mutated_at_gene data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "number_of_samples_mutated_at_gene"
+          }
+        },
+        {
+          "name": "total_number_of_mutated_samples",
+          "description": "Field containing total_number_of_mutated_samples data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "total_number_of_mutated_samples"
+          }
+        },
+        {
+          "name": "overall_mutation_frequency",
+          "description": "Field containing overall_mutation_frequency data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "overall_mutation_frequency"
+          }
+        },
+        {
+          "name": "cancer_type",
+          "description": "Field containing cancer_type data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "cancer_type"
+          }
+        },
+        {
+          "name": "number_of_samples_with_gains",
+          "description": "Field containing number_of_samples_with_gains data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "number_of_samples_with_gains"
+          }
+        },
+        {
+          "name": "number_of_samples_with_losses",
+          "description": "Field containing number_of_samples_with_losses data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "number_of_samples_with_losses"
+          }
+        },
+        {
+          "name": "total_number_of_samples",
+          "description": "Field containing total_number_of_samples data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "total_number_of_samples"
+          }
+        },
+        {
+          "name": "percent_of_samples_with_gains",
+          "description": "Field containing percent_of_samples_with_gains data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "percent_of_samples_with_gains"
+          }
+        },
+        {
+          "name": "percent_of_samples_with_losses",
+          "description": "Field containing percent_of_samples_with_losses data",
+          "valueType": "number",
+          "meta": {
+            "displayName": "percent_of_samples_with_losses"
+          }
+        },
+        {
+          "name": "dataset_name",
+          "description": "Field containing dataset_name data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dataset_name"
+          }
+        },
+        {
+          "name": "is_oncogene",
+          "description": "Field containing is_oncogene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_oncogene"
+          }
+        },
+        {
+          "name": "is_tumor_suppressor_gene",
+          "description": "Field containing is_tumor_suppressor_gene data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_tumor_suppressor_gene"
+          }
+        },
+        {
+          "name": "is_wdr",
+          "description": "Field containing is_wdr data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "is_wdr"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-10-08T23:57:01.765Z",
+        "sourceFile": "mutationExample.csv"
+      }
+    },
+    {
+      "name": "proteinTable",
+      "description": "Schema generated from proteinExample.csv",
+      "fields": [
+        {
+          "name": "hugo_symbol_a",
+          "description": "Field containing hugo_symbol_a data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hugo_symbol_a"
+          }
+        },
+        {
+          "name": "hugo_symbol_b",
+          "description": "Field containing hugo_symbol_b data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "hugo_symbol_b"
+          }
+        },
+        {
+          "name": "neighborhood",
+          "description": "Field containing neighborhood data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "neighborhood"
+          }
+        },
+        {
+          "name": "neighborhood_transferred",
+          "description": "Field containing neighborhood_transferred data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "neighborhood_transferred"
+          }
+        },
+        {
+          "name": "fusion",
+          "description": "Field containing fusion data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "fusion"
+          }
+        },
+        {
+          "name": "cooccurence",
+          "description": "Field containing cooccurence data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "cooccurence"
+          }
+        },
+        {
+          "name": "homology",
+          "description": "Field containing homology data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "homology"
+          }
+        },
+        {
+          "name": "coexpression",
+          "description": "Field containing coexpression data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "coexpression"
+          }
+        },
+        {
+          "name": "coexpression_transferred",
+          "description": "Field containing coexpression_transferred data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "coexpression_transferred"
+          }
+        },
+        {
+          "name": "experiments",
+          "description": "Field containing experiments data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "experiments"
+          }
+        },
+        {
+          "name": "experiments_transferred",
+          "description": "Field containing experiments_transferred data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "experiments_transferred"
+          }
+        },
+        {
+          "name": "database",
+          "description": "Field containing database data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "database"
+          }
+        },
+        {
+          "name": "database_transferred",
+          "description": "Field containing database_transferred data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "database_transferred"
+          }
+        },
+        {
+          "name": "textmining",
+          "description": "Field containing textmining data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "textmining"
+          }
+        },
+        {
+          "name": "textmining_transferred",
+          "description": "Field containing textmining_transferred data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "textmining_transferred"
+          }
+        },
+        {
+          "name": "combined_score",
+          "description": "Field containing combined_score data",
+          "valueType": "integer",
+          "meta": {
+            "displayName": "combined_score"
+          }
+        },
+        {
+          "name": "dataset_name",
+          "description": "Field containing dataset_name data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "dataset_name"
+          }
+        },
+        {
+          "name": "is_oncogene_a",
+          "description": "Field containing is_oncogene_a data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_oncogene_a"
+          }
+        },
+        {
+          "name": "is_tumor_suppressor_gene_a",
+          "description": "Field containing is_tumor_suppressor_gene_a data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_tumor_suppressor_gene_a"
+          }
+        },
+        {
+          "name": "is_oncogene_b",
+          "description": "Field containing is_oncogene_b data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_oncogene_b"
+          }
+        },
+        {
+          "name": "is_tumor_suppressor_gene_b",
+          "description": "Field containing is_tumor_suppressor_gene_b data",
+          "valueType": "string",
+          "meta": {
+            "displayName": "is_tumor_suppressor_gene_b"
+          }
+        },
+        {
+          "name": "is_wdr_a",
+          "description": "Field containing is_wdr_a data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "is_wdr_a"
+          }
+        },
+        {
+          "name": "is_wdr_b",
+          "description": "Field containing is_wdr_b data",
+          "valueType": "boolean",
+          "meta": {
+            "displayName": "is_wdr_b"
+          }
+        }
+      ],
+      "meta": {
+        "createdAt": "2025-10-08T23:57:01.765Z",
+        "sourceFile": "proteinExample.csv"
+      }
+    }
+  ]
+}
