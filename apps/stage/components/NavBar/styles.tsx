@@ -81,10 +81,10 @@ export const StyledListLink = styled.a<{ theme?: typeof defaultTheme }>`
 		color: ${theme?.colors.black};
 		cursor: pointer;
 		display: flex;
-		font-size: 16px;
-		height: 40px;
+		font-size: 14px;
+		min-height: 40px;
 		outline: none;
-		padding: 6px 12px;
+		padding: 8px 12px;
 		text-decoration: none;
 		width: 100%;
 

@@ -135,6 +135,8 @@ const Dropdown = ({
 						top: calc(100% + 5px);
 						z-index: 1000;
 						border-left: 4px solid ${theme.colors.primary_dark};
+						max-height: calc(100vh - 80px);
+						overflow-y: auto;
 
 						li {
 							box-sizing: border-box;

@@ -3,7 +3,7 @@ import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
 import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
-import { extractTitle, generateSlug, extractOrder } from '../documentation/utils/documentUtils';
+import { extractOrder, extractTitle, generateSlug } from '../documentation/utils/documentUtils';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
 interface CardItem {
@@ -30,13 +30,13 @@ const HomeNavigation = (): ReactElement => {
 		{
 			title: 'Explore the Data',
 			link: '#',
-			description: 'Browse and interact with data',
+			description: 'Browse and interact with your data',
 			isDynamic: true,
 		},
 		{
-			title: 'Documentation',
+			title: 'IBC Workshop',
 			link: INTERNAL_PATHS.DOCUMENTATION,
-			description: 'Everything you want know about this demo platform',
+			description: 'All workshop materials can be found here',
 			isDynamic: true,
 		},
 		{
@@ -46,7 +46,7 @@ const HomeNavigation = (): ReactElement => {
 			external: true,
 		},
 		{
-			title: 'Community Resources',
+			title: 'Resources',
 			link: '#',
 			description: 'Additional Overture resources',
 			subItems: [

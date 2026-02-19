@@ -10,7 +10,7 @@ services:
     #  Update the enviorment variables here according to your specific project           #
     #  More information can be found within the docs folder                              #
     # ================================================================================== #
-    profiles: ["demo", "default"]
+    profiles: ["demo", "platform", "default"]
     image: alpine/curl:8.8.0
     container_name: setup
     ports:
@@ -53,6 +53,11 @@ services:
         case "$PROFILE" in
           "demo")
             echo "Running demo deployment..."
+            chmod +x setup/scripts/deployments/demo.sh
+            setup/scripts/deployments/demo.sh
+            ;;
+          "platform")
+            echo "Running platform deployment..."
             chmod +x setup/scripts/deployments/demo.sh
             setup/scripts/deployments/demo.sh
             ;;
@@ -112,7 +117,7 @@ services:
   # Persistant storage for data being indexed into elasticsearch.                      #
   # -----------------------------------------------------------------------------------#
   postgres:
-    profiles: ["demo", "default"]
+    profiles: ["demo", "platform", "default"]
     image: postgres:15-alpine
     container_name: postgres
     platform: linux/amd64
@@ -140,7 +145,7 @@ services:
   # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
   # --------------------------------------------------------------------------------------#
   elasticsearch:
-    profiles: ["demo", "demo", "default"]
+    profiles: ["demo", "platform", "default"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
     container_name: elasticsearch
     platform: linux/amd64
@@ -178,7 +183,7 @@ services:
   # https://docs.overture.bio/docs/core-software/Arranger/overview                      #
   # ------------------------------------------------------------------------------------#
   arranger-datatable1:
-    profiles: ["demo", "demo", "default"]
+    profiles: ["demo", "platform", "default"]
     image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
     container_name: arranger-datatable1
     platform: linux/amd64
@@ -209,7 +214,7 @@ services:
   # https://docs.overture.bio/docs/core-software/Stage/overview                         #
   # ------------------------------------------------------------------------------------#
   stage:
-    profiles: ["demo", "demo", "default"]
+    profiles: ["demo", "platform", "default"]
     build:
       context: .
       dockerfile: ./apps/stage/Dockerfile
@@ -223,8 +228,8 @@ services:
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: Overture Demo Portal
-      NEXT_PUBLIC_ADMIN_EMAIL: example@example.com
+      NEXT_PUBLIC_LAB_NAME: ISB Workshop 2026
+      NEXT_PUBLIC_ADMIN_EMAIL: mshiell@oicr.on.ca
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true

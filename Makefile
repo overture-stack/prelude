@@ -1,36 +1,41 @@
 SHELL := /bin/bash
+.DEFAULT_GOAL := help
 
 help:
 	@echo "================ Prelude Makefile Commands ================"
 	@echo ""
-	@echo "setup Development Environments:"
-	@echo "  phase0         - Run pre-deployment checks"
-	@echo "  demo           - Start demo deployment (with data)"
+	@echo "Development Environments:"
+	@echo "  make demo          - Start demo deployment (with sample data)"
+	@echo "  make platform      - Start platform (upload your own data)"
+	@echo "  make start         - Start existing services (no rebuild)"
+	@echo "  make restart       - Restart platform containers (preserves data)"
+	@echo "  make down          - Gracefully shutdown all containers"
+	@echo "  make status        - Show status of all services"
 	@echo ""
-	@echo "  stage-dev      - Start Stage development environment"
+	@echo "Service Management:"
+	@echo "  make rebuild       - Rebuild and redeploy stage only"
+	@echo "  make check-space   - Check disk usage"
 	@echo ""
-	@echo "System Management:"
-	@echo "  down           - Gracefully shutdown all containers"
-	@echo "  restart        - Restart containers for a specific profile"
-	@echo "  reset          - DANGER: Remove all containers and volumes (DATA LOSS)"
-	@echo "  nuke           - DANGER: Complete cleanup including images"
+	@echo "Danger Zone:"
+	@echo "  make reset         - DANGER: Remove all containers and volumes (DATA LOSS)"
+	@echo "  make nuke          - DANGER: Complete cleanup including images"
 	@echo ""
 	@echo "General Usage:"
-	@echo "  make help      - Show this help message"
-	@echo "  make <command> - Run a specific command"
+	@echo "  make help          - Show this help message"
+	@echo "  make <command>     - Run a specific command"
 	@echo ""
-	@echo "==============================================================="
+	@echo "==========================================================="
 
 # Run pre-deployment checks
 phase0:
 	@echo "Running Pre-deployment checks..."
 	chmod +x ./setup/scripts/deployments/phase0.sh
-	./setup/scripts/deployments/phase0.sh 
+	./setup/scripts/deployments/phase0.sh
 
 # Start demo deployment (populates portal with data for you)
 demo: phase0
 	@echo ""
-	@echo "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m"
+	@printf "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m\n"
 	@echo ""
 	@echo ""
 	@echo ""
@@ -45,45 +50,115 @@ demo: phase0
 		done; \
 	}
 	@echo ""
-	@echo "\033[1;32mStage Portal UI built\033[0m"
+	@printf "\033[1;32mStage Portal UI built\033[0m\n"
 	@echo ""
-	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup 
+	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
+
+# Start platform services without data upload (user uploads their own data via conductor)
+platform: phase0
+	@echo ""
+	@printf "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m\n"
+	@echo ""
+	@echo ""
+	@echo ""
+	@docker compose build stage 2>&1 | { \
+		line1=""; line2=""; line3=""; \
+		while IFS= read -r line; do \
+			line1="$$line2"; line2="$$line3"; line3="$$line"; \
+			printf "\033[4A\033[2K\r\033[1;33mBuilding portal UI (stage) image (this may take a minute)....\033[0m\n"; \
+			[ -n "$$line1" ] && echo "$${line1:0:64}" || echo ""; \
+			[ -n "$$line2" ] && echo "$${line2:0:64}" || echo ""; \
+			[ -n "$$line3" ] && echo "$${line3:0:64}" || echo ""; \
+		done; \
+	}
+	@echo ""
+	@printf "\033[1;32mStage Portal UI built\033[0m\n"
+	@echo ""
+	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
+
+# Start existing services without rebuild
+start:
+	@echo "Starting services..."
+	@PROFILE=platform docker compose --profile platform up -d
+	@printf "\033[1;32m✓ Services started\033[0m\n"
 
 # Gracefully shutdown all containers while preserving volumes
 down:
 	@echo "Shutting down all running containers..."
 	PROFILE=default docker compose -f ./docker-compose.yml --profile default down
 
-# Restart containers and run deployment scripts for a specific profile
+# Restart platform containers and run deployment scripts
 restart:
-	@echo "Restarting containers with fresh deployment..."
-	echo "Shutting down containers..."; \
-	PROFILE=demo docker compose -f ./docker-compose.yml --profile demo down; \
-	echo "Starting containers with profile demo..."; \
-	./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
+	@echo "Restarting platform containers..."
+	@PROFILE=platform docker compose -f ./docker-compose.yml --profile platform down
+	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
+
+# Show status of all services
+status:
+	@PROFILE=platform docker compose ps
+
+# Rebuild and redeploy stage service only
+rebuild:
+	@echo "Stopping stage service..."
+	@PROFILE=platform docker compose stop stage
+	@echo "Rebuilding stage image..."
+	@PROFILE=platform docker compose build --no-cache stage
+	@echo "Starting stage service..."
+	@PROFILE=platform docker compose up -d stage
+	@printf "\033[1;32m✓ Stage rebuilt and redeployed\033[0m\n"
+
+# Check disk usage for volumes and containers
+check-space:
+	@printf "\033[1;33m=== Docker System Overview ===\033[0m\n"
+	@docker system df
+	@echo ""
+	@printf "\033[1;33m=== Project Volumes ===\033[0m\n"
+	@docker volume ls --filter name=prelude
+	@echo ""
+	@printf "\033[1;33m=== Available Disk Space ===\033[0m\n"
+	@df -h . | tail -1
 
 # Shutdown all containers and remove all volumes (Deletes all data)
 reset:
-	@echo "\033[1;33mWarning:\033[0m This will remove all containers AND their volumes. Data will be lost."
-	@read -p "Are you sure you want to continue? [y/N] " confirm; \
-	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
-		echo "Stopping containers and removing volumes..."; \
+	@echo ""
+	@printf "\033[1;31m╔════════════════════════════════════════════════════════════╗\033[0m\n"
+	@printf "\033[1;31m║                        DANGER ZONE                         ║\033[0m\n"
+	@printf "\033[1;31m╚════════════════════════════════════════════════════════════╝\033[0m\n"
+	@echo ""
+	@echo "This will permanently delete:"
+	@echo "  • All Docker containers"
+	@echo "  • All Docker volumes (Elasticsearch, Stage, PostgreSQL)"
+	@echo ""
+	@printf "\033[1;33mData size to be removed:\033[0m\n"
+	@docker system df -v 2>/dev/null | grep prelude | awk '{print "  " $$1 ": " $$3}' || true
+	@echo ""
+	@printf "\033[1;33m⚠️  BACKUP REMINDER:\033[0m\n"
+	@echo "  Before proceeding, ensure you have backed up your data:"
+	@echo "  \$$$ docker exec postgres pg_dump -U admin -Fc overtureDb > backup.dump"
+	@echo ""
+	@read -p "Type 'DELETE' to confirm permanent data deletion: " confirm; \
+	if [ "$$confirm" = "DELETE" ]; then \
+		echo ""; \
+		printf "\033[1;33mShutting down containers and removing volumes...\033[0m\n"; \
 		PROFILE=default docker compose -f ./docker-compose.yml --profile default down -v; \
-		echo "\033[1;32m\nReset complete.\033[0m"; \
+		echo ""; \
+		printf "\033[1;32m✓ Reset complete. All data has been removed.\033[0m\n"; \
 	else \
-		echo "Operation cancelled"; \
+		echo ""; \
+		printf "\033[1;32mReset cancelled. No data was deleted.\033[0m\n"; \
 	fi
 
 # Complete cleanup: remove containers, volumes, AND images
 nuke:
-	@echo "\033[1;31mDANGER:\033[0m This will remove all containers, volumes, AND Docker images."
+	@printf "\033[1;31mDANGER:\033[0m This will remove all containers, volumes, AND Docker images.\n"
 	@echo "This is the most destructive option and will require a full rebuild on next start."
 	@read -p "Are you absolutely sure? [y/N] " confirm; \
 	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
 		echo "Nuking everything..."; \
 		PROFILE=default docker compose -f ./docker-compose.yml --profile default down -v --rmi all; \
-		echo "\033[1;32m\nCleanup finished. All Docker resources removed.\033[0m"; \
+		printf "\n\033[1;32mCleanup finished. All Docker resources removed.\033[0m\n"; \
 	else \
 		echo "Operation cancelled"; \
 	fi
 
+.PHONY: help phase0 demo platform start down restart status rebuild check-space reset nuke

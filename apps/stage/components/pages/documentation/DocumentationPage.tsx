@@ -50,9 +50,7 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 		if (!contentRef.current || !currentSection) return;
 
 		// Hydrate custom components (DictionaryTable and DictionaryViewerFull)
-		const dictionaryTableContainers = contentRef.current.querySelectorAll(
-			'[data-component="DictionaryTable"]',
-		);
+		const dictionaryTableContainers = contentRef.current.querySelectorAll('[data-component="DictionaryTable"]');
 		dictionaryTableContainers.forEach((container) => {
 			const url = container.getAttribute('data-url') || '';
 			const showSchemaNames = container.getAttribute('data-show-schema-names') === 'true';
@@ -66,9 +64,7 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 			);
 		});
 
-		const dictionaryViewerContainers = contentRef.current.querySelectorAll(
-			'[data-component="DictionaryViewerFull"]',
-		);
+		const dictionaryViewerContainers = contentRef.current.querySelectorAll('[data-component="DictionaryViewerFull"]');
 		dictionaryViewerContainers.forEach((container) => {
 			const url = container.getAttribute('data-url') || '';
 
@@ -146,7 +142,7 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 		<div css={styles.container}>
 			<aside css={styles.sidebar}>
 				<nav css={styles.nav}>
-					<h3 css={styles.sidebarTitle}>Documentation</h3>
+					<h3 css={styles.sidebarTitle}>IBC Workshop</h3>
 					<ul css={styles.navList}>
 						{sections.map((section) => (
 							<li key={section.id} css={styles.navItem}>
@@ -266,6 +262,8 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		line-height: ${theme.lineHeight.base};
 		transition: ${theme.transitions.fast};
 		border-left: 3px solid transparent;
+		cursor: pointer;
+		user-select: none;
 
 		&:hover {
 			background: ${theme.colors.sidebarItemBackgroundHover};
