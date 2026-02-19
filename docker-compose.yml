@@ -53,13 +53,13 @@ services:
         case "$PROFILE" in
           "demo")
             echo "Running demo deployment..."
-            chmod +x setup/scripts/deployments/demo.sh
-            setup/scripts/deployments/demo.sh
+            chmod +x setup/scripts/deployments/platform.sh
+            setup/scripts/deployments/platform.sh
             ;;
           "platform")
             echo "Running platform deployment..."
-            chmod +x setup/scripts/deployments/demo.sh
-            setup/scripts/deployments/demo.sh
+            chmod +x setup/scripts/deployments/platform.sh
+            setup/scripts/deployments/platform.sh
             ;;
           *)
             echo "Invalid profile specified."
