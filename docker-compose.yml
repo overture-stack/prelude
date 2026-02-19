@@ -16,7 +16,6 @@ services:
     ports:
       - "9204:9204"
     volumes:
-      - ./data:/data
       - ./setup:/setup
       - ./setup/volumes/health:/health
     environment:
