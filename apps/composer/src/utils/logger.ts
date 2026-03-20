@@ -1,4 +1,3 @@
-// src/utils/logger.ts - Standardized logger with consistent template literal usage
 import chalk from "chalk";
 
 // Make LogLevel public for use in other modules
@@ -271,7 +270,15 @@ export class Logger {
   }
 
   // File list utilities
-  static fileList(title: string, files: string[]): void {
+  static infoFileList(title: string, files: string[]): void {
+    if (files.length === 0) return;
+    this.infoString(`${title}:\n`);
+    files.forEach((file) => {
+      console.log(chalk.gray`  - ${file}`);
+    });
+  }
+
+  static warnFileList(title: string, files: string[]): void {
     if (files.length === 0) return;
     this.warnString(`${title}:\n`);
     files.forEach((file) => {
@@ -291,140 +298,82 @@ export class Logger {
     this.header("Composer Configuration Commands");
 
     this.generic(chalk.bold.magenta("Generate Song Schema:"));
-    this.generic(chalk.white("composer -p SongSchema -f metadata.json"));
+    this.generic(chalk.white("composer song-schema -f metadata.json"));
     this.generic(chalk.gray("Options:"));
     this.generic(
-      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+      chalk.gray("-f, --files <paths...>        Input JSON metadata file(s) (required)")
     );
     this.generic(
-      chalk.gray("-f, --files <paths...>  Input JSON metadata file (required)")
+      chalk.gray("-o, --output <path>           Output schema file path (default: configs/songSchema/)")
     );
-    this.generic(
-      chalk.gray(
-        "-o, --output <path>     Output schema file path (default: configs/songSchema/)"
-      )
-    );
-    this.generic(chalk.gray("-n, --name <name>       Schema name"));
-    this.generic(chalk.gray("--file-types <types...> Allowed file types"));
+    this.generic(chalk.gray("-n, --name <name>             Schema name"));
+    this.generic(chalk.gray("--file-types <types...>       Allowed file types"));
+    this.generic(chalk.gray("--force                       Overwrite existing files"));
     this.generic("");
     this.generic(
       chalk.gray(
-        "Example: composer -p SongSchema -f file_metadata.json -n my_schema --file-types BAM VCF"
+        "Example: composer song-schema -f file_metadata.json -n my_schema --file-types BAM VCF"
       )
     );
     this.generic("");
 
     this.generic(chalk.bold.magenta("Generate Lectern Dictionary:"));
-    this.generic(chalk.white("composer -p LecternDictionary -f data.csv"));
+    this.generic(chalk.white("composer lectern-dictionary -f data.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
-      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+      chalk.gray("-f, --files <paths...>        Input CSV files (required)")
     );
     this.generic(
-      chalk.gray("-f, --files <paths...>  Input CSV files (required)")
+      chalk.gray("-o, --output <path>           Output dictionary file path (default: configs/lecternDictionaries/)")
     );
+    this.generic(chalk.gray("-n, --name <name>             Dictionary name"));
+    this.generic(chalk.gray("-d, --description <text>      Dictionary description"));
+    this.generic(chalk.gray("-v, --version <version>       Dictionary version (default: 1.0.0)"));
     this.generic(
-      chalk.gray(
-        "-o, --output <path>     Output dictionary file path (default: configs/lecternDictionaries/)"
-      )
+      chalk.gray("--delimiter <char>            CSV delimiter (default: ,)")
     );
-    this.generic(chalk.gray("-n, --name <name>       Dictionary name"));
-    this.generic(chalk.gray("-d, --description <text> Dictionary description"));
-    this.generic(chalk.gray("-v, --version <version> Dictionary version"));
-    this.generic(
-      chalk.gray("--delimiter <char>      CSV delimiter (default: ,)")
-    );
+    this.generic(chalk.gray("--force                       Overwrite existing files"));
     this.generic("");
     this.generic(
       chalk.gray(
-        'Example: composer -p LecternDictionary -f clinical_data.csv -n clinical_dict -d "Clinical data dictionary"'
-      )
-    );
-    this.generic("");
-
-    this.generic(chalk.bold.magenta("Generate Arranger Configs:"));
-    this.generic(
-      chalk.white("composer -p ArrangerConfigs -f elasticsearch-mapping.json")
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
-    );
-    this.generic(
-      chalk.gray("-f, --files <paths...>  Input file mapping (JSON) (required)")
-    );
-    this.generic(
-      chalk.gray(
-        "-o, --output <path>     Output file path for generated configs (default: configs/arrangerConfigs/)"
-      )
-    );
-    // this.generic(
-    //   chalk.gray(
-    //     "--arranger-doc-type <type> Arranger document type (file or analysis) (default: file)"
-    //   )
-    // );
-    this.generic(
-      chalk.gray(
-        "-i, --index <n>         Elasticsearch index name (default: data)"
-      )
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: composer -p ArrangerConfigs -f mapping.json -o configs/clinicalConfigs/ -i clinical_data"
+        'Example: composer lectern-dictionary -f clinical_data.csv -n clinical_dict -d "Clinical data dictionary"'
       )
     );
     this.generic("");
 
     this.generic(chalk.bold.magenta("Generate Elasticsearch Mapping:"));
-    this.generic(chalk.white("composer -p ElasticsearchMapping -f data.csv"));
+    this.generic(chalk.white("composer elasticsearch-mapping -f data.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
-      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
-    );
-    this.generic(
       chalk.gray(
-        "-f, --files <paths...>  Input file paths (CSV, JSON, or Lectern dictionary, space separated) (required)"
+        "-f, --files <paths...>        Input file paths (CSV, JSON, or Lectern dictionary) (required)"
       )
     );
     this.generic(
-      chalk.gray(
-        "-o, --output <path>     Output file path for generated mapping (default: configs/elasticsearchConfigs/)"
-      )
+      chalk.gray("-o, --output <path>           Output file path for generated mapping (default: configs/elasticsearchConfigs/)")
     );
     this.generic(
-      chalk.gray(
-        "-i, --index <n>       Elasticsearch index name (default: data)"
-      )
+      chalk.gray("-i, --index <name>            Elasticsearch index name (default: data)")
     );
-    // this.generic(
-    //   chalk.gray(
-    //     "--shards <number>        Number of Elasticsearch shards (default: 1)"
-    //   )
-    // );
-    // this.generic(
-    //   chalk.gray(
-    //     "--replicas <number>      Number of Elasticsearch replicas (default: 1)"
-    //   )
-    // );
     this.generic(
-      chalk.gray("--delimiter <char>       CSV delimiter (default: ,)")
+      chalk.gray("--shards <number>             Number of Elasticsearch shards (default: 1)")
     );
-    // this.generic(
-    //   chalk.gray(
-    //     "--ignore-fields <fields...> Field names to exclude from mapping"
-    //   )
-    // );
-    // this.generic(
-    //   chalk.gray(
-    //     "--skip-metadata          Skip adding submission metadata to mapping"
-    //   )
-    // );
+    this.generic(
+      chalk.gray("--replicas <number>           Number of Elasticsearch replicas (default: 1)")
+    );
+    this.generic(chalk.gray("--delimiter <char>            CSV delimiter (default: ,)"));
+    this.generic(
+      chalk.gray("--ignore-fields <fields...>   Field names to exclude from mapping")
+    );
+    this.generic(
+      chalk.gray("--skip-metadata               Skip adding submission metadata to mapping")
+    );
+    this.generic(chalk.gray("--force                       Overwrite existing files"));
     this.generic("");
     this.generic(chalk.bold.cyan("    From CSV files:"));
     this.generic(
       chalk.gray(
-        "    composer -p ElasticsearchMapping -f data.csv -i my_index -o /configs/es-mapping.json"
+        "    composer elasticsearch-mapping -f data.csv -i my_index -o configs/es-mapping.json"
       )
     );
     this.generic(
@@ -432,41 +381,55 @@ export class Logger {
     );
     this.generic(
       chalk.gray(
-        "    composer -p ElasticsearchMapping -f clinical-dictionary.json -i clinical_data -o mapping.json"
+        "    composer elasticsearch-mapping -f clinical-dictionary.json -i clinical_data -o mapping.json"
+      )
+    );
+    this.generic("");
+
+    this.generic(chalk.bold.magenta("Generate Arranger Configs:"));
+    this.generic(
+      chalk.white("composer arranger-configs -f elasticsearch-mapping.json")
+    );
+    this.generic(chalk.gray("Options:"));
+    this.generic(
+      chalk.gray("-f, --files <paths...>        Input Elasticsearch mapping file (JSON) (required)")
+    );
+    this.generic(
+      chalk.gray("-o, --output <path>           Output file path for generated configs (default: configs/arrangerConfigs/)")
+    );
+    this.generic(
+      chalk.gray("-i, --index <name>            Elasticsearch index name (default: data)")
+    );
+    this.generic(
+      chalk.gray("--arranger-doc-type <type>    Arranger document type: file or analysis (default: file)")
+    );
+    this.generic(chalk.gray("--force                       Overwrite existing files"));
+    this.generic("");
+    this.generic(
+      chalk.gray(
+        "Example: composer arranger-configs -f mapping.json -o configs/clinicalConfigs/ -i clinical_data"
       )
     );
     this.generic("");
 
     this.generic(chalk.bold.magenta("Generate PostgreSQL Table:"));
-    this.generic(chalk.white("composer -p PostgresTable -f data.csv"));
+    this.generic(chalk.white("composer postgres-table -f data.csv"));
     this.generic(chalk.gray("Options:"));
     this.generic(
-      chalk.gray("-p, --profile <profile> Execution profile (default: default)")
+      chalk.gray("-f, --files <paths...>        Input CSV file path(s) (required)")
     );
     this.generic(
-      chalk.gray("-f, --files <paths...>  Input CSV file path (required)")
+      chalk.gray("-o, --output <path>           Output SQL file path (default: configs/postgresConfigs/)")
     );
+    this.generic(chalk.gray("--table-name <name>           PostgreSQL table name"));
     this.generic(
-      chalk.gray(
-        "-o, --output <path>     Output SQL file path (default: configs/postgresConfigs/)"
-      )
+      chalk.gray("--delimiter <char>            CSV delimiter (default: ,)")
     );
-    this.generic(chalk.gray("--table-name <n>        PostgreSQL table name"));
-    this.generic(chalk.gray("--schema <n>            PostgreSQL schema name"));
-    this.generic(
-      chalk.gray("--delimiter <char>      CSV delimiter (default: ,)")
-    );
+    this.generic(chalk.gray("--force                       Overwrite existing files"));
     this.generic("");
-    this.generic(chalk.bold.cyan("    Basic table generation:"));
     this.generic(
       chalk.gray(
-        "    composer -p PostgresTable -f users.csv --table-name users -o create_users.sql"
-      )
-    );
-    this.generic(chalk.bold.cyan("    With schema:"));
-    this.generic(
-      chalk.gray(
-        "    composer -p PostgresTable -f patient_data.csv --table-name patients --schema clinical"
+        "Example: composer postgres-table -f users.csv --table-name users -o create_users.sql"
       )
     );
     this.generic("");

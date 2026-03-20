@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ComposerError, ErrorFactory } from "../utils/errors";
 import { ArrangerConfigs } from "../services/generateArrangerConfigs";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
@@ -18,8 +18,6 @@ export class ArrangerCommand extends Command {
 
   constructor() {
     super("Arranger", CONFIG_PATHS.arranger.dir);
-    // Override the default filename from the base class
-    this.defaultOutputFileName = "configs";
   }
 
   /**
@@ -48,7 +46,7 @@ export class ArrangerCommand extends Command {
     // Ensure only one mapping file is provided
     if (cliOutput.filePaths.length !== 1) {
       Logger.debug`Invalid number of mapping files: ${cliOutput.filePaths.length}`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.args("You must provide exactly one mapping file", [
         "Arranger config generation requires a single Elasticsearch mapping file",
         "Example: -f elasticsearch-mapping.json",
@@ -62,7 +60,7 @@ export class ArrangerCommand extends Command {
 
     if (!documentType || !validDocumentTypes.includes(documentType)) {
       Logger.debug`Invalid document type: ${documentType}`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.args(
         `Invalid document type. Must be one of: ${validDocumentTypes.join(
           ", "
@@ -89,7 +87,7 @@ export class ArrangerCommand extends Command {
 
     if (fileExtension !== ".json") {
       Logger.debug`File extension validation failed - not JSON`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.file(
         "Arranger configs require a JSON mapping file",
         filePath,
@@ -103,7 +101,7 @@ export class ArrangerCommand extends Command {
 
     if (!fs.existsSync(filePath)) {
       Logger.debug`File not found at path: ${filePath}`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.file(`File not found: ${filePath}`, filePath, [
         "Check that the mapping file exists",
         "Verify the file path is correct",
@@ -120,15 +118,9 @@ export class ArrangerCommand extends Command {
    * @returns The generated configurations
    * @throws {ComposerError} If generation fails
    */
-  protected async execute(cliOutput: CLIOutput): Promise<any> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     Logger.debug`Starting ArrangerCommand execution`;
-    let outputPath = cliOutput.outputPath!;
-
-    // Normalize output path for arranger config files
-    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
-      outputPath = path.join(outputPath, this.defaultOutputFileName);
-      Logger.debug`Output is a directory, will create ${this.defaultOutputFileName} inside it`;
-    }
+    const outputPath = this.resolveOutputPath(cliOutput.outputPath!);
 
     const filePath = cliOutput.filePaths[0];
 
@@ -143,7 +135,7 @@ export class ArrangerCommand extends Command {
         mapping = JSON.parse(mappingContent);
       } catch (error) {
         Logger.debug`JSON parsing failed: ${error}`;
-        // UPDATED: Use ErrorFactory with helpful suggestions
+       
         throw ErrorFactory.file("Invalid JSON mapping file", filePath, [
           "Ensure the mapping file contains valid JSON",
           "Check for syntax errors like missing commas or brackets",
@@ -183,14 +175,12 @@ export class ArrangerCommand extends Command {
       Logger.generic(`    - ${tableFilePath}`);
       Logger.generic(`    - ${facetsFilePath}`);
 
-      return configs;
     } catch (error) {
       Logger.debug`Error during execution: ${error}`;
-      if (error instanceof Error && error.name === "ComposerError") {
-        Logger.errorString(error.message);
+      if (error instanceof ComposerError) {
         throw error;
       }
-      // UPDATED: Use ErrorFactory
+     
       throw ErrorFactory.generation(
         "Failed to generate Arranger configurations",
         error,

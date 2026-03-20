@@ -6,12 +6,9 @@ import { Environment } from "./config/environment";
 import { handleError } from "./utils/errors";
 import { Logger } from "./utils/logger";
 
-// Add global unhandled rejection handler
-process.on("unhandledRejection", (reason, promise) => {
-  Logger.debugString("Unhandled Rejection at:");
-  Logger.debugString(String(promise));
-  Logger.debugString("Reason:");
-  Logger.debugString(String(reason));
+process.on("unhandledRejection", (reason) => {
+  Logger.errorString(`Unhandled error: ${String(reason)}`);
+  process.exit(1);
 });
 
 async function main() {
@@ -29,8 +26,7 @@ async function main() {
     Logger.debug`Running command`;
 
     // Execute the command
-    // FIXED: baseCommand.run() handles ALL error logging
-    // Don't add additional error handling here
+    // baseCommand.run() handles all error logging — no additional handling needed here
     const result = await command.run(cliOutput);
 
     // Check command result - if failed, just exit

@@ -2,19 +2,47 @@ import * as fs from "fs"; // File system operations
 import * as readline from "readline"; // Reading files line by line
 import { parse as csvParse } from "csv-parse/sync"; // CSV parsing functionality
 import { Logger } from "../../utils/logger";
-import { ErrorFactory } from "../../utils/errors";
+import { ConductorError, ErrorFactory } from "../../utils/errors";
 
 /**
- * CSV Processing utility
- *
- * This module provides core functionality for processing CSV files:
- * - Counting lines in CSV files (excluding headers)
- * - Parsing individual CSV lines into arrays
- *
- * Used by the Conductor to prepare data for Elasticsearch ingestion.
- * Handles type conversion, null values, and submitter metadata.
- * Updated to use error factory pattern for consistent error handling.
+ * Core CSV utilities: file validation/line counting and CSV line parsing.
  */
+
+/**
+ * Validates a CSV file exists and is readable, then returns the data line count.
+ * Throws a ConductorError if the file is missing, unreadable, or empty.
+ */
+export async function validateAndCountCSVFile(filePath: string): Promise<number> {
+  if (!fs.existsSync(filePath)) {
+    throw ErrorFactory.file("CSV file not found", filePath, [
+      "Check that the file exists",
+      "Verify the file path is correct",
+      "Ensure the file hasn't been moved or deleted",
+    ]);
+  }
+
+  try {
+    fs.accessSync(filePath, fs.constants.R_OK);
+  } catch {
+    throw ErrorFactory.file("Cannot read CSV file", filePath, [
+      "Check file permissions",
+      "Ensure you have read access",
+      "Try running with appropriate privileges",
+    ]);
+  }
+
+  const totalLines = await countFileLines(filePath);
+
+  if (totalLines === 0) {
+    throw ErrorFactory.invalidFile("CSV file contains no data rows", filePath, [
+      "Ensure the file contains data beyond headers",
+      "Check if the file has at least one data row",
+      "Verify the file format is correct",
+    ]);
+  }
+
+  return totalLines;
+}
 
 /**
  * Counts the total number of lines in a file, excluding the header
@@ -56,8 +84,12 @@ export async function countFileLines(filePath: string): Promise<number> {
     let lines = 0;
 
     // Count each line in file
-    for await (const _ of rl) {
-      lines++;
+    try {
+      for await (const _ of rl) {
+        lines++;
+      }
+    } finally {
+      rl.close();
     }
 
     const recordCount = lines - 1; // Subtract header line from total count
@@ -74,7 +106,7 @@ export async function countFileLines(filePath: string): Promise<number> {
     return recordCount;
   } catch (error) {
     // If it's already a ConductorError, rethrow it
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 
@@ -125,7 +157,7 @@ export function parseCSVLine(
   line: string,
   delimiter: string,
   isHeaderRow: boolean = false
-): any[] {
+): string[][] {
   try {
     // Validate inputs
     if (typeof line !== "string") {
@@ -193,7 +225,7 @@ export function parseCSVLine(
     return result;
   } catch (error) {
     // If it's already a ConductorError, rethrow it
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 

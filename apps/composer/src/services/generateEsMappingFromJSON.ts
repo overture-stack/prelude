@@ -1,9 +1,8 @@
-// src/services/generateEsMappingFromJSON.ts - Updated with consolidated error handling
 import fs from "fs";
 import path from "path";
 import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 
 // ---- Type Inference Configuration ----
 
@@ -20,7 +19,7 @@ export interface MappingOptions {
 }
 
 const defaultRules: TypeInferenceRules = {
-  maxTextLength: 256,
+  maxTextLength: 255,
   datePatterns: ["date", "time", "timestamp", "created", "updated", "modified"],
   excludePatterns: ["password", "secret", "key", "token"],
 };
@@ -33,21 +32,21 @@ function isValidDate(dateString: string): boolean {
 function inferFieldType(
   keyName: string,
   sampleValue: any,
-  rules: TypeInferenceRules = defaultRules
+  rules: TypeInferenceRules = defaultRules,
 ): ElasticsearchField {
   try {
     Logger.debug`Inferring type for field: ${keyName}`;
 
     if (sampleValue === null || sampleValue === undefined) {
       Logger.debugString(
-        "Null/undefined value detected, defaulting to keyword"
+        "Null/undefined value detected, defaulting to keyword",
       );
       return { type: "keyword" as const, null_value: "No Data" };
     }
 
     if (
       rules.excludePatterns.some((pattern) =>
-        keyName.toLowerCase().includes(pattern)
+        keyName.toLowerCase().includes(pattern),
       )
     ) {
       Logger.debugString("Field matches exclude pattern, setting as keyword");
@@ -89,7 +88,7 @@ function inferFieldType(
         const elementType = inferFieldType(
           `${keyName}_element`,
           sampleValue[0],
-          rules
+          rules,
         );
 
         return {
@@ -116,7 +115,7 @@ function inferFieldType(
     if (typeof sampleValue === "string") {
       if (
         rules.datePatterns.some((pattern) =>
-          keyName.toLowerCase().includes(pattern)
+          keyName.toLowerCase().includes(pattern),
         )
       ) {
         if (isValidDate(sampleValue)) {
@@ -139,7 +138,7 @@ function inferFieldType(
   } catch (error) {
     Logger.errorString("Error inferring field type");
     Logger.debugObject("Error details", { keyName, sampleValue, error });
-    // UPDATED: Use ErrorFactory
+
     throw ErrorFactory.generation(
       "Error inferring field type",
       { keyName, sampleValue, error },
@@ -147,7 +146,7 @@ function inferFieldType(
         "Check that the JSON value is valid",
         "Ensure the field name doesn't contain special characters",
         "Verify the JSON structure is properly formatted",
-      ]
+      ],
     );
   }
 }
@@ -156,12 +155,12 @@ function inferFieldType(
 export function generateMappingFromJson(
   jsonFilePath: string,
   indexName: string,
-  options: MappingOptions = {}
+  options: MappingOptions = {},
 ): ElasticsearchMapping {
   try {
     Logger.debugString("generateEsMappingFromJSON running");
     Logger.debug`Processing file: ${path.basename(
-      jsonFilePath
+      jsonFilePath,
     )} within generateEsMappingFromJSON function`;
 
     const ignoredFields = options.ignoredFields || [];
@@ -175,20 +174,20 @@ export function generateMappingFromJson(
 
     if (ignoredFields.length > 0) {
       Logger.info`Fields that will be excluded from mapping: ${ignoredFields.join(
-        ", "
+        ", ",
       )}`;
     }
 
     if (skipMetadata) {
       Logger.infoString(
-        "Submission metadata fields will be excluded from mapping"
+        "Submission metadata fields will be excluded from mapping",
       );
     }
 
     if (indexName === "default" || indexName === "data") {
       Logger.defaultValueWarning(
         "No index name supplied, defaulting to: data",
-        "--index <n>"
+        "--index <n>",
       );
       indexName = "data";
     } else {
@@ -205,7 +204,6 @@ export function generateMappingFromJson(
     }
 
     if (typeof jsonData !== "object" || jsonData === null) {
-      // UPDATED: Use ErrorFactory
       throw ErrorFactory.file(
         "Invalid JSON: Expected a non-null object",
         jsonFilePath,
@@ -213,7 +211,7 @@ export function generateMappingFromJson(
           "Ensure the JSON file contains a valid object structure",
           "Check that the file is not empty or corrupted",
           "Verify the JSON syntax is correct",
-        ]
+        ],
       );
     }
 
@@ -223,7 +221,7 @@ export function generateMappingFromJson(
     const sampleData = hasDataKey ? jsonData.data : jsonData;
 
     const processDataStructure = (
-      data: Record<string, any>
+      data: Record<string, any>,
     ): Record<string, ElasticsearchField> => {
       const dataProperties: Record<string, ElasticsearchField> = {};
 
@@ -273,7 +271,7 @@ export function generateMappingFromJson(
         type: "object" as const,
         properties: {
           submission_id: { type: "keyword" as const, null_value: "No Data" },
-          source_file_hash: { type: "keyword" as const, null_value: "No Data" },
+          source_file_name: { type: "keyword" as const, null_value: "No Data" },
           processed_at: { type: "date" as const },
         },
       };
@@ -311,7 +309,7 @@ export function generateMappingFromJson(
     if (error instanceof Error && error.name === "ComposerError") {
       throw error;
     }
-    // UPDATED: Use ErrorFactory
+
     throw ErrorFactory.generation(
       `Error generating mapping from JSON: ${errorMessage}`,
       {
@@ -324,7 +322,7 @@ export function generateMappingFromJson(
         "Ensure the file contains the expected data structure",
         "Verify file permissions and accessibility",
         "Check that the JSON follows the expected schema format",
-      ]
+      ],
     );
   }
 }

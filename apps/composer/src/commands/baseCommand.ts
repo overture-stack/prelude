@@ -1,5 +1,5 @@
 import { CLIOutput } from "../types";
-import { ErrorFactory, handleError } from "../utils/errors"; // UPDATED: Import from utils/errors
+import { ErrorFactory, handleError } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import * as fs from "fs";
 import * as path from "path";
@@ -90,7 +90,7 @@ export abstract class Command {
       // Execute the specific command implementation
       await this.execute(cliOutput);
     } catch (error) {
-      handleError(error); // UPDATED: Use consolidated handleError
+      handleError(error);
     }
   }
 
@@ -126,7 +126,7 @@ export abstract class Command {
    */
   protected async validate(cliOutput: CLIOutput): Promise<void> {
     if (!cliOutput.filePaths?.length) {
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.args("No input files provided", [
         "Use -f or --files to specify input files",
         "Example: -f data.csv metadata.json",
@@ -139,7 +139,7 @@ export abstract class Command {
     const expandedPaths = expandDirectoryPaths(cliOutput.filePaths);
 
     if (expandedPaths.length === 0) {
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.args("No valid input files found", [
         "Check that the specified paths exist",
         "Ensure files have the correct extensions",
@@ -165,6 +165,26 @@ export abstract class Command {
     if (cliOutput.csvDelimiter) {
       validateDelimiter(cliOutput.csvDelimiter);
     }
+  }
+
+  /**
+   * Resolves the final output file path, handling directory and extension cases.
+   * If outputPath is an existing directory, appends defaultOutputFileName.
+   * If ext is provided and the path doesn't already end with it, appends it.
+   *
+   * @param outputPath - The raw output path
+   * @param ext - Optional file extension to enforce (e.g. ".json", ".sql")
+   */
+  protected resolveOutputPath(outputPath: string, ext?: string): string {
+    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
+      Logger.debug`Output is a directory, appending ${this.defaultOutputFileName}`;
+      return path.join(outputPath, this.defaultOutputFileName);
+    }
+    if (ext && !outputPath.endsWith(ext)) {
+      Logger.debug`Appending ${ext} extension to output path`;
+      return outputPath + ext;
+    }
+    return outputPath;
   }
 
   /**
@@ -224,7 +244,7 @@ export abstract class Command {
     }
 
     // Display list of files that would be overwritten
-    Logger.fileList(
+    Logger.warnFileList(
       "The following file(s) in the output directory will be overwritten",
       filesToOverwrite
     );

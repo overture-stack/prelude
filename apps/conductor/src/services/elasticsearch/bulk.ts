@@ -11,9 +11,6 @@ import { Logger } from "../../utils/logger";
 import * as fs from "fs";
 import * as path from "path";
 
-// Track if we've already displayed the error summary to avoid duplicates during retries
-let hasDisplayedErrorSummary = false;
-
 /**
  * Interface for bulk operation options
  */
@@ -32,6 +29,24 @@ interface BulkOptions {
 }
 
 /**
+ * Interface for documents with optional IDs for upsert behavior
+ */
+interface DocumentWithId {
+  _id?: string | number;
+  [key: string]: unknown;
+}
+
+/** Shape of a single item in the Elasticsearch bulk response */
+interface BulkResponseItem {
+  index?: {
+    _id?: string;
+    status?: number;
+    result?: string;
+    error?: { type: string; reason: string };
+  };
+}
+
+/**
  * Interface for tracking error patterns
  */
 interface ErrorPattern {
@@ -45,9 +60,10 @@ interface ErrorPattern {
 
 /**
  * Sends a bulk write request to Elasticsearch.
+ * Supports upsert behavior by including document IDs when available.
  *
  * @param client - The Elasticsearch client instance
- * @param records - An array of records to be indexed
+ * @param records - An array of records to be indexed (can include _id field for upserts)
  * @param indexName - The name of the Elasticsearch index
  * @param onFailure - Callback function to handle failed records
  * @param options - Optional configuration for bulk operations
@@ -55,32 +71,48 @@ interface ErrorPattern {
  */
 export async function sendBulkWriteRequest(
   client: Client,
-  records: object[],
+  records: DocumentWithId[],
   indexName: string,
   onFailure: (count: number) => void,
-  options: BulkOptions = {}
+  options: BulkOptions = {},
+  onIndexed?: (created: number, updated: number) => void
 ): Promise<void> {
   const maxRetries = options.maxRetries || 3;
   const refresh = options.refresh !== undefined ? options.refresh : true;
 
-  // Reset the error display flag for each new bulk request
-  hasDisplayedErrorSummary = false;
-
+  let hasDisplayedErrorSummary = false;
   let attempt = 0;
   let success = false;
-  let lastErrorAnalysis: any = null;
+  let lastErrorAnalysis: { patterns: ErrorPattern[]; totalErrors: number } | null = null;
+
+  // Build bulk body once — records don't change between retry attempts
+  const body: Record<string, unknown>[] = new Array(records.length * 2);
+  let bi = 0;
+  for (const doc of records) {
+    const { _id, ...docBody } = doc;
+    body[bi++] = _id
+      ? { index: { _index: indexName, _id: String(_id) } }
+      : { index: { _index: indexName } };
+    body[bi++] = docBody;
+  }
 
   while (attempt < maxRetries && !success) {
     try {
-      const body = records.flatMap((doc) => [
-        { index: { _index: indexName } },
-        doc,
-      ]);
 
       const { body: result } = await client.bulk({
         body,
         refresh,
       });
+
+      if (onIndexed) {
+        let created = 0;
+        let updated = 0;
+        result.items.forEach((item: BulkResponseItem) => {
+          if (item.index?.result === "created") created++;
+          else if (item.index?.result === "updated") updated++;
+        });
+        onIndexed(created, updated);
+      }
 
       if (result.errors) {
         const errorAnalysis = analyzeErrors(result.items);
@@ -98,15 +130,21 @@ export async function sendBulkWriteRequest(
         }
 
         // Show concise error summary in terminal (only once)
-        displayConciseErrorSummary(errorAnalysis, logFileName);
-
-        onFailure(errorAnalysis.totalErrors);
+        if (!hasDisplayedErrorSummary) {
+          displayConciseErrorSummary(errorAnalysis, logFileName);
+          hasDisplayedErrorSummary = true;
+        }
 
         // If some records succeeded, consider it a partial success
         if (errorAnalysis.totalErrors < records.length) {
+          onFailure(errorAnalysis.totalErrors);
           success = true;
         } else {
           attempt++;
+          // Only count failures once — on the final attempt
+          if (attempt >= maxRetries) {
+            onFailure(errorAnalysis.totalErrors);
+          }
         }
       } else {
         success = true;
@@ -118,8 +156,11 @@ export async function sendBulkWriteRequest(
           error instanceof Error ? error.message : String(error)
         }`
       );
-      onFailure(records.length);
       attempt++;
+      // Only count failures once — on the final attempt
+      if (attempt >= maxRetries) {
+        onFailure(records.length);
+      }
 
       if (attempt < maxRetries) {
         Logger.debugString(`Retrying... (${attempt}/${maxRetries})`);
@@ -150,14 +191,14 @@ export async function sendBulkWriteRequest(
 /**
  * Analyzes bulk operation errors and groups them by pattern
  */
-function analyzeErrors(items: any[]): {
+function analyzeErrors(items: BulkResponseItem[]): {
   patterns: ErrorPattern[];
   totalErrors: number;
 } {
   const errorPatterns = new Map<string, ErrorPattern>();
   let totalErrors = 0;
 
-  items.forEach((item: any, index: number) => {
+  items.forEach((item: BulkResponseItem) => {
     if (item.index?.error) {
       totalErrors++;
 
@@ -187,7 +228,7 @@ function analyzeErrors(items: any[]): {
       }
 
       if (pattern.sampleDocuments.length < 3) {
-        pattern.sampleDocuments.push(item.index._id);
+        pattern.sampleDocuments.push(item.index._id ?? "unknown");
       }
     }
   });
@@ -205,44 +246,50 @@ function displayConciseErrorSummary(
   errorAnalysis: { patterns: ErrorPattern[]; totalErrors: number },
   logFileName?: string
 ): void {
-  // Only display if we haven't shown this pattern before (to avoid duplicates during retries)
-  if (!hasDisplayedErrorSummary) {
-    Logger.generic("");
-    Logger.generic("");
-    Logger.info`Bulk indexing failed for ${errorAnalysis.totalErrors} records`;
+  Logger.generic("");
+  Logger.generic("");
+  Logger.info`Bulk indexing rejected ${errorAnalysis.totalErrors} records`;
 
-    Logger.suggestion("Issues");
-    errorAnalysis.patterns.forEach((pattern) => {
-      if (pattern.type === "mapper_parsing_exception") {
+  const mappingPatterns = errorAnalysis.patterns.filter(
+    (p) => p.type === "mapper_parsing_exception"
+  );
+  const otherPatterns = errorAnalysis.patterns.filter(
+    (p) => p.type !== "mapper_parsing_exception"
+  );
+
+  if (mappingPatterns.length > 0) {
+    Logger.suggestion("Mapping Type Mismatches");
+    mappingPatterns.forEach((pattern) => {
+      Logger.generic(
+        `   ▸ Field "${pattern.field}": ${pattern.reason} (${pattern.count} records affected)`
+      );
+      if (pattern.sampleValues.length > 0) {
         Logger.generic(
-          `   ▸ ${pattern.field}: ${pattern.reason} (${pattern.count} records)`
+          `     Values received: ${pattern.sampleValues.join(", ")}`
         );
-        if (pattern.sampleValues.length > 0) {
-          Logger.generic(
-            `     Sample of values provided: ${pattern.sampleValues.join(", ")}`
-          );
-        }
+      }
+      Logger.generic(
+        `     Fix: update "${pattern.field}" type in your Elasticsearch mapping`
+      );
+    });
+  }
+
+  if (otherPatterns.length > 0) {
+    Logger.suggestion("Other Issues");
+    otherPatterns.forEach((pattern) => {
+      Logger.generic(
+        `   ▸ ${pattern.type} — ${pattern.reason} (${pattern.count} records)`
+      );
+      if (pattern.sampleValues.length > 0) {
+        Logger.generic(
+          `     Values received: ${pattern.sampleValues.join(", ")}`
+        );
       }
     });
+  }
 
-    // Show other error types if any
-    const otherPatterns = errorAnalysis.patterns.filter(
-      (p) => p.type !== "mapper_parsing_exception"
-    );
-    if (otherPatterns.length > 0) {
-      Logger.suggestion("Other Issues");
-      otherPatterns.forEach((pattern) => {
-        Logger.generic(
-          `     ${pattern.type}: ${pattern.reason} (${pattern.count} records)`
-        );
-      });
-    }
-
-    if (logFileName) {
-      Logger.generic(`   ▸ Detailed error log: ${logFileName}`);
-    }
-
-    hasDisplayedErrorSummary = true;
+  if (logFileName) {
+    Logger.generic(`   ▸ Full error log: ${logFileName}`);
   }
 }
 
@@ -251,7 +298,7 @@ function displayConciseErrorSummary(
  */
 async function writeErrorLogFile(
   errorAnalysis: { patterns: ErrorPattern[]; totalErrors: number },
-  items: any[],
+  items: BulkResponseItem[],
   indexName: string,
   logDir?: string
 ): Promise<string> {
@@ -291,7 +338,7 @@ async function writeErrorLogFile(
     logContent += "\nDETAILED ERRORS:\n";
     logContent += "=================\n\n";
 
-    items.forEach((item: any, index: number) => {
+    items.forEach((item: BulkResponseItem, index: number) => {
       if (item.index?.error) {
         logContent += `Record ${index}:\n`;
         logContent += `  Document ID: ${item.index._id}\n`;

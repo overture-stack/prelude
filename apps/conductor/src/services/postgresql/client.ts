@@ -24,6 +24,7 @@ interface PostgresClientOptions {
   max?: number;
   idleTimeoutMillis?: number;
   connectionTimeoutMillis?: number;
+  statement_timeout?: number;
 }
 
 /**
@@ -56,6 +57,8 @@ export function createPostgresClient(config: Config): Pool {
   options.idleTimeoutMillis = config.postgresql?.idleTimeoutMillis || 30000;
   options.connectionTimeoutMillis =
     config.postgresql?.connectionTimeoutMillis || 10000;
+  // Abort any single query that runs longer than 2 minutes to prevent hangs
+  options.statement_timeout = config.postgresql?.statementTimeout || 120000;
 
   try {
     return new Pool(options);

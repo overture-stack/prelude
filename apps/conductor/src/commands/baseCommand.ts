@@ -3,11 +3,11 @@
  *
  * Provides the base abstract class and interfaces for all command implementations.
  * Commands follow the Command Pattern for encapsulating operations.
- * FIXED: Centralized error logging - only log here, nowhere else
+ * Error logging is centralised in `run()` — subclasses should throw, not log.
  */
 
 import { CLIOutput } from "../types/cli";
-import * as fs from "fs";
+import { existsSync, accessSync, statSync, constants as fsConstants } from "fs";
 import { Logger } from "../utils/logger";
 import { ErrorFactory, ConductorError } from "../utils/errors";
 
@@ -25,7 +25,7 @@ export interface CommandResult {
   errorCode?: string;
 
   /** Additional result details */
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**
@@ -42,7 +42,6 @@ export abstract class Command {
 
   /**
    * Main method to run the command with the provided CLI arguments.
-   * FIXED: Single point of error logging - only log errors here
    *
    * @param cliOutput - The parsed command line arguments
    * @returns A promise that resolves to a CommandResult object
@@ -96,19 +95,14 @@ export abstract class Command {
 
       // CENTRALIZED ERROR LOGGING - SINGLE POINT OF CONTROL
       if (error instanceof ConductorError) {
-        // Only log if not already logged
-        if (!error.isLogged) {
-          Logger.errorString(error.message);
+        Logger.errorString(error.message);
 
-          // Display suggestions if available
-          if (error.suggestions && error.suggestions.length > 0) {
-            Logger.suggestion("Suggestions");
-            error.suggestions.forEach((suggestion: string) => {
-              Logger.tipString(suggestion);
-            });
-          }
-
-          error.isLogged = true; // Mark as logged
+        // Display suggestions if available
+        if (error.suggestions && error.suggestions.length > 0) {
+          Logger.suggestion("Suggestions");
+          error.suggestions.forEach((suggestion: string) => {
+            Logger.tipString(suggestion);
+          });
         }
 
         // Display additional details in debug mode
@@ -198,7 +192,7 @@ export abstract class Command {
     // Validate each input file exists if file paths are provided
     if (cliOutput.filePaths?.length) {
       for (const filePath of cliOutput.filePaths) {
-        if (!fs.existsSync(filePath)) {
+        if (!existsSync(filePath)) {
           throw ErrorFactory.file("Input file not found", filePath, [
             "Check the file path spelling",
             "Ensure the file exists in the specified location",
@@ -208,7 +202,7 @@ export abstract class Command {
 
         // Check if file is readable
         try {
-          fs.accessSync(filePath, fs.constants.R_OK);
+          accessSync(filePath, fsConstants.R_OK);
         } catch (error) {
           throw ErrorFactory.file("File is not readable", filePath, [
             "Check file permissions",
@@ -218,7 +212,7 @@ export abstract class Command {
         }
 
         // Check if file has content
-        const stats = fs.statSync(filePath);
+        const stats = statSync(filePath);
         if (stats.size === 0) {
           throw ErrorFactory.invalidFile("File is empty", filePath, [
             "Ensure the file contains data",
@@ -239,29 +233,70 @@ export abstract class Command {
   }
 
   /**
-   * Helper method to create a directory if it doesn't exist.
-   * Available for commands that need to create output directories.
+   * Iterates over a list of file paths, calling processor for each one.
+   * Handles per-file error logging, counting, and returns a unified CommandResult.
+   * Shared by upload commands that process one or more input files.
    */
-  protected createDirectoryIfNotExists(dirPath: string): void {
-    if (!fs.existsSync(dirPath)) {
+  protected async processFiles(
+    filePaths: string[],
+    processor: (filePath: string) => Promise<void>
+  ): Promise<CommandResult> {
+    let successCount = 0;
+    let failureCount = 0;
+    const failureDetails: Record<string, unknown> = {};
+
+    for (const filePath of filePaths) {
+      Logger.generic("");
+      Logger.info`Processing File: ${filePath}`;
       try {
-        fs.mkdirSync(dirPath, { recursive: true });
-        Logger.info`Created directory: ${dirPath}`;
+        await processor(filePath);
+        Logger.debug`Successfully processed ${filePath}`;
+        successCount++;
       } catch (error) {
-        throw ErrorFactory.file("Failed to create directory", dirPath, [
-          "Check directory permissions",
-          "Ensure parent directories exist",
-          "Verify sufficient disk space",
-        ]);
+        failureCount++;
+
+        if (error instanceof ConductorError) {
+          Logger.errorString(`${error.message}`);
+
+          if (error.suggestions && error.suggestions.length > 0) {
+            Logger.suggestion("Suggestions");
+            error.suggestions.forEach((suggestion) => {
+              Logger.tipString(suggestion);
+            });
+          }
+
+          Logger.debug`Skipping file '${filePath}': [${error.code}] ${error.message}`;
+          failureDetails[filePath] = {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+          };
+        } else if (error instanceof Error) {
+          Logger.errorString(`${error.message}`);
+          Logger.debug`Skipping file '${filePath}': ${error.message}`;
+          failureDetails[filePath] = { message: error.message };
+        } else {
+          Logger.errorString("An unknown error occurred");
+          Logger.debug`Skipping file '${filePath}' due to an error`;
+          failureDetails[filePath] = { message: "Unknown error" };
+        }
       }
+    }
+
+    if (failureCount === 0) {
+      Logger.debug`Successfully processed all ${successCount} files`;
+      return { success: true, details: { filesProcessed: successCount } };
+    } else if (successCount === 0) {
+      return { success: false, errorCode: "PROCESSING_FAILED", details: failureDetails };
+    } else {
+      Logger.warnString(
+        `Processed ${successCount} files successfully, ${failureCount} failed`
+      );
+      return {
+        success: true,
+        details: { filesProcessed: successCount, filesFailed: failureCount, failureDetails },
+      };
     }
   }
 
-  /**
-   * Helper method to log generated files.
-   * Available for commands that generate output files.
-   */
-  protected logGeneratedFile(filePath: string): void {
-    Logger.success`Generated file: ${filePath}`;
-  }
 }

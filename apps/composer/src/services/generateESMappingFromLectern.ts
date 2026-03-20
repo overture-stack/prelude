@@ -1,4 +1,3 @@
-// src/services/generateEsMappingFromLectern.ts
 import fs from "fs";
 import path from "path";
 import { Logger } from "../utils/logger";
@@ -25,7 +24,7 @@ interface TypeMappingRules {
 }
 
 const defaultRules: TypeMappingRules = {
-  textFieldThreshold: 256,
+  textFieldThreshold: 255,
   datePatterns: ["date", "time", "timestamp", "created", "updated", "modified"],
   keywordFields: ["id", "code", "status", "type", "category"],
 };
@@ -35,7 +34,7 @@ const defaultRules: TypeMappingRules = {
  */
 function mapLecternTypeToElasticsearch(
   lecternField: LecternField,
-  rules: TypeMappingRules = defaultRules
+  rules: TypeMappingRules = defaultRules,
 ): ElasticsearchField {
   Logger.debug`Mapping Lectern field: ${lecternField.name} (${lecternField.valueType})`;
 
@@ -43,12 +42,12 @@ function mapLecternTypeToElasticsearch(
 
   // Check for date patterns in field name
   const isDateField = rules.datePatterns.some((pattern) =>
-    fieldName.includes(pattern)
+    fieldName.includes(pattern),
   );
 
   // Check for keyword patterns in field name
   const isKeywordField = rules.keywordFields.some((pattern) =>
-    fieldName.includes(pattern)
+    fieldName.includes(pattern),
   );
 
   let esField: ElasticsearchField;
@@ -99,7 +98,7 @@ function mapLecternTypeToElasticsearch(
 function convertLecternSchemaToProperties(
   schema: LecternSchema,
   options: LecternMappingOptions,
-  rules: TypeMappingRules
+  rules: TypeMappingRules,
 ): Record<string, ElasticsearchField> {
   Logger.info`Converting schema: ${schema.name}`;
 
@@ -134,7 +133,7 @@ function convertLecternSchemaToProperties(
 export function generateMappingFromLectern(
   lecternFilePath: string,
   indexName: string,
-  options: LecternMappingOptions = {}
+  options: LecternMappingOptions = {},
 ): ElasticsearchMapping {
   try {
     Logger.debugString("generateEsMappingFromLectern running");
@@ -155,14 +154,14 @@ export function generateMappingFromLectern(
 
     if (skipMetadata) {
       Logger.infoString(
-        "Submission metadata fields will be excluded from mapping"
+        "Submission metadata fields will be excluded from mapping",
       );
     }
 
     if (indexName === "default" || indexName === "data") {
       Logger.defaultValueWarning(
         "No index name supplied, defaulting to: data",
-        "--index <name>"
+        "--index <name>",
       );
       indexName = "data";
     } else {
@@ -173,7 +172,7 @@ export function generateMappingFromLectern(
 
     // Read and parse Lectern dictionary
     const lecternData: LecternDictionary = JSON.parse(
-      fs.readFileSync(lecternFilePath, "utf8")
+      fs.readFileSync(lecternFilePath, "utf8"),
     );
 
     const parseTime = Date.now() - startTime;
@@ -190,7 +189,7 @@ export function generateMappingFromLectern(
           "Ensure the dictionary contains a 'schemas' array",
           "Check that the file is a valid Lectern dictionary",
           "Verify the JSON structure matches Lectern specification",
-        ]
+        ],
       );
     }
 
@@ -202,7 +201,7 @@ export function generateMappingFromLectern(
           "Ensure the dictionary has at least one schema",
           "Check that schemas were properly generated",
           "Verify the dictionary is not empty",
-        ]
+        ],
       );
     }
 
@@ -225,7 +224,7 @@ export function generateMappingFromLectern(
           "Check that not all schemas are being ignored",
           "Verify schema names in the dictionary",
           "Ensure the dictionary contains processable schemas",
-        ]
+        ],
       );
     }
 
@@ -239,7 +238,7 @@ export function generateMappingFromLectern(
       const schemaProperties = convertLecternSchemaToProperties(
         schema,
         options,
-        rules
+        rules,
       );
 
       // Merge properties - if there are conflicts, log them
@@ -276,7 +275,7 @@ export function generateMappingFromLectern(
         type: "object" as const,
         properties: {
           submission_id: { type: "keyword" as const, null_value: "No Data" },
-          source_file_hash: { type: "keyword" as const, null_value: "No Data" },
+          source_file_name: { type: "keyword" as const, null_value: "No Data" },
           processed_at: { type: "date" as const },
         },
       };
@@ -334,7 +333,7 @@ export function generateMappingFromLectern(
         "Ensure the file contains valid schemas with fields",
         "Verify file permissions and accessibility",
         "Check that the dictionary follows Lectern specification",
-      ]
+      ],
     );
   }
 }

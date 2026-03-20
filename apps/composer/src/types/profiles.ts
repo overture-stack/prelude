@@ -1,12 +1,9 @@
-// src/types/profiles.ts - Updated with PostgreSQL profile
 export const Profiles = {
-  GENERATE_SONG_SCHEMA: "SongSchema",
-  GENERATE_LECTERN_DICTIONARY: "LecternDictionary",
-  GENERATE_ELASTICSEARCH_MAPPING: "ElasticsearchMapping",
-  GENERATE_ARRANGER_CONFIGS: "ArrangerConfigs",
-  GENERATE_POSTGRES_TABLE: "PostgresTable", // NEW PROFILE
-  GENERATE_CONFIGS: "GenerateConfigs", // Added missing property
-  DEFAULT: "default", // Added missing property
+  GENERATE_SONG_SCHEMA: "song-schema",
+  GENERATE_LECTERN_DICTIONARY: "lectern-dictionary",
+  GENERATE_ELASTICSEARCH_MAPPING: "elasticsearch-mapping",
+  GENERATE_ARRANGER_CONFIGS: "arranger-configs",
+  GENERATE_POSTGRES_TABLE: "postgres-table",
 } as const;
 
 export type Profile = (typeof Profiles)[keyof typeof Profiles];

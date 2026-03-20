@@ -1,4 +1,3 @@
-// src/services/generatePostgresTable.ts
 import { Logger } from "../utils/logger";
 
 // ---- Type Inference Configuration ----
@@ -57,7 +56,7 @@ function isValidTimestamp(timestampString: string): boolean {
   ];
 
   const matchesFormat = timestampFormats.some((format) =>
-    format.test(timestampString)
+    format.test(timestampString),
   );
   if (!matchesFormat) return false;
 
@@ -120,7 +119,7 @@ function analyzeNumericValues(values: string[]): {
 function inferPostgresType(
   columnName: string,
   sampleValues: string[],
-  rules: PostgresTypeInferenceRules = defaultRules
+  rules: PostgresTypeInferenceRules = defaultRules,
 ): string {
   Logger.debug`Inferring PostgreSQL type for column: ${columnName}`;
 
@@ -171,14 +170,14 @@ function inferPostgresType(
       // Decimal/numeric type
       const precision = Math.max(
         rules.decimalPrecision,
-        numericAnalysis.maxDecimalPlaces + 5
+        numericAnalysis.maxDecimalPlaces + 5,
       );
       const scale = Math.max(
         rules.decimalScale,
-        numericAnalysis.maxDecimalPlaces
+        numericAnalysis.maxDecimalPlaces,
       );
       Logger.debugString(
-        `Detected DECIMAL type with precision ${precision}, scale ${scale}`
+        `Detected DECIMAL type with precision ${precision}, scale ${scale}`,
       );
       return `DECIMAL(${precision},${scale})`;
     }
@@ -186,10 +185,10 @@ function inferPostgresType(
 
   // Check for date/timestamp types based on column name and sample values
   const hasDatePattern = rules.datePatterns.some((pattern) =>
-    lowerColumnName.includes(pattern)
+    lowerColumnName.includes(pattern),
   );
   const hasTimestampPattern = rules.timestampPatterns.some((pattern) =>
-    lowerColumnName.includes(pattern)
+    lowerColumnName.includes(pattern),
   );
 
   if (hasTimestampPattern || nonEmptyValues.some((v) => isValidTimestamp(v))) {
@@ -214,7 +213,7 @@ function inferPostgresType(
   const varcharLength = Math.max(maxLength * 1.5, 50); // Add 50% buffer, minimum 50
   const finalLength = Math.min(
     Math.ceil(varcharLength),
-    rules.maxVarcharLength
+    rules.maxVarcharLength,
   );
 
   Logger.debugString(`Detected VARCHAR(${finalLength}) type`);
@@ -230,7 +229,7 @@ export function generatePostgresTable(
   tableName: string,
   headers: string[],
   sampleData: Record<string, string[]>,
-  options: PostgresTableOptions = {}
+  options: PostgresTableOptions = {},
 ): string {
   try {
     Logger.debugString("Generating PostgreSQL CREATE TABLE statement");
@@ -284,21 +283,26 @@ export function generatePostgresTable(
     sql += columnDefinitions.join(",\n");
     sql += "\n);\n";
 
+    // Unique index on submission_id enables ON CONFLICT deduplication in conductor
+    sql += `\nDROP INDEX IF EXISTS idx_${sanitizedTableName}_submission_id;\n`;
+    sql += `CREATE UNIQUE INDEX IF NOT EXISTS idx_${sanitizedTableName}_submission_id\n`;
+    sql += `ON ${sanitizedTableName} ((submission_metadata->>'submission_id'));\n`;
+
     // Add helpful comments
     sql += `\n-- Table created for ${headers.length + 1} columns (${headers.length} data + 1 submission_metadata)\n`;
     sql += `-- Sample data analysis: ${Math.max(
-      ...Object.values(sampleData).map((arr) => arr.length)
+      ...Object.values(sampleData).map((arr) => arr.length),
     )} rows\n`;
 
     // Add JSONB usage examples
     sql += `\n-- JSONB submission_metadata usage examples:\n`;
-    sql += `-- INSERT: submission_metadata = '{"submission_id": "abc123", "source_file_hash": "def456", "processed_at": "2025-09-03T21:04:07.761Z"}'\n`;
+    sql += `-- INSERT: submission_metadata = '{"submission_id": "abc123", "source_file_name": "def456", "processed_at": "2025-09-03T21:04:07.761Z"}'\n`;
     sql += `-- Query by submission_id: WHERE submission_metadata->>'submission_id' = 'abc123'\n`;
-    sql += `-- Query by hash: WHERE submission_metadata->>'source_file_hash' = 'def456'\n`;
+    sql += `-- Query by hash: WHERE submission_metadata->>'source_file_name' = 'def456'\n`;
     sql += `-- Query by date: WHERE (submission_metadata->>'processed_at')::timestamp > '2025-01-01'\n`;
 
     Logger.debugString(
-      "PostgreSQL CREATE TABLE statement generated successfully"
+      "PostgreSQL CREATE TABLE statement generated successfully",
     );
     return sql;
   } catch (error) {

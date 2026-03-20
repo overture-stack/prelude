@@ -1,4 +1,3 @@
-// src/commands/lecternCommand.ts - Updated to error on explicit mixed file types
 import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
@@ -9,8 +8,7 @@ import {
   generateSchema,
 } from "../services/generateLecternDictionary";
 import { parseCSVLine } from "../utils/csvParser";
-import { validateCSVHeaders, validateEnvironment } from "../validations";
-import { Profiles } from "../types";
+import { validateCSVHeaders } from "../validations";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
 
@@ -19,9 +17,7 @@ export class DictionaryCommand extends Command {
   protected readonly defaultOutputFileName = "dictionary.json";
 
   constructor() {
-    super("Lectern Dictionary", CONFIG_PATHS?.lectern?.dir);
-    // Override the default filename from the base class
-    this.defaultOutputFileName = "dictionary.json";
+    super("Lectern Dictionary", CONFIG_PATHS.lectern.dir);
   }
 
   /**
@@ -46,41 +42,6 @@ export class DictionaryCommand extends Command {
       ]);
     }
 
-    // Validate dictionary config
-    if (!cliOutput.dictionaryConfig) {
-      throw ErrorFactory.args("Dictionary configuration is required", [
-        "Use --name, --description, or --version to configure the dictionary",
-        "Example: --name 'My Dictionary' --version '2.0.0'",
-      ]);
-    }
-
-    const config = cliOutput.dictionaryConfig;
-
-    if (!config.name) {
-      // Set a default value first
-      config.name = "lectern_dictionary";
-
-      Logger.defaultValueInfo(
-        `No dictionary name supplied, defaulting to: ${config.name}`,
-        "--name <name>"
-      );
-    }
-
-    // Similar fixes for description and version if needed
-    if (config.description === "Generated dictionary from CSV files") {
-      Logger.defaultValueInfo(
-        "No dictionary description supplied, using default description",
-        "--description <text>"
-      );
-    }
-
-    if (config.version === "1.0.0") {
-      Logger.defaultValueInfo(
-        "No dictionary version supplied, using default version: 1.0.0",
-        "--version <version>"
-      );
-    }
-
     // Get only CSV files from the paths (already expanded in base class)
     const csvFiles = cliOutput.filePaths.filter(
       (filePath) => path.extname(filePath).toLowerCase() === ".csv"
@@ -99,7 +60,7 @@ export class DictionaryCommand extends Command {
       );
     }
 
-    // UPDATED: Check if user explicitly provided mixed file types
+   
     if (csvFiles.length < cliOutput.filePaths.length) {
       const skippedFiles = cliOutput.filePaths.filter(
         (filePath) => path.extname(filePath).toLowerCase() !== ".csv"
@@ -154,13 +115,8 @@ export class DictionaryCommand extends Command {
           invalidFiles.push(filePath);
         }
       } catch (error) {
-        // Handle CSV validation errors with proper formatting
-        if (error instanceof Error && error.name === "ComposerError") {
-          const composerError = error as any;
-          if (composerError.details?.invalidHeaders) {
-            // Collect all invalid headers for summary display
-            allInvalidHeaders.push(...composerError.details.invalidHeaders);
-          }
+        if (error instanceof ComposerError && (error.details as any)?.invalidHeaders) {
+          allInvalidHeaders.push(...(error.details as any).invalidHeaders);
         }
         invalidFiles.push(filePath);
       }
@@ -201,28 +157,13 @@ export class DictionaryCommand extends Command {
     Logger.info`Found ${cliOutput.filePaths.length} valid CSV files to process`;
   }
 
-  protected async execute(cliOutput: CLIOutput): Promise<any> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     const { dictionaryConfig } = cliOutput;
     const delimiter = cliOutput.csvDelimiter;
 
-    // Get output path, similar to MappingCommand
-    let outputPath = cliOutput.outputPath!;
-
-    // Normalize output path for dictionary files specifically
-    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
-      outputPath = path.join(outputPath, this.defaultOutputFileName);
-      Logger.debug`Output is a directory, will create ${this.defaultOutputFileName} inside it`;
-    } else if (!outputPath.endsWith(".json")) {
-      outputPath += ".json";
-      Logger.info`Adding .json extension to output path`;
-    }
+    const outputPath = this.resolveOutputPath(cliOutput.outputPath!, ".json");
 
     try {
-      // Validate environment
-      await validateEnvironment({
-        profile: Profiles.GENERATE_LECTERN_DICTIONARY,
-        outputPath: outputPath,
-      });
 
       const dictionary = generateDictionary(
         dictionaryConfig!.name,
@@ -297,7 +238,7 @@ export class DictionaryCommand extends Command {
       fs.writeFileSync(outputPath, JSON.stringify(dictionary, null, 2));
       Logger.success`Dictionary saved to ${outputPath}`;
 
-      return dictionary;
+      Logger.debug`Dictionary generation complete`;
     } catch (error) {
       if (error instanceof ComposerError) {
         throw error;

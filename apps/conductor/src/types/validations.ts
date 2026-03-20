@@ -20,34 +20,6 @@ export interface ValidationResult {
 }
 
 /**
- * Header validation result with field information - Keep internal if not used externally
- */
-interface HeaderValidation extends ValidationResult {
-  /** List of valid fields */
-  fields?: string[];
-
-  /** List of invalid fields */
-  invalidFields?: string[];
-}
-
-/**
- * Detailed CSV validation result - Keep internal if not used externally
- */
-interface CSVValidationResult extends ValidationResult {
-  /** Header validation result */
-  header?: HeaderValidation;
-
-  /** Number of rows in the CSV */
-  rowCount?: number;
-
-  /** Number of rows sampled for validation */
-  sampleSize?: number;
-
-  /** Detected or used delimiter */
-  delimiter?: string;
-}
-
-/**
  * Elasticsearch index validation result
  */
 export interface IndexValidationResult extends ValidationResult {
@@ -55,10 +27,10 @@ export interface IndexValidationResult extends ValidationResult {
   exists?: boolean;
 
   /** Index mappings if available */
-  mappings?: any;
+  mappings?: Record<string, unknown>;
 
   /** Index settings if available */
-  settings?: any;
+  settings?: Record<string, unknown>;
 }
 
 /**

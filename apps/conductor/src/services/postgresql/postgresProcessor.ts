@@ -1,23 +1,23 @@
-// src/services/csvProcessor/postgresProcessor.ts
+// src/services/postgresql/postgresProcessor.ts
 /**
  * PostgreSQL CSV Processing Module
  *
  * Processes CSV files for PostgreSQL upload, similar to the Elasticsearch processor
  * but optimized for PostgreSQL bulk inserts.
- * FIXED: Proper error handling to stop processing on header validation failures.
+ * Fails fast on header validation errors so processing stops before any rows are inserted.
  */
 
 import * as fs from "fs";
 import * as readline from "readline";
 import { Pool } from "pg";
 import { Config } from "../../types/cli";
-import { countFileLines, parseCSVLine } from "./csvParser";
+import { validateAndCountCSVFile, parseCSVLine } from "../csvProcessor/csvParser";
 import { Logger } from "../../utils/logger";
-import { ErrorFactory } from "../../utils/errors";
-import { CSVProcessingErrorHandler } from "./logHandler";
-import { sendBulkInsertRequest } from "../postgresql/bulk";
-import { formatDuration, calculateETA, createProgressBar } from "./progressBar";
-import { createRecordMetadata } from "./metadata";
+import { ConductorError, ErrorFactory } from "../../utils/errors";
+import { CSVProcessingErrorHandler } from "../csvProcessor/logHandler";
+import { sendBulkInsertRequest } from "./bulk";
+import { updateProgressDisplay, finalizeProgressDisplay } from "../csvProcessor/progressBar";
+import { createRecordMetadata } from "../csvProcessor/metadata";
 
 /**
  * Processes a CSV file and inserts the data into PostgreSQL.
@@ -29,80 +29,21 @@ import { createRecordMetadata } from "./metadata";
 export async function processCSVFileForPostgres(
   filePath: string,
   config: Config,
-  client: Pool
+  client: Pool,
+  onBatchInserted?: (rows: object[]) => Promise<void>,
+  onSkipped?: (totalSkipped: number) => void
 ): Promise<void> {
   let isFirstLine = true;
   let headers: string[] = [];
+  let sortedDataHeaders: string[] = [];
   let processedRecords = 0;
   let failedRecords = 0;
+  let skippedRecords = 0;
   const startTime = Date.now();
   const batchedRecords: object[] = [];
-  const processingStartTime = new Date().toISOString();
 
   try {
-    // Validate inputs
-    if (!filePath || typeof filePath !== "string") {
-      throw ErrorFactory.args("Invalid file path provided", [
-        "Provide a valid file path",
-        "Check file path parameter",
-      ]);
-    }
-
-    if (!config) {
-      throw ErrorFactory.args("Configuration is required", [
-        "Provide valid configuration object",
-        "Check configuration setup",
-      ]);
-    }
-
-    if (!config.postgresql) {
-      throw ErrorFactory.args("PostgreSQL configuration is required", [
-        "Provide valid PostgreSQL configuration",
-        "Check postgresql config in your configuration object",
-      ]);
-    }
-
-    if (!client) {
-      throw ErrorFactory.args("PostgreSQL client is required", [
-        "Provide valid PostgreSQL client",
-        "Check client initialization",
-      ]);
-    }
-
-    // Check file exists and is accessible
-    if (!fs.existsSync(filePath)) {
-      throw ErrorFactory.file("CSV file not found", filePath, [
-        "Check that the file exists",
-        "Verify the file path is correct",
-        "Ensure the file hasn't been moved or deleted",
-      ]);
-    }
-
-    // Check file permissions
-    try {
-      fs.accessSync(filePath, fs.constants.R_OK);
-    } catch (error) {
-      throw ErrorFactory.file("Cannot read CSV file", filePath, [
-        "Check file permissions",
-        "Ensure you have read access",
-        "Try running with appropriate privileges",
-      ]);
-    }
-
-    // Get total lines upfront
-    const totalLines = await countFileLines(filePath);
-
-    if (totalLines === 0) {
-      throw ErrorFactory.invalidFile(
-        "CSV file contains no data rows",
-        filePath,
-        [
-          "Ensure the file contains data beyond headers",
-          "Check if the file has at least one data row",
-          "Verify the file format is correct",
-        ]
-      );
-    }
+    const totalLines = await validateAndCountCSVFile(filePath);
 
     Logger.debug`Processing file: ${filePath}`;
     Logger.debugString(`Total data rows to process: ${totalLines}`);
@@ -117,13 +58,16 @@ export async function processCSVFileForPostgres(
       for await (const line of rl) {
         try {
           if (isFirstLine) {
-            // FIXED: If header processing fails, throw immediately - don't continue
+            // If header processing fails, throw immediately — don't continue
             headers = await processHeaderLine(line, config, client, filePath);
 
             // Add submission_metadata to headers if metadata is enabled
             if (config.postgresql?.addMetadata) {
               headers = [...headers, 'submission_metadata'];
             }
+
+            // Sort data headers once here so every record reuses the same sorted key order
+            sortedDataHeaders = headers.filter(h => h !== 'submission_metadata').sort();
 
             isFirstLine = false;
             continue;
@@ -135,8 +79,8 @@ export async function processCSVFileForPostgres(
             headers,
             config,
             filePath,
-            processingStartTime,
-            processedRecords + 1
+            processedRecords + 1,
+            sortedDataHeaders
           );
 
           if (record) {
@@ -149,31 +93,40 @@ export async function processCSVFileForPostgres(
             }
 
             if (batchedRecords.length >= config.batchSize) {
-              await sendBatchToPostgreSQL(
-                client,
-                batchedRecords,
-                config.postgresql!.table!, // Use non-null assertion since we validated above
-                headers,
-                filePath,
-                (count) => {
-                  failedRecords += count;
-                }
-              );
-              batchedRecords.length = 0;
+              const batchNum = Math.ceil(processedRecords / config.batchSize);
+              try {
+                await sendBatchToPostgreSQL(
+                  client,
+                  batchedRecords,
+                  config.postgresql!.table!,
+                  headers,
+                  filePath,
+                  (count) => { failedRecords += count; },
+                  (count) => { skippedRecords += count; onSkipped?.(skippedRecords); },
+                  onBatchInserted
+                );
+              } catch (batchError) {
+                const msg =
+                  batchError instanceof Error
+                    ? batchError.message
+                    : String(batchError);
+                Logger.warn`PostgreSQL upload — Batch ${batchNum} failed (${batchedRecords.length} records skipped)`;
+                Logger.warnString(`  Reason: ${msg}`);
+                failedRecords += batchedRecords.length;
+              } finally {
+                batchedRecords.length = 0;
+              }
             }
           }
         } catch (lineError) {
-          // FIXED: If this is a header validation error, don't treat it as a line processing error
+          // Header validation errors must propagate — don't treat them as per-line errors
           if (isFirstLine) {
-            // Header validation failed - rethrow to stop processing entirely
             throw lineError;
           }
 
-          // Handle individual line processing errors (not header errors)
-          Logger.warnString(
-            `Error processing line: ${line.substring(0, 50)}...`
-          );
-          Logger.debugString(`Line error: ${lineError}`);
+          const msg =
+            lineError instanceof Error ? lineError.message : String(lineError);
+          Logger.warn`Record ${processedRecords + 1} skipped: ${msg}`;
           failedRecords++;
         }
       }
@@ -183,17 +136,25 @@ export async function processCSVFileForPostgres(
         await sendBatchToPostgreSQL(
           client,
           batchedRecords,
-          config.postgresql!.table!, // Use non-null assertion since we validated above
+          config.postgresql!.table!,
           headers,
           filePath,
-          (count) => {
-            failedRecords += count;
-          }
+          (count) => { failedRecords += count; },
+          (count) => { skippedRecords += count; onSkipped?.(skippedRecords); },
+          onBatchInserted
         );
       }
 
-      // Ensure final progress is displayed
+      // Ensure final progress is displayed, then advance cursor past all 3 reserved lines
       updateProgressDisplay(processedRecords, totalLines, startTime);
+      finalizeProgressDisplay();
+
+      // Print skipped summary only when the caller isn't managing display (no onSkipped callback)
+      if (skippedRecords > 0 && !onSkipped) {
+        Logger.generic(
+          `   └─ Skipped ${skippedRecords} duplicate record(s) — already exists in "${config.postgresql!.table!}"`
+        );
+      }
 
       // Display final summary
       CSVProcessingErrorHandler.displaySummary(
@@ -205,15 +166,9 @@ export async function processCSVFileForPostgres(
       rl.close();
     }
   } catch (error) {
-    // FIXED: If it's a header validation error, don't proceed with CSV processing error handler
-    if (error instanceof Error && error.name === "ConductorError") {
-      const conductorError = error as any;
-      // Check if this is a header validation error by examining the error details
-      if (
-        conductorError.details?.extraHeaders ||
-        conductorError.details?.missingHeaders
-      ) {
-        // This is a header validation error - rethrow it directly
+    // Header validation errors must propagate — don't swallow them in the generic CSV error handler
+    if (error instanceof ConductorError) {
+      if (error.details?.extraHeaders || error.details?.missingHeaders) {
         throw error;
       }
     }
@@ -228,10 +183,7 @@ export async function processCSVFileForPostgres(
   }
 }
 
-/**
- * Process the header line of the CSV file
- * FIXED: Proper error handling to stop processing on validation failures
- */
+/** Parses and validates the CSV header line against the target table schema. */
 async function processHeaderLine(
   line: string,
   config: Config,
@@ -256,7 +208,6 @@ async function processHeaderLine(
 
     Logger.debug`Validating headers against table schema`;
 
-    // FIXED: This validation should throw and stop processing if it fails
     await validateHeadersAgainstTable(
       client,
       headers,
@@ -267,8 +218,7 @@ async function processHeaderLine(
 
     return headers;
   } catch (error) {
-    // FIXED: Don't wrap header validation errors - let them bubble up to stop processing
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 
@@ -292,8 +242,8 @@ async function processDataLine(
   headers: string[],
   config: Config,
   filePath: string,
-  processingStartTime: string,
-  recordNumber: number
+  recordNumber: number,
+  sortedDataHeaders?: string[]
 ): Promise<object | null> {
   try {
     if (line.trim() === "") {
@@ -308,19 +258,14 @@ async function processDataLine(
       return null;
     }
 
-    // Create a simple record object mapping headers to values
-    const record: any = {};
+    const record: Record<string, string | null> = {};
     headers.forEach((header, index) => {
       record[header] = rowValues[index] || null;
     });
 
     // Add metadata if configured
     if (config.postgresql?.addMetadata) {
-      const metadata = createRecordMetadata(
-        filePath,
-        processingStartTime,
-        recordNumber
-      );
+      const metadata = createRecordMetadata(filePath, record, sortedDataHeaders);
       record.submission_metadata = JSON.stringify(metadata);
     }
 
@@ -350,7 +295,7 @@ async function validateHeadersAgainstTable(
       [tableName]
     );
 
-    const tableColumns = result.rows.map((row: any) => row.column_name);
+    const tableColumns = result.rows.map((row: { column_name: string }) => row.column_name);
 
     Logger.debug`Table columns: ${tableColumns.join(", ")}`;
     Logger.debug`CSV headers: ${headers.join(", ")}`;
@@ -409,7 +354,7 @@ async function validateHeadersAgainstTable(
 
     Logger.debug`Headers match table structure perfectly`;
   } catch (error) {
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 
@@ -429,34 +374,6 @@ async function validateHeadersAgainstTable(
 }
 
 /**
- * Updates the progress display in the console
- */
-function updateProgressDisplay(
-  processed: number,
-  total: number,
-  startTime: number
-): void {
-  const elapsedMs = Math.max(1, Date.now() - startTime);
-  const progress = Math.min(100, (processed / total) * 100);
-  const progressBar = createProgressBar(progress);
-  const eta = calculateETA(processed, total, elapsedMs / 1000);
-  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
-
-  if (processed === 10) {
-    Logger.generic("");
-  }
-  // Use \r to overwrite previous line
-  process.stdout.write("\r");
-  process.stdout.write(
-    ` ${progressBar} | ` +
-      `${processed}/${total} | ` +
-      `⏱ ${formatDuration(elapsedMs)} | ` +
-      `🏁 ${eta} | ` +
-      `⚡${recordsPerSecond} rows/sec`
-  );
-}
-
-/**
  * Sends a batch of records to PostgreSQL
  */
 async function sendBatchToPostgreSQL(
@@ -465,21 +382,22 @@ async function sendBatchToPostgreSQL(
   tableName: string,
   headers: string[],
   filePath: string,
-  onFailure: (count: number) => void
+  onFailure: (count: number) => void,
+  onSkipped?: (count: number) => void,
+  onInserted?: (rows: object[]) => Promise<void>
 ): Promise<void> {
   try {
-    await sendBulkInsertRequest(client, records, tableName, headers, onFailure);
+    const insertedRows = await sendBulkInsertRequest(client, records, tableName, headers, onFailure, {}, onSkipped);
+    if (onInserted && insertedRows.length > 0) {
+      await onInserted(insertedRows);
+    }
   } catch (error) {
     // If it's already a specific validation error, just rethrow it
-    if (error instanceof Error && error.name === "ConductorError") {
-      const conductorError = error as any;
-
-      // Check if this is a data validation error (from our bulk handler)
+    if (error instanceof ConductorError) {
       if (
-        conductorError.message.includes("constraint violation") ||
-        conductorError.message.includes("Bulk insert failed")
+        error.message.includes("constraint violation") ||
+        error.message.includes("Bulk insert failed")
       ) {
-        // Rethrow without additional wrapping - the user already has specific info
         throw error;
       }
     }

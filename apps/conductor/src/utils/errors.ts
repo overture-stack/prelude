@@ -2,12 +2,10 @@
 import { Logger } from "./logger";
 
 export class ConductorError extends Error {
-  public isLogged: boolean = false; // Add this property to track if error was already logged
-
   constructor(
     message: string,
     public code: string,
-    public details?: any,
+    public details?: Record<string, unknown>,
     public suggestions?: string[]
   ) {
     super(message);
@@ -47,7 +45,7 @@ export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 export class ErrorFactory {
   static validation(
     message: string,
-    details?: any,
+    details?: Record<string, unknown>,
     suggestions?: string[]
   ): ConductorError {
     return new ConductorError(
@@ -95,7 +93,7 @@ export class ErrorFactory {
 
   static connection(
     message: string,
-    details?: any,
+    details?: Record<string, unknown>,
     suggestions?: string[]
   ): ConductorError {
     return new ConductorError(
@@ -108,7 +106,7 @@ export class ErrorFactory {
 
   static environment(
     message: string,
-    details?: any,
+    details?: Record<string, unknown>,
     suggestions?: string[]
   ): ConductorError {
     return new ConductorError(
@@ -121,7 +119,7 @@ export class ErrorFactory {
 
   static parsing(
     message: string,
-    details?: any,
+    details?: Record<string, unknown>,
     suggestions?: string[]
   ): ConductorError {
     return new ConductorError(
@@ -134,7 +132,7 @@ export class ErrorFactory {
 
   static csv(
     message: string,
-    details?: any,
+    details?: Record<string, unknown>,
     suggestions?: string[]
   ): ConductorError {
     return new ConductorError(
@@ -147,7 +145,7 @@ export class ErrorFactory {
 
   static elasticsearch(
     message: string,
-    details?: any,
+    details?: Record<string, unknown>,
     suggestions?: string[]
   ): ConductorError {
     return new ConductorError(
@@ -160,7 +158,7 @@ export class ErrorFactory {
 
   static auth(
     message: string,
-    details?: any,
+    details?: Record<string, unknown>,
     suggestions?: string[]
   ): ConductorError {
     return new ConductorError(
@@ -187,13 +185,7 @@ export class ErrorFactory {
   }
 }
 
-function formatErrorDetails(details: any): string {
-  if (typeof details === "string") {
-    return details;
-  }
-  if (details instanceof Error) {
-    return details.message;
-  }
+function formatErrorDetails(details: Record<string, unknown>): string {
   try {
     return JSON.stringify(details, null, 2);
   } catch {
@@ -247,10 +239,3 @@ export function handleError(error: unknown, showHelp?: () => void): never {
   process.exit(1);
 }
 
-// Keep the legacy function for backward compatibility during transition
-export function createValidationError(
-  message: string,
-  details?: any
-): ConductorError {
-  return ErrorFactory.validation(message, details);
-}

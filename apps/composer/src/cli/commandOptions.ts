@@ -1,7 +1,5 @@
-// src/cli/commandOptions.ts - Updated with case-insensitive profile matching
-import { Command, Option } from "commander";
-import { Profile, Profiles } from "../types";
-import { ErrorFactory } from "../utils/errors";
+import { Command } from "commander";
+import { Profile } from "../types";
 import { Logger } from "../utils/logger";
 import {
   CLIOutput,
@@ -11,99 +9,21 @@ import {
 } from "../types";
 import { PostgresConfig } from "../types/postgres";
 
-// Profile descriptions including PostgreSQL
-export const PROFILE_DESCRIPTIONS = new Map([
-  [Profiles.GENERATE_SONG_SCHEMA, "Generate Song schema from JSON metadata"],
-  [
-    Profiles.GENERATE_LECTERN_DICTIONARY,
-    "Generate Lectern dictionary from CSV files",
-  ],
-  [
-    Profiles.GENERATE_ELASTICSEARCH_MAPPING,
-    "Generate Elasticsearch mapping from CSV or JSON",
-  ],
-  [
-    Profiles.GENERATE_ARRANGER_CONFIGS,
-    "Generate Arranger configs from Elasticsearch mapping",
-  ],
-  [
-    Profiles.GENERATE_POSTGRES_TABLE,
-    "Generate PostgreSQL CREATE TABLE from CSV file",
-  ],
-]);
-
 /**
- * Configure CLI command options - separated from parsing logic
+ * Configure CLI command options using conductor-style subcommands
  */
-export function configureCommandOptions(program: Command): Command {
+export function configureCommandOptions(program: Command): void {
   Logger.debug`Configuring command options`;
 
-  return program
+  program
     .name("composer")
     .description(
       "Generate Dictionary, Song Schema, Elasticsearch, or PostgreSQL configurations"
     )
-    .argument("[profile]", "Execution profile (optional)")
+    .helpOption(false)
     .option("--debug", "Enable debug logging")
-    .addOption(
-      new Option("-p, --profile <profile>", "Execution profile (alternative to positional argument)")
-        .choices(Object.values(Profiles))
-        .argParser((value) => {
-          // Find matching profile (case-insensitive)
-          const matchingProfile = Object.values(Profiles).find(
-            (profile) => profile.toLowerCase() === value.toLowerCase()
-          );
-
-          if (!matchingProfile) {
-            // UPDATED: Use ErrorFactory with formatted suggestions
-            const suggestions = Array.from(PROFILE_DESCRIPTIONS.entries()).map(
-              ([profile, desc]) => `  ▸ ${profile}: ${desc}`
-            );
-
-            throw ErrorFactory.args(`Invalid profile: ${value}`, [
-              "Valid profiles are (case-insensitive):\n",
-              ...suggestions,
-            ]);
-          }
-          return matchingProfile as Profile;
-        })
-    )
-    .requiredOption(
-      "-f, --files <paths...>",
-      "Input file paths (CSV or JSON, space separated)"
-    )
-    .option("-i, --index <n>", "Elasticsearch index name", "data")
-    .option("--shards <number>", "Number of Elasticsearch shards", "1")
-    .option("--replicas <number>", "Number of Elasticsearch replicas", "1")
-    .option(
-      "-o, --output <path>",
-      "Output file path for generated schemas or mapping"
-    )
-    .option("--arranger-doc-type <type>", "Arranger document type", "file")
-    .option("-n, --name <n>", "Dictionary/Schema name")
-    .option(
-      "-d, --description <text>",
-      "Dictionary description",
-      "Generated dictionary from CSV files"
-    )
-    .option("-v, --version <version>", "Dictionary version", "1.0.0")
-    .option("--file-types <types...>", "Allowed file types for Song schema")
-    .option("--delimiter <char>", "CSV delimiter", ",")
-    .option(
-      "--ignore-fields <fields...>",
-      "Field names to exclude from Elasticsearch mapping"
-    )
-    .option(
-      "--skip-metadata",
-      "Skip adding submission metadata to Elasticsearch mapping"
-    )
-    // PostgreSQL options
-    .option("--table-name <n>", "PostgreSQL table name")
-    .option("--force", "Force overwrite of existing files without prompting")
-    .helpOption(false) // Disable default help option
     .option("-h, --help", "display help for command")
     .on("option:help", () => {
-      // Show only our custom reference commands
       Logger.showReferenceCommands();
       process.exit(0);
     })
@@ -114,12 +34,108 @@ export function configureCommandOptions(program: Command): Command {
         Logger.debug`Full command options: ${JSON.stringify(opts, null, 2)}`;
       }
     });
+
+  program
+    .command("song-schema")
+    .description("Generate Song schema from JSON metadata")
+    .requiredOption("-f, --files <paths...>", "Input JSON metadata file(s)")
+    .option("-o, --output <path>", "Output schema file path")
+    .option("-n, --name <name>", "Schema name")
+    .option("--file-types <types...>", "Allowed file types for Song schema")
+    .option("--force", "Force overwrite of existing files without prompting")
+    .action(() => { /* Handled by cli/index.ts */ });
+
+  program
+    .command("lectern-dictionary")
+    .description("Generate Lectern dictionary from CSV files")
+    .requiredOption("-f, --files <paths...>", "Input CSV files")
+    .option("-o, --output <path>", "Output dictionary file path")
+    .option("-n, --name <name>", "Dictionary name")
+    .option(
+      "-d, --description <text>",
+      "Dictionary description",
+      "Generated dictionary from CSV files"
+    )
+    .option("-v, --version <version>", "Dictionary version", "1.0.0")
+    .option("--delimiter <char>", "CSV delimiter", ",")
+    .option("--force", "Force overwrite of existing files without prompting")
+    .action(() => { /* Handled by cli/index.ts */ });
+
+  program
+    .command("elasticsearch-mapping")
+    .description("Generate Elasticsearch mapping from CSV or JSON")
+    .requiredOption(
+      "-f, --files <paths...>",
+      "Input file paths (CSV or JSON, space separated)"
+    )
+    .option("-o, --output <path>", "Output file path for generated mapping")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option("--shards <number>", "Number of Elasticsearch shards", "1")
+    .option("--replicas <number>", "Number of Elasticsearch replicas", "1")
+    .option("--delimiter <char>", "CSV delimiter", ",")
+    .option(
+      "--ignore-fields <fields...>",
+      "Field names to exclude from Elasticsearch mapping"
+    )
+    .option(
+      "--skip-metadata",
+      "Skip adding submission metadata to Elasticsearch mapping"
+    )
+    .option("--force", "Force overwrite of existing files without prompting")
+    .action(() => { /* Handled by cli/index.ts */ });
+
+  program
+    .command("arranger-configs")
+    .description("Generate Arranger configs from Elasticsearch mapping")
+    .requiredOption(
+      "-f, --files <paths...>",
+      "Input Elasticsearch mapping file (JSON)"
+    )
+    .option("-o, --output <path>", "Output file path for generated configs")
+    .option("-i, --index <name>", "Elasticsearch index name", "data")
+    .option(
+      "--arranger-doc-type <type>",
+      "Arranger document type (file or analysis)",
+      "file"
+    )
+    .option("--force", "Force overwrite of existing files without prompting")
+    .action(() => { /* Handled by cli/index.ts */ });
+
+  program
+    .command("postgres-table")
+    .description("Generate PostgreSQL CREATE TABLE from CSV file")
+    .requiredOption("-f, --files <paths...>", "Input CSV file path(s)")
+    .option("-o, --output <path>", "Output SQL file path")
+    .option("--table-name <name>", "PostgreSQL table name")
+    .option("--delimiter <char>", "CSV delimiter", ",")
+    .option("--force", "Force overwrite of existing files without prompting")
+    .action(() => { /* Handled by cli/index.ts */ });
+}
+
+export interface ParsedOpts {
+  profile?: Profile;
+  debug?: boolean;
+  files?: string[];
+  index?: string;
+  shards?: string;
+  replicas?: string;
+  output?: string;
+  arrangerDocType?: string;
+  name?: string;
+  description?: string;
+  version?: string;
+  fileTypes?: string[];
+  delimiter?: string;
+  ignoreFields?: string[];
+  skipMetadata?: boolean;
+  tableName?: string;
+  force?: boolean;
 }
 
 /**
  * Parse command line arguments into structured CLIOutput
  */
-export function parseOptions(opts: any): CLIOutput {
+export function parseOptions(opts: ParsedOpts): CLIOutput {
   Logger.debug`Parsing command line arguments`;
 
   // Build elasticsearch config
@@ -152,15 +168,19 @@ export function parseOptions(opts: any): CLIOutput {
       : undefined;
 
   // Build postgres config if needed
-  const postgresConfig: PostgresConfig | undefined =
-    opts.tableName
-      ? {
-          tableName: opts.tableName || "generated_table",
-        }
-      : undefined;
+  const postgresConfig: PostgresConfig | undefined = opts.tableName
+    ? {
+        tableName: opts.tableName || "generated_table",
+      }
+    : undefined;
+
+  const arrangerDocType = opts.arrangerDocType as
+    | "file"
+    | "analysis"
+    | undefined;
 
   const output: CLIOutput = {
-    profile: opts.profile,
+    profile: opts.profile as Profile,
     debug: opts.debug || false,
     filePaths: opts.files || [],
     outputPath: opts.output,
@@ -171,9 +191,9 @@ export function parseOptions(opts: any): CLIOutput {
     dictionaryConfig,
     songConfig,
     postgresConfig,
-    arrangerConfig: opts.arrangerDocType
+    arrangerConfig: arrangerDocType
       ? {
-          documentType: opts.arrangerDocType,
+          documentType: arrangerDocType,
         }
       : undefined,
   };

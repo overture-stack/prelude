@@ -1,4 +1,3 @@
-// src/services/generateSongSchema.ts - Updated with consolidated error handling
 import { Logger } from "../utils/logger";
 import type { SongSchema, SongField, SongOptions } from "../types";
 

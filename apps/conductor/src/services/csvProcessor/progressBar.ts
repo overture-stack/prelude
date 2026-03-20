@@ -1,15 +1,16 @@
 import chalk from "chalk";
 
 /**
- * Utility functions for progress tracking, duration formatting,
- * user interaction, and unique ID generation.
+ * Progress display utilities: duration formatting, ETA, progress bar rendering,
+ * and the shared in-place progress line writer used by both CSV processors.
  *
- * This module provides helper functions to:
- * - Format time durations
- * - Calculate estimated time to completion (ETA)
- * - Create visual progress bars
- * - Generate unique submission identifiers
- * - Prompt users for confirmation
+ * TTY layout (3 lines, cursor-controlled):
+ *   └─ [bar] X% | processed/total | ⏱ elapsed | 🏁 eta | ⚡ rows/sec
+ *   └─ indexed X records
+ *   └─ found Y duplicate records
+ *
+ * Non-TTY layout (single line, printed once per 1% increment):
+ *   └─ [bar] X% | ... | 📦 X indexed | ⏭ Y skipped
  */
 
 export function formatDuration(ms: number): string {
@@ -27,7 +28,6 @@ export function calculateETA(
   total: number,
   elapsedSeconds: number
 ): string {
-  // Validate inputs
   if (!isFinite(processed) || !isFinite(total) || !isFinite(elapsedSeconds)) {
     return chalk.yellow("Invalid calculation");
   }
@@ -46,41 +46,145 @@ export function calculateETA(
     }
 
     return formatDuration(remainingSeconds * 1000);
-  } catch (error) {
+  } catch {
     return chalk.red("ETA calculation error");
   }
 }
 
 export function createProgressBar(
   progress: number,
-  width: number = 30
+  color: "blue" | "green" = "green"
 ): string {
   try {
-    // Validate and normalize inputs
-    if (!isFinite(progress) || !isFinite(width)) {
+    if (!isFinite(progress)) {
       return chalk.yellow("[Invalid progress value]");
     }
 
-    // Clamp progress between 0 and 100
     const normalizedProgress = Math.max(0, Math.min(100, progress || 0));
-    // Ensure width is reasonable
-    const normalizedWidth = Math.max(10, Math.min(100, width));
+    const filledWidth = Math.round(30 * (normalizedProgress / 100));
+    const emptyWidth = 30 - filledWidth;
 
-    // Calculate bar segments
-    const filledWidth = Math.round(
-      normalizedWidth * (normalizedProgress / 100)
-    );
-    const emptyWidth = normalizedWidth - filledWidth;
+    const colorFn = color === "blue" ? chalk.cyan : chalk.green;
 
-    // Create bar segments with boundary checks
-    const filledBar = chalk.green("█").repeat(Math.max(0, filledWidth));
+    const filledBar = colorFn("█").repeat(Math.max(0, filledWidth));
     const emptyBar = chalk.gray("░").repeat(Math.max(0, emptyWidth));
 
-    // Return formatted progress bar
-    return `${filledBar}${emptyBar} ${chalk.green(
+    return `${filledBar}${emptyBar} ${colorFn(
       normalizedProgress.toFixed(1) + "%"
     )}`;
-  } catch (error) {
+  } catch {
     return chalk.yellow("[Progress calculation error]");
   }
+}
+
+// ─── Shared pipeline stats ─────────────────────────────────────────────────
+// Set by the pipeline command after each ES batch so the progress display
+// can show live indexed / skipped counts without extra cursor control.
+
+let _indexedCount = 0;
+let _skippedCount = 0;
+
+// Tracks the last percent milestone printed in non-TTY mode.
+let _lastReportedPercent = -1;
+
+export function setProgressStats(indexed: number, skipped: number): void {
+  _indexedCount = indexed;
+  _skippedCount = skipped;
+}
+
+export function resetProgressStats(): void {
+  _indexedCount = 0;
+  _skippedCount = 0;
+  _lastReportedPercent = -1;
+}
+
+// ─── Lifecycle helpers ─────────────────────────────────────────────────────
+
+/**
+ * Call once before the processing loop begins.
+ * TTY: writes 2 blank lines below and moves cursor back up, reserving space
+ *      for the 3-line display (progress + indexed + skipped).
+ * Non-TTY: writes a single blank line as a visual separator.
+ */
+export function reserveProgressLines(): void {
+  if (process.stdout.isTTY) {
+    // Reserve lines 2 and 3 below the current cursor (line 1).
+    process.stdout.write("\n\n\u001B[2A");
+  } else {
+    process.stdout.write("\n");
+  }
+}
+
+/**
+ * Call once after the processing loop ends (replaces the bare `\n` write).
+ * Advances the cursor past all reserved lines so subsequent output appears
+ * cleanly below the completed progress display.
+ */
+export function finalizeProgressDisplay(): void {
+  if (process.stdout.isTTY) {
+    // Cursor is on line 1; advance past lines 1, 2, 3.
+    process.stdout.write("\n\n\n");
+  } else {
+    process.stdout.write("\n");
+  }
+}
+
+// ─── Main display function ─────────────────────────────────────────────────
+
+/**
+ * Writes the progress display to stdout.
+ * TTY: overwrites the 3-line block in place on every call.
+ * Non-TTY: prints a single line once per 1% increment.
+ */
+export function updateProgressDisplay(
+  processed: number,
+  total: number,
+  startTime: number
+): void {
+  const elapsedMs = Math.max(1, Date.now() - startTime);
+  const progress = Math.min(100, (processed / total) * 100);
+  const progressBar = createProgressBar(progress);
+  const eta = calculateETA(processed, total, elapsedMs / 1000);
+  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
+
+  const progressLine =
+    `   └─ ${progressBar} | ` +
+    `${processed}/${total} | ` +
+    `⏱ ${formatDuration(elapsedMs)} | ` +
+    `🏁 ${eta} | ` +
+    `⚡${recordsPerSecond} rows/sec`;
+
+  if (!process.stdout.isTTY) {
+    // Non-TTY: emit once per 1% step, resetting when a new file starts.
+    const percentInt = Math.floor(progress);
+    if (percentInt < _lastReportedPercent) {
+      _lastReportedPercent = -1; // new file detected (percent went backwards)
+    }
+    if (percentInt <= _lastReportedPercent && processed !== total) return;
+    _lastReportedPercent = percentInt;
+
+    const stats =
+      _indexedCount > 0 ? ` | 📦 ${_indexedCount.toLocaleString()} indexed` : "";
+    const skippedStats =
+      _skippedCount > 0 ? ` | ⏭ ${_skippedCount.toLocaleString()} skipped` : "";
+    process.stdout.write(progressLine + stats + skippedStats + "\n");
+    return;
+  }
+
+  // TTY: overwrite all 3 lines, leave cursor back on line 1.
+  const indexedLine =
+    _indexedCount > 0
+      ? `   └─ indexed ${_indexedCount.toLocaleString()} records`
+      : ``;
+  const skippedLine =
+    _skippedCount > 0
+      ? `   └─ found ${_skippedCount.toLocaleString()} duplicate records`
+      : ``;
+
+  process.stdout.write(
+    `\r\u001B[2K${progressLine}` +
+    `\n\r\u001B[2K${indexedLine}` +
+    `\n\r\u001B[2K${skippedLine}` +
+    `\u001B[2A\r`
+  );
 }

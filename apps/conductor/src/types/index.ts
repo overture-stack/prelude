@@ -8,5 +8,4 @@
 // Export core types
 export * from "./cli";
 export * from "./constants";
-export * from "./elasticsearch";
 export * from "./validations";

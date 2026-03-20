@@ -1,4 +1,3 @@
-// src/utils/paths.ts - Removed unused getConfigTypeForProfile function
 import * as path from "path";
 
 /**

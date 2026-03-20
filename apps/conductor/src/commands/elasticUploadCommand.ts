@@ -1,8 +1,8 @@
 /**
- * Upload Command
+ * Elasticsearch Upload Command
  *
- * Command implementation for uploading CSV data to Elasticsearch.
- * Simplified to remove unnecessary output file handling.
+ * Uploads CSV files directly to an Elasticsearch index, validating headers
+ * against the index mapping before processing.
  */
 
 import {
@@ -18,7 +18,7 @@ import { validateFiles } from "../validations/fileValidator";
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
-import { ErrorFactory } from "../utils/errors";
+import { ConductorError, ErrorFactory } from "../utils/errors";
 import {
   createClientFromConfig,
   validateConnection,
@@ -27,113 +27,22 @@ import { processCSVFile } from "../services/csvProcessor";
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import * as fs from "fs";
 
-export class UploadCommand extends Command {
+export class ElasticUploadCommand extends Command {
   /**
-   * Creates a new UploadCommand instance.
+   * Creates a new ElasticUploadCommand instance.
    */
   constructor() {
     super("upload");
   }
 
-  /**
-   * Executes the upload process for all specified files
-   * @param cliOutput The CLI configuration and inputs
-   * @returns Promise<CommandResult> with success/failure information
-   */
+  /** Executes the upload process for all specified files. */
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config, filePaths } = cliOutput;
 
     Logger.debug`Input files specified: ${filePaths.length}`;
     Logger.debug`Files: ${filePaths.join(", ")}`;
 
-    // Process each file
-    let successCount = 0;
-    let failureCount = 0;
-    const failureDetails: Record<string, any> = {};
-
-    for (const filePath of filePaths) {
-      Logger.generic("");
-      Logger.info`Processing File: ${filePath}`;
-      try {
-        await this.processFile(filePath, config);
-        Logger.debug`Successfully processed ${filePath}`;
-        successCount++;
-      } catch (error) {
-        failureCount++;
-
-        // Handle ConductorErrors - log them with suggestions here
-        if (error instanceof Error && error.name === "ConductorError") {
-          const conductorError = error as any;
-
-          // Log the error and suggestions at the file processing level
-          Logger.errorString(`${conductorError.message}`);
-
-          // Show suggestions if available
-          if (
-            conductorError.suggestions &&
-            conductorError.suggestions.length > 0
-          ) {
-            Logger.suggestion("Suggestions");
-            conductorError.suggestions.forEach((suggestion: string) => {
-              Logger.tipString(suggestion);
-            });
-          }
-
-          Logger.debug`Skipping file '${filePath}': [${conductorError.code}] ${conductorError.message}`;
-
-          failureDetails[filePath] = {
-            code: conductorError.code,
-            message: conductorError.message,
-            details: conductorError.details,
-          };
-        } else if (error instanceof Error) {
-          // Only log non-ConductorError errors
-          Logger.errorString(`${error.message}`);
-          Logger.debug`Skipping file '${filePath}': ${error.message}`;
-          failureDetails[filePath] = {
-            message: error.message,
-          };
-        } else {
-          Logger.errorString("An unknown error occurred");
-          Logger.debug`Skipping file '${filePath}' due to an error`;
-          failureDetails[filePath] = {
-            message: "Unknown error",
-          };
-        }
-      }
-    }
-
-    // Return the CommandResult
-    if (failureCount === 0) {
-      Logger.debug`Successfully processed all ${successCount} files`;
-      return {
-        success: true,
-        details: {
-          filesProcessed: successCount,
-        },
-      };
-    } else if (successCount === 0) {
-      // Don't create a new error, just return the failure result
-      // The original error with suggestions has already been logged
-      return {
-        success: false,
-        errorCode: "PROCESSING_FAILED",
-        details: failureDetails,
-      };
-    } else {
-      // Partial success
-      Logger.warnString(
-        `Processed ${successCount} files successfully, ${failureCount} failed`
-      );
-      return {
-        success: true,
-        details: {
-          filesProcessed: successCount,
-          filesFailed: failureCount,
-          failureDetails,
-        },
-      };
-    }
+    return this.processFiles(filePaths, (filePath) => this.processFile(filePath, config));
   }
 
   /**
@@ -157,7 +66,7 @@ export class UploadCommand extends Command {
           "Check file extensions (.csv, .tsv allowed)",
           "Verify files exist and are accessible",
           "Ensure files are not empty",
-        ])
+        ]),
       );
     }
     // Validate delimiter
@@ -171,7 +80,7 @@ export class UploadCommand extends Command {
           "Delimiter must be a single character",
           "Common delimiters: , (comma), ; (semicolon), \\t (tab)",
           "Use --delimiter option to specify delimiter",
-        ]
+        ],
       );
     }
 
@@ -186,7 +95,7 @@ export class UploadCommand extends Command {
           "Batch size must be a positive number",
           "Recommended range: 100-5000",
           "Use --batch-size option to specify batch size",
-        ]
+        ],
       );
     }
 
@@ -201,7 +110,7 @@ export class UploadCommand extends Command {
    */
   private async validateFileHeaders(
     filePath: string,
-    delimiter: string
+    delimiter: string,
   ): Promise<void> {
     try {
       const fileContent = fs.readFileSync(filePath, "utf-8");
@@ -215,7 +124,7 @@ export class UploadCommand extends Command {
             "Ensure the file contains data",
             "Check if the first line contains column headers",
             "Verify the file was not corrupted during transfer",
-          ]
+          ],
         );
       }
 
@@ -228,7 +137,7 @@ export class UploadCommand extends Command {
             `Check if '${delimiter}' is the correct delimiter`,
             "Verify CSV format is valid",
             "Ensure headers don't contain special characters",
-          ]
+          ],
         );
       }
 
@@ -238,7 +147,7 @@ export class UploadCommand extends Command {
       await validateCSVStructure(headers);
     } catch (error) {
       // If it's already a ConductorError, rethrow it
-      if (error instanceof Error && error.name === "ConductorError") {
+      if (error instanceof ConductorError) {
         throw error;
       }
 
@@ -250,7 +159,7 @@ export class UploadCommand extends Command {
           "Check CSV file format and structure",
           "Ensure headers follow naming conventions",
           "Verify file encoding is UTF-8",
-        ]
+        ],
       );
     }
   }
@@ -259,7 +168,7 @@ export class UploadCommand extends Command {
    * Processes a single file with consolidated validation
    * Index validation now happens here, creating single point of validation
    */
-  private async processFile(filePath: string, config: any): Promise<void> {
+  private async processFile(filePath: string, config: CLIOutput["config"]): Promise<void> {
     try {
       // Set up Elasticsearch client
       const client = createClientFromConfig(config);
@@ -280,7 +189,7 @@ export class UploadCommand extends Command {
       await validateHeadersMatchMappings(
         client,
         headers,
-        config.elasticsearch.index
+        config.elasticsearch.index,
       );
 
       // Process the file
@@ -288,7 +197,7 @@ export class UploadCommand extends Command {
     } catch (error) {
       // If it's already a ConductorError, just rethrow it without additional wrapping
       // This prevents duplicate error creation and logging
-      if (error instanceof Error && error.name === "ConductorError") {
+      if (error instanceof ConductorError) {
         throw error;
       }
 
@@ -312,7 +221,7 @@ export class UploadCommand extends Command {
             `Verify the URL: ${config.elasticsearch.url}`,
             "Check network connectivity",
             "Review firewall and security settings",
-          ]
+          ],
         );
       }
 
@@ -327,7 +236,7 @@ export class UploadCommand extends Command {
             "Check your Elasticsearch credentials",
             "Verify username and password",
             "Ensure you have write permissions to the index",
-          ]
+          ],
         );
       }
 
@@ -343,7 +252,7 @@ export class UploadCommand extends Command {
           "Verify file is not corrupted",
           "Ensure sufficient memory and disk space",
           "Use --debug for detailed error information",
-        ]
+        ],
       );
     }
   }

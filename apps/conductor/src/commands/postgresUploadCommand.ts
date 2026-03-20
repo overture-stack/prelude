@@ -12,12 +12,12 @@ import { validateFiles } from "../validations/fileValidator";
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
-import { ErrorFactory } from "../utils/errors";
+import { ConductorError, ErrorFactory } from "../utils/errors";
 import {
   createPostgresClient,
   validateConnection,
 } from "../services/postgresql";
-import { processCSVFileForPostgres } from "../services/csvProcessor/postgresProcessor";
+import { processCSVFileForPostgres } from "../services/postgresql/postgresProcessor";
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import * as fs from "fs";
 import { Pool } from "pg";
@@ -27,114 +27,14 @@ export class PostgresUploadCommand extends Command {
     super("postgresUpload");
   }
 
-  /**
-   * Executes the upload process for all specified files
-   */
+  /** Executes the upload process for all specified files. */
   protected async execute(cliOutput: CLIOutput): Promise<CommandResult> {
     const { config, filePaths } = cliOutput;
 
     Logger.debug`Input files specified: ${filePaths.length}`;
     Logger.debug`Files: ${filePaths.join(", ")}`;
 
-    // Process each file
-    let successCount = 0;
-    let failureCount = 0;
-    const failureDetails: Record<string, any> = {};
-
-    try {
-      for (const filePath of filePaths) {
-        Logger.generic("");
-        Logger.info`Processing File: ${filePath}`;
-        try {
-          await this.processFile(filePath, config);
-          Logger.debug`Successfully processed ${filePath}`;
-          successCount++;
-        } catch (error) {
-          failureCount++;
-
-          // Handle ConductorErrors - log them with suggestions here
-          if (error instanceof Error && error.name === "ConductorError") {
-            const conductorError = error as any;
-
-            // Log the error and suggestions at the file processing level
-            Logger.errorString(`${conductorError.message}`);
-
-            // Show suggestions if available
-            if (
-              conductorError.suggestions &&
-              conductorError.suggestions.length > 0
-            ) {
-              Logger.suggestion("Suggestions");
-              conductorError.suggestions.forEach((suggestion: string) => {
-                Logger.tipString(suggestion);
-              });
-            }
-
-            Logger.debug`Skipping file '${filePath}': [${conductorError.code}] ${conductorError.message}`;
-
-            failureDetails[filePath] = {
-              code: conductorError.code,
-              message: conductorError.message,
-              details: conductorError.details,
-            };
-          } else if (error instanceof Error) {
-            // Only log non-ConductorError errors
-            Logger.errorString(`${error.message}`);
-            Logger.debug`Skipping file '${filePath}': ${error.message}`;
-            failureDetails[filePath] = {
-              message: error.message,
-            };
-          } else {
-            Logger.errorString("An unknown error occurred");
-            Logger.debug`Skipping file '${filePath}' due to an error`;
-            failureDetails[filePath] = {
-              message: "Unknown error",
-            };
-          }
-        }
-      }
-
-      // Return the CommandResult
-      if (failureCount === 0) {
-        Logger.debug`Successfully processed all ${successCount} files`;
-        return {
-          success: true,
-          details: {
-            filesProcessed: successCount,
-          },
-        };
-      } else if (successCount === 0) {
-        // Don't create a new error, just return the failure result
-        // The original error with suggestions has already been logged
-        return {
-          success: false,
-          errorCode: "PROCESSING_FAILED",
-          details: failureDetails,
-        };
-      } else {
-        // Partial success
-        Logger.warnString(
-          `Processed ${successCount} files successfully, ${failureCount} failed`
-        );
-        return {
-          success: true,
-          details: {
-            filesProcessed: successCount,
-            filesFailed: failureCount,
-            failureDetails,
-          },
-        };
-      }
-    } finally {
-      // CRITICAL: Ensure we exit the process cleanly
-      Logger.debug`Cleaning up and preparing to exit`;
-
-      // Force exit after a short delay to allow any remaining cleanup
-      setTimeout(() => {
-        Logger.debug`Forcing process exit`;
-        process.exit(0);
-      }, 500);
-    }
+    return this.processFiles(filePaths, (filePath) => this.processFile(filePath, config));
   }
 
   /**
@@ -151,7 +51,7 @@ export class PostgresUploadCommand extends Command {
     if (!hasTableFlag) {
       throw ErrorFactory.args("Table name is required", [
         "Use -t or --table option to specify the target table",
-        "Example: conductor dbupload -f data.csv -t users",
+        "Example: conductor upload-db -f data.csv -t users",
         "Table name must be explicitly provided for data safety",
       ]);
     }
@@ -264,7 +164,7 @@ export class PostgresUploadCommand extends Command {
       Logger.debug`Validated headers for ${filePath}: ${headers.join(", ")}`;
     } catch (error) {
       // If it's already a ConductorError, just rethrow it
-      if (error instanceof Error && error.name === "ConductorError") {
+      if (error instanceof ConductorError) {
         throw error;
       }
 
@@ -305,7 +205,7 @@ export class PostgresUploadCommand extends Command {
         `Batch size ${batchSize} is quite large and may cause performance issues`
       );
       Logger.tipString(
-        "Consider using a smaller batch size (1000–5000) for better performance"
+        "Consider using a smaller batch size (1000–5000) for better stability"
       );
     } else {
       Logger.debug`Batch size validated: ${batchSize}`;
@@ -315,7 +215,7 @@ export class PostgresUploadCommand extends Command {
   /**
    * Processes a single file with proper connection cleanup
    */
-  private async processFile(filePath: string, config: any): Promise<void> {
+  private async processFile(filePath: string, config: CLIOutput["config"]): Promise<void> {
     let client: Pool | undefined;
 
     try {
@@ -326,13 +226,13 @@ export class PostgresUploadCommand extends Command {
       await validateConnection(client, config);
 
       // Validate table exists
-      await this.validateTable(client, config.postgresql!.table);
+      await this.validateTable(client, config.postgresql!.table!);
 
       // Process the file
       await processCSVFileForPostgres(filePath, config, client);
     } catch (error) {
       // If it's already a ConductorError, just rethrow it without additional wrapping
-      if (error instanceof Error && error.name === "ConductorError") {
+      if (error instanceof ConductorError) {
         throw error;
       }
 

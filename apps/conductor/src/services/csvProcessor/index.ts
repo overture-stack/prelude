@@ -2,16 +2,16 @@ import * as fs from "fs";
 import * as readline from "readline";
 import { Client } from "@elastic/elasticsearch";
 import { Config } from "../../types";
-import { countFileLines, parseCSVLine } from "./csvParser";
+import { validateAndCountCSVFile, parseCSVLine } from "./csvParser";
 import { Logger } from "../../utils/logger";
-import { ErrorFactory } from "../../utils/errors";
+import { ConductorError, ErrorFactory } from "../../utils/errors";
 import {
   validateCSVStructure,
   validateHeadersMatchMappings,
 } from "../../validations";
 import { CSVProcessingErrorHandler } from "./logHandler";
 import { sendBulkWriteRequest } from "../elasticsearch";
-import { formatDuration, calculateETA, createProgressBar } from "./progressBar";
+import { updateProgressDisplay } from "./progressBar";
 import { createRecordMetadata } from "./metadata";
 
 /**
@@ -33,65 +33,9 @@ export async function processCSVFile(
   let failedRecords = 0;
   const startTime = Date.now();
   const batchedRecords: object[] = [];
-  const processingStartTime = new Date().toISOString();
 
   try {
-    // Validate inputs
-    if (!filePath || typeof filePath !== "string") {
-      throw ErrorFactory.args("Invalid file path provided", [
-        "Provide a valid file path",
-        "Check file path parameter",
-      ]);
-    }
-
-    if (!config) {
-      throw ErrorFactory.args("Configuration is required", [
-        "Provide valid configuration object",
-        "Check configuration setup",
-      ]);
-    }
-
-    if (!client) {
-      throw ErrorFactory.args("Elasticsearch client is required", [
-        "Provide valid Elasticsearch client",
-        "Check client initialization",
-      ]);
-    }
-
-    // Check file exists and is accessible
-    if (!fs.existsSync(filePath)) {
-      throw ErrorFactory.file("CSV file not found", filePath, [
-        "Check that the file exists",
-        "Verify the file path is correct",
-        "Ensure the file hasn't been moved or deleted",
-      ]);
-    }
-
-    // Check file permissions
-    try {
-      fs.accessSync(filePath, fs.constants.R_OK);
-    } catch (error) {
-      throw ErrorFactory.file("Cannot read CSV file", filePath, [
-        "Check file permissions",
-        "Ensure you have read access",
-        "Try running with appropriate privileges",
-      ]);
-    }
-
-    // Get total lines upfront to avoid repeated calls
-    const totalLines = await countFileLines(filePath);
-
-    if (totalLines === 0) {
-      throw ErrorFactory.invalidFile(
-        "CSV file contains no data rows",
-        filePath,
-        [
-          "Ensure the file contains data beyond headers",
-          "Check if the file has at least one data row",
-          "Verify the file format is correct",
-        ]
-      );
-    }
+    const totalLines = await validateAndCountCSVFile(filePath);
 
     Logger.debug`Processing file: ${filePath}`;
     Logger.debugString(`Total data rows to process: ${totalLines}`);
@@ -116,7 +60,6 @@ export async function processCSVFile(
             headers,
             config,
             filePath,
-            processingStartTime,
             processedRecords + 1
           );
 
@@ -130,24 +73,34 @@ export async function processCSVFile(
             }
 
             if (batchedRecords.length >= config.batchSize) {
-              await sendBatchToElasticsearch(
-                client,
-                batchedRecords,
-                config.elasticsearch.index,
-                filePath,
-                (count) => {
-                  failedRecords += count;
-                }
-              );
-              batchedRecords.length = 0;
+              const batchNum = Math.ceil(processedRecords / config.batchSize);
+              try {
+                await sendBatchToElasticsearch(
+                  client,
+                  batchedRecords,
+                  config.elasticsearch.index,
+                  filePath,
+                  (count) => {
+                    failedRecords += count;
+                  }
+                );
+              } catch (batchError) {
+                const msg =
+                  batchError instanceof Error
+                    ? batchError.message
+                    : String(batchError);
+                Logger.warn`Elasticsearch indexing — Batch ${batchNum} failed (${batchedRecords.length} records skipped)`;
+                Logger.warnString(`  Reason: ${msg}`);
+                failedRecords += batchedRecords.length;
+              } finally {
+                batchedRecords.length = 0;
+              }
             }
           }
         } catch (lineError) {
-          // Handle individual line processing errors
-          Logger.warnString(
-            `Error processing line: ${line.substring(0, 50)}...`
-          );
-          Logger.debugString(`Line error: ${lineError}`);
+          const msg =
+            lineError instanceof Error ? lineError.message : String(lineError);
+          Logger.warn`Record ${processedRecords + 1} skipped: ${msg}`;
           failedRecords++;
         }
       }
@@ -179,7 +132,7 @@ export async function processCSVFile(
     }
   } catch (error) {
     // If it's already a ConductorError, rethrow it
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 
@@ -231,7 +184,7 @@ async function processHeaderLine(
 
     return headers;
   } catch (error) {
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 
@@ -255,7 +208,6 @@ async function processDataLine(
   headers: string[],
   config: Config,
   filePath: string,
-  processingStartTime: string,
   recordNumber: number
 ): Promise<object | null> {
   try {
@@ -271,11 +223,7 @@ async function processDataLine(
       return null;
     }
 
-    const metadata = createRecordMetadata(
-      filePath,
-      processingStartTime,
-      recordNumber
-    );
+    const metadata = createRecordMetadata(filePath);
 
     const record = {
       submission_metadata: metadata,
@@ -290,38 +238,6 @@ async function processDataLine(
 }
 
 /**
- * Updates the progress display in the console
- *
- * @param processed - Number of processed records
- * @param total - Total number of records
- * @param startTime - When processing started
- */
-function updateProgressDisplay(
-  processed: number,
-  total: number,
-  startTime: number
-): void {
-  const elapsedMs = Math.max(1, Date.now() - startTime);
-  const progress = Math.min(100, (processed / total) * 100);
-  const progressBar = createProgressBar(progress);
-  const eta = calculateETA(processed, total, elapsedMs / 1000);
-  const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
-
-  if (processed === 10) {
-    Logger.generic("");
-  }
-  // Use \r to overwrite previous line
-  process.stdout.write("\r");
-  process.stdout.write(
-    ` ${progressBar} | ` + // Added space before progress bar
-      `${processed}/${total} | ` +
-      `⏱ ${formatDuration(elapsedMs)} | ` +
-      `🏁 ${eta} | ` +
-      `⚡${recordsPerSecond} rows/sec` // Added space after rows/sec
-  );
-}
-
-/**
  * Sends a batch of records to Elasticsearch
  */
 async function sendBatchToElasticsearch(
@@ -333,18 +249,14 @@ async function sendBatchToElasticsearch(
 ): Promise<void> {
   try {
     // Call with 4 parameters as expected by the function
-    await sendBulkWriteRequest(client, records, indexName, onFailure);
+    await sendBulkWriteRequest(client, records as Record<string, unknown>[], indexName, onFailure);
   } catch (error) {
     // If it's already a specific data validation error, just rethrow it without adding generic suggestions
-    if (error instanceof Error && error.name === "ConductorError") {
-      const conductorError = error as any;
-
-      // Check if this is a data validation error (from our bulk handler)
+    if (error instanceof ConductorError) {
       if (
-        conductorError.message.includes("Data type validation failed") ||
-        conductorError.message.includes("Bulk indexing failed")
+        error.message.includes("Data type validation failed") ||
+        error.message.includes("Bulk indexing failed")
       ) {
-        // Rethrow without additional wrapping - the user already has specific info
         throw error;
       }
     }

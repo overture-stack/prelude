@@ -1,14 +1,15 @@
 import { Client } from "@elastic/elasticsearch";
-import { ErrorFactory } from "../utils/errors";
+import { ConductorError, ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import { ConnectionValidationResult, IndexValidationResult } from "../types";
+import { Config } from "../types/cli";
 
 /**
  * Validates Elasticsearch connection by making a ping request.
  */
 export async function validateElasticsearchConnection(
   client: Client,
-  config: any
+  config: Config
 ): Promise<ConnectionValidationResult> {
   try {
     Logger.info`Testing connection to Elasticsearch at ${config.elasticsearch.url}`;
@@ -25,7 +26,7 @@ export async function validateElasticsearchConnection(
       errors: [],
       responseTimeMs: responseTime,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     Logger.debug`Connection error details: ${JSON.stringify(error, null, 2)}`;
@@ -66,7 +67,7 @@ async function getAvailableIndices(client: Client): Promise<string[]> {
 
     if (Array.isArray(response.body)) {
       return response.body
-        .map((idx: any) => idx.index)
+        .map((idx: { index: string }) => idx.index)
         .filter((index: string) => index && !index.startsWith("."))
         .sort();
     }
@@ -120,7 +121,6 @@ export async function validateIndex(
         [] // Empty suggestions since we already displayed them above
       );
 
-      (error as any).isLogged = true;
       throw error;
     }
 
@@ -130,19 +130,16 @@ export async function validateIndex(
       errors: [],
       exists: true,
     };
-  } catch (indexError: any) {
-    // If it's already our formatted error, rethrow it
-    if (
-      indexError instanceof Error &&
-      indexError.name === "ConductorError" &&
-      (indexError as any).isLogged
-    ) {
+  } catch (indexError: unknown) {
+    if (indexError instanceof ConductorError) {
       throw indexError;
     }
 
+    type ESClientError = { meta?: { body?: { error?: { type?: string }; status?: number } } };
+    const esError = indexError as ESClientError;
     if (
-      indexError.meta?.body?.error?.type === "index_not_found_exception" ||
-      indexError.meta?.body?.status === 404
+      esError.meta?.body?.error?.type === "index_not_found_exception" ||
+      esError.meta?.body?.status === 404
     ) {
       // Get available indices for helpful display
       const availableIndices = await getAvailableIndices(client);
@@ -178,7 +175,6 @@ export async function validateIndex(
         ]
       );
 
-      (error as any).isLogged = true;
       throw error;
     }
 
@@ -226,7 +222,7 @@ export function validateBatchSize(batchSize: number): void {
       `Batch size ${batchSize} is quite large and may cause performance issues`
     );
     Logger.tipString(
-      "Consider using a smaller batch size (1000–5000) for better performance"
+      "Consider using a smaller batch size (1000–5000) for better stability"
     );
   } else {
     Logger.debug`Batch size validated: ${batchSize}`;

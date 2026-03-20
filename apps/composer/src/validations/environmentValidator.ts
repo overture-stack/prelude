@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 import { PathValidationConfig } from "../types/validations";
 import { Logger } from "../utils/logger";
 
@@ -46,7 +46,7 @@ export async function validateEnvironment(
         fs.mkdirSync(dir, { recursive: true });
         Logger.info`Created directory: ${dir}`;
       } catch (error) {
-        // UPDATED: Use ErrorFactory with helpful suggestions
+       
         throw ErrorFactory.environment(
           `Failed to create directory ${dir}`,
           error,

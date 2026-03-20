@@ -216,7 +216,7 @@ export class Logger {
     console.log(this.formatMessage(message, LogLevel.GENERIC));
   }
 
-  static input(message: string): string {
+  static formatInputPrompt(message: string): string {
     return this.formatMessage(message, LogLevel.INPUT);
   }
 
@@ -232,7 +232,7 @@ export class Logger {
   }
 
   static commandInfo(command: string, description: string): void {
-    console.log`${chalk.bold.blue(command)}: ${description}`;
+    this.generic(`${chalk.bold.blue(command)}: ${description}`);
   }
 
   // Enhanced default value methods
@@ -251,7 +251,7 @@ export class Logger {
   }
 
   // Debug object logging
-  static debugObject(label: string, obj: any): void {
+  static debugObject(label: string, obj: Record<string, unknown>): void {
     if (this.config.debug) {
       console.log(chalk.gray`🔍 ${label}:`);
       Object.entries(obj).forEach(([key, value]) => {
@@ -277,7 +277,7 @@ export class Logger {
   }
 
   // File list utilities (updated names for consistency)
-  static warnfileList(title: string, files: string[]): void {
+  static warnFileList(title: string, files: string[]): void {
     if (files.length === 0) return;
     Logger.warn`${title}:`;
     files.forEach((file) => {
@@ -285,7 +285,7 @@ export class Logger {
     });
   }
 
-  static infofileList(title: string, files: string[]): void {
+  static infoFileList(title: string, files: string[]): void {
     if (files.length === 0) return;
     Logger.info`${title}:`;
     files.forEach((file) => {
@@ -302,162 +302,36 @@ export class Logger {
   }
 
   static showReferenceCommands(): void {
-    this.header("Conductor Commands");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { version } = require("../../package.json") as { version: string };
+    this.header(`Conductor v${version} Commands`);
 
-    // Full Pipeline Command
-    this.generic(
-      chalk.bold.magenta(
-        "Complete Workflow (CSV → PostgreSQL → Elasticsearch):"
-      )
-    );
-    this.generic(
-      chalk.white("conductor upload -f data.csv -t table-name -i index-name")
-    );
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray("-f, --file <paths...>   CSV files to process (required)")
-    );
-    this.generic(
-      chalk.gray("-t, --table <name>      Database table name (default: data)")
-    );
-    this.generic(
-      chalk.gray(
-        "-i, --index <name>      Elasticsearch index name (default: data)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--db-host <host:port>   PostgreSQL connection (default: localhost:5435)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--es-host <host:port>   Elasticsearch connection (default: localhost:9200)"
-      )
-    );
-    this.generic(
-      chalk.gray("-b, --batch-size <n>    Batch size (default: 1000)")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray(
-        "Example: conductor upload -f users.csv -t users -i users-index"
-      )
-    );
+    this.generic(chalk.bold.magenta("Commands:"));
+    this.generic(chalk.white("  upload     ") + chalk.gray("CSV → PostgreSQL → Elasticsearch"));
+    this.generic(chalk.white("  upload-es  ") + chalk.gray("CSV → Elasticsearch only"));
+    this.generic(chalk.white("  upload-db  ") + chalk.gray("CSV → PostgreSQL only"));
+    this.generic(chalk.white("  index-db   ") + chalk.gray("PostgreSQL → Elasticsearch"));
     this.generic("");
 
-    // Elasticsearch Only Upload
-    this.generic(chalk.bold.magenta("Elasticsearch Only Upload:"));
-    this.generic(chalk.white("conductor esupload -f data.csv -i index-name"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray("-f, --file <paths...>   CSV files to upload (required)")
-    );
-    this.generic(
-      chalk.gray(
-        "-i, --index <name>      Elasticsearch index name (default: data)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--es-host <host:port>   Elasticsearch connection (default: localhost:9200)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--es-user <username>    Elasticsearch username (default: elastic)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--es-pass <password>    Elasticsearch password (default: myelasticpassword)"
-      )
-    );
-    this.generic(
-      chalk.gray("-b, --batch-size <n>    Batch size (default: 1000)")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor esupload -f data.csv -i my-index")
-    );
+    this.generic(chalk.bold.magenta("Usage:"));
+    this.generic(chalk.white("  conductor upload    -f data.csv -t <table> -i <index>"));
+    this.generic(chalk.white("  conductor upload-es -f data.csv -i <index>"));
+    this.generic(chalk.white("  conductor upload-db -f data.csv -t <table>"));
+    this.generic(chalk.white("  conductor index-db  -t <table> -i <index>"));
     this.generic("");
 
-    // PostgreSQL Only Upload
-    this.generic(chalk.bold.magenta("PostgreSQL Only Upload:"));
-    this.generic(chalk.white("conductor dbupload -f data.csv -t table-name"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray("-f, --file <paths...>   CSV files to upload (required)")
-    );
-    this.generic(
-      chalk.gray("-t, --table <name>      Database table name (default: data)")
-    );
-    this.generic(
-      chalk.gray(
-        "--db-host <host:port>   PostgreSQL connection (default: localhost:5435)"
-      )
-    );
-    this.generic(
-      chalk.gray("--db-name <name>        Database name (default: overtureDb)")
-    );
-    this.generic(
-      chalk.gray(
-        "--db-user <username>    Database username (default: admin)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--db-pass <password>    Database password (default: admin123)"
-      )
-    );
-    this.generic(
-      chalk.gray("-b, --batch-size <n>    Batch size (default: 1000)")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor dbupload -f users.csv -t users")
-    );
+    this.generic(chalk.bold.magenta("Flags:"));
+    this.generic(chalk.gray("  -f, --file <paths...>        CSV files to process"));
+    this.generic(chalk.gray("  -t, --table <name>           PostgreSQL table name"));
+    this.generic(chalk.gray("  -i, --index <name>           Elasticsearch index name"));
+    this.generic(chalk.gray("  -b, --batch-size <n>         Records per batch (default: 5000)"));
+    this.generic(chalk.gray("  --delimiter <char>           CSV delimiter (default: ,)"));
     this.generic("");
 
-    // Table Indexing
-    this.generic(chalk.bold.magenta("Index Existing PostgreSQL Table:"));
-    this.generic(chalk.white("conductor indexDb -t table-name -i index-name"));
-    this.generic(chalk.gray("Options:"));
-    this.generic(
-      chalk.gray("-t, --table <name>      Database table name (default: data)")
-    );
-    this.generic(
-      chalk.gray(
-        "-i, --index <name>      Elasticsearch index name (default: data)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--db-host <host:port>   PostgreSQL connection (default: localhost:5435)"
-      )
-    );
-    this.generic(
-      chalk.gray(
-        "--es-host <host:port>   Elasticsearch connection (default: localhost:9200)"
-      )
-    );
-    this.generic(
-      chalk.gray("-b, --batch-size <n>    Batch size (default: 1000)")
-    );
-    this.generic("");
-    this.generic(
-      chalk.gray("Example: conductor indexDb -t users -i users-index")
-    );
-    this.generic("");
-
-    // Connection Information
-    this.generic(chalk.bold.magenta("Default Connection Information:"));
-    this.generic(
-      chalk.gray("PostgreSQL:    localhost:5435 (admin/admin123) → overtureDb database")
-    );
-    this.generic(
-      chalk.gray("Elasticsearch: localhost:9200 (elastic/myelasticpassword)")
-    );
+    this.generic(chalk.bold.magenta("Connection defaults:"));
+    this.generic(chalk.gray("  --db-host    localhost:5435   --db-name  overtureDb"));
+    this.generic(chalk.gray("  --db-user    admin            --db-pass  admin123"));
+    this.generic(chalk.gray("  --es-host    localhost:9200   --es-user  elastic"));
     this.generic("");
   }
 }

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "./logger";
-import { ErrorFactory } from "./errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "./errors";
 
 /**
  * Expands directory paths to individual file paths, filtering by extension if specified
@@ -79,7 +79,7 @@ export function expandDirectoryPaths(
       }
     } catch (error) {
       Logger.debug`Error accessing path ${inputPath}: ${error}`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.file(`Cannot access path: ${inputPath}`, inputPath, [
         "Check that the path exists and is accessible",
         "Verify file permissions allow reading",

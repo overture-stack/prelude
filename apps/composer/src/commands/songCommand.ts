@@ -2,10 +2,9 @@ import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ComposerError, ErrorFactory } from "../utils/errors";
 import { SongSchema, validateSongSchema } from "../services/generateSongSchema";
-import { validateFile, validateEnvironment } from "../validations";
-import { Profiles } from "../types";
+import { validateFile } from "../validations";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
 
@@ -47,7 +46,7 @@ export class SongCommand extends Command {
     // Ensure only one JSON file is provided
     if (cliOutput.filePaths.length !== 1) {
       Logger.debug`Invalid number of JSON files: ${cliOutput.filePaths.length}`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.args("You must provide exactly one JSON file", [
         "Song schema generation requires a single JSON input file",
         "Example: -f sample-data.json",
@@ -57,7 +56,7 @@ export class SongCommand extends Command {
 
     if (!cliOutput.outputPath) {
       Logger.debug`Output path validation failed`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.args("Output path is required", [
         "Use -o or --output to specify where to save the schema",
         "Example: -o song-schema.json",
@@ -77,7 +76,7 @@ export class SongCommand extends Command {
 
     if (fileExtension !== ".json") {
       Logger.debug`File extension validation failed - not JSON`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.file(
         "Song schema generation requires a JSON input file",
         filePath,
@@ -92,7 +91,7 @@ export class SongCommand extends Command {
     const fileValid = await validateFile(filePath);
     if (!fileValid) {
       Logger.debug`File not found or invalid: ${filePath}`;
-      // UPDATED: Use ErrorFactory with helpful suggestions
+     
       throw ErrorFactory.file(`Invalid file ${filePath}`, filePath, [
         "Check that the file exists and is readable",
         "Ensure the JSON file is properly formatted",
@@ -117,7 +116,7 @@ export class SongCommand extends Command {
         sampleData = JSON.parse(fileContent);
       } catch (error) {
         Logger.debug`JSON parsing failed: ${error}`;
-        // UPDATED: Use ErrorFactory with helpful suggestions
+       
         throw ErrorFactory.file("Invalid JSON file", filePath, [
           "Ensure the file contains valid JSON syntax",
           "Check for missing quotes, commas, or brackets",
@@ -128,7 +127,7 @@ export class SongCommand extends Command {
       // Validate JSON structure - only require experiment object
       if (!sampleData || !sampleData.experiment) {
         Logger.debug`Invalid JSON structure - missing experiment object`;
-        // UPDATED: Use ErrorFactory with helpful suggestions
+       
         throw ErrorFactory.validation(
           "JSON must contain an experiment object",
           { providedKeys: Object.keys(sampleData || {}) },
@@ -167,7 +166,7 @@ export class SongCommand extends Command {
       Logger.debug`Validating generated schema`;
       if (!validateSongSchema(songSchema)) {
         Logger.debug`Generated schema validation failed`;
-        // UPDATED: Use ErrorFactory with helpful suggestions
+       
         throw ErrorFactory.validation(
           "Generated schema validation failed",
           { schemaName },
@@ -179,12 +178,6 @@ export class SongCommand extends Command {
         );
       }
 
-      // Ensure output directory exists
-      await validateEnvironment({
-        profile: Profiles.GENERATE_SONG_SCHEMA,
-        outputPath: outputPath,
-      });
-
       // Write schema to file
       fs.writeFileSync(outputPath, JSON.stringify(songSchema, null, 2));
 
@@ -194,10 +187,10 @@ export class SongCommand extends Command {
       );
     } catch (error) {
       Logger.debug`Error during execution: ${error}`;
-      if (error instanceof Error && error.name === "ComposerError") {
+      if (error instanceof ComposerError) {
         throw error;
       }
-      // UPDATED: Use ErrorFactory
+     
       throw ErrorFactory.generation("Error generating SONG schema", error, [
         "Check that the input JSON file is valid",
         "Ensure the output directory is writable",

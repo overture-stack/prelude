@@ -1,11 +1,10 @@
-// src/utils/errors.ts - Updated to use tips for suggestions
 import { Logger } from "./logger";
 
 export class ComposerError extends Error {
   constructor(
     message: string,
     public code: string,
-    public details?: any,
+    public details?: unknown,
     public suggestions?: string[]
   ) {
     super(message);
@@ -37,7 +36,7 @@ export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 export class ErrorFactory {
   static validation(
     message: string,
-    details?: any,
+    details?: unknown,
     suggestions?: string[]
   ): ComposerError {
     return new ComposerError(
@@ -72,7 +71,7 @@ export class ErrorFactory {
 
   static generation(
     message: string,
-    details?: any,
+    details?: unknown,
     suggestions?: string[]
   ): ComposerError {
     return new ComposerError(
@@ -85,7 +84,7 @@ export class ErrorFactory {
 
   static environment(
     message: string,
-    details?: any,
+    details?: unknown,
     suggestions?: string[]
   ): ComposerError {
     return new ComposerError(
@@ -98,7 +97,7 @@ export class ErrorFactory {
 
   static parsing(
     message: string,
-    details?: any,
+    details?: unknown,
     suggestions?: string[]
   ): ComposerError {
     return new ComposerError(

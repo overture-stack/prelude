@@ -7,3 +7,4 @@
 
 export { createPostgresClient, validateConnection } from "./client";
 export { sendBulkInsertRequest } from "./bulk";
+export { processCSVFileForPostgres } from "./postgresProcessor";

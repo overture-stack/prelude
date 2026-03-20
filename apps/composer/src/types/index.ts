@@ -1,4 +1,3 @@
-// src/types/index.ts - Fixed to avoid duplicate exports
 export * from "./elasticsearch";
 export * from "./arranger";
 export * from "./song";

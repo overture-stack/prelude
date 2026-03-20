@@ -9,7 +9,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { ValidationResult } from "../types/validations";
 import { Logger } from "../utils/logger";
-import { ErrorFactory } from "../utils/errors";
+import { ConductorError, ErrorFactory } from "../utils/errors";
 import { ALLOWED_EXTENSIONS } from "./constants";
 
 /**
@@ -112,7 +112,7 @@ export async function validateFile(filePath: string): Promise<boolean> {
     Logger.debug`File '${filePath}' is valid and readable`;
     return true;
   } catch (error) {
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 

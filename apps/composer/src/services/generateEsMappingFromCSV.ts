@@ -1,7 +1,6 @@
-// src/services/generateEsMappingFromCSV.ts - Updated with consolidated error handling
 import { Logger } from "../utils/logger";
 import type { ElasticsearchMapping, ElasticsearchField } from "../types";
-import { ErrorFactory } from "../utils/errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "../utils/errors";
 
 // ---- Type Inference Configuration ----
 
@@ -13,7 +12,7 @@ interface TypeInferenceRules {
 }
 
 const defaultRules: TypeInferenceRules = {
-  maxTextLength: 256,
+  maxTextLength: 255,
   datePatterns: ["date", "time", "timestamp", "created", "updated", "modified"],
   excludePatterns: ["password", "secret", "key", "token"],
   booleanValues: ["true", "false", "yes", "no", "0", "1"],
@@ -27,21 +26,21 @@ function isValidDate(dateString: string): boolean {
 function inferFieldType(
   headerName: string,
   sampleValue: string,
-  rules: TypeInferenceRules = defaultRules
+  rules: TypeInferenceRules = defaultRules,
 ): ElasticsearchField {
   try {
     Logger.debug`Inferring type for field: ${headerName}`;
 
     if (!sampleValue || sampleValue.trim() === "") {
       Logger.debugString(
-        "Empty value detected, defaulting to keyword with null value"
+        "Empty value detected, defaulting to keyword with null value",
       );
       return { type: "keyword" as const, null_value: "No Data" };
     }
 
     if (
       rules.excludePatterns.some((pattern) =>
-        headerName.toLowerCase().includes(pattern)
+        headerName.toLowerCase().includes(pattern),
       )
     ) {
       Logger.debugString("Field matches exclude pattern, setting as keyword");
@@ -65,7 +64,7 @@ function inferFieldType(
 
     if (
       rules.datePatterns.some((pattern) =>
-        headerName.toLowerCase().includes(pattern)
+        headerName.toLowerCase().includes(pattern),
       )
     ) {
       if (isValidDate(sampleValue)) {
@@ -84,7 +83,7 @@ function inferFieldType(
   } catch (error) {
     Logger.errorString("Error inferring field type");
     Logger.debugObject("Error details", { headerName, sampleValue, error });
-    // UPDATED: Use ErrorFactory
+
     throw ErrorFactory.generation(
       "Error inferring field type",
       { headerName, sampleValue, error },
@@ -92,7 +91,7 @@ function inferFieldType(
         "Check that the sample value is valid",
         "Ensure the header name doesn't contain special characters",
         "Verify the CSV data is properly formatted",
-      ]
+      ],
     );
   }
 }
@@ -107,7 +106,7 @@ export function generateMappingFromCSV(
   csvHeaders: string[],
   sampleData: Record<string, string>,
   indexName: string = "data",
-  options: CSVMappingOptions = {}
+  options: CSVMappingOptions = {},
 ): ElasticsearchMapping {
   try {
     Logger.debugString("generateEsMappingFromCSV running");
@@ -123,14 +122,14 @@ export function generateMappingFromCSV(
 
     if (skipMetadata) {
       Logger.infoString(
-        "Submission metadata fields will be excluded from mapping"
+        "Submission metadata fields will be excluded from mapping",
       );
     }
 
     if (indexName === "default" || indexName === "data") {
       Logger.defaultValueWarning(
         "No index name supplied, defaulting to: data",
-        "--index <name>"
+        "--index <name>",
       );
       indexName = "data";
     } else {
@@ -221,7 +220,7 @@ export function generateMappingFromCSV(
         type: "object" as const,
         properties: {
           submission_id: { type: "keyword" as const, null_value: "No Data" },
-          source_file_hash: { type: "keyword" as const, null_value: "No Data" },
+          source_file_name: { type: "keyword" as const, null_value: "No Data" },
           processed_at: { type: "date" as const },
         },
       };
@@ -247,7 +246,7 @@ export function generateMappingFromCSV(
   } catch (error) {
     Logger.errorString("Error generating mapping from CSV");
     Logger.debugObject("Error details", { csvHeaders, error });
-    // UPDATED: Use ErrorFactory
+
     throw ErrorFactory.generation(
       "Error generating mapping from CSV",
       { csvHeaders, error },
@@ -256,7 +255,7 @@ export function generateMappingFromCSV(
         "Ensure sample data is properly formatted",
         "Verify there are no special characters in headers",
         "Check that the CSV structure is consistent",
-      ]
+      ],
     );
   }
 }

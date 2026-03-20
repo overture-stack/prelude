@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { Client } from "@elastic/elasticsearch";
-import { ErrorFactory } from "../utils/errors";
+import { ConductorError, ErrorFactory } from "../utils/errors";
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import { VALIDATION_CONSTANTS } from "./constants";
 import { Logger } from "../utils/logger";
@@ -150,11 +150,11 @@ export async function validateCSVStructure(
     Logger.debug`CSV header structure matches valid`;
 
     // Log all headers in debug mode
-    Logger.debugObject("CSV Headers", cleanedHeaders);
+    Logger.debugString(`CSV Headers: ${cleanedHeaders.join(", ")}`);
 
     return true;
   } catch (error) {
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
     Logger.errorString(
@@ -330,9 +330,9 @@ export async function validateHeadersMatchMappings(
 
     Logger.debug`Headers validated against index mapping - perfect match!`;
     return true;
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If it's already a ConductorError, just rethrow it
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 

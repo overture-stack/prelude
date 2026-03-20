@@ -1,9 +1,8 @@
-// src/commands/postgresCommand.ts
 import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
 import { CLIOutput } from "../types";
-import { ErrorFactory } from "../utils/errors";
+import { ComposerError, ErrorFactory } from "../utils/errors";
 import { generatePostgresTable } from "../services/generatePostgresTable";
 import { validateCSVHeaders } from "../validations";
 import { parseCSVLine } from "../utils/csvParser";
@@ -15,8 +14,7 @@ export class PostgresCommand extends Command {
   protected readonly defaultOutputFileName = "create_table.sql";
 
   constructor() {
-    super("PostgreSQL Table", path.join("configs", "postgresConfigs"));
-    this.defaultOutputFileName = "create_table.sql";
+    super("PostgreSQL Table", CONFIG_PATHS.postgres.dir);
   }
 
   /**
@@ -24,10 +22,8 @@ export class PostgresCommand extends Command {
    */
   protected isUsingDefaultPath(cliOutput: CLIOutput): boolean {
     return (
-      cliOutput.outputPath ===
-        path.join("configs", "postgresConfigs", "create_table.sql") ||
-      cliOutput.outputPath ===
-        path.join("configs", "postgresConfigs") ||
+      cliOutput.outputPath === CONFIG_PATHS.postgres.table ||
+      cliOutput.outputPath === CONFIG_PATHS.postgres.dir ||
       super.isUsingDefaultPath(cliOutput)
     );
   }
@@ -137,21 +133,11 @@ export class PostgresCommand extends Command {
     Logger.info`Processing CSV file: ${path.basename(cliOutput.filePaths[0])}`;
   }
 
-  protected async execute(cliOutput: CLIOutput): Promise<any> {
+  protected async execute(cliOutput: CLIOutput): Promise<void> {
     const { postgresConfig } = cliOutput;
     const delimiter = cliOutput.csvDelimiter;
 
-    // Get output path
-    let outputPath = cliOutput.outputPath!;
-
-    // Normalize output path for SQL files
-    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
-      outputPath = path.join(outputPath, this.defaultOutputFileName);
-      Logger.debug`Output is a directory, will create ${this.defaultOutputFileName} inside it`;
-    } else if (!outputPath.endsWith(".sql")) {
-      outputPath += ".sql";
-      Logger.info`Adding .sql extension to output path`;
-    }
+    const outputPath = this.resolveOutputPath(cliOutput.outputPath!, ".sql");
 
     try {
       const filePath = cliOutput.filePaths[0];
@@ -231,14 +217,8 @@ export class PostgresCommand extends Command {
       Logger.debug`Columns: ${headers.length}`;
       Logger.debug`Sample rows analyzed: ${sampleSize}`;
 
-      return {
-        tableName: postgresConfig!.tableName,
-        columns: headers.length,
-        sqlFile: outputPath,
-        statement: sqlStatement,
-      };
     } catch (error) {
-      if (error instanceof Error && error.name === "ComposerError") {
+      if (error instanceof ComposerError) {
         throw error;
       }
       throw ErrorFactory.generation(

@@ -1,5 +1,6 @@
-// src/commands/commandRegistry.ts - Updated to support Lectern dictionaries
+import * as path from "path";
 import { Command } from "./baseCommand";
+import { CLIOutput } from "../types/cli";
 import { Profile, Profiles } from "../types";
 import { Logger } from "../utils/logger";
 import { ErrorFactory } from "../utils/errors";
@@ -27,7 +28,7 @@ export class CommandRegistry {
     [
       Profiles.GENERATE_SONG_SCHEMA,
       {
-        name: "SongSchema",
+        name: "song-schema",
         description: "Generate Song schema from JSON metadata",
         fileTypes: [".json"],
         createCommand: () => new SongCommand(),
@@ -36,7 +37,7 @@ export class CommandRegistry {
     [
       Profiles.GENERATE_LECTERN_DICTIONARY,
       {
-        name: "LecternDictionary",
+        name: "lectern-dictionary",
         description: "Generate Lectern dictionary from CSV files",
         fileTypes: [".csv"],
         createCommand: () => new DictionaryCommand(),
@@ -45,7 +46,7 @@ export class CommandRegistry {
     [
       Profiles.GENERATE_ELASTICSEARCH_MAPPING,
       {
-        name: "ElasticsearchMapping",
+        name: "elasticsearch-mapping",
         description:
           "Generate Elasticsearch mapping from CSV, JSON, or Lectern dictionary",
         fileTypes: [".csv", ".json"], // Note: Lectern dictionaries are JSON files
@@ -55,7 +56,7 @@ export class CommandRegistry {
     [
       Profiles.GENERATE_ARRANGER_CONFIGS,
       {
-        name: "ArrangerConfigs",
+        name: "arranger-configs",
         description: "Generate Arranger configs from Elasticsearch mapping",
         fileTypes: [".json"],
         createCommand: () => new ArrangerCommand(),
@@ -64,7 +65,7 @@ export class CommandRegistry {
     [
       Profiles.GENERATE_POSTGRES_TABLE,
       {
-        name: "PostgresTable",
+        name: "postgres-table",
         description: "Generate PostgreSQL CREATE TABLE statement from CSV files",
         fileTypes: [".csv"],
         createCommand: () => new PostgresCommand(),
@@ -94,7 +95,7 @@ export class CommandRegistry {
   /**
    * Create and execute a command in one step
    */
-  static async execute(profile: Profile, cliOutput: any): Promise<void> {
+  static async execute(profile: Profile, cliOutput: CLIOutput): Promise<void> {
     const command = this.createCommand(profile);
     await command.run(cliOutput);
   }
@@ -137,7 +138,6 @@ export class CommandRegistry {
       return { valid: false, invalidFiles: filePaths, supportedTypes: [] };
     }
 
-    const path = require("path");
     const invalidFiles = filePaths.filter((filePath) => {
       const ext = path.extname(filePath).toLowerCase();
       return !config.fileTypes.includes(ext);

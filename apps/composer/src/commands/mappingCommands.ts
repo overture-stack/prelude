@@ -1,4 +1,3 @@
-// src/commands/mappingCommands.ts - Updated to support Lectern dictionaries
 import * as path from "path";
 import * as fs from "fs";
 import { Command } from "./baseCommand";
@@ -17,8 +16,7 @@ import { validateCSVHeaders } from "../validations";
 import { parseCSVLine } from "../utils/csvParser";
 import { Logger } from "../utils/logger";
 import { CONFIG_PATHS } from "../utils/paths";
-import { ElasticsearchMapping } from "../types/elasticsearch";
-import { ElasticsearchField } from "../types/elasticsearch";
+import { ElasticsearchMapping, ElasticsearchField } from "../types/elasticsearch";
 
 // Local interface for mapping options
 interface MappingOptions {
@@ -248,16 +246,7 @@ export class MappingCommand extends Command {
     // Start execution timing
     const startTime = Date.now();
 
-    let outputPath = cliOutput.outputPath!;
-
-    // Normalize output path for mapping files specifically
-    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
-      outputPath = path.join(outputPath, this.defaultOutputFileName);
-      Logger.debug`Output is a directory, will create ${this.defaultOutputFileName} inside it`;
-    } else if (!outputPath.endsWith(".json")) {
-      outputPath += ".json";
-      Logger.info`Adding .json extension to output path`;
-    }
+    const outputPath = this.resolveOutputPath(cliOutput.outputPath!, ".json");
 
     try {
       // Access elasticsearch config directly from CLIOutput

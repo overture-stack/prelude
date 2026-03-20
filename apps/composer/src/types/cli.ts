@@ -1,7 +1,6 @@
-// src/types/cli.ts - Updated to include Lectern dictionary support
 import { Profiles } from "./profiles";
 import { ArrangerConfig } from "./arranger";
-import { PostgresConfig } from "./postgres"; // IMPORT FROM POSTGRES TYPES
+import { PostgresConfig } from "./postgres";
 
 export type Profile = (typeof Profiles)[keyof typeof Profiles];
 
@@ -11,7 +10,7 @@ export interface ElasticsearchConfig {
   shards: number;
   replicas: number;
   ignoredFields?: string[];
-  ignoredSchemas?: string[]; // NEW: Support for ignoring schemas in Lectern dictionaries
+  ignoredSchemas?: string[];
   skipMetadata?: boolean;
 }
 

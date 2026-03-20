@@ -1,4 +1,3 @@
-// src/cli/environment.ts - Updated with Lectern dictionary support
 import { EnvConfig } from "../types";
 import { ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
@@ -29,7 +28,7 @@ const ENV_VAR_MAP: Record<keyof EnvConfig, string> = {
   esShards: "ES_SHARDS",
   esReplicas: "ES_REPLICAS",
   esIgnoredFields: "ES_IGNORED_FIELDS",
-  esIgnoredSchemas: "ES_IGNORED_SCHEMAS", // NEW: Environment variable for ignored schemas
+  esIgnoredSchemas: "ES_IGNORED_SCHEMAS",
   esSkipMetadata: "ES_SKIP_METADATA",
 
   // CSV options
@@ -69,7 +68,7 @@ export function loadEnvironmentConfig(): EnvConfig {
       esShards: parseInt(process.env.ES_SHARDS || "1", 10),
       esReplicas: parseInt(process.env.ES_REPLICAS || "1", 10),
       esIgnoredFields: process.env.ES_IGNORED_FIELDS?.split(/\s+/),
-      esIgnoredSchemas: process.env.ES_IGNORED_SCHEMAS?.split(/\s+/), // NEW: Parse ignored schemas
+      esIgnoredSchemas: process.env.ES_IGNORED_SCHEMAS?.split(/\s+/),
       esSkipMetadata: process.env.ES_SKIP_METADATA?.toLowerCase() === "true",
 
       // CSV options

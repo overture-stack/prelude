@@ -1,15 +1,17 @@
 // src/commands/postgresIndexCommand.ts
 /**
- * PostgreSQL to Elasticsearch Index Command - UPDATED for nested data structure
+ * PostgreSQL to Elasticsearch Index Command
  *
- * Command implementation for reading data from a PostgreSQL table
- * and indexing it directly into Elasticsearch with proper nested data mapping.
+ * Reads data from a PostgreSQL table using a server-side cursor and indexes
+ * it into Elasticsearch in batches, keeping memory usage flat regardless of
+ * table size.
  */
 
 import { Command, CommandResult } from "./baseCommand";
 import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
-import { ErrorFactory } from "../utils/errors";
+import { DEFAULTS } from "../config/defaults";
+import { ConductorError, ErrorFactory } from "../utils/errors";
 import {
   createPostgresClient,
   validateConnection as validatePostgresConnection,
@@ -20,10 +22,11 @@ import {
 } from "../services/elasticsearch";
 import { sendBulkWriteRequest } from "../services/elasticsearch/bulk";
 import { Pool } from "pg";
+import Cursor from "pg-cursor";
 import { Client } from "@elastic/elasticsearch";
-import { createRecordMetadata } from "../services/csvProcessor/metadata";
-import { formatDuration, calculateETA, createProgressBar } from "../services/csvProcessor/progressBar";
-import { processCSVFileForPostgres } from "../services/csvProcessor/postgresProcessor";
+import { postgresRowToEsDocument } from "../services/csvProcessor/metadata";
+import { createProgressBar } from "../services/csvProcessor/progressBar";
+import { processCSVFileForPostgres } from "../services/postgresql/postgresProcessor";
 import { validateFiles } from "../validations/fileValidator";
 
 export class PostgresIndexCommand extends Command {
@@ -42,21 +45,15 @@ export class PostgresIndexCommand extends Command {
     try {
       const hasFiles = filePaths && filePaths.length > 0;
 
-      if (hasFiles) {
-        Logger.info`Starting full workflow: CSV upload to PostgreSQL + indexing to Elasticsearch`;
-      } else {
-        Logger.info`Starting PostgreSQL to Elasticsearch indexing`;
-      }
-
       // Set up clients
       pgClient = createPostgresClient(config);
       esClient = createClientFromConfig(config);
 
       // Validate connections
-      Logger.info`Validating PostgreSQL connection`;
+      Logger.debug`Validating PostgreSQL connection`;
       await validatePostgresConnection(pgClient, config);
 
-      Logger.info`Validating Elasticsearch connection`;
+      Logger.debug`Validating Elasticsearch connection`;
       await validateElasticsearchConnection(esClient);
 
       const tableName = config.postgresql!.table!;
@@ -64,62 +61,64 @@ export class PostgresIndexCommand extends Command {
 
       // Step 1: Upload CSV files to PostgreSQL if files are provided
       if (hasFiles) {
-        Logger.info`Step 1: Uploading CSV files to PostgreSQL`;
-        await this.uploadFilesToPostgreSQL(filePaths, config, pgClient);
+        const uploadResult = await this.processFiles(
+          filePaths,
+          (filePath) => processCSVFileForPostgres(filePath, config, pgClient!)
+        );
+        if (!uploadResult.success) {
+          throw ErrorFactory.validation(
+            "All file uploads failed",
+            uploadResult.details,
+            [
+              "Check PostgreSQL connection and table permissions",
+              "Verify CSV file format and data types",
+              "Review error messages above for specific issues",
+            ]
+          );
+        }
+        if (uploadResult.details?.filesFailed) {
+          Logger.tipString("Continuing with indexing using successfully uploaded data");
+        }
       }
 
-      // Step 2: Index PostgreSQL data to Elasticsearch
-      Logger.info`Step 2: Reading data from PostgreSQL table: ${tableName}`;
-      const tableData = await this.readTableData(pgClient, tableName);
+      // Step 2: Index PostgreSQL data to Elasticsearch with streaming
+      const result = await this.streamIndexToElasticsearch(
+        pgClient,
+        esClient,
+        tableName,
+        indexName,
+        config.batchSize || DEFAULTS.BATCH_SIZE,
+        10000
+      );
 
-      if (tableData.length === 0) {
-        const message = hasFiles ?
-          "No data found in table after upload - check CSV file format" :
-          `No data found in table ${tableName}`;
-        Logger.warn`${message}`;
+      if (result.totalProcessed === 0) {
+        Logger.warn`No data found in table ${tableName}`;
         return {
           success: true,
           details: {
             recordsProcessed: 0,
             recordsIndexed: 0,
-            message,
+            message: `No data found in table ${tableName}`,
           },
         };
       }
 
-      Logger.info`Found ${tableData.length} records in table ${tableName}`;
-
-      // Transform and index data to Elasticsearch with proper nested structure
-      Logger.info`Step 3: Indexing data to Elasticsearch index: ${indexName}`;
-      const indexedCount = await this.indexToElasticsearch(
-        esClient,
-        tableData,
-        indexName,
-        config.batchSize || 1000,
-        tableName
+      Logger.successString(
+        `Indexing complete: ${result.totalIndexed} records indexed to ${indexName}`
       );
-
-      if (hasFiles) {
-        Logger.successString("Full workflow completed successfully");
-        Logger.generic(`  ▸ CSV files uploaded to PostgreSQL: ${filePaths.length}`);
-      } else {
-        Logger.successString("Indexing completed successfully");
-      }
-      Logger.generic(`  ▸ Records processed from table: ${tableData.length}`);
-      Logger.generic(`  ▸ Records indexed to Elasticsearch: ${indexedCount}`);
 
       return {
         success: true,
         details: {
           filesUploaded: hasFiles ? filePaths.length : 0,
-          recordsProcessed: tableData.length,
-          recordsIndexed: indexedCount,
+          recordsProcessed: result.totalProcessed,
+          recordsIndexed: result.totalIndexed,
           sourceTable: tableName,
           targetIndex: indexName,
         },
       };
     } catch (error) {
-      if (error instanceof Error && error.name === "ConductorError") {
+      if (error instanceof ConductorError) {
         throw error;
       }
 
@@ -145,10 +144,14 @@ export class PostgresIndexCommand extends Command {
         }
       }
 
-      // Force exit after cleanup
-      setTimeout(() => {
-        process.exit(0);
-      }, 500);
+      if (esClient) {
+        try {
+          Logger.debug`Closing Elasticsearch client`;
+          await esClient.close();
+        } catch (closeError) {
+          Logger.debug`Warning: Error closing Elasticsearch client: ${closeError}`;
+        }
+      }
     }
   }
 
@@ -207,16 +210,132 @@ export class PostgresIndexCommand extends Command {
   }
 
   /**
-   * Reads all data from a PostgreSQL table
+   * Streams data from PostgreSQL and indexes to Elasticsearch in batches
+   * Memory-efficient approach using cursors to avoid loading entire table into memory
    */
-  private async readTableData(client: Pool, tableName: string): Promise<any[]> {
+  private async streamIndexToElasticsearch(
+    pgClient: Pool,
+    esClient: Client,
+    tableName: string,
+    indexName: string,
+    esBatchSize: number,
+    pgReadChunkSize: number
+  ): Promise<{ totalProcessed: number; totalIndexed: number }> {
+    let totalProcessed = 0;
+    let totalIndexed = 0;
+    let failedRecords = 0;
+    let totalCreated = 0;
+    let totalUpdated = 0;
+    const startTime = Date.now();
+
+    // Get a dedicated client from the pool for cursor operations
+    const client = await pgClient.connect();
+
     try {
-      Logger.debug`Executing query: SELECT * FROM ${tableName}`;
+      Logger.debug`PostgreSQL chunk size: ${pgReadChunkSize}, Elasticsearch batch size: ${esBatchSize}`;
 
-      const result = await client.query(`SELECT * FROM ${tableName}`);
+      // Get total record count for accurate progress tracking
+      Logger.debug`Counting total records in ${tableName}`;
+      const countResult = await client.query(
+        `SELECT COUNT(*) FROM ${tableName}`
+      );
+      const totalRecords = parseInt(countResult.rows[0].count, 10);
 
-      Logger.debug`Query returned ${result.rows.length} rows`;
-      return result.rows;
+      console.log("");
+      Logger.info`Indexing ${totalRecords} records from ${tableName} into ${indexName}`;
+
+      // Create cursor for streaming data from PostgreSQL
+      const cursor = client.query(new Cursor(`SELECT * FROM ${tableName}`));
+
+      let buffer: Record<string, unknown>[] = [];
+      let hasMoreRows = true;
+
+      while (hasMoreRows) {
+        // Read chunk from PostgreSQL
+        const rows: Record<string, unknown>[] = await new Promise((resolve, reject) => {
+          cursor.read(pgReadChunkSize, (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+          });
+        });
+
+        if (rows.length === 0) {
+          hasMoreRows = false;
+        } else {
+          totalProcessed += rows.length;
+          buffer.push(...rows);
+        }
+
+        // Process buffer when it reaches ES batch size or we've read all data
+        while (
+          buffer.length >= esBatchSize ||
+          (!hasMoreRows && buffer.length > 0)
+        ) {
+          const batch = buffer.splice(0, esBatchSize);
+
+          // Transform PostgreSQL records to Elasticsearch documents
+          const esDocuments = batch.map((record) =>
+            postgresRowToEsDocument(record, tableName)
+          );
+
+          // Send batch to Elasticsearch
+          await sendBulkWriteRequest(
+            esClient,
+            esDocuments,
+            indexName,
+            (failureCount) => {
+              failedRecords += failureCount;
+            },
+            {
+              maxRetries: 3,
+              refresh: false,
+              writeErrorLog: false,
+            },
+            (created, updated) => {
+              totalCreated += created;
+              totalUpdated += updated;
+            }
+          );
+
+          totalIndexed += batch.length;
+
+          // Update progress with accurate total
+          this.updateProgressDisplay(totalIndexed, totalRecords, startTime);
+
+          // If we've processed all remaining buffer and no more rows, exit
+          if (buffer.length === 0 && !hasMoreRows) {
+            break;
+          }
+        }
+      }
+
+      // Close cursor
+      await new Promise<void>((resolve, reject) => {
+        cursor.close((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      // Final refresh to make all data searchable
+      Logger.debug`Refreshing index ${indexName}`;
+      await esClient.indices.refresh({ index: indexName });
+
+      // Add newline after progress bar
+      if (totalIndexed > 0) {
+        process.stdout.write("\n");
+      }
+
+      Logger.generic(`   └─ Indexed ${totalIndexed} records to ${indexName}`);
+      if (totalCreated > 0 || totalUpdated > 0) {
+        Logger.generic(`   └─ ${totalCreated} new, ${totalUpdated} updated`);
+      }
+
+      if (failedRecords > 0) {
+        Logger.generic(`   └─ ${failedRecords} failed records`);
+      }
+
+      return { totalProcessed, totalIndexed };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -237,131 +356,25 @@ export class PostgresIndexCommand extends Command {
       }
 
       throw ErrorFactory.validation(
-        `Failed to read data from table ${tableName}`,
-        { tableName, originalError: error },
-        [
-          "Check PostgreSQL connection",
-          "Verify table exists and is accessible",
-          "Check your permissions on the table",
-        ]
-      );
-    }
-  }
-
-  /**
-   * Indexes data to Elasticsearch in batches with proper nested data structure
-   * Enhanced with improved bulk operations and error handling
-   */
-  private async indexToElasticsearch(
-    client: Client,
-    data: any[],
-    indexName: string,
-    batchSize: number,
-    sourceTable: string
-  ): Promise<number> {
-    let totalIndexed = 0;
-    let failedRecords = 0;
-    const startTime = Date.now();
-    const processingStartTime = new Date().toISOString();
-
-    try {
-      Logger.info`Starting indexing of ${data.length} records to ${indexName}`;
-
-      // Process data in batches
-      for (let i = 0; i < data.length; i += batchSize) {
-        const batch = data.slice(i, i + batchSize);
-
-        // Transform PostgreSQL records to Elasticsearch documents
-        const esDocuments = batch.map((record, j) => {
-          const recordId = record.id || `${i + j + 1}`;
-
-          // Extract existing metadata from PostgreSQL record, or create new if missing
-          let metadata;
-          if (record.submission_metadata) {
-            try {
-              // Parse existing metadata from PostgreSQL (stored as JSON string)
-              metadata = JSON.parse(record.submission_metadata);
-            } catch (error) {
-              Logger.debug`Failed to parse existing submission_metadata, creating new: ${error}`;
-              metadata = createRecordMetadata(
-                `postgresql://${sourceTable}`,
-                processingStartTime,
-                i + j + 1
-              );
-            }
-          } else {
-            // Create new metadata if none exists
-            metadata = createRecordMetadata(
-              `postgresql://${sourceTable}`,
-              processingStartTime,
-              i + j + 1
-            );
-          }
-
-          // Separate data from metadata columns
-          const { submission_metadata, id, ...dataColumns } = record;
-
-          // Structure the document with standardized format
-          return {
-            submission_metadata: metadata,
-            data: dataColumns,
-          };
-        });
-
-        // Use enhanced bulk operations with error analysis
-        await sendBulkWriteRequest(
-          client,
-          esDocuments,
-          indexName,
-          (failureCount) => {
-            failedRecords += failureCount;
-          },
-          {
-            maxRetries: 3,
-            refresh: false, // Don't refresh on each batch for performance
-            writeErrorLog: true,
-          }
-        );
-
-        const successfulInBatch = batch.length - (failedRecords - (totalIndexed > 0 ? failedRecords - batch.length : 0));
-        totalIndexed += Math.max(0, successfulInBatch);
-
-        // Update progress
-        this.updateProgressDisplay(i + batch.length, data.length, startTime);
-      }
-
-      // Final refresh to make all data searchable
-      Logger.debug`Refreshing index ${indexName}`;
-      await client.indices.refresh({ index: indexName });
-
-      // Clear progress line and show summary
-      process.stdout.write('\r' + ' '.repeat(80) + '\r');
-
-      if (failedRecords > 0) {
-        Logger.warnString(`Indexing completed with ${failedRecords} failed records`);
-        Logger.successString(`Successfully indexed ${totalIndexed} out of ${data.length} records`);
-      } else {
-        Logger.successString(`Successfully indexed all ${totalIndexed} records`);
-      }
-
-      return totalIndexed;
-    } catch (error) {
-      throw ErrorFactory.validation(
-        "Failed to index data to Elasticsearch",
+        "Failed to stream and index data",
         {
+          tableName,
           indexName,
-          totalRecords: data.length,
-          processedRecords: totalIndexed,
+          totalProcessed,
+          totalIndexed,
           failedRecords,
-          originalError: error
+          originalError: error,
         },
         [
-          "Check Elasticsearch connection and status",
-          "Verify index permissions and mapping",
+          "Check PostgreSQL and Elasticsearch connections",
+          "Verify table exists and is accessible",
           "Review error logs for detailed information",
-          "Ensure PostgreSQL data types match Elasticsearch field types",
+          "Ensure sufficient memory is available",
         ]
       );
+    } finally {
+      // Release the client back to the pool
+      client.release();
     }
   }
 
@@ -375,19 +388,21 @@ export class PostgresIndexCommand extends Command {
   ): void {
     const elapsedMs = Math.max(1, Date.now() - startTime);
     const progress = Math.min(100, (processed / total) * 100);
-    const progressBar = createProgressBar(progress);
-    const eta = calculateETA(processed, total, elapsedMs / 1000);
+    const progressBar = createProgressBar(progress, "blue");
     const recordsPerSecond = Math.round(processed / (elapsedMs / 1000));
 
-    // Show progress every 10 records or when complete
-    if (processed % 10 === 0 || processed === total) {
-      process.stdout.write("\r");
+    // Show progress every 1000 records, every 10% for small datasets, or when complete
+    const showProgress =
+      processed % 1000 === 0 ||
+      processed === total ||
+      (total < 1000 && processed % Math.max(1, Math.floor(total / 10)) === 0);
+
+    if (showProgress) {
+      // Clear the line first, then write new progress
+      process.stdout.clearLine(0);
+      process.stdout.cursorTo(0);
       process.stdout.write(
-        ` ${progressBar} | ` +
-          `${processed}/${total} | ` +
-          `⏱ ${formatDuration(elapsedMs)} | ` +
-          `🏁 ${eta} | ` +
-          `⚡${recordsPerSecond} records/sec`
+        `   └─ ${progressBar} ${processed}/${total} | ${recordsPerSecond} records/sec`
       );
     }
   }
@@ -399,58 +414,4 @@ export class PostgresIndexCommand extends Command {
     return false; // Files are optional
   }
 
-  /**
-   * Uploads CSV files to PostgreSQL table
-   */
-  private async uploadFilesToPostgreSQL(
-    filePaths: string[],
-    config: any,
-    client: Pool
-  ): Promise<void> {
-    let successCount = 0;
-    let failureCount = 0;
-
-    for (const filePath of filePaths) {
-      try {
-        Logger.info`Processing file: ${filePath}`;
-        await processCSVFileForPostgres(filePath, config, client);
-        Logger.success`Successfully uploaded ${filePath} to PostgreSQL`;
-        successCount++;
-      } catch (error) {
-        failureCount++;
-
-        // Log the error but continue processing other files
-        if (error instanceof Error && error.name === "ConductorError") {
-          const conductorError = error as any;
-          Logger.errorString(`${conductorError.message}`);
-          if (conductorError.suggestions && conductorError.suggestions.length > 0) {
-            Logger.suggestion("Suggestions");
-            conductorError.suggestions.forEach((suggestion: string) => {
-              Logger.tipString(suggestion);
-            });
-          }
-        } else {
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          Logger.errorString(`Failed to upload ${filePath}: ${errorMessage}`);
-        }
-      }
-    }
-
-    if (failureCount === 0) {
-      Logger.successString(`Successfully uploaded all ${successCount} files to PostgreSQL`);
-    } else if (successCount === 0) {
-      throw ErrorFactory.validation(
-        "All file uploads failed",
-        { successCount, failureCount },
-        [
-          "Check PostgreSQL connection and table permissions",
-          "Verify CSV file format and data types",
-          "Review error messages above for specific issues",
-        ]
-      );
-    } else {
-      Logger.warnString(`Uploaded ${successCount} files successfully, ${failureCount} failed`);
-      Logger.tipString("Continuing with indexing using successfully uploaded data");
-    }
-  }
 }

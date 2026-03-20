@@ -1,105 +1,81 @@
-// src/cli/index.ts - Fixed to handle directories properly
 import { Command } from "commander";
 import { CommandRegistry } from "../commands/commandRegistry";
 import { ErrorFactory } from "../utils/errors";
 import { validateEnvironment } from "../validations";
 import { loadEnvironmentConfig } from "./environment";
-import { configureCommandOptions, parseOptions, PROFILE_DESCRIPTIONS } from "./commandOptions";
+import { configureCommandOptions, parseOptions, ParsedOpts } from "./commandOptions";
 import { Profiles } from "../types/profiles";
+import { CLIOutput } from "../types/cli";
 import { Logger } from "../utils/logger";
 import { expandDirectoryPaths } from "../utils/fileUtils";
 import * as path from "path";
 import * as fs from "fs";
 
-export async function setupCLI(): Promise<any> {
+type Profile = (typeof Profiles)[keyof typeof Profiles];
+
+const VALID_PROFILES = new Set<string>(Object.values(Profiles));
+
+export async function setupCLI(): Promise<CLIOutput> {
   const program = new Command();
 
   try {
     const envConfig = loadEnvironmentConfig();
     configureCommandOptions(program);
 
-    // Check if we should show help before parsing (when no profile is specified)
-    const argv = process.argv.slice(2);
-    const hasProfile = argv.some(arg =>
-      Object.values(Profiles).some(profile =>
-        profile.toLowerCase() === arg.toLowerCase()
-      )
+    Logger.debug`Raw arguments: ${process.argv.join(" ")}`;
+    program.parse(process.argv);
+
+    const commandName = program.args[0];
+
+    // Show help if no command provided
+    if (!commandName) {
+      Logger.showReferenceCommands();
+      process.exit(0);
+    }
+
+    // Validate it's a known profile
+    if (!VALID_PROFILES.has(commandName)) {
+      throw ErrorFactory.args(`Unknown command: ${commandName}`, [
+        "Use 'composer --help' to see available commands",
+        `Available commands: ${Array.from(VALID_PROFILES).join(", ")}`,
+      ]);
+    }
+
+    const subCommand = program.commands.find(
+      (cmd) => cmd.name() === commandName
     );
-    const hasPFlag = argv.includes('-p') || argv.some(arg => arg.startsWith('--profile'));
-    const hasHelpFlag = argv.includes('-h') || argv.includes('--help');
 
-    // If no profile specified and no help flag, show help
-    if (!hasProfile && !hasPFlag && !hasHelpFlag && argv.length > 0) {
-      Logger.showReferenceCommands();
-      process.exit(0);
-    }
-
-    // If no arguments at all, show help
-    if (argv.length === 0) {
-      Logger.showReferenceCommands();
-      process.exit(0);
-    }
-
-    program.parse();
-    const options = program.opts();
-    const args = program.args;
-
-    // Handle profile from positional argument or -p option
-    let profile = options.profile;
-
-    // If positional argument is provided, use it (takes precedence over -p option)
-    if (args.length > 0) {
-      const positionalProfile = args[0];
-      // Find matching profile (case-insensitive)
-      const matchingProfile = Object.values(Profiles).find(
-        (p) => p.toLowerCase() === positionalProfile.toLowerCase()
-      );
-
-      if (matchingProfile) {
-        profile = matchingProfile;
-      } else {
-        // If positional argument doesn't match a profile, treat it as invalid
-        const suggestions = Array.from(PROFILE_DESCRIPTIONS.entries()).map(
-          ([profile, desc]) => `  ▸ ${profile}: ${desc}`
-        );
-
-        throw ErrorFactory.args(`Invalid profile: ${positionalProfile}`, [
-          "Valid profiles are (case-insensitive):\n",
-          ...suggestions,
-          "\nUsage examples:",
-          "  ▸ composer ArrangerConfigs -f mapping.json",
-          "  ▸ composer -p ArrangerConfigs -f mapping.json",
-        ]);
-      }
-    }
-
-    // Profile should be set by now (either from args or -p option)
-    if (!profile) {
-      throw ErrorFactory.args("No profile specified", [
-        "This should not happen - profile validation error",
+    if (!subCommand) {
+      throw ErrorFactory.args(`Unknown command: ${commandName}`, [
+        "Use 'composer --help' to see available commands",
       ]);
     }
 
-    // Update options with resolved profile
-    options.profile = profile;
+    const globalOpts = program.opts();
+    const subOpts = subCommand.opts();
 
-    if (!CommandRegistry.isRegistered(options.profile)) {
-      throw ErrorFactory.args(`Invalid profile: ${options.profile}`, [
+    // Merge global debug flag with subcommand opts
+    const options: ParsedOpts = { ...(subOpts as ParsedOpts), profile: commandName as Profile, debug: globalOpts.debug || (subOpts as ParsedOpts).debug };
+
+    if (options.debug) {
+      Logger.enableDebug();
+      Logger.debug`Parsed options: ${JSON.stringify(options, null, 2)}`;
+    }
+
+    const profile = commandName as Profile;
+
+    if (!CommandRegistry.isRegistered(profile)) {
+      throw ErrorFactory.args(`Invalid profile: ${profile}`, [
         "Use --help to see available profiles",
-        `Available profiles: ${CommandRegistry.getAvailableProfiles().join(
-          ", "
-        )}`,
-        "Example: -p SongSchema or -p LecternDictionary",
+        `Available profiles: ${CommandRegistry.getAvailableProfiles().join(", ")}`,
       ]);
     }
 
-    // FIXED: Expand directories but let commands handle file type validation
+    // Expand directories but let commands handle file type validation
     if (options.files) {
-      // Get the command config to know what file types are supported
-      const commandConfig = CommandRegistry.getConfig(options.profile);
+      const commandConfig = CommandRegistry.getConfig(profile);
 
       if (commandConfig) {
-        // Separate directories from explicit files
         const directories: string[] = [];
         const explicitFiles: string[] = [];
 
@@ -111,18 +87,15 @@ export async function setupCLI(): Promise<any> {
               explicitFiles.push(pathStr);
             }
           } catch {
-            // If we can't stat it, treat it as an explicit file (let file validation handle the error)
             explicitFiles.push(pathStr);
           }
         });
 
-        // Expand directories with file type filtering
         const expandedFiles =
           directories.length > 0
             ? expandDirectoryPaths(directories, commandConfig.fileTypes)
             : [];
 
-        // Combine expanded directory files with explicit files (no filtering on explicit files)
         const allFiles = [...expandedFiles, ...explicitFiles];
 
         if (allFiles.length === 0) {
@@ -133,22 +106,16 @@ export async function setupCLI(): Promise<any> {
               supportedTypes: commandConfig.fileTypes,
             },
             [
-              `${commandConfig.name} supports: ${commandConfig.fileTypes.join(
-                ", "
-              )}`,
+              `${commandConfig.name} supports: ${commandConfig.fileTypes.join(", ")}`,
               "Check that your directories contain files with the correct extensions",
               "Verify the paths are correct and accessible",
             ]
           );
         }
 
-        // Replace the original files array with the combined list
         options.files = allFiles;
 
-        // Only validate file extensions for directory-expanded files
-        // Let individual commands handle explicit file validation for better error messages
         if (directories.length > 0 && explicitFiles.length === 0) {
-          // Only directories were provided - validate all files
           const invalidFiles = options.files.filter((file: string) => {
             const ext = path.extname(file).toLowerCase();
             return !commandConfig.fileTypes.includes(ext);
@@ -163,9 +130,7 @@ export async function setupCLI(): Promise<any> {
                 providedFiles: options.files,
               },
               [
-                `${commandConfig.name} supports: ${commandConfig.fileTypes.join(
-                  ", "
-                )}`,
+                `${commandConfig.name} supports: ${commandConfig.fileTypes.join(", ")}`,
                 "Check your input files and try again",
                 `Invalid files: ${invalidFiles.join(", ")}`,
               ]
@@ -175,13 +140,11 @@ export async function setupCLI(): Promise<any> {
       }
     }
 
-    // Use the parseOptions function from commandOptions
-    const cliOutput = parseOptions(options);
+    const cliOutput = parseOptions(options as Parameters<typeof parseOptions>[0]);
     cliOutput.envConfig = envConfig;
 
-    // Validate environment
     await validateEnvironment({
-      profile: options.profile,
+      profile,
       outputPath: cliOutput.outputPath,
     });
 

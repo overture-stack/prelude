@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { parse as csvParse } from "csv-parse/sync";
-import { ErrorFactory } from "./errors"; // UPDATED: Import ErrorFactory
+import { ErrorFactory } from "./errors";
 import { CSVParseOptions } from "../types/validations";
 import { Logger } from "./logger";
 
@@ -33,7 +33,7 @@ export function parseCSVLine(
 
     return result;
   } catch (error) {
-    // UPDATED: Use ErrorFactory with helpful suggestions
+   
     throw ErrorFactory.parsing("Error parsing CSV line", { line, error }, [
       "Check that the CSV delimiter is correct",
       "Ensure the CSV file is properly formatted",

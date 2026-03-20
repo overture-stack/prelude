@@ -1,4 +1,3 @@
-// src/services/generateLecternDictionary.ts - Updated with consolidated error handling
 import { Logger } from "../utils/logger";
 import * as path from "path";
 import type {

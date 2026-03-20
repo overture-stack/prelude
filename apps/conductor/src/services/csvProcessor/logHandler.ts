@@ -1,4 +1,4 @@
-import { ErrorFactory } from "../../utils/errors";
+import { ConductorError, ErrorFactory } from "../../utils/errors";
 import { Logger } from "../../utils/logger";
 import { formatDuration } from "./progressBar";
 
@@ -24,7 +24,7 @@ export class CSVProcessingErrorHandler {
     delimiter: string
   ): never {
     // If it's already a ConductorError, preserve it
-    if (error instanceof Error && error.name === "ConductorError") {
+    if (error instanceof ConductorError) {
       throw error;
     }
 
@@ -195,33 +195,30 @@ export class CSVProcessingErrorHandler {
       if (failed > 0) {
         if (successfulRecords > 0) {
           Logger.warnString(
-            `Transfer to elasticsearch completed with partial errors`
+            `Transfer completed with partial errors`
           );
         } else {
           Logger.errorString(
-            `Transfer to elasticsearch failed - no records processed successfully`
+            `Transfer failed - no records processed successfully`
           );
         }
       } else if (processed === 0) {
         Logger.warnString(`No records were processed`);
       } else {
-        Logger.successString(`Transfer to elasticsearch complete`);
-        Logger.generic("");
+        Logger.debug`Transfer complete`;
       }
 
-      // Print detailed summary
-      Logger.generic(`  ▸ Total Records processed: ${processed}`);
-      Logger.generic(
-        `  ▸ Records Successfully transferred: ${successfulRecords}`
-      );
+      // Print detailed summary - simplified for postgresFullPipelineCommand
+      Logger.debug`Total Records processed: ${processed}`;
+      Logger.debug`Records Successfully transferred: ${successfulRecords}`;
 
       if (failed > 0) {
-        Logger.generic(`  ▸ Records Failed to transfer: ${failed}`);
-        Logger.generic(`  ▸ Error logs available in debug output`);
+        Logger.debug`Records Failed to transfer: ${failed}`;
+        Logger.debug`Error logs available in debug output`;
 
         // Calculate failure rate
         const failureRate = ((failed / processed) * 100).toFixed(1);
-        Logger.generic(`  ▸ Failure rate: ${failureRate}%`);
+        Logger.debug`Failure rate: ${failureRate}%`;
 
         if (parseFloat(failureRate) > 10) {
           Logger.tipString(
@@ -230,10 +227,8 @@ export class CSVProcessingErrorHandler {
         }
       }
 
-      Logger.generic(
-        `  ▸ Processing speed: ${Math.round(recordsPerSecond)} rows/sec`
-      );
-      Logger.debug` ⏱ Total processing time: ${formatDuration(elapsedMs)}`;
+      Logger.debug`Processing speed: ${Math.round(recordsPerSecond)} rows/sec`;
+      Logger.debug`Total processing time: ${formatDuration(elapsedMs)}`;
 
       // Success rate insights
       if (processed > 0) {
@@ -247,98 +242,4 @@ export class CSVProcessingErrorHandler {
     }
   }
 
-  /**
-   * Logs detailed error information for debugging
-   *
-   * @param error - The error to log
-   * @param context - Additional context information
-   */
-  public static logDetailedError(
-    error: unknown,
-    context: Record<string, any> = {}
-  ): void {
-    try {
-      Logger.debugString("=== Detailed Error Information ===");
-
-      if (error instanceof Error) {
-        Logger.debugString(`Error Type: ${error.name}`);
-        Logger.debugString(`Error Message: ${error.message}`);
-
-        if (error.stack) {
-          Logger.debugString(error.stack);
-        }
-      } else {
-        Logger.debugString(`Error: ${String(error)}`);
-      }
-
-      if (Object.keys(context).length > 0) {
-        Logger.debugString("Context Information:");
-        for (const [key, value] of Object.entries(context)) {
-          Logger.debugString(`  ${key}: ${JSON.stringify(value)}`);
-        }
-      }
-
-      Logger.debugString("=== End Error Information ===");
-    } catch (logError) {
-      // Prevent recursive errors in error logging
-      console.error("Error logging detailed error information:", logError);
-    }
-  }
-
-  /**
-   * Provides suggestions based on common CSV processing issues
-   *
-   * @param errorType - Type of error encountered
-   * @param context - Error context
-   * @returns Array of helpful suggestions
-   */
-  public static getErrorSuggestions(
-    errorType: string,
-    context: Record<string, any> = {}
-  ): string[] {
-    const suggestions: string[] = [];
-
-    switch (errorType.toLowerCase()) {
-      case "parsing":
-        suggestions.push(
-          "Check CSV format and delimiter",
-          "Verify quotes and escape characters",
-          "Ensure consistent column counts"
-        );
-        break;
-
-      case "connection":
-        suggestions.push(
-          "Verify Elasticsearch is running",
-          "Check network connectivity",
-          "Review connection configuration"
-        );
-        break;
-
-      case "validation":
-        suggestions.push(
-          "Check data format and types",
-          "Verify field mappings",
-          "Ensure required fields are present"
-        );
-        break;
-
-      case "memory":
-        suggestions.push(
-          "Reduce batch size",
-          "Process smaller files",
-          "Increase available memory"
-        );
-        break;
-
-      default:
-        suggestions.push(
-          "Use --debug for detailed error information",
-          "Check file format and permissions",
-          "Verify configuration settings"
-        );
-    }
-
-    return suggestions;
-  }
 }
