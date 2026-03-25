@@ -131,8 +131,13 @@ main() {
     fi
 
     # Disk Space Check
+    # Try macOS diskutil first, fall back to df for Linux/WSL2
     DOCKER_DISK_SPACE=$(diskutil info / 2>/dev/null | grep "Total Space" | awk '{print $3 $4}' | sed 's/[()]//g')
-    DISK_GB=$(echo "$DOCKER_DISK_SPACE" | sed 's/[^0-9.]//g')  # strip everything except numbers/dot
+    DISK_GB=$(echo "$DOCKER_DISK_SPACE" | sed 's/[^0-9.]//g')
+    if [ -z "$DISK_GB" ]; then
+        # Fallback for Linux/WSL2: use df to get total disk in GB
+        DISK_GB=$(df -BG / 2>/dev/null | awk 'NR==2 {print $2}' | sed 's/G//')
+    fi
 
     if ! safe_compare -lt "$DISK_GB" "$DOCKER_MIN_DISK_GB"; then
         printf "   └─ \033[1;36mInfo:\033[0m Docker virtual disk space meets minimum requirements (%s GB)\n" "$DISK_GB"
