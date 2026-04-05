@@ -1,5 +1,4 @@
 const path = require('path');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const withPlugins = require('next-compose-plugins');
 const { patchWebpackConfig: patchForGlobalCSS } = require('next-global-css');
 const withTranspileModules = require('next-transpile-modules')([
@@ -7,7 +6,6 @@ const withTranspileModules = require('next-transpile-modules')([
 	'swagger-ui-dist',
 	'@overture-stack/lectern-ui',
 ]);
-const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 
 module.exports = withPlugins([withTranspileModules], {
 	typescript: {
@@ -17,13 +15,16 @@ module.exports = withPlugins([withTranspileModules], {
 		if (options.isServer) {
 			config.externals = ['react', ...config.externals];
 		} else {
-			options.dev &&
-				config.plugins.push(new ForkTsCheckerWebpackPlugin()) &&
+			if (options.dev) {
+				const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+				const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
+				config.plugins.push(new ForkTsCheckerWebpackPlugin());
 				config.plugins.push(
 					new ExtraWatchWebpackPlugin({
 						dirs: [path.resolve(__dirname, '.', 'node_modules', 'react')],
 					}),
 				);
+			}
 		}
 
 		config.resolve.alias['@emotion/react'] = path.resolve(__dirname, '.', 'node_modules', '@emotion/react');
@@ -156,13 +157,14 @@ module.exports = withPlugins([withTranspileModules], {
 		esmExternals: 'loose',
 	},
 	async headers() {
+		const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '*';
 		return [
 			{
 				source: '/api/:path*',
 				headers: [
-					{ key: 'Access-Control-Allow-Origin', value: '*' },
-					{ key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-					{ key: 'Access-Control-Allow-Headers', value: '*' },
+					{ key: 'Access-Control-Allow-Origin', value: allowedOrigin },
+					{ key: 'Access-Control-Allow-Methods', value: 'GET,POST,OPTIONS' },
+					{ key: 'Access-Control-Allow-Headers', value: 'Content-Type,Authorization' },
 				],
 			},
 		];

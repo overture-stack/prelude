@@ -188,9 +188,6 @@ export class CSVProcessingErrorHandler {
       );
       const successfulRecords = Math.max(0, processed - failed); // Ensure it's never negative
 
-      // Clear the current line
-      process.stdout.write("\n");
-
       // Determine overall success status
       if (failed > 0) {
         if (successfulRecords > 0) {

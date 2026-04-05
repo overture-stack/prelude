@@ -335,3 +335,105 @@ Then restart WSL2: `wsl --shutdown` from PowerShell.
 ### `docker compose` vs `docker-compose` — which do I use?
 
 Use `docker compose` (with a space). The hyphenated `docker-compose` is the legacy v1 Python-based tool, which is no longer maintained. Docker Compose v2 is a Go plugin bundled with Docker Desktop and uses the space syntax. The Makefile already uses `docker compose`.
+
+---
+
+## Production & Deployment
+
+### How do I move this from a demo to a production deployment?
+
+See [production-readiness.md](production-readiness.md) for the full gap analysis and phased plan. The short version:
+
+1. **Externalize secrets** — move passwords out of `docker-compose.yml` into a `.env` file (git-ignored)
+2. **Stop exposing internal ports** — remove `ports:` from PostgreSQL, Elasticsearch, and Arranger
+3. **Add restart policies** — `restart: unless-stopped` on every long-running service
+4. **Enable HTTPS** — deploy nginx + Certbot using the templates in `setup/configs/nginxConfigs/`
+5. **Set up automated backups** — daily `pg_dump` and Elasticsearch snapshots via cron
+
+### Are the default passwords safe for production?
+
+**No.** The `docker-compose.yml` ships with hardcoded passwords (`admin123`, `myelasticpassword`, `your-secure-secret-here`) that are visible in the git repository. These are intentionally simple for the workshop.
+
+For production, create a `.env` file with strong random passwords:
+
+```bash
+# Generate strong passwords
+openssl rand -base64 32   # for POSTGRES_PASSWORD
+openssl rand -base64 32   # for ES_PASSWORD
+openssl rand -base64 48   # for NEXTAUTH_SECRET
+```
+
+Reference them in `docker-compose.yml` with `${VARIABLE_NAME}` syntax. Never commit `.env` to git.
+
+### Can I use Podman instead of Docker?
+
+Yes. Podman reads Docker Compose files and is a drop-in replacement for most use cases. It has two advantages for production:
+
+1. **Rootless by default** — no privileged daemon running on the host
+2. **Kubernetes export** — running containers can be exported as K8s manifests via `podman generate kube`
+
+To use Podman with this stack:
+
+```bash
+# Install Podman and Docker Compose v2 binary
+sudo apt install podman
+# Install docker-compose v2 (Podman delegates to it)
+
+# Enable Podman socket
+systemctl --user enable --now podman.socket
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+
+# Run exactly like Docker
+podman compose up -d
+```
+
+**Gotchas:** Rootless Podman can't bind ports below 1024 (use nginx on the host), and SELinux hosts need `:z` on bind mounts. See [production-readiness.md](production-readiness.md) for the full Podman section.
+
+### Why can't I just expose Docker ports directly instead of using nginx?
+
+You technically can, but it means:
+
+- **No HTTPS** — browsers will warn users, and data (including auth tokens) is sent in cleartext
+- **Port numbers in URLs** — users must type `http://yourserver:3000` instead of `https://portal.yourlab.org`
+- **No rate limiting** — anyone can flood your Elasticsearch with expensive queries
+- **All services exposed** — PostgreSQL (5435) and Elasticsearch (9200) are reachable from the internet
+
+Nginx solves all of these with a single config file. It's the minimum required for any publicly accessible deployment.
+
+### How do I back up my data?
+
+**PostgreSQL (research data):**
+```bash
+docker exec postgres pg_dump -U admin -Fc overtureDb > backup-$(date +%Y%m%d).dump
+```
+
+**Restore:**
+```bash
+docker exec -i postgres pg_restore -U admin -d overtureDb < backup-20260325.dump
+```
+
+**Elasticsearch (search indices):** Indices can be rebuilt from PostgreSQL data using Conductor, so PostgreSQL is the authoritative backup. If you want faster recovery without re-indexing:
+
+```bash
+# Create snapshot repository (one-time setup)
+curl -X PUT "localhost:9200/_snapshot/backups" -H 'Content-Type: application/json' \
+  -d '{"type":"fs","settings":{"location":"/backups"}}'
+
+# Take snapshot
+curl -X PUT "localhost:9200/_snapshot/backups/snap_$(date +%Y%m%d)"
+```
+
+Automate with a daily cron job. See `production-readiness.md` for a complete backup script.
+
+### What monitoring should I set up?
+
+For a small team, start simple:
+
+| What | Tool | Cost |
+|---|---|---|
+| Uptime checks (is the portal responding?) | [UptimeRobot](https://uptimerobot.com) or [Healthchecks.io](https://healthchecks.io) | Free tier |
+| Disk space alerts | Cron + `df` + email | Free |
+| Container restarts | `docker events` or `podman events` piped to a log | Free |
+| Log review | `docker compose logs --since 24h` weekly | Free |
+
+You do not need Prometheus, Grafana, or Datadog to start. Add those when you have more than one server or more than one team member doing operations.

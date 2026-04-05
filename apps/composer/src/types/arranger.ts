@@ -7,7 +7,7 @@ export interface ArrangerConfig {
 
 export interface ArrangerBaseConfig {
   documentType: "file" | "analysis";
-  index: string;
+  esIndex: string;
 }
 
 export interface ExtendedField {

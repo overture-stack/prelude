@@ -417,7 +417,7 @@ export function ArrangerConfigs(
     const configs = {
       base: {
         documentType,
-        index: indexName,
+        esIndex: indexName,
       },
       extended: {
         extended: allExtendedFields,

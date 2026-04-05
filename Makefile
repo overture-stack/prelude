@@ -1,6 +1,9 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
+# Auto-detect Stage port: use 3001 if port 3000 is already occupied (e.g. Docusaurus)
+STAGE_PORT := $(shell bash -c '(echo > /dev/tcp/localhost/3000) 2>/dev/null && echo 3001 || echo 3000')
+
 help:
 	@echo "================ Prelude Makefile Commands ================"
 	@echo ""
@@ -14,6 +17,7 @@ help:
 	@echo ""
 	@echo "Service Management:"
 	@echo "  make rebuild       - Rebuild and redeploy stage only"
+	@echo "  make backup        - Back up PostgreSQL database"
 	@echo "  make check-space   - Check disk usage"
 	@echo ""
 	@echo "Danger Zone:"
@@ -34,8 +38,13 @@ phase0:
 
 # Start demo deployment (populates portal with data for you)
 demo: phase0
+	@if [ "$(STAGE_PORT)" = "3001" ]; then \
+		printf "\033[1;33m⚠  Port 3000 is occupied — Stage will start on port 3001 instead\033[0m\n"; \
+	else \
+		printf "\033[1;36mStage will start on port 3000\033[0m\n"; \
+	fi
 	@echo ""
-	@printf "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m\n"
+	@printf "\033[1;33mBuilding portal UI (stage) image (this may take a couple minutes)...\033[0m\n"
 	@echo ""
 	@echo ""
 	@echo ""
@@ -52,10 +61,15 @@ demo: phase0
 	@echo ""
 	@printf "\033[1;32mStage Portal UI built\033[0m\n"
 	@echo ""
-	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
+	@./setup/scripts/services/utils/open-browser-monitor.sh & STAGE_PORT=$(STAGE_PORT) PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
 
 # Start platform services without data upload (user uploads their own data via conductor)
 platform: phase0
+	@if [ "$(STAGE_PORT)" = "3001" ]; then \
+		printf "\033[1;33m⚠  Port 3000 is occupied — Stage will start on port 3001 instead\033[0m\n"; \
+	else \
+		printf "\033[1;36mStage will start on port 3000\033[0m\n"; \
+	fi
 	@echo ""
 	@printf "\033[1;33mBuilding portal UI (stage) image (this may take a minute)...\033[0m\n"
 	@echo ""
@@ -74,12 +88,12 @@ platform: phase0
 	@echo ""
 	@printf "\033[1;32mStage Portal UI built\033[0m\n"
 	@echo ""
-	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
+	@./setup/scripts/services/utils/open-browser-monitor.sh & STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
 
 # Start existing services without rebuild
 start:
 	@echo "Starting services..."
-	@PROFILE=platform docker compose --profile platform up -d
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose --profile platform up -d
 	@printf "\033[1;32m✓ Services started\033[0m\n"
 
 # Gracefully shutdown all containers while preserving volumes
@@ -91,7 +105,7 @@ down:
 restart:
 	@echo "Restarting platform containers..."
 	@PROFILE=platform docker compose -f ./docker-compose.yml --profile platform down
-	@./setup/scripts/services/utils/open-browser-monitor.sh & PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
+	@./setup/scripts/services/utils/open-browser-monitor.sh & STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
 
 # Show status of all services
 status:
@@ -100,12 +114,17 @@ status:
 # Rebuild and redeploy stage service only
 rebuild:
 	@echo "Stopping stage service..."
-	@PROFILE=platform docker compose stop stage
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose stop stage
 	@echo "Rebuilding stage image..."
-	@PROFILE=platform docker compose build --no-cache stage
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose build --no-cache stage
 	@echo "Starting stage service..."
-	@PROFILE=platform docker compose up -d stage
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose up -d stage
 	@printf "\033[1;32m✓ Stage rebuilt and redeployed\033[0m\n"
+
+# Back up PostgreSQL database
+backup:
+	@chmod +x ./setup/scripts/backup.sh
+	@./setup/scripts/backup.sh
 
 # Check disk usage for volumes and containers
 check-space:
@@ -161,4 +180,4 @@ nuke:
 		echo "Operation cancelled"; \
 	fi
 
-.PHONY: help phase0 demo platform start down restart status rebuild check-space reset nuke
+.PHONY: help phase0 demo platform start down restart status rebuild backup check-space reset nuke

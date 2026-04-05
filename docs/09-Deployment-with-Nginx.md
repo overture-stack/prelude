@@ -177,20 +177,110 @@ Certbot will automatically modify your nginx configuration to handle HTTPS and s
 
 When exposing services externally:
 
-- **Elasticsearch:** Consider whether it needs to be publicly accessible. If only Arranger queries it, keep it internal (don't create the `es.*` subdomain/server block).
-- **Credentials:** Change the default Elasticsearch password (`myelasticpassword`) to something secure.
+- **Elasticsearch:** Consider whether it needs to be publicly accessible. If only Arranger queries it, keep it internal (don't create the `es.*` subdomain/server block). The production `docker-compose.yml` no longer exposes Elasticsearch or PostgreSQL ports to the host.
+- **Credentials:** The default passwords (`admin123`, `myelasticpassword`) are for the workshop only. Production deployments must use the `.env` file with strong random passwords. See the [Production Hardening](#production-hardening) section below.
 - **Firewall:** Only expose ports 80 and 443 through your firewall. Docker's internal ports (3000, 5050, 9200, 5432) should not be directly accessible from outside.
 - **Authentication:** Stage supports NextAuth for user authentication. For portals with restricted access, configure authentication providers in the Stage environment variables.
+- **CORS:** The portal's CORS policy defaults to `*` (allow all) for development. Set the `CORS_ALLOWED_ORIGIN` environment variable to your domain in production (e.g. `https://portal.yourlab.org`).
+
+## Production Hardening
+
+The `docker-compose.yml` has been configured with production-readiness in mind. Here's what it includes and what you need to do on top of it.
+
+### What's already configured
+
+| Feature | Detail |
+|---|---|
+| **Externalized secrets** | Passwords read from `.env` via `${VARIABLE}` syntax with workshop defaults as fallbacks |
+| **Restart policies** | All persistent services set to `restart: unless-stopped` |
+| **Localhost-bound ports** | PostgreSQL, Elasticsearch, and Arranger bound to `127.0.0.1` — accessible locally but not from the network |
+| **Resource limits** | Memory and CPU caps on all services to prevent a single runaway query from crashing the host |
+| **Health checks** | All services have health checks so Docker can detect and recover from failures |
+| **Log rotation** | All services capped at 50 MB x 10 files (500 MB max per service) |
+| **CORS lockdown** | Configurable via `CORS_ALLOWED_ORIGIN` env var; defaults to `*` only for development |
+
+### Steps for your production server
+
+**1. Create your `.env` file**
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set strong random passwords:
+
+```bash
+# Generate secure values
+openssl rand -base64 32   # for POSTGRES_PASSWORD
+openssl rand -base64 32   # for ES_PASSWORD
+openssl rand -base64 48   # for NEXTAUTH_SECRET
+```
+
+**2. Set your CORS origin**
+
+In `.env`, set:
+
+```bash
+CORS_ALLOWED_ORIGIN=https://portal.yourlab.org
+```
+
+**3. Harden TLS in nginx**
+
+After running Certbot, add these directives to the `http` block of your `nginx.conf`:
+
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers HIGH:!aNULL:!MD5;
+ssl_prefer_server_ciphers on;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+```
+
+**4. Set up automated backups**
+
+```bash
+# Manual backup
+make backup
+
+# Automated daily backup (add to crontab)
+crontab -e
+0 2 * * * /path/to/prelude/setup/scripts/backup.sh
+```
+
+Backups are stored in `./backups/` with 30-day retention.
+
+**5. Configure your firewall**
+
+Only ports 80 and 443 should be reachable from outside:
+
+```bash
+# UFW (Ubuntu)
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+```
+
+### Production checklist
+
+- [ ] `.env` file created with strong random passwords
+- [ ] `CORS_ALLOWED_ORIGIN` set to production domain
+- [ ] Nginx deployed with TLS via Certbot
+- [ ] HSTS and TLS 1.2+ enforced in nginx config
+- [ ] Firewall permits only ports 80 and 443
+- [ ] Daily backup cron job configured (`make backup`)
+- [ ] DNS records created for portal and Arranger subdomains
+
+> For a deeper analysis of production considerations including Podman compatibility and Kubernetes migration paths, see `docs/devdocs/production-readiness.md`.
 
 ## Real-World Example
 
 The Overture team has deployed portals for multiple research groups using this exact architecture. A typical production setup includes:
 
-- A single VM or server running Docker
+- A single VM or server running Docker (or Podman)
 - Nginx as a reverse proxy with SSL
 - DNS CNAME records for each service subdomain
 - Automated certificate renewal via Certbot
 - Firewall rules restricting direct port access
+- Automated daily backups with 30-day retention
 
 This pattern scales from a single-table lab portal to multi-table institutional platforms serving external collaborators.
 

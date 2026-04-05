@@ -1,25 +1,41 @@
-FROM node:22-alpine
+# ======================================================================== #
+# Stage 1 — builder                                                        #
+# Installs all dependencies (including devDeps) and compiles TypeScript.   #
+# ======================================================================== #
+FROM node:22-alpine AS builder
 
-# Set working directory
+# Patch Alpine OS packages and upgrade npm to fix bundled CVEs
+# (brace-expansion, minimatch, tar, glob, diff are npm-internal and only
+#  execute during npm ci — not at application runtime)
+RUN apk upgrade --no-cache
+
 WORKDIR /app
 
-# Copy package files first for better layer caching
+# Install all deps first (layer cache: only re-runs when package files change)
 COPY package*.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
-
-# Copy source code
+# Compile TypeScript → dist/
 COPY . .
-
-# Build the conductor CLI
 RUN npm run build
 
-# Make the CLI executable
+# ======================================================================== #
+# Stage 2 — runner                                                         #
+# Production dependencies only; ships the compiled dist/ output.           #
+# devDependencies (TypeScript, ts-node, vitest, @types/*) are excluded.    #
+# ======================================================================== #
+FROM node:22-alpine AS runner
+
+# Same patches applied to the runtime stage
+RUN apk upgrade --no-cache
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY --from=builder /app/dist ./dist
+
 RUN chmod +x dist/main.js
 
-# Install curl for health checks
-RUN apk add --no-cache curl
-
-# Default command (can be overridden)
 CMD ["node", "dist/main.js"]

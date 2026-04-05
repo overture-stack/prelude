@@ -3,7 +3,7 @@
 # Define some basic configurations
 RETRY_COUNT=0
 MAX_RETRIES=10          
-RETRY_DELAY=20          
+RETRY_DELAY=10
 TIMEOUT=10              
 DEBUG=${DEBUG:-false}
 

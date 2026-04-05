@@ -125,7 +125,7 @@ const DataExplorerPage = ({ config }: DataExplorerPageProps): ReactElement => {
 		 * .catch() → runs on error
 		 */
 		arrangerFetcher({
-			endpoint: 'graphql/hasValidConfig',
+			endpoint: 'graphql',
 			body: JSON.stringify({
 				variables: {
 					documentType: config.arrangerDocumentType,

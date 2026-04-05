@@ -30,6 +30,13 @@ CREATE TABLE IF NOT EXISTS datatable1 (
   submission_metadata JSONB
 );
 
+-- Unique index on submission_id within the JSONB metadata column.
+-- Required by conductor's ON CONFLICT deduplication: if a row with the same
+-- submission_id is uploaded again, it is silently skipped instead of duplicated.
+DROP INDEX IF EXISTS idx_datatable1_submission_id;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_datatable1_submission_id
+ON datatable1 ((submission_metadata->>'submission_id'));
+
 -- Table created for 24 columns (23 data + 1 submission_metadata)
 -- Sample data analysis: 51 rows
 

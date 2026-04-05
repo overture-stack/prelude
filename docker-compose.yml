@@ -13,8 +13,6 @@ services:
     profiles: ["demo", "platform", "default"]
     image: alpine/curl:8.8.0
     container_name: setup
-    ports:
-      - "9204:9204"
     volumes:
       - ./setup:/setup
       - ./setup/volumes/health:/health
@@ -27,9 +25,9 @@ services:
       # PostgreSQL Connection
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
-      POSTGRES_DB: overtureDb
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       # Elasticsearch Index Configuration
       ES_INDEX_COUNT: 1
       # First index
@@ -41,10 +39,11 @@ services:
       ARRANGER_COUNT: 1
       ARRANGER_0_URL: http://arranger-datatable1:5050
       # Service Connections
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
+      ES_USER: ${ES_USER:-elastic}
+      ES_PASS: ${ES_PASSWORD:-myelasticpassword}
       ES_URL: http://elasticsearch:9200
       STAGE_URL: http://stage:3000
+      STAGE_PORT: ${STAGE_PORT:-3000}
     command: >
       sh -c '
         set -e
@@ -91,18 +90,27 @@ services:
     pull_policy: never
     volumes:
       - ./data:/data
+    environment:
+      ES_USER: ${ES_USER:-elastic}
+      ES_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
     command: >
       sh -c '
         echo "Starting conductor CLI 4.0 - data upload service"
-        echo "Available files in /data: $(ls -la /data/ || echo none)"
+        echo "Available files in /data: $$(ls -la /data/ || echo none)"
         node dist/main.js upload \
         -f /data/datatable1.csv \
         -t datatable1 \
         -i datatable1-index \
         --db-host postgres:5432 \
+        --db-user "$$POSTGRES_USER" \
+        --db-pass "$$POSTGRES_PASSWORD" \
+        --db-name "$$POSTGRES_DB" \
         --es-host elasticsearch:9200 \
-        --es-user elastic \
-        --es-pass myelasticpassword \
+        --es-user "$$ES_USER" \
+        --es-pass "$$ES_PASSWORD" \
       '
     depends_on:
       setup:
@@ -118,20 +126,32 @@ services:
   postgres:
     profiles: ["demo", "platform", "default"]
     image: postgres:15-alpine
+    pull_policy: if_not_present
     container_name: postgres
     platform: linux/amd64
+    restart: unless-stopped
     ports:
-      - "5435:5432"
+      - "127.0.0.1:5435:5432" # Localhost only — not accessible from the network
     environment:
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_USER: admin
-      POSTGRES_DB: overtureDb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin}"]
       interval: 20s
       timeout: 10s
       retries: 10
       start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
@@ -146,22 +166,31 @@ services:
   elasticsearch:
     profiles: ["demo", "platform", "default"]
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
+    pull_policy: if_not_present
     container_name: elasticsearch
     platform: linux/amd64
-    ports:
-      - "9200:9200"
+    restart: unless-stopped
     environment:
       discovery.type: single-node
       cluster.name: workflow.elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx2048m
-      ES_USER: elastic
-      ELASTIC_PASSWORD: myelasticpassword
+      ES_USER: ${ES_USER:-elastic}
+      ELASTIC_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
       xpack.security.enabled: "true"
+    ports:
+      - "127.0.0.1:9200:9200" # Localhost only — not accessible from the network
     logging:
       driver: "json-file"
       options:
         max-size: "50m"
         max-file: "10"
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: "2"
+        reservations:
+          memory: 2G
     volumes:
       - elasticsearch-data:/usr/share/configs/elasticsearch/data
     healthcheck:
@@ -183,26 +212,52 @@ services:
   # ------------------------------------------------------------------------------------#
   arranger-datatable1:
     profiles: ["demo", "platform", "default"]
-    image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+    image: ghcr.io/overture-stack/arranger-server:4919f736
+    pull_policy: if_not_present
     container_name: arranger-datatable1
     platform: linux/amd64
+    restart: unless-stopped
     depends_on:
       setup:
         condition: service_healthy
-    ports:
-      - "5050:5050"
     volumes:
-      - ./setup/configs/arrangerConfigs/datatable1:/app/modules/server/configs
+      - ./setup/configs/arrangerConfigs/datatable1:/app/apps/search-server/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
-      ES_USER: elastic
-      ES_PASS: myelasticpassword
+      ES_USER: ${ES_USER:-elastic}
+      ES_PASS: ${ES_PASSWORD:-myelasticpassword}
       ES_ARRANGER_SET_INDEX: datatable1_arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
       ENABLE_LOGS: false
+    ports:
+      - "127.0.0.1:5050:5050" # Localhost only — not accessible from the network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5050/",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1"
     networks:
       - platform-network
 
@@ -219,16 +274,17 @@ services:
       dockerfile: ./apps/stage/Dockerfile
     image: stageimage:1.0
     container_name: stage
+    restart: unless-stopped
     depends_on:
       setup:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${STAGE_PORT:-3000}:3000"
     environment:
       # Stage Variables
       NEXTAUTH_URL: http://localhost:3000/api/auth
-      NEXT_PUBLIC_LAB_NAME: ISB Workshop 2026
-      NEXT_PUBLIC_ADMIN_EMAIL: mshiell@oicr.on.ca
+      NEXT_PUBLIC_LAB_NAME: ${NEXT_PUBLIC_LAB_NAME:-IBC Workshop}
+      NEXT_PUBLIC_ADMIN_EMAIL: ${NEXT_PUBLIC_ADMIN_EMAIL:-admin@example.org}
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
@@ -239,9 +295,36 @@ services:
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
       NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
       # Auth Variables
-      NEXTAUTH_SECRET: your-secure-secret-here
-      SECRET: your-secure-secret-here
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
+      SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
+      SESSION_ENCRYPTION_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
+      # CORS
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-}
       # File Arranger Variables
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
     volumes:
       - stage-data:/usr/src/public/static/dms_user_assets
     networks:

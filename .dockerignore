@@ -1,0 +1,21 @@
+# ── Git ──────────────────────────────────────────────────────────────── #
+.git
+
+# ── Monorepo apps not needed by the Stage image ──────────────────────── #
+apps/composer
+apps/conductor
+
+# ── Stage build artefacts (rebuilt inside the container) ─────────────── #
+apps/stage/node_modules
+apps/stage/.next
+apps/stage/tsconfig.tsbuildinfo
+apps/stage/.env.local
+apps/stage/.env.test
+apps/stage/.env.schema
+
+# ── Workshop data and infrastructure scripts ─────────────────────────── #
+data
+setup
+
+# NOTE: docs/ is intentionally NOT excluded.
+# The Dockerfile copies docs/ into public/docs inside the image.

@@ -84,6 +84,9 @@ export function createProgressBar(
 let _indexedCount = 0;
 let _skippedCount = 0;
 
+// Tracks how many TTY lines are currently in the progress block (1–3).
+let _displayedLines = 1;
+
 // Tracks the last percent milestone printed in non-TTY mode.
 let _lastReportedPercent = -1;
 
@@ -95,6 +98,7 @@ export function setProgressStats(indexed: number, skipped: number): void {
 export function resetProgressStats(): void {
   _indexedCount = 0;
   _skippedCount = 0;
+  _displayedLines = 1;
   _lastReportedPercent = -1;
 }
 
@@ -103,11 +107,13 @@ export function resetProgressStats(): void {
 /**
  * Call once before the processing loop begins.
  * TTY: writes 2 blank lines below and moves cursor back up, reserving space
- *      for the 3-line display (progress + indexed + skipped).
+ *      for up to 3 lines (progress + indexed + skipped). The actual number
+ *      of rendered lines grows dynamically as counts become non-zero.
  * Non-TTY: writes a single blank line as a visual separator.
  */
 export function reserveProgressLines(): void {
   if (process.stdout.isTTY) {
+    _displayedLines = 1;
     // Reserve lines 2 and 3 below the current cursor (line 1).
     process.stdout.write("\n\n\u001B[2A");
   } else {
@@ -117,13 +123,13 @@ export function reserveProgressLines(): void {
 
 /**
  * Call once after the processing loop ends (replaces the bare `\n` write).
- * Advances the cursor past all reserved lines so subsequent output appears
- * cleanly below the completed progress display.
+ * Advances the cursor past the lines actually used by the progress display
+ * so subsequent output appears cleanly below without blank gaps.
  */
 export function finalizeProgressDisplay(): void {
   if (process.stdout.isTTY) {
-    // Cursor is on line 1; advance past lines 1, 2, 3.
-    process.stdout.write("\n\n\n");
+    // Cursor is on line 1; advance past only the lines we rendered.
+    process.stdout.write("\n".repeat(_displayedLines));
   } else {
     process.stdout.write("\n");
   }
@@ -171,20 +177,29 @@ export function updateProgressDisplay(
     return;
   }
 
-  // TTY: overwrite all 3 lines, leave cursor back on line 1.
-  const indexedLine =
-    _indexedCount > 0
-      ? `   └─ indexed ${_indexedCount.toLocaleString()} records`
-      : ``;
-  const skippedLine =
-    _skippedCount > 0
-      ? `   └─ found ${_skippedCount.toLocaleString()} duplicate records`
-      : ``;
+  // TTY: build only non-empty lines so no blank gaps appear.
+  const lines: string[] = [progressLine];
+  if (_indexedCount > 0) {
+    lines.push(`   └─ indexed ${_indexedCount.toLocaleString()} records`);
+  }
+  if (_skippedCount > 0) {
+    lines.push(`   └─ found ${_skippedCount.toLocaleString()} duplicate records`);
+  }
 
-  process.stdout.write(
-    `\r\u001B[2K${progressLine}` +
-    `\n\r\u001B[2K${indexedLine}` +
-    `\n\r\u001B[2K${skippedLine}` +
-    `\u001B[2A\r`
-  );
+  // Grow the block if new lines appeared (never shrink during a run).
+  if (lines.length > _displayedLines) {
+    _displayedLines = lines.length;
+  }
+
+  // Write all tracked lines (pad with empty clears for any unused slots).
+  let output = `\r\u001B[2K${lines[0]}`;
+  for (let i = 1; i < _displayedLines; i++) {
+    output += `\n\r\u001B[2K${lines[i] || ""}`;
+  }
+  // Move cursor back to line 1.
+  if (_displayedLines > 1) {
+    output += `\u001B[${_displayedLines - 1}A\r`;
+  }
+
+  process.stdout.write(output);
 }

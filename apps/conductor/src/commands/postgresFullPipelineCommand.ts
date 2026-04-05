@@ -85,6 +85,7 @@ export class PostgresFullPipelineCommand extends Command {
       // Process each CSV file — postgres INSERT returns only newly inserted rows,
       // which are indexed directly without a second table scan.
       for (const filePath of filePaths) {
+        Logger.generic("");
         Logger.info`Uploading ${filePath} → ${tableName} (PostgreSQL + Elasticsearch)`;
 
         await processCSVFileForPostgres(

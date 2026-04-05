@@ -1,5 +1,8 @@
 .env
+.env.local
+.env.production
 .DS_Store
 node_modules
 __MACOSX
 dist
+backups/
