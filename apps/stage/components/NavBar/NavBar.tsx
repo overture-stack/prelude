@@ -179,7 +179,7 @@ const NavBar = (): ReactElement => {
 							`}
 							data={[
 								<InternalLink path={INTERNAL_PATHS.SUBMIT}>
-									<StyledListLink>Submit Data</StyledListLink>
+									<StyledListLink>Data Submitter</StyledListLink>
 								</InternalLink>,
 								<InternalLink path={INTERNAL_PATHS.CONFIG_GENERATOR}>
 									<StyledListLink>Config Generator</StyledListLink>
