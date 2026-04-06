@@ -13,7 +13,6 @@ import UserDropdown from '../UserDropdown';
 import labIcon from '@/public/images/navbar-logo.png';
 import DataTablesDropdown from './DataTablesDropdown';
 import DocumentationDropdown from './DocumentationDropdown';
-
 import Dropdown from './Dropdown';
 import { StyledListLink } from './styles';
 
@@ -157,7 +156,7 @@ const NavBar = (): ReactElement => {
 							display: flex;
 							align-items: center;
 							justify-content: center;
-							width: 144px;
+							width: 180px;
 							background-color: ${theme.colors.white};
 							height: 100%;
 							&:hover {
@@ -179,6 +178,9 @@ const NavBar = (): ReactElement => {
 								font-weight: bold;
 							`}
 							data={[
+								<InternalLink path={INTERNAL_PATHS.CONFIG_GENERATOR}>
+									<StyledListLink>Config Generator</StyledListLink>
+								</InternalLink>,
 								<a href={ARRANGER_GQL} target="_blank" rel="noopener noreferrer">
 									<StyledListLink>GraphQL API</StyledListLink>
 								</a>,
@@ -186,7 +188,8 @@ const NavBar = (): ReactElement => {
 									<StyledListLink>ElasticVue</StyledListLink>
 								</a>,
 							]}
-							label="APIs"
+							label="Resources & Tools"
+							urls={[INTERNAL_PATHS.CONFIG_GENERATOR]}
 						/>
 					</div>
 				</div>
