@@ -178,6 +178,9 @@ const NavBar = (): ReactElement => {
 								font-weight: bold;
 							`}
 							data={[
+								<InternalLink path={INTERNAL_PATHS.SUBMIT}>
+									<StyledListLink>Submit Data</StyledListLink>
+								</InternalLink>,
 								<InternalLink path={INTERNAL_PATHS.CONFIG_GENERATOR}>
 									<StyledListLink>Config Generator</StyledListLink>
 								</InternalLink>,
@@ -189,7 +192,7 @@ const NavBar = (): ReactElement => {
 								</a>,
 							]}
 							label="Resources & Tools"
-							urls={[INTERNAL_PATHS.CONFIG_GENERATOR]}
+							urls={[INTERNAL_PATHS.SUBMIT, INTERNAL_PATHS.CONFIG_GENERATOR]}
 						/>
 					</div>
 				</div>

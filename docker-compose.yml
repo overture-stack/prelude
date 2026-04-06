@@ -300,7 +300,16 @@ services:
       SESSION_ENCRYPTION_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
       # CORS
       CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-}
-      # File Arranger Variables
+      # PostgreSQL (for data submission)
+      DB_HOST: postgres
+      DB_PORT: 5432
+      POSTGRES_DATABASE: ${POSTGRES_DB:-overtureDb}
+      POSTGRES_USERNAME: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      # Elasticsearch (for data submission)
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_USER: ${ES_USER:-elastic}
+      ELASTICSEARCH_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
     healthcheck:
       test:
         [

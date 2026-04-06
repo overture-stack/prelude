@@ -47,6 +47,7 @@ export enum INTERNAL_PATHS {
 	SCORE = '/swaggerDocs/score',
 	DICTIONARY = '/dictionary',
 	CONFIG_GENERATOR = '/configGenerator',
+	SUBMIT = '/submit',
 }
 
 // external Swagger links
