@@ -1,63 +1,17 @@
 # Next Steps
 
-## What You Built
+### What You Built
 
 You now have a locally running data discovery portal with:
 
-- **Postgres:** a database to store persistent data
-- **Elasticsearch** indexing your tabular data with typed field mappings
-- **Arranger** providing a GraphQL search API and configurable UI components
-- **Stage** rendering a browser-based portal with faceted search, sortable tables, and data export
+- **PostgreSQL:** a database to store persistent data
+- **Elasticsearch:** indexing your tabular data with typed field mappings
+- **Arranger:** providing a GraphQL search API and configurable UI components
+- **Stage:** rendering a browser-based portal with faceted search, sortable tables, and data export
 
-You've seen how to:
+You've seen how to generate configuration files from CSV data, wire services together through Docker Compose, load data with Conductor, customize the portal's search interface and appearance, and understand the deployment architecture for making portals network-accessible.
 
-- Generate configuration files from CSV data using Composer
-- Wire services together through Docker Compose
-- Load data with Conductor
-- Customize the portal's search interface and appearance
-- Understand the deployment architecture for making portals network-accessible
-
-## Adapting to Your Own Data
-
-If you brought your own CSV file, here's the workflow to configure the portal for it:
-
-### 1. Prepare your CSV
-
-Ensure your file follows the conventions from the [Data Preparation](04-Data-Preparation) section:
-
-- Valid headers (snake_case, no prohibited characters)
-- Consistent formatting
-- Place the file in the `data/` directory
-
-### 2. Generate configurations
-
-```bash
-# Generate Elasticsearch mapping
-composer -p ElasticsearchMapping -f ./data/yourdata.csv -i yourdata -o ./setup/configs/elasticsearchConfigs/yourdata-mapping.json
-
-# Generate Arranger configs
-composer -p ArrangerConfigs -f ./setup/configs/elasticsearchConfigs/yourdata-mapping.json -o ./setup/configs/arrangerConfigs/yourdata/
-```
-
-### 3. Review and customize
-
-- Check field types in the Elasticsearch mapping
-- Update `base.json` with the correct index alias
-- Adjust display names in `extended.json`
-- Configure which facets and columns to show in `facets.json` and `table.json`
-
-### 4. Update Docker configuration
-
-Modify `docker-compose.yml` to reference your new index, config files, and data file. Follow the patterns described in the [Docker Configuration](06-Docker-Configuration) section.
-
-### 5. Deploy and load
-
-```bash
-make restart
-conductor upload -f ./data/yourdata.csv -t yourdata -i yourdata-index
-```
-
-## Expanding the Platform
+### Expanding the Platform
 
 The search and exploration stack used in this workshop is part of the broader Overture platform. Depending on your needs, you can extend it with:
 
@@ -69,58 +23,53 @@ The search and exploration stack used in this workshop is part of the broader Ov
 | Store and transfer files   | **Score**        | Object storage integration (S3, Azure Blob, etc.)                  |
 | Automate indexing          | **Maestro**      | Event-driven indexing from Song/Lyric into Elasticsearch           |
 
-These services compose together, letting you build from a simple search portal to a full data management platform incrementally.
+These services compose together, letting you build from a simple search portal to a full data management platform incrementally. For more information, see the [Overture documentation](https://docs.overture.bio).
 
-For more information, see the [Overture documentation](https://docs.overture.bio).
+### Conversational Data Discovery
 
-## Useful Commands Reference
+:::info
+This capability is currently in active development by the Overture team. It is not part of this workshop, but it is a direct and natural extension of the infrastructure you are building here.
+:::
 
-```bash
-# Start the demo portal
-make demo
+One of the most compelling reasons to structure your data through Arranger is that it makes your data **machine-accessible in a way that modern AI tooling can reason over**. The same GraphQL API and schema introspection endpoints that power the browser portal can be consumed by a language model, enabling researchers to query data in plain language rather than constructing filters manually.
 
-# Stop all services
-make down
+The Overture team is building a **Conversational Data Discovery (CDD)** platform: an interactive research environment that wraps a self-hosted language model around Arranger-indexed datasets. Because Arranger exposes a live description of your data, including field names, types, value distributions, and catalogue structure, a language model can:
 
-# Restart with fresh configuration (preserves data)
-make restart
+- **Understand what data is available** without being hardcoded to a specific schema. It reads your index configuration at runtime.
+- **Translate natural language questions into validated queries.** A researcher asks "how many samples have a TP53 mutation?" and the model constructs the correct filter against your specific field names.
+- **Ground its responses in your actual data** rather than hallucinating field names or value ranges, it reads the schema before generating any query.
+- **Execute analysis code in a sandboxed workspace.** Once a query is confirmed, the model can generate Python to analyse and visualise results, running it in an isolated container where the researcher approves every step.
 
-# Full reset (removes all data and volumes)
-make reset
+**Why Arranger specifically matters here:** Most data stores are opaque to language models. There is no way for a model to discover what fields exist, what values are valid, or how to construct a correct query without being told explicitly. Arranger's introspection endpoints solve this structurally. The field metadata, operator grammar, and value distributions it exposes are exactly the grounding information a language model needs to query your data reliably.
 
-# Remove everything including Docker images
-make nuke
+**Why self-hosted models:** Research data is often sensitive. Routing queries through commercial AI providers is not viable for many research contexts. The CDD platform runs capable models on sovereign infrastructure, adjacent to the data, with full control over the stack.
 
-# Check running containers
-docker ps
+The platform is built around four core principles:
 
-# View container logs
-docker logs <container-name>
+- **Data minimisation by default:** the model operates on schemas and metadata, not record-level data, unless the researcher explicitly consents to share results.
+- **No action without consent:** every query, code execution, and file access requires explicit researcher approval before it happens.
+- **Sandboxed execution:** all code runs in a network-isolated container with no access outside its defined boundaries.
+- **Reproducibility:** every session, including messages, tool calls, consent decisions, generated code, and outputs, can be exported as a complete reproducible research package.
 
-# Query Elasticsearch
-curl -u elastic:myelasticpassword http://localhost:9200/_cat/indices?v
+The CDD platform connects to Arranger via the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), an open standard for giving language models access to external tools and data sources. An Arranger MCP server wraps your existing deployment with no changes to your data or index configuration required.
 
-# Upload data
-conductor upload -f ./data/yourfile.csv -t your-table-name -i your-index-name
-```
+Setting up the infrastructure in this workshop, Arranger-indexed, schema-configured, and queryable via GraphQL, is the prerequisite step. When the CDD platform reaches production, your deployment will be immediately compatible.
 
-## Resources
+### Get in Touch
+
+Whether you're adapting the platform to your own data, running into issues after the workshop, or exploring what a larger deployment might look like for your research group, we're happy to help. Reach out to the Overture team directly at [contact@overture.bio](mailto:contact@overture.bio).
+
+### Post-Workshop Survey
+
+If you have a few minutes, we'd appreciate your feedback on the workshop. Your responses help us improve the content, pacing, and hands-on exercises for future sessions.
+
+**[Fill in the post-workshop survey →](#)**
+
+### Resources
 
 - **Overture Documentation:** [docs.overture.bio](https://docs.overture.bio)
 - **Overture GitHub:** [github.com/overture-stack](https://github.com/overture-stack)
 - **Arranger Docs:** [Arranger overview](https://docs.overture.bio/docs/core-software/arranger/overview/)
 - **Stage Docs:** [Stage overview](https://docs.overture.bio/docs/core-software/stage/overview/)
 - **Elasticsearch 7.17 Reference:** [elastic.co/guide](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/index.html)
-- **Elasticvue:** [elasticvue.com](https://elasticvue.com/installation)
-
-## Support
-
-- **Community Discussions:** [GitHub Discussions](https://github.com/overture-stack/prelude/discussions)
-- **Bug Reports:** [GitHub Issues](https://github.com/overture-stack/prelude/issues)
-- **Email:** [contact@overture.bio](mailto:contact@overture.bio)
-
-## Workshop Contact
-
-**Mitchell Shiell**
-Ontario Institute for Cancer Research
-[mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)
+- **Support Forum:** [GitHub Discussions](https://github.com/overture-stack/roadmap/discussions/categories/support)

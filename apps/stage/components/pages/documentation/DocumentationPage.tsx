@@ -1,142 +1,24 @@
 import { css, useTheme } from '@emotion/react';
 import Link from 'next/link';
-import { ReactElement, useEffect, useMemo, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import { ReactElement, useMemo, useRef } from 'react';
 import { DocumentationData } from '../../../lib/documentation';
 import { StageThemeInterface } from '../../theme';
 import { createDocumentationTheme } from '../../theme/adapters/documentation';
-import { DictionaryTableOnly, DictionaryViewer } from '../dictionary';
 import FundingStatement from './FundingStatement';
+import { useCodeBlockCopyButtons } from './utils/useCodeBlockCopyButtons';
+import { useDictionaryHydration } from './utils/useDictionaryHydration';
+import { useHeadingAnchors } from './utils/useHeadingAnchors';
 
-interface DocumentationPageProps extends DocumentationData {}
-
-// Utility function to copy text to clipboard
-const copyToClipboard = async (text: string): Promise<boolean> => {
-	try {
-		if (navigator.clipboard && window.isSecureContext) {
-			await navigator.clipboard.writeText(text);
-			return true;
-		} else {
-			// Fallback for older browsers or non-secure contexts
-			const textArea = document.createElement('textarea');
-			textArea.value = text;
-			textArea.style.position = 'fixed';
-			textArea.style.opacity = '0';
-			document.body.appendChild(textArea);
-			textArea.focus();
-			textArea.select();
-			const success = document.execCommand('copy');
-			document.body.removeChild(textArea);
-			return success;
-		}
-	} catch (error) {
-		console.error('Failed to copy to clipboard:', error);
-		return false;
-	}
-};
-
-const DocumentationPage = ({ sections, currentSection, headings }: DocumentationPageProps): ReactElement => {
+const DocumentationPage = ({ sections, currentSection, headings }: DocumentationData): ReactElement => {
 	const contentRef = useRef<HTMLDivElement>(null);
 
-	// Access Stage theme and create documentation-specific theme
 	const stageTheme = useTheme() as StageThemeInterface;
-	const theme = createDocumentationTheme(stageTheme);
-
-	// Memoize styles to avoid recreation on every render
+	const theme = useMemo(() => createDocumentationTheme(stageTheme), [stageTheme]);
 	const styles = useMemo(() => getStyles(theme), [theme]);
 
-	// Add heading anchor links and hydrate custom components after content renders
-	useEffect(() => {
-		if (!contentRef.current || !currentSection) return;
-
-		// Hydrate custom components (DictionaryTable and DictionaryViewerFull)
-		const dictionaryTableContainers = contentRef.current.querySelectorAll('[data-component="DictionaryTable"]');
-		dictionaryTableContainers.forEach((container) => {
-			const url = container.getAttribute('data-url') || '';
-			const showSchemaNames = container.getAttribute('data-show-schema-names') === 'true';
-
-			// Render the DictionaryTableOnly component
-			ReactDOM.render(
-				<div>
-					<DictionaryTableOnly dictionaryUrl={url} showSchemaNames={showSchemaNames} />
-				</div>,
-				container,
-			);
-		});
-
-		const dictionaryViewerContainers = contentRef.current.querySelectorAll('[data-component="DictionaryViewerFull"]');
-		dictionaryViewerContainers.forEach((container) => {
-			const url = container.getAttribute('data-url') || '';
-
-			// Render the full DictionaryViewer component
-			ReactDOM.render(
-				<div>
-					<DictionaryViewer dictionaryUrl={url} />
-				</div>,
-				container,
-			);
-		});
-
-		const headingElements = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
-		const clickHandlers: Array<() => void> = [];
-
-		headingElements.forEach((heading) => {
-			// Skip if already has a link
-			if (heading.querySelector('.heading-link')) return;
-
-			const id = heading.getAttribute('id');
-			if (!id) return;
-
-			// Create the # link element
-			const linkElement = document.createElement('a');
-			linkElement.className = 'heading-link';
-			linkElement.textContent = '#';
-			linkElement.setAttribute('aria-label', `Copy link to ${heading.textContent}`);
-
-			// Create click handler for entire heading
-			const handleClick = async (e: Event) => {
-				e.preventDefault();
-				const fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
-				const success = await copyToClipboard(fullUrl);
-
-				if (success) {
-					// Update URL without scrolling
-					window.history.pushState(null, '', `#${id}`);
-
-					// Visual feedback
-					linkElement.textContent = '✓';
-					setTimeout(() => {
-						linkElement.textContent = '#';
-					}, 1000);
-				} else {
-					// Fallback: just update URL
-					window.location.hash = id;
-				}
-			};
-
-			// Make the entire heading clickable
-			if (heading instanceof HTMLElement) {
-				heading.style.cursor = 'pointer';
-			}
-			heading.addEventListener('click', handleClick);
-			clickHandlers.push(() => heading.removeEventListener('click', handleClick));
-
-			// Append the link to the heading
-			heading.appendChild(linkElement);
-		});
-
-		// Cleanup function
-		return () => {
-			clickHandlers.forEach((cleanup) => cleanup());
-			// Unmount dictionary components
-			dictionaryTableContainers.forEach((container) => {
-				ReactDOM.unmountComponentAtNode(container);
-			});
-			dictionaryViewerContainers.forEach((container) => {
-				ReactDOM.unmountComponentAtNode(container);
-			});
-		};
-	}, [currentSection]);
+	useDictionaryHydration(contentRef, currentSection);
+	useHeadingAnchors(contentRef, currentSection);
+	useCodeBlockCopyButtons(contentRef, currentSection);
 
 	return (
 		<div css={styles.container}>
@@ -172,6 +54,7 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 						</div>
 						{headings.length > 0 && (
 							<aside css={styles.toc}>
+								<p css={styles.tocLabel}>On this page</p>
 								<nav css={styles.tocNav}>
 									<ul css={styles.tocList}>
 										{headings.map((heading) => (
@@ -268,7 +151,6 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		&:hover {
 			background: ${theme.colors.sidebarItemBackgroundHover};
 			color: ${theme.colors.text};
-			text-decoration: none;
 		}
 
 		&.active {
@@ -296,10 +178,6 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		@media (max-width: ${theme.breakpoints.lg}) {
 			margin-left: 0;
 		}
-
-		@media (max-width: ${theme.breakpoints.md}) {
-			padding: 0;
-		}
 	`,
 
 	contentContainer: css`
@@ -313,24 +191,12 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			padding-right: ${theme.spacing[8]};
 		}
 
-		@media (min-width: 993px) and (max-width: 1159px) {
-			max-width: 100%;
-			padding: 0 ${theme.spacing[6]};
-		}
-
-		@media (max-width: 992px) {
-			padding: 0 ${theme.spacing[6]};
-			max-width: 100%;
-		}
-
 		@media (max-width: ${theme.breakpoints.md}) {
 			padding: 0 ${theme.spacing[5]};
-			max-width: 100vw;
 		}
 
 		@media (max-width: ${theme.breakpoints.sm}) {
 			padding: 0 ${theme.spacing[4]};
-			max-width: 100vw;
 		}
 	`,
 
@@ -357,7 +223,6 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		color: ${theme.colors.text};
 		word-wrap: break-word;
 		overflow-wrap: break-word;
-		hyphens: auto;
 		font-size: ${theme.fontSize.base};
 		box-sizing: border-box;
 
@@ -369,7 +234,6 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		@media (max-width: ${theme.breakpoints.sm}) {
 			font-size: ${theme.fontSize.xs};
 			line-height: 1.5;
-			word-break: break-word;
 		}
 
 		h1,
@@ -381,8 +245,8 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			font-family: ${theme.fonts.heading};
 			font-weight: 600;
 			line-height: 1.25;
-			margin-top: ${theme.spacing[12]};
-			margin-bottom: ${theme.spacing[6]};
+			margin-top: ${theme.spacing[8]};
+			margin-bottom: ${theme.spacing[3]};
 			color: ${theme.colors.text};
 			scroll-margin-top: 100px;
 			position: relative;
@@ -439,82 +303,61 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			}
 
 			@media (max-width: ${theme.breakpoints.md}) {
-				margin-top: ${theme.spacing[10]};
-				margin-bottom: ${theme.spacing[5]};
+				margin-top: ${theme.spacing[6]};
+				margin-bottom: ${theme.spacing[3]};
 				line-height: 1.3;
 			}
 
 			@media (max-width: ${theme.breakpoints.sm}) {
-				margin-top: ${theme.spacing[8]};
-				margin-bottom: ${theme.spacing[4]};
+				margin-top: ${theme.spacing[5]};
+				margin-bottom: ${theme.spacing[2]};
 				line-height: 1.3;
 			}
 		}
 
 		h1 {
-			font-size: ${theme.fontSize['5xl']};
-
-			@media (max-width: ${theme.breakpoints.md}) {
-				font-size: ${theme.fontSize['3xl']};
-			}
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				font-size: ${theme.fontSize['2xl']};
-			}
-		}
-		h2 {
 			font-size: ${theme.fontSize['3xl']};
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				font-size: ${theme.fontSize['2xl']};
 			}
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				font-size: ${theme.fontSize.xl};
-			}
 		}
-		h3 {
+		h2 {
 			font-size: ${theme.fontSize['2xl']};
+			padding-bottom: ${theme.spacing[2]};
+			border-bottom: 1px solid ${theme.colors.border};
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				font-size: ${theme.fontSize.xl};
 			}
+		}
+		h3 {
+			font-size: ${theme.fontSize.xl};
 
-			@media (max-width: ${theme.breakpoints.sm}) {
+			@media (max-width: ${theme.breakpoints.md}) {
 				font-size: ${theme.fontSize.lg};
 			}
 		}
 		h4 {
-			font-size: ${theme.fontSize.xl};
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				font-size: ${theme.fontSize.lg};
-			}
+			font-size: ${theme.fontSize.lg};
 		}
 		h5 {
-			font-size: ${theme.fontSize.lg};
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				font-size: ${theme.fontSize.base};
-			}
+			font-size: ${theme.fontSize.base};
 		}
 		h6 {
-			font-size: ${theme.fontSize.base};
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				font-size: ${theme.fontSize.sm};
-			}
+			font-size: ${theme.fontSize.sm};
+			color: ${theme.colors.textSecondary};
 		}
 
 		/* Paragraph styles */
 		p {
-			margin-bottom: ${theme.spacing[5]};
+			margin-bottom: ${theme.spacing[4]};
 			font-size: inherit; /* Inherit responsive font size from parent */
 			line-height: 1.6;
 			text-align: left;
 
 			@media (max-width: ${theme.breakpoints.md}) {
-				margin-bottom: ${theme.spacing[4]};
+				margin-bottom: ${theme.spacing[3]};
 				line-height: 1.5;
 			}
 
@@ -527,12 +370,12 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		/* List styles */
 		ul,
 		ol {
-			margin: ${theme.spacing[5]} 0;
+			margin: ${theme.spacing[4]} 0;
 			padding-left: ${theme.spacing[6]};
 			line-height: 1.6;
 
 			@media (max-width: ${theme.breakpoints.md}) {
-				margin: ${theme.spacing[4]} 0;
+				margin: ${theme.spacing[3]} 0;
 				padding-left: ${theme.spacing[5]};
 				line-height: 1.5;
 			}
@@ -551,15 +394,10 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				margin-bottom: ${theme.spacing[1]};
 			}
 
-			@media (max-width: ${theme.breakpoints.sm}) {
-				margin-bottom: ${theme.spacing[1]};
-			}
-
 			/* Nested lists */
 			ul,
 			ol {
-				margin: ${theme.spacing[2]} 0;
-				margin-bottom: ${theme.spacing[1]};
+				margin: ${theme.spacing[2]} 0 ${theme.spacing[1]};
 
 				@media (max-width: ${theme.breakpoints.md}) {
 					margin: ${theme.spacing[1]} 0;
@@ -585,22 +423,16 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			border-radius: ${theme.borderRadius.md};
 			margin: ${theme.spacing[4]} auto;
 			display: block;
-			width: auto;
 			box-sizing: border-box;
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				margin: ${theme.spacing[3]} auto;
 				border-radius: ${theme.borderRadius.sm};
-				max-width: 100%;
-				width: auto;
 			}
 
 			@media (max-width: ${theme.breakpoints.sm}) {
 				margin: ${theme.spacing[2]} auto;
-				border-radius: ${theme.borderRadius.sm};
 				max-width: calc(100vw - ${theme.spacing[2]});
-				width: auto;
-				height: auto;
 			}
 		}
 
@@ -629,7 +461,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			border-radius: ${theme.borderRadius.sm};
 			font-family: ${theme.fonts.mono};
 			font-size: ${theme.fontSize.sm};
-			word-break: break-all; /* Allow breaking long code snippets */
+			word-break: break-all;
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				font-size: ${theme.fontSize.xs};
@@ -637,7 +469,6 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			}
 
 			@media (max-width: ${theme.breakpoints.sm}) {
-				font-size: ${theme.fontSize.xs};
 				padding: 0.05rem 0.15rem;
 			}
 		}
@@ -651,6 +482,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			margin: ${theme.spacing[6]} 0;
 			font-size: ${theme.fontSize.sm};
 			line-height: 1.5;
+			position: relative;
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				padding: ${theme.spacing[4]};
@@ -670,6 +502,37 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				padding: 0;
 				word-break: normal; /* Don't break words in code blocks */
 			}
+
+			.copy-code-button {
+				position: absolute;
+				top: ${theme.spacing[2]};
+				right: ${theme.spacing[2]};
+				padding: ${theme.spacing[1]} ${theme.spacing[2]};
+				background: ${theme.colors.background};
+				color: ${theme.colors.textSecondary};
+				border: 1px solid ${theme.colors.border};
+				border-radius: ${theme.borderRadius.md};
+				font-size: ${theme.fontSize.xs};
+				font-family: ${theme.fonts.base};
+				cursor: pointer;
+				opacity: 0;
+				transition: opacity 0.15s ease, color 0.15s ease;
+				line-height: 1;
+
+				&:hover {
+					color: ${theme.colors.primary};
+					border-color: ${theme.colors.primary};
+				}
+
+				&.copied {
+					color: ${theme.colors.secondary};
+					border-color: ${theme.colors.secondary};
+				}
+			}
+
+			&:hover .copy-code-button {
+				opacity: 1;
+			}
 		}
 
 		/* Table container for horizontal scrolling */
@@ -679,20 +542,17 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			margin: ${theme.spacing[6]} 0;
 			width: 100%;
 			box-sizing: border-box;
-			-webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-			scrollbar-width: thin; /* Firefox */
+			-webkit-overflow-scrolling: touch;
+			scrollbar-width: thin;
 
-			/* Desktop with sidebar */
 			@media (min-width: 1201px) {
-				max-width: calc(1200px - ${theme.spacing[8]} - 250px); /* Account for TOC width */
+				max-width: calc(1200px - ${theme.spacing[8]} - 250px);
 			}
 
-			/* Desktop without TOC but with sidebar */
 			@media (min-width: 993px) and (max-width: 1200px) {
-				max-width: calc(100vw - 300px - ${theme.spacing[8]}); /* Account for sidebar width */
+				max-width: calc(100vw - 300px - ${theme.spacing[8]});
 			}
 
-			/* No sidebar - transition zone and below */
 			@media (max-width: 992px) {
 				max-width: calc(100vw - ${theme.spacing[12]});
 			}
@@ -712,30 +572,20 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		table {
 			width: 100%;
 			border-collapse: collapse;
-			margin: 0; /* Remove margin since container handles it */
+			margin: 0;
 			font-size: ${theme.fontSize.sm};
 			border-radius: ${theme.borderRadius.md};
 			border: 2px solid ${theme.colors.borderDark};
-			table-layout: fixed; /* Fixed layout for better control */
-
-			/* Responsive table sizing based on viewport */
-			@media (min-width: 993px) {
-				min-width: 600px; /* Minimum table width on desktop */
-			}
+			table-layout: fixed;
+			min-width: 600px;
 
 			@media (max-width: 992px) {
-				min-width: 500px; /* Smaller minimum on tablet */
-				font-size: ${theme.fontSize.xs};
-			}
-
-			@media (max-width: ${theme.breakpoints.md}) {
-				min-width: 450px; /* Even smaller on mobile */
+				min-width: 450px;
 				font-size: ${theme.fontSize.xs};
 			}
 
 			@media (max-width: ${theme.breakpoints.sm}) {
-				min-width: 350px; /* Smallest on phone */
-				font-size: ${theme.fontSize.xs};
+				min-width: 350px;
 				border: 1px solid ${theme.colors.borderDark};
 			}
 		}
@@ -785,18 +635,15 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			}
 		}
 
-		/* Blockquote/Note styles */
+		/* Blockquote styles */
 		blockquote {
 			margin: ${theme.spacing[8]} 0;
 			padding: ${theme.spacing[5]} ${theme.spacing[6]};
 			border-left: 4px solid ${theme.colors.primary};
 			background: ${theme.colors.primaryLight};
 			border-radius: 0 ${theme.borderRadius.md} ${theme.borderRadius.md} 0;
-			width: 100%;
-			max-width: 100%;
 			box-sizing: border-box;
 			overflow-wrap: break-word;
-			word-wrap: break-word;
 			font-size: ${theme.fontSize.base};
 			line-height: 1.6;
 
@@ -821,11 +668,8 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 
 			p {
 				margin: 0;
-				color: ${theme.colors.text};
 				font-size: inherit;
 				line-height: inherit;
-				word-wrap: break-word;
-				overflow-wrap: break-word;
 
 				&:not(:last-child) {
 					margin-bottom: ${theme.spacing[3]};
@@ -836,7 +680,6 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				}
 			}
 
-			/* Handle nested elements */
 			ul,
 			ol {
 				margin: ${theme.spacing[3]} 0;
@@ -849,8 +692,107 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			}
 
 			code {
-				background: rgba(255, 255, 255, 0.1);
+				background: color-mix(in srgb, ${theme.colors.primary} 10%, white);
 				color: ${theme.colors.text};
+			}
+		}
+
+		/* Admonition (:::type) callout blocks — Docusaurus full-border style */
+		.admonition {
+			margin: ${theme.spacing[5]} 0;
+			border: 1px solid transparent;
+			border-radius: ${theme.borderRadius.lg};
+			overflow: hidden;
+			box-sizing: border-box;
+
+			@media (max-width: ${theme.breakpoints.md}) {
+				margin: ${theme.spacing[4]} 0;
+				border-radius: ${theme.borderRadius.md};
+			}
+		}
+
+		.admonition-info {
+			border-color: ${theme.colors.primary};
+			.admonition-heading { background: ${theme.colors.primaryLight}; color: ${theme.colors.primary}; }
+			.admonition-content { background: color-mix(in srgb, ${theme.colors.primaryLight} 40%, white); }
+		}
+
+		.admonition-tip {
+			border-color: ${theme.colors.secondary};
+			.admonition-heading { background: ${theme.colors.secondaryLight}; color: ${theme.colors.secondary}; }
+			.admonition-content { background: color-mix(in srgb, ${theme.colors.secondaryLight} 40%, white); }
+		}
+
+		.admonition-caution,
+		.admonition-warning {
+			border-color: ${theme.colors.warning};
+			.admonition-heading { background: color-mix(in srgb, ${theme.colors.warning} 15%, white); color: color-mix(in srgb, ${theme.colors.warning} 80%, black); }
+			.admonition-content { background: color-mix(in srgb, ${theme.colors.warning} 6%, white); }
+		}
+
+		.admonition-important,
+		.admonition-danger {
+			border-color: ${theme.colors.accent1};
+			.admonition-heading { background: color-mix(in srgb, ${theme.colors.accent1} 12%, white); color: ${theme.colors.accent1}; }
+			.admonition-content { background: color-mix(in srgb, ${theme.colors.accent1} 5%, white); }
+		}
+
+		.admonition-note {
+			border-color: ${theme.colors.borderDark};
+			.admonition-heading { background: ${theme.colors.backgroundSecondary}; color: ${theme.colors.textSecondary}; }
+			.admonition-content { background: ${theme.colors.backgroundTertiary}; }
+		}
+
+		.admonition-heading {
+			display: flex;
+			align-items: center;
+			gap: ${theme.spacing[2]};
+			padding: ${theme.spacing[2]} ${theme.spacing[4]};
+			font-weight: 700;
+			font-size: ${theme.fontSize.xs};
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+
+			svg {
+				flex-shrink: 0;
+			}
+		}
+
+		.admonition-content {
+			padding: ${theme.spacing[3]} ${theme.spacing[4]};
+
+			@media (max-width: ${theme.breakpoints.md}) {
+				padding: ${theme.spacing[3]};
+			}
+
+			> *:first-child { margin-top: 0; }
+			> *:last-child { margin-bottom: 0; }
+
+			p {
+				font-size: ${theme.fontSize.sm};
+				line-height: 1.6;
+				margin-bottom: ${theme.spacing[3]};
+
+				&:last-child { margin-bottom: 0; }
+			}
+
+			ul, ol {
+				margin: ${theme.spacing[2]} 0;
+				padding-left: ${theme.spacing[5]};
+				font-size: ${theme.fontSize.sm};
+			}
+
+			code {
+				background: ${theme.colors.background};
+				font-size: 0.875em;
+			}
+
+			pre {
+				margin: ${theme.spacing[3]} 0 0;
+				background: ${theme.colors.background};
+				border: 1px solid ${theme.colors.border};
+
+				code { background: none; }
 			}
 		}
 
@@ -887,7 +829,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 
 		summary {
 			background: ${theme.colors.backgroundSecondary};
-			padding: ${theme.spacing[4]} ${theme.spacing[5]};
+			padding: ${theme.spacing[4]} ${theme.spacing[5]} ${theme.spacing[4]} ${theme.spacing[8]};
 			font-weight: 600;
 			font-size: ${theme.fontSize.base};
 			color: ${theme.colors.text};
@@ -899,12 +841,12 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			line-height: 1.5;
 
 			@media (max-width: ${theme.breakpoints.md}) {
-				padding: ${theme.spacing[3]} ${theme.spacing[4]};
+				padding: ${theme.spacing[3]} ${theme.spacing[4]} ${theme.spacing[3]} ${theme.spacing[7]};
 				font-size: ${theme.fontSize.sm};
 			}
 
 			@media (max-width: ${theme.breakpoints.sm}) {
-				padding: ${theme.spacing[2]} ${theme.spacing[3]};
+				padding: ${theme.spacing[2]} ${theme.spacing[3]} ${theme.spacing[2]} ${theme.spacing[6]};
 				font-size: ${theme.fontSize.sm};
 			}
 
@@ -938,17 +880,6 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				}
 			}
 
-			/* Add padding to account for arrow */
-			padding-left: ${theme.spacing[8]};
-
-			@media (max-width: ${theme.breakpoints.md}) {
-				padding-left: ${theme.spacing[7]};
-			}
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				padding-left: ${theme.spacing[6]};
-			}
-
 			&:hover {
 				background: ${theme.colors.primaryLight};
 				color: ${theme.colors.primary};
@@ -956,132 +887,45 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 
 			&:focus {
 				outline: none;
-				box-shadow: 0 0 0 2px rgba(11, 117, 162, 0.2);
+				box-shadow: 0 0 0 2px color-mix(in srgb, ${theme.colors.primary} 20%, transparent);
 			}
 
 			&:focus-visible {
 				outline: none;
-				box-shadow: 0 0 0 2px rgba(11, 117, 162, 0.3);
+				box-shadow: 0 0 0 2px color-mix(in srgb, ${theme.colors.primary} 30%, transparent);
 			}
 		}
 
-		/* Content inside details */
+		/* Content inside details — consistent with main content */
 		details > *:not(summary) {
-			padding: ${theme.spacing[4]} ${theme.spacing[5]};
-			margin: 0;
-			background: ${theme.colors.backgroundTertiary};
+			padding-left: ${theme.spacing[5]};
+			padding-right: ${theme.spacing[5]};
 
 			@media (max-width: ${theme.breakpoints.md}) {
-				padding: ${theme.spacing[3]} ${theme.spacing[4]};
+				padding-left: ${theme.spacing[4]};
+				padding-right: ${theme.spacing[4]};
 			}
 
 			@media (max-width: ${theme.breakpoints.sm}) {
-				padding: ${theme.spacing[3]} ${theme.spacing[3]};
-			}
-
-			&:first-of-type {
-				padding-top: ${theme.spacing[4]};
-			}
-
-			&:last-child {
-				padding-bottom: ${theme.spacing[4]};
+				padding-left: ${theme.spacing[3]};
+				padding-right: ${theme.spacing[3]};
 			}
 		}
 
-		/* Handle paragraph spacing within details content */
-		details p {
-			padding: 0 ${theme.spacing[5]} ${theme.spacing[3]} ${theme.spacing[5]};
-			margin: 0;
-			background: ${theme.colors.backgroundTertiary};
-
-			@media (max-width: ${theme.breakpoints.md}) {
-				padding: 0 ${theme.spacing[4]} ${theme.spacing[2]} ${theme.spacing[4]};
-			}
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				padding: 0 ${theme.spacing[3]} ${theme.spacing[2]} ${theme.spacing[3]};
-			}
-
-			&:first-of-type {
-				padding-top: ${theme.spacing[4]};
-
-				@media (max-width: ${theme.breakpoints.md}) {
-					padding-top: ${theme.spacing[3]};
-				}
-			}
-
-			&:last-child {
-				padding-bottom: ${theme.spacing[4]};
-
-				@media (max-width: ${theme.breakpoints.md}) {
-					padding-bottom: ${theme.spacing[3]};
-				}
-			}
+		/* First content element after summary gets top padding */
+		details > summary + * {
+			padding-top: ${theme.spacing[4]};
 		}
 
-		/* Handle lists within details */
-		details ul,
-		details ol {
-			background: ${theme.colors.backgroundTertiary};
-			padding: ${theme.spacing[2]} ${theme.spacing[5]} ${theme.spacing[3]} ${theme.spacing[8]};
-			margin: 0;
-
-			@media (max-width: ${theme.breakpoints.md}) {
-				padding: ${theme.spacing[2]} ${theme.spacing[4]} ${theme.spacing[2]} ${theme.spacing[7]};
-			}
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				padding: ${theme.spacing[2]} ${theme.spacing[3]} ${theme.spacing[2]} ${theme.spacing[6]};
-			}
-		}
-
-		/* Code elements in details */
-		details code {
-			background: rgba(255, 255, 255, 0.8);
-			padding: 0.25rem 0.5rem;
-			border-radius: ${theme.borderRadius.sm};
-			font-family: ${theme.fonts.mono};
-			font-size: 0.875em;
-			color: ${theme.colors.primary};
-			border: 1px solid rgba(11, 117, 162, 0.2);
-			white-space: nowrap;
-			display: inline-block;
-			margin: 0 0.125rem;
-		}
-
-		/* Code blocks in details */
-		details pre {
-			background: rgba(255, 255, 255, 0.9);
-			padding: ${theme.spacing[4]};
-			border-radius: ${theme.borderRadius.sm};
-			margin: ${theme.spacing[3]} ${theme.spacing[5]};
-			overflow-x: auto;
-			border: 1px solid rgba(11, 117, 162, 0.15);
-
-			@media (max-width: ${theme.breakpoints.md}) {
-				margin: ${theme.spacing[2]} ${theme.spacing[4]};
-				padding: ${theme.spacing[3]};
-			}
-
-			@media (max-width: ${theme.breakpoints.sm}) {
-				margin: ${theme.spacing[2]} ${theme.spacing[3]};
-				padding: ${theme.spacing[2]};
-			}
-
-			code {
-				background: none;
-				border: none;
-				padding: 0;
-				margin: 0;
-				white-space: pre;
-				display: block;
-			}
+		/* Last content element gets bottom padding */
+		details > *:not(summary):last-child {
+			padding-bottom: ${theme.spacing[4]};
 		}
 	`,
 
 	toc: css`
 		width: 250px;
-		padding: ${theme.spacing[4]} ${theme.spacing[4]};
+		padding: ${theme.spacing[4]};
 		position: fixed;
 		right: ${theme.spacing[4]};
 		top: 70px;
@@ -1094,9 +938,18 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		}
 	`,
 
+	tocLabel: css`
+		font-size: ${theme.fontSize.xs};
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: ${theme.colors.textSecondary};
+		margin: 0 0 ${theme.spacing[3]} 0;
+	`,
+
 	tocNav: css`
-		border-left: 1px solid ${theme.colors.primary};
-		padding-left: ${theme.spacing[4]};
+		border-left: 1px solid ${theme.colors.border};
+		padding-left: ${theme.spacing[3]};
 	`,
 
 	tocList: css`
@@ -1107,6 +960,10 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 
 	tocItem: css`
 		margin: ${theme.spacing[1]} 0;
+
+		&[data-level='3'] {
+			padding-left: ${theme.spacing[4]};
+		}
 	`,
 
 	tocLink: css`
