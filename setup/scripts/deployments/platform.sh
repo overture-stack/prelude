@@ -78,8 +78,6 @@ if [ "$STAGE_PORT" != "3000" ]; then
 fi
 
 # Success and Next Steps
-# Signal to open browser on host machine
-echo "OPEN_BROWSER:http://localhost:${STAGE_PORT}" > /health/open_browser_signal
 echo -e "\n\033[1;36m╔══════════════════════════════════════════╗\033[0m"
 echo -e "\033[1;36m║   Demo Portal now running on localhost   ║\033[0m"
 echo -e "\033[1;36m╚══════════════════════════════════════════╝\033[0m\n"

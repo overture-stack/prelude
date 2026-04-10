@@ -19,34 +19,18 @@
  *
  */
 
-import { css } from '@emotion/react';
 import { ReactElement } from 'react';
 import PageLayout from '../../components/PageLayout';
 import { DictionaryViewer } from '../../components/pages/dictionary';
 import { createPage } from '../../global/utils/pages';
 
-/**
- * Dictionary Page
- *
- * Displays a data dictionary from a static JSON file hosted in the public directory.
- *
- * Architecture:
- * - Page component handles layout and routing
- * - DictionaryViewer component handles Lectern integration
- *
- */
 const DictionaryPage = (): ReactElement => {
 	return (
 		<PageLayout>
-			<div
-				css={css`
-					margin: 0 auto;
-					padding-top: 
-					padding-bottom: 20rem;
-				`}
-			>
-				<DictionaryViewer dictionaryUrl="/dictionary/dictionary.json" />
-			</div>
+			<DictionaryViewer
+				dictionaryUrl="/dictionary/pcgl-dictionary.json"
+				filterDropdowns={[{ label: 'Category', filterProperty: 'meta.category' }]}
+			/>
 		</PageLayout>
 	);
 };

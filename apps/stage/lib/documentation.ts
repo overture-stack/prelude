@@ -79,13 +79,15 @@ export async function loadDocumentationSections(): Promise<DocumentationSection[
 					},
 				)
 				.replace(/(<img\s[^>]*src=")(?!\/|https?:\/\/)([^"]+)"/g, '$1/docs/$2"')
-			.replace(/<summary>([\s\S]*?)<\/summary>/g, (_m, content) =>
-				`<summary>${content
+			.replace(/<summary>([\s\S]*?)<\/summary>/g, (_m, content) => {
+				// Unwrap redundant <strong> wrappers so nested **markdown** can be processed cleanly
+				let c = content.replace(/<strong>([\s\S]*?)<\/strong>/g, '$1');
+				c = c
 					.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
 					.replace(/`([^`\n]+)`/g, '<code>$1</code>')
-					.replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
-				}</summary>`,
-			);
+					.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+				return `<summary>${c}</summary>`;
+			});
 
 			return {
 				id,

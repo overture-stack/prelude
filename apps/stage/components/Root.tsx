@@ -19,12 +19,13 @@
  *
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Head from 'next/head';
 import { ThemeProvider } from '@emotion/react';
 import { AuthProvider } from '../global/hooks/useAuthContext';
 import { PageContext } from '../global/hooks/usePageContext';
 import { ClientSideGetInitialPropsContext } from '../global/utils/pages/types';
+import { ThemeConfig, applyThemeConfig } from '../lib/themeConfig';
 
 import defaultTheme from './theme';
 
@@ -32,15 +33,25 @@ const Root = ({
 	children,
 	pageContext,
 	session,
+	themeConfig = {},
 }: {
 	children: React.ReactElement;
 	pageContext: ClientSideGetInitialPropsContext;
 	session: any;
+	themeConfig?: ThemeConfig;
 }) => {
+	const theme = useMemo(() => applyThemeConfig(defaultTheme, themeConfig), [themeConfig]);
+
+	const fontFamily = themeConfig?.fonts?.base;
+	const googleFontsUrl = themeConfig?.fonts?.googleFontsUrl;
+
 	return (
 		<>
 			<Head>
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+				{googleFontsUrl && (
+					<link href={googleFontsUrl} rel="stylesheet" />
+				)}
 			</Head>
 			<style>
 				{`
@@ -51,7 +62,7 @@ const Root = ({
           bottom: 0px;
           left: 0px;
           right: 0px;
-        } /* custom! */
+        }
         #__next {
           position: absolute;
           top: 0px;
@@ -59,12 +70,13 @@ const Root = ({
           left: 0px;
           right: 0px;
         }
+        ${fontFamily ? `:root { --stage-font-base: '${fontFamily}', sans-serif; }` : ''}
       `}
 			</style>
 
 			<AuthProvider session={session}>
 				<PageContext.Provider value={pageContext}>
-					<ThemeProvider theme={defaultTheme}>{children}</ThemeProvider>
+					<ThemeProvider theme={theme}>{children}</ThemeProvider>
 				</PageContext.Provider>
 			</AuthProvider>
 		</>

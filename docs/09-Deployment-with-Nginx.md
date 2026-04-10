@@ -1,11 +1,9 @@
 # Deployment with Nginx
 
-So far, the portal runs on `localhost`, accessible only from your own machine. To make it available to collaborators on your institutional network or the public internet, you need a reverse proxy (a traffic router that sits in front of your services). Nginx is the standard tool for this.
-
-This section explains the concepts and provides a real-world configuration example. Hands-on setup is beyond the scope of this workshop but this serves as a reference for when you're ready to deploy.
+So far, the portal runs on `localhost`, accessible only from your own machine. To make it available to collaborators on your institutional network or the public internet, you need a reverse proxy — a traffic router that sits in front of your services. Nginx is the standard tool for this.
 
 <details>
-<summary>**What Nginx does**</summary>
+<summary><strong>What Nginx does</strong></summary>
 
 By default, each service in the platform runs on its own port and is only reachable from your local machine:
 
@@ -28,32 +26,153 @@ For a deeper overview, see the [Nginx beginner's guide](https://nginx.org/en/doc
 
 </details>
 
+## Guided Walkthrough
+
+The workshop repository includes fully annotated Nginx configuration files in `setup/configs/nginxConfigs/`. Open each file in your editor and work through the questions below.
+
+### portal.conf
+
+Open [setup/configs/nginxConfigs/portal.conf](../setup/configs/nginxConfigs/portal.conf).
+
+This file defines which domains map to which services. There are two active `server` blocks and one commented out. Reading through the Stage block:
+
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+    server_name YOUR_DOMAIN;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        include proxy_params;
+    }
+}
+```
+
+Work through these questions before moving on:
+
+- [ ] Which directive tells Nginx which domain name this block responds to?
+- [ ] Where does a request to `portal.yourlab.org/explore` get forwarded?
+- [ ] The Arranger block uses `proxy_pass http://localhost:5050/` — why does it have a trailing slash while the Stage block doesn't?
+- [ ] Why is the Elasticsearch server block commented out by default?
+
+### proxy_params
+
+Open [setup/configs/nginxConfigs/proxy_params](../setup/configs/nginxConfigs/proxy_params).
+
+This file is pulled in by every server block via `include proxy_params`. It sets timeouts and passes headers the backend services need. Focus on the headers section:
+
+```nginx
+proxy_set_header Host              $host;
+proxy_set_header X-Real-IP         $remote_addr;
+proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+```
+
+- [ ] Without `proxy_set_header Host $host`, what host value would Stage see on incoming requests?
+- [ ] Why does a backend behind a proxy need `X-Forwarded-Proto`?
+- [ ] What would happen if you removed the WebSocket headers from a service that used WebSockets?
+
+### nginx.conf
+
+Open [setup/configs/nginxConfigs/nginx.conf](../setup/configs/nginxConfigs/nginx.conf).
+
+This is the global config — worker processes, logging, gzip, security headers, TLS settings. You typically configure this once during initial server setup. Scan the file and find:
+
+- [ ] Which security headers does this config add to every response, and what does each protect against?
+- [ ] Why is the HSTS header commented out? When should you enable it?
+- [ ] Where does this file tell Nginx to look for site configs like `portal.conf`?
+
+---
+
+## Extension Activity (Optional)
+
 :::info
-The steps in this section assume you are working on a **dedicated server or cloud VM** (e.g. an AWS EC2 instance, a university HPC node with a public IP, or a rented VPS). While technically possible, running a publicly accessible portal on a personal laptop is not practical, laptops aren't always on, rarely have a stable public IP address, and are typically behind a home or office router that blocks inbound connections from the internet.
+This section is for attendees who finish the main walkthrough early. It adds a containerized Nginx to the local stack so you can access the portal at `http://portal.local` instead of `http://localhost:3000` — making the configuration tangible rather than purely conceptual.
+:::
+
+:::caution Important difference from production
+When Nginx runs as a container inside the Docker network, `proxy_pass` uses Docker service names (`stage`, `arranger-datatable1`) instead of `localhost`. Both approaches are valid in different contexts — the concepts and config syntax are identical, only the upstream addresses differ. The production deployment steps below use the host-installed pattern (Nginx outside Docker, `proxy_pass http://localhost:3000`).
+:::
+
+### Step 1: Add /etc/hosts entries
+
+Nginx routes requests by domain name. To make `portal.local` resolve to your machine, add an entry to your local hosts file:
+
+**macOS / Linux:**
+
+```bash
+echo "127.0.0.1 portal.local datatable1-arranger.portal.local" | sudo tee -a /etc/hosts
+```
+
+**Windows (WSL2):** Edit `C:\Windows\System32\drivers\etc\hosts` as Administrator and add:
+
+```
+127.0.0.1 portal.local datatable1-arranger.portal.local
+```
+
+:::info
+Port 80 must be free on your machine. If something else is using it (another web server, etc.), you'll see a bind error when starting Nginx. Check with `sudo lsof -i :80` (macOS/Linux).
+:::
+
+### Step 2: Start Nginx
+
+With the platform already running (`make demo` or `make platform`), start the Nginx container:
+
+```bash
+make nginx
+```
+
+This starts an `nginx:alpine` container that mounts [setup/configs/nginxConfigs/workshop-nginx.conf](../setup/configs/nginxConfigs/workshop-nginx.conf) and joins the same Docker network as the other services.
+
+### Step 3: Open the portal via domain
+
+Navigate to **http://portal.local** in your browser. You should see the same portal that was previously only at `http://localhost:3000`.
+
+Open [setup/configs/nginxConfigs/workshop-nginx.conf](../setup/configs/nginxConfigs/workshop-nginx.conf) and compare it with `portal.conf`:
+
+- [ ] What is different about the `proxy_pass` values between the two files, and why?
+- [ ] What would happen if you changed `server_name portal.local` to `server_name myportal.local` without updating `/etc/hosts`?
+
+### Step 4: Verify Nginx is proxying correctly
+
+Check the Nginx access log to confirm requests are flowing through it:
+
+```bash
+docker logs nginx --follow
+```
+
+Make a search in the portal, then stop the log stream with `Ctrl+C`. You should see HTTP requests logged for each interaction.
+
+To stop Nginx when you're done:
+
+```bash
+docker compose --profile nginx stop nginx
+```
+
+---
+
+## Deploying on a Real Server
+
+:::info
+The steps below assume you are working on a **dedicated server or cloud VM** (e.g. an AWS EC2 instance, a university HPC node with a public IP, or a rented VPS). Running a publicly accessible portal on a personal laptop is not practical — laptops aren't always on, rarely have a stable public IP, and are typically behind a router that blocks inbound connections.
 :::
 
 :::caution
-This setup is suited for **small to medium research deployments** such as lab portals, internal collaborative platforms, or pilot studies. It runs all services on a single server with no redundancy. There are some important limitations to be aware of before deploying to production:
+This setup is suited for **small to medium research deployments** such as lab portals, internal collaborative platforms, or pilot studies. It runs all services on a single server with no redundancy. Important limitations:
 
-- **Single point of failure:** if the server goes down, the portal goes down. There is no automatic failover or clustering.
-- **Elasticsearch is single-node:** the default Elasticsearch configuration runs one node with no replicas. This is fine for moderate data volumes but is not suitable for high-availability or very large datasets without additional tuning.
-- **No built-in user authentication on data:** Stage supports login via NextAuth, but data in Elasticsearch is not row-level access controlled. All authenticated users see the same data.
-- **Backups are not automatic by default:** the `make backup` command and the cron job in the production hardening section must be configured manually.
-- **Scaling requires migration:** if your usage grows beyond what a single server can handle, migrating to a container orchestration platform (such as Kubernetes) is a significant undertaking.
+- **Single point of failure:** if the server goes down, the portal goes down.
+- **Elasticsearch is single-node:** not suitable for high-availability or very large datasets without additional tuning.
+- **No built-in row-level access control:** all authenticated users see the same data.
+- **Backups are not automatic:** the cron job in the production hardening section must be configured manually.
+- **Scaling requires migration:** growing beyond a single server means migrating to a container orchestration platform (such as Kubernetes), which is a significant undertaking.
 
 For guidance on scaling or hardening beyond this setup, reach out via [contact@overture.bio](mailto:contact@overture.bio).
 :::
 
 ### Step 1: DNS Records
 
-To make your portal accessible at a domain name, you need to create DNS (Domain Name System) records. Think of DNS as the internet's contact book: it translates a human-readable address like `portal.yourlab.org` into the numerical IP (Internet Protocol) address of your server, so browsers know where to connect.
-
-There are two record types you'll use:
-
-- **A record:** maps a domain directly to your server's IP address
-- **CNAME record:** maps a subdomain to another hostname (a human-readable server address) instead
-
-DNS records are managed wherever your domain is registered or hosted, common providers include AWS Route 53, Cloudflare, GoDaddy, or your institution's IT team. For a portal at `portal.yourlab.org`:
+Create DNS records wherever your domain is registered (AWS Route 53, Cloudflare, GoDaddy, or your institution's IT team):
 
 | Record Type | Hostname                                 | Points To                  |
 | ----------- | ---------------------------------------- | -------------------------- |
@@ -64,12 +183,7 @@ DNS records are managed wherever your domain is registered or hosted, common pro
 Hostnames must be lowercase. No uppercase characters are accepted in DNS records.
 :::
 
-### Step 2: Nginx Configuration
-
-Nginx (pronounced "engine-x") is a lightweight, high-performance web server widely used as a reverse proxy. It uses two configuration files for this setup:
-
-- **`nginx.conf`:** the global config that controls how Nginx itself runs: worker processes, compression, security headers, logging, and TLS settings. You typically configure this once.
-- **`portal.conf`:** the site-specific config that defines which domains map to which services. This is what you update when adding a new data table or service.
+### Step 2: Install and configure Nginx
 
 Install Nginx on your server:
 
@@ -81,117 +195,21 @@ sudo apt install nginx
 sudo yum install nginx
 ```
 
-#### Site configuration (portal.conf)
+Copy the workshop config files to your server:
 
-Create your site config at `/etc/nginx/sites-available/portal`:
-
-```nginx showLineNumbers
-# Stage frontend — main portal UI
-server {
-    listen 80;
-    listen [::]:80;
-    server_name portal.yourlab.org;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        include proxy_params;
-    }
-}
-
-# Arranger search API (datatable1)
-server {
-    listen 80;
-    listen [::]:80;
-    server_name datatable1-arranger.portal.yourlab.org;
-
-    location / {
-        proxy_pass http://localhost:5050/;
-        include proxy_params;
-    }
-}
-
-# Elasticsearch — only uncomment if external tools need direct access.
-# Arranger already reaches Elasticsearch over Docker's internal network,
-# so the portal does NOT need this block to function.
-#
-# WARNING: Elasticsearch has no built-in authentication in the default setup.
-# If you expose it, restrict access by IP:
-#
-# server {
-#     listen 80;
-#     listen [::]:80;
-#     server_name es.portal.yourlab.org;
-#
-#     allow 192.168.1.0/24;  # replace with your trusted IP range
-#     deny all;
-#
-#     location / {
-#         proxy_pass http://localhost:9200/;
-#         include proxy_params;
-#     }
-# }
+```bash showLineNumbers
+sudo cp setup/configs/nginxConfigs/nginx.conf /etc/nginx/nginx.conf
+sudo cp setup/configs/nginxConfigs/proxy_params /etc/nginx/proxy_params
+sudo cp setup/configs/nginxConfigs/portal.conf /etc/nginx/sites-available/portal
 ```
 
-<details>
-<summary>**Configuration breakdown**</summary>
-
-Each service gets its own `server` block. Here's what the directives mean:
-
-| Directive              | What it does                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------------ |
-| `listen 80`            | Accepts incoming HTTP connections on port 80 (standard web port)                                       |
-| `listen [::]:80`       | Same as above but for IPv6 connections                                                                 |
-| `server_name`          | The domain this block responds to, Nginx uses this to route requests to the right service              |
-| `location /`           | Matches all incoming request paths (everything after the domain)                                       |
-| `proxy_pass`           | Forwards the request to the internal service running on the specified port                             |
-| `include proxy_params` | Loads shared proxy settings: timeouts, buffering, forwarded headers, and WebSocket support (see below) |
-
-**Note on the trailing slash:** `proxy_pass http://localhost:5050/` has a trailing slash. For root `location /` blocks this doesn't change behaviour, but it's good practice: it tells Nginx to strip the location prefix before forwarding, which matters for non-root location paths.
-
-After running Certbot (Step 4), each block will also gain `listen 443 ssl` directives automatically.
-
-For a full reference on Nginx server blocks, see the [Nginx core module docs](https://nginx.org/en/docs/http/ngx_http_core_module.html).
-
-</details>
-
-Enable the site and test:
+Replace `YOUR_DOMAIN` in `portal.conf` with your actual domain, then enable the site:
 
 ```bash showLineNumbers
 sudo ln -s /etc/nginx/sites-available/portal /etc/nginx/sites-enabled/
 sudo nginx -t           # always test before reloading
 sudo systemctl reload nginx
 ```
-
-#### Global configuration (nginx.conf)
-
-The global `nginx.conf` at `/etc/nginx/nginx.conf` controls Nginx-wide settings. The key things it enables for this deployment:
-
-- **Gzip compression:** compresses API responses before sending them, reducing bandwidth by 70–80% for typical JSON traffic
-- **Security headers:** adds `X-Frame-Options`, `X-Content-Type-Options`, and `X-XSS-Protection` to every response
-- **TLS settings:** restricts to TLS 1.2/1.3 and strong ciphers once SSL is enabled
-- **Performance tuning:** `sendfile`, `tcp_nopush`, `tcp_nodelay`, and `keepalive_timeout`
-
-A ready-to-use annotated `nginx.conf` is [included in the workshop repository here](https://github.com/overture-stack/prelude/tree/IBCworkshop/setup/configs/nginxConfigs). Copy it to `/etc/nginx/nginx.conf` after reviewing it.
-
-:::info
-HSTS (HTTP Strict Transport Security) is included in `nginx.conf` but commented out. Only enable it after you have confirmed HTTPS is working correctly, once a browser sees this header it will refuse to connect over plain HTTP for the next year, which can lock you out if your SSL setup has issues.
-:::
-
-#### proxy_params
-
-The `include proxy_params` line in each server block loads a shared file at `/etc/nginx/proxy_params`. This file tells Nginx how to forward requests to your services and passes essential information the backend needs:
-
-| Setting                 | What it does                                                                      |
-| ----------------------- | --------------------------------------------------------------------------------- |
-| `proxy_connect_timeout` | How long to wait for the initial connection to a backend service (default: 60s)   |
-| `proxy_read_timeout`    | How long to wait for a response, increase this if large searches cause 504 errors |
-| `proxy_set_header Host` | Passes the original domain name so the backend generates correct URLs and cookies |
-| `X-Real-IP`             | Passes the client's real IP address for logging and rate limiting                 |
-| `X-Forwarded-For`       | Lists all proxies the request passed through                                      |
-| `X-Forwarded-Proto`     | Tells the backend whether the original request was HTTP or HTTPS                  |
-| WebSocket headers       | Enables WebSocket connections (harmless for non-WebSocket traffic)                |
-
-A ready-to-use annotated `proxy_params` file is [included in the workshop repository here](https://github.com/overture-stack/prelude/tree/IBCworkshop/setup/configs/nginxConfigs). Copy it to `/etc/nginx/proxy_params`.
 
 ### Step 3: Update Stage API URLs
 
@@ -216,10 +234,10 @@ sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d portal.yourlab.org -d datatable1-arranger.portal.yourlab.org
 ```
 
-Certbot will automatically modify your Nginx configuration to handle HTTPS and set up certificate auto-renewal. Once HTTPS is confirmed working, uncomment the HSTS header in `nginx.conf` and reload Nginx.
+Certbot automatically modifies your Nginx configuration to handle HTTPS and sets up certificate auto-renewal. Once HTTPS is confirmed working, uncomment the HSTS header in `nginx.conf` and reload Nginx.
 
 <details>
-<summary>**Security considerations**</summary>
+<summary><strong>Security considerations</strong></summary>
 
 When exposing services externally:
 
@@ -232,7 +250,7 @@ When exposing services externally:
 </details>
 
 <details>
-<summary>**Production hardening**</summary>
+<summary><strong>Production hardening</strong></summary>
 
 The `docker-compose.yml` has been configured with production-readiness in mind:
 
@@ -262,15 +280,7 @@ The `docker-compose.yml` has been configured with production-readiness in mind:
    CORS_ALLOWED_ORIGIN=https://portal.yourlab.org
    ```
 
-3. Copy the workshop Nginx configs to your server:
-
-   ```bash showLineNumbers
-   sudo cp nginx.conf /etc/nginx/nginx.conf
-   sudo cp proxy_params /etc/nginx/proxy_params
-   sudo cp portal.conf /etc/nginx/sites-available/portal
-   sudo ln -s /etc/nginx/sites-available/portal /etc/nginx/sites-enabled/
-   sudo nginx -t && sudo systemctl reload nginx
-   ```
+3. Copy the workshop Nginx configs to your server and enable the site (see Step 2 above).
 
 4. Run Certbot and then enable HSTS in `nginx.conf`:
 

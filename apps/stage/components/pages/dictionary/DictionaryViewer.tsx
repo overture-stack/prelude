@@ -19,59 +19,30 @@
  *
  */
 
-import { DictionaryTableStateProvider, ThemeProvider } from '@overture-stack/lectern-ui';
-// Note: DictionaryStaticDataProvider and DictionaryTableViewer are not exported from main index
-// Using internal imports for static dictionary support
-// @ts-ignore - using internal path
-import { DictionaryTableViewer } from '@overture-stack/lectern-ui/dist/viewer-table/DictionaryTableViewer';
-import { DictionaryStaticDataProvider } from '@overture-stack/lectern-ui/dist/dictionary-controller/DictionaryDataContext';
+import {
+	DictionaryStaticDataProvider,
+	DictionaryTableStateProvider,
+	DictionaryTableViewer,
+	ThemeProvider,
+} from '@overture-stack/lectern-ui';
+import type { FilterDropdown } from '@overture-stack/lectern-ui/dist/viewer-table/DictionaryTableViewer';
+import { css } from '@emotion/react';
 import { ReactElement } from 'react';
 import { createLecternTheme } from '../../theme/adapters/lectern';
 import { useDictionary, useStageTheme } from './hooks';
 
-/**
- * Props for DictionaryViewer component
- */
 interface DictionaryViewerProps {
 	/** URL to the static dictionary JSON file */
 	dictionaryUrl: string;
+	/** Optional: Filter dropdowns for schema-level metadata filtering */
+	filterDropdowns?: FilterDropdown[];
 	/** Optional: CSS class for custom styling */
 	className?: string;
 }
 
-/**
- * DictionaryViewer Component
- *
- * Displays a full-featured data dictionary using the Lectern UI library.
- * This component follows the same pattern as the Arranger data explorer,
- * providing a clean separation between the page and the viewer logic.
- *
- * Features:
- * - Dictionary header with name, version, and description
- * - Interactive toolbar with expand/collapse, filters, and download
- * - Collapsible accordion sections for each schema
- * - Full conditional logic and validation display
- *
- * Architecture:
- * - Fetches dictionary JSON via useDictionary hook
- * - Integrates with Stage global theme (with fallback for embedded contexts)
- * - Provides all necessary context providers for Lectern UI
- *
- * Usage:
- * - In pages: Wrapped in theme context automatically
- * - In documentation: Falls back to default theme when hydrated
- *
- * Similar to: components/pages/dataExplorer/PageContent.tsx (Arranger pattern)
- *
- * @param props - Component properties
- * @returns ReactElement
- */
-export const DictionaryViewer = ({ dictionaryUrl, className }: DictionaryViewerProps): ReactElement => {
-	// Use shared hooks for dictionary loading and theme handling
+export const DictionaryViewer = ({ dictionaryUrl, filterDropdowns, className }: DictionaryViewerProps): ReactElement => {
 	const { dictionary, loading, error } = useDictionary(dictionaryUrl);
 	const stageTheme = useStageTheme();
-
-	// Transform Stage theme to Lectern-compatible structure
 	const lecternTheme = createLecternTheme(stageTheme);
 
 	if (loading) {
@@ -84,10 +55,15 @@ export const DictionaryViewer = ({ dictionaryUrl, className }: DictionaryViewerP
 
 	return (
 		<ThemeProvider theme={lecternTheme}>
-			<div className={className}>
+			<div
+				className={className}
+				css={css`
+					padding: 0 48px;
+				`}
+			>
 				<DictionaryStaticDataProvider staticDictionaries={[dictionary]}>
 					<DictionaryTableStateProvider>
-						<DictionaryTableViewer />
+						<DictionaryTableViewer filterDropdowns={filterDropdowns} />
 					</DictionaryTableStateProvider>
 				</DictionaryStaticDataProvider>
 			</div>

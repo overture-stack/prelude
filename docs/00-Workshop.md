@@ -20,14 +20,14 @@ Downloading Docker images on conference Wi-Fi is slow and unreliable. Complete t
 The following software must be installed and verified before the workshop:
 
 <details>
-<summary><strong>**1. Git**, `git --version` returns a version number</strong></summary>
+<summary><strong>1. Git `git --version` returns a version number</strong></summary>
 
 Download from [git-scm.com](https://git-scm.com/downloads) if the command is not recognised.
 
 </details>
 
 <details>
-<summary><strong>**2. Docker Desktop** (`28.0.0` or later)</strong></summary>
+<summary><strong>2. Docker Desktop (`28.0.0` or later)</strong></summary>
 
 - **macOS / Windows:** Download from [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
 - **Linux:** Follow the [Docker Engine install guide](https://docs.docker.com/engine/install/)
@@ -43,7 +43,7 @@ Please ensure `docker --version` and `docker compose version` both return versio
 </details>
 
 <details>
-<summary><strong>**3. Node.js** (`v18` or later), `node --version` returns a version number</strong></summary>
+<summary><strong>3. Node.js (`v18` or later), `node --version` returns a version number</strong></summary>
 
 Download the LTS version from [nodejs.org](https://nodejs.org/).
 
@@ -57,7 +57,7 @@ npm --version
 </details>
 
 <details>
-<summary><strong>**4. Docker images pre-downloaded:** run the pulls below before the workshop</strong></summary>
+<summary><strong>4. Docker images pre-downloaded: run the pulls below before the workshop</strong></summary>
 
 Pull the required Docker images now to avoid slow downloads during the workshop:
 
@@ -68,22 +68,23 @@ docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.27
 docker pull ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
 docker pull node:lts-alpine
 docker pull node:22-slim
+docker pull nginx:alpine
 ```
 
-Verify all six downloaded:
+Verify all seven downloaded:
 
 ```bash
-docker images | grep -E "alpine/curl|postgres|elasticsearch|arranger-server|node"
+docker images | grep -E "alpine/curl|postgres|elasticsearch|arranger-server|node|nginx"
 ```
 
-You should see all six images listed.
+You should see all seven images listed.
 
 </details>
 
 <details>
-<summary><strong>**5. Repository cloned:** `git clone https://github.com/overture-stack/prelude.git`</strong></summary>
+<summary><strong>5. Repository cloned: `git clone https://github.com/overture-stack/prelude.git`</strong></summary>
 
-The `prelude` repository contains everything needed for this workshop: Docker Compose configuration, the Composer and Conductor CLI tools, and sample data. Clone it once before the workshop and you won't need internet access for the hands-on portion.
+The `prelude` repository contains everything needed for this workshop: Docker Compose configuration, the Conductor CLI tool, and sample data. Clone it once before the workshop and you won't need internet access for the hands-on portion.
 
 ```bash
 git clone https://github.com/overture-stack/prelude.git
@@ -93,7 +94,7 @@ cd prelude
 </details>
 
 <details>
-<summary><strong>**6. _(Windows only)_ WSL2 configured** with Docker Desktop integration enabled</strong></summary>
+<summary><strong>6. _(Windows only)_ WSL2 configured with Docker Desktop integration enabled</strong></summary>
 
 1. Install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
 2. Use Ubuntu or another Linux distribution within WSL2
@@ -140,7 +141,7 @@ Before the workshop, confirm:
 - [ ] `docker compose version` returns a version number
 - [ ] Docker Desktop is running
 - [ ] `node --version` returns v18 or later
-- [ ] All six Docker images are downloaded (`docker images`)
+- [ ] All seven Docker images are downloaded (`docker images`)
 - [ ] The repository is cloned and you can `cd` into it
 - [ ] _(Windows only)_ WSL2 is configured and Docker integration is enabled
 
@@ -151,7 +152,7 @@ Before the workshop, confirm:
 | Time      | Section                     | Description                                                               |
 | --------- | --------------------------- | ------------------------------------------------------------------------- |
 | 2:00–2:25 | Introduction & Overview     | Workshop objectives, run the pre-built demo, and architecture walkthrough |
-| 2:25–3:20 | Building Your Portal        | Prepare data, generate configurations with Composer, and wire up Docker   |
+| 2:25–3:20 | Building Your Portal        | Prepare data, generate configurations with the Stage UI, and wire up Docker   |
 | 3:20–3:30 | Break                       | Stretch break                                                             |
 | 3:30–4:00 | Launch, Customize & Wrap-Up | Load data with Conductor, customize the portal, and discuss next steps    |
 

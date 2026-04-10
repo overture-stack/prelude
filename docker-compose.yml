@@ -291,7 +291,7 @@ services:
       NEXT_PUBLIC_DISABLE_WELCOME_BANNER: false
       # Datatable1 Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: records
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
       NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
       # Auth Variables
@@ -336,6 +336,33 @@ services:
           cpus: "1"
     volumes:
       - stage-data:/usr/src/public/static/dms_user_assets
+    networks:
+      - platform-network
+
+  # ------------------------------------------------------------------------------------#
+  # Nginx — Local Reverse Proxy (Extension Activity)                                  #
+  # ------------------------------------------------------------------------------------#
+  # Workshop extension activity only. Runs Nginx inside Docker so attendees can        #
+  # access the portal at http://portal.local instead of http://localhost:3000.         #
+  #                                                                                    #
+  # Start with: make nginx  (requires the platform to already be running)             #
+  # Requires /etc/hosts entry: 127.0.0.1 portal.local datatable1-arranger.portal.local#
+  # ------------------------------------------------------------------------------------#
+  nginx:
+    profiles: ["nginx"]
+    image: nginx:alpine
+    pull_policy: if_not_present
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./setup/configs/nginxConfigs/workshop-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      stage:
+        condition: service_healthy
+      arranger-datatable1:
+        condition: service_healthy
     networks:
       - platform-network
 

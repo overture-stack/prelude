@@ -34,7 +34,7 @@ ES_INDEX_0_ALIAS_NAME: datatable1_centric # must match the alias in your mapping
 | Variable                    | What it controls                                                                              |
 | --------------------------- | --------------------------------------------------------------------------------------------- |
 | `POSTGRES_DB/USER/PASSWORD` | Database credentials, must be consistent across all services that connect to PostgreSQL       |
-| `ES_INDEX_0_NAME`           | The Elasticsearch index name, corresponds to the value passed to `-i` when running Composer   |
+| `ES_INDEX_0_NAME`           | The Elasticsearch index name, corresponds to the index name entered in the Config Generator   |
 | `ES_INDEX_0_TEMPLATE_FILE`  | Path to your generated mapping JSON, tells setup where to find the index template             |
 | `ES_INDEX_0_ALIAS_NAME`     | The alias Arranger queries, must match `aliases` in your mapping and `esIndex` in `base.json` |
 
@@ -131,7 +131,7 @@ stage:
 
     # highlight-start
     NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050 # must match Arranger service name and port
-    NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
+    NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: records
     NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric # must match ES_INDEX_0_ALIAS_NAME in setup
     NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
     # highlight-end

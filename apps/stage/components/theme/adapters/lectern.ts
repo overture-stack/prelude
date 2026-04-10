@@ -20,6 +20,7 @@
  */
 
 import { css } from '@emotion/react';
+import { defaultTheme } from '@overture-stack/lectern-ui';
 import { StageThemeInterface } from '../index';
 
 /**
@@ -124,80 +125,81 @@ export const createLecternTheme = (stageTheme: StageThemeInterface) => {
 
 		typography: {
 			hero: css`
-				font-family: ${typography.heading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 36px;
 				font-weight: bold;
 				line-height: 120%;
 			`,
 			title: css`
-				font-family: ${typography.heading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 32px;
 				font-weight: bold;
 				line-height: 120%;
 			`,
 			subtitle: css`
-				font-family: ${typography.regular};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 28px;
 				line-height: 130%;
 			`,
 			subtitleBold: css`
-				font-family: ${typography.heading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 30px;
 				font-weight: bold;
 				line-height: 100%;
 			`, // Dictionary title
 			subtitleSecondary: css`
-				font-family: ${typography.subheading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 24px;
+				font-weight: 700;
 				line-height: 130%;
 			`,
 			headingSmall: css`
-				font-family: ${typography.subheading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 22px;
 				font-weight: bold;
 				line-height: 120%;
 			`,
 			introText: css`
-				font-family: ${typography.regular};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 20px;
 				line-height: 150%;
 			`,
 			introTextBold: css`
-				font-family: ${typography.heading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 20px;
 				font-weight: bold;
 				line-height: 150%;
 			`,
 			regular: typography.regular,
 			paragraph: css`
-				font-family: ${typography.regular};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 18px;
 				line-height: 150%;
 			`,
 			paragraphBold: css`
-				font-family: ${typography.heading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 18px;
 				font-weight: bold;
 				line-height: 130%;
 			`,
 			paragraphSmall: css`
-				font-family: ${typography.regular};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 14px;
 				line-height: 140%;
 			`, // Table cells, descriptions
 			paragraphSmallBold: css`
-				font-family: ${typography.label};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 16px;
 				font-weight: bold;
 				line-height: 140%;
 			`, // Attribute headers, labels
 			body: css`
-				font-family: ${typography.regular};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 16px;
 				line-height: 150%;
 			`, // Description text
 			bodyBold: css`
-				font-family: ${typography.heading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 16px;
 				font-weight: bold;
 				line-height: 150%;
@@ -208,31 +210,31 @@ export const createLecternTheme = (stageTheme: StageThemeInterface) => {
 				font-weight: bold;
 			`,
 			caption: css`
-				font-family: ${typography.label2};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 12px;
 				line-height: 140%;
 			`,
 			captionBold: css`
-				font-family: ${typography.label};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 12px;
 				font-weight: bold;
 				line-height: 140%;
 			`, // Small pills
 			buttonText: css`
-				font-family: ${typography.button};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 16px;
 				line-height: 1.5;
 				vertical-align: middle;
 			`, // All buttons
 			fieldBlock: css`
-				font-family: ${typography.data};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 14px;
 				line-height: 100%;
 				text-align: center;
 				vertical-align: middle;
 			`, // Field name blocks
 			tableHeader: css`
-				font-family: ${typography.subheading};
+				font-family: var(--stage-font-base, 'Lato', sans-serif);
 				font-size: 16px;
 				font-weight: bold;
 				line-height: 100%;
@@ -249,6 +251,7 @@ export const createLecternTheme = (stageTheme: StageThemeInterface) => {
 				height: dimensions.labIcon.height,
 			},
 		},
-		// icons: Can be overridden with custom icon components
+		// Use lectern's default icon set (SVG components, no external dependencies)
+		icons: defaultTheme.icons,
 	};
 };

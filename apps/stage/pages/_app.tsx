@@ -1,9 +1,10 @@
 import { getSession, SessionProvider } from 'next-auth/react';
 import { AppContext } from 'next/app';
 import Router from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Root from '../components/Root';
 import { getConfig } from '../global/config';
+import type { ThemeConfig } from '../lib/themeConfig';
 import { AUTH_PROVIDER, LOGIN_PATH } from '../global/utils/constants';
 import getInternalLink from '../global/utils/getInternalLink';
 import { PageWithConfig } from '../global/utils/pages/types';
@@ -13,12 +14,16 @@ const DMSApp = ({
 	pageProps,
 	ctx,
 	session,
+	themeConfig,
 }: {
 	Component: PageWithConfig;
 	pageProps: { [k: string]: any };
 	ctx: any;
 	session: any;
+	themeConfig: ThemeConfig;
 }) => {
+	// Initialised once from SSR data — client navigations won't reset this
+	const [resolvedThemeConfig] = useState<ThemeConfig>(themeConfig ?? {});
 	const { NEXT_PUBLIC_AUTH_PROVIDER } = getConfig();
 
 	useEffect(() => {
@@ -34,7 +39,7 @@ const DMSApp = ({
 
 	return (
 		<SessionProvider session={session}>
-			<Root pageContext={ctx} session={session}>
+			<Root pageContext={ctx} session={session} themeConfig={resolvedThemeConfig}>
 				<Component {...pageProps} />
 			</Root>
 		</SessionProvider>
@@ -55,6 +60,15 @@ DMSApp.getInitialProps = async ({ ctx, Component }: AppContext & { Component: Pa
 
 	const session = await getSession(ctx);
 
+	// Read theme.config.json server-side only — serialised into initial HTML,
+	// hydrated on client without a second request and without a flash.
+	// Dynamic require prevents webpack from bundling the 'fs' module for the client.
+	let themeConfig: ThemeConfig = {};
+	if (typeof window === 'undefined') {
+		const { loadThemeConfig } = require('../lib/loadThemeConfig');
+		themeConfig = loadThemeConfig();
+	}
+
 	return {
 		ctx: {
 			pathname: ctx.pathname,
@@ -63,6 +77,7 @@ DMSApp.getInitialProps = async ({ ctx, Component }: AppContext & { Component: Pa
 		},
 		pageProps,
 		session,
+		themeConfig,
 	};
 };
 

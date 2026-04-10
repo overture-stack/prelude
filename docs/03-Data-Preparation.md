@@ -40,7 +40,7 @@ Here are some examples to help illustrate:
 
 #### Data Types
 
-Composer will automatically infer field types when generating Elasticsearch mappings:
+The Config Generator will automatically infer field types when generating Elasticsearch mappings:
 
 | CSV Content             | Elasticsearch Type | Example                                     |
 | ----------------------- | ------------------ | ------------------------------------------- |
@@ -49,7 +49,7 @@ Composer will automatically infer field types when generating Elasticsearch mapp
 | Decimal numbers         | `float`            | `3.14`, `0.95`                              |
 | Dates (ISO format)      | `date`             | `2024-01-15`                                |
 
-The goal is to get the structure right, you can review and adjust individual type assignments after Composer generates the mapping, which we'll cover in the next section.
+The goal is to get the structure right, you can review and adjust individual type assignments after the Config Generator produces the mapping, which we'll cover in the next section.
 
 :::tip
 LLMs can be a powerful aid for reviewing, refining and troubleshooting configurations. Just ensure any data shared with an external model complies with your institution's data governance and privacy requirements.
@@ -114,4 +114,4 @@ Before proceeding, confirm:
 - [ ] Headers use `snake_case` with no spaces or special characters
 - [ ] You understand that each CSV file becomes one data table in the portal
 
-**Next:** With data prepared, we'll use Composer to generate the Elasticsearch and Arranger configuration files.
+**Next:** With data prepared, we'll use the Config Generator to produce the Elasticsearch and Arranger configuration files.

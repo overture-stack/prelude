@@ -3,8 +3,6 @@ import { EsMapping } from './generateEsMapping';
 // Re-export the mapping type so the API route can import from one place.
 export type { EsMapping };
 
-type DocType = 'file' | 'analysis';
-
 const SEARCHABLE_TYPES = new Set(['keyword', 'text', 'integer', 'float', 'boolean', 'date']);
 
 function toDisplayName(fieldName: string): string {
@@ -24,7 +22,7 @@ export interface ArrangerConfigs {
 	facets: object;
 }
 
-export function generateArrangerConfigs(mapping: any, indexName: string, docType: DocType): ArrangerConfigs {
+export function generateArrangerConfigs(mapping: any, indexName: string): ArrangerConfigs {
 	const dataProps: Record<string, { type: string }> =
 		mapping?.mappings?.properties?.data?.properties ?? {};
 
@@ -68,7 +66,7 @@ export function generateArrangerConfigs(mapping: any, indexName: string, docType
 
 	return {
 		base: {
-			documentType: docType,
+			documentType: 'records',
 			esIndex: `${indexName}_centric`,
 		},
 		extended: { extended },

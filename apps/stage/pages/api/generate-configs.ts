@@ -3,21 +3,22 @@ import { parseCsv } from '@/lib/configGenerator/csvParser';
 import { generateEsMapping } from '@/lib/configGenerator/generateEsMapping';
 import { generatePostgresSql } from '@/lib/configGenerator/generatePostgresTable';
 import { generateArrangerConfigs } from '@/lib/configGenerator/generateArrangerConfigs';
+import { generateLecternDictionary } from '@/lib/configGenerator/generateLecternDictionary';
 
 export type GenerateConfigsRequest = {
 	csvContent: string;
 	indexName: string;
-	documentType: 'file' | 'analysis';
 	tableName: string;
 };
 
 export type GenerateConfigsResponse = {
+	postgresSql: string;
+	lecternDictionary: object;
 	esMapping: object;
 	arrangerBase: object;
 	arrangerExtended: object;
 	arrangerTable: object;
 	arrangerFacets: object;
-	postgresSql: string;
 };
 
 export default function handler(
@@ -28,7 +29,7 @@ export default function handler(
 		return res.status(405).json({ error: 'Method not allowed' });
 	}
 
-	const { csvContent, indexName, documentType, tableName } = req.body as GenerateConfigsRequest;
+	const { csvContent, indexName, tableName } = req.body as GenerateConfigsRequest;
 
 	if (!csvContent?.trim()) {
 		return res.status(400).json({ error: 'CSV content is required' });
@@ -43,16 +44,19 @@ export default function handler(
 		return res.status(400).json({ error: 'Could not parse CSV headers' });
 	}
 
+	const schemaName = tableName || indexName;
 	const esMapping = generateEsMapping(csv, indexName);
-	const { base, extended, table, facets } = generateArrangerConfigs(esMapping, indexName, documentType);
-	const postgresSql = generatePostgresSql(csv, tableName || indexName);
+	const { base, extended, table, facets } = generateArrangerConfigs(esMapping, indexName);
+	const postgresSql = generatePostgresSql(csv, schemaName);
+	const lecternDictionary = generateLecternDictionary(csv, schemaName, indexName);
 
 	return res.status(200).json({
+		postgresSql,
+		lecternDictionary,
 		esMapping,
 		arrangerBase: base,
 		arrangerExtended: extended,
 		arrangerTable: table,
 		arrangerFacets: facets,
-		postgresSql,
 	});
 }

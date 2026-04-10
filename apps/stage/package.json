@@ -16,7 +16,7 @@
 		"@emotion/react": "^11.9.0",
 		"@emotion/styled": "^11.8.1",
 		"@overture-stack/arranger-components": "^3.0.1",
-		"@overture-stack/lectern-ui": "^0.0.1-beta.0",
+		"@overture-stack/lectern-ui": "1.0.0",
 		"@overture-stack/sqon-builder": "^1.1.0",
 		"@tanstack/react-table": "^8.21.3",
 		"@types/marked": "^5.0.2",

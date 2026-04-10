@@ -75,7 +75,7 @@ Stage will start at **http://localhost:3001**. Create a `.env.local` file in `ap
 
 ```bash
 NEXT_PUBLIC_ARRANGER_DATATABLE_1_API=http://localhost:5050
-NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE=file
+NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE=records
 NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX=datatable1_centric
 NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD=submission_metadata.submission_id
 NEXT_PUBLIC_LAB_NAME=My Data Portal
@@ -122,7 +122,7 @@ Add the new data table's Arranger connection to `docker-compose.yml` (covered in
 
 ```yaml
 NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger-datatable2:5051
-NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: file
+NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: records
 NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: datatable2_centric
 ```
 
@@ -137,7 +137,7 @@ make restart
 The new data table will automatically appear in the navigation menu and homepage.
 
 <details>
-<summary>**Key configuration files**</summary>
+<summary><strong>Key configuration files</strong></summary>
 
 These files contain variable declarations used by the data table components:
 
@@ -165,7 +165,7 @@ docs/
 To add a new documentation page, create a Markdown file with the next number in sequence. To remove a page, delete the file. The navigation sidebar updates automatically.
 
 <details>
-<summary>**Additional component directories**</summary>
+<summary><strong>Additional component directories</strong></summary>
 
 For deeper customization:
 

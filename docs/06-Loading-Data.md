@@ -24,7 +24,7 @@ conductor -h
 You should see help text listing the available commands, including `upload`.
 
 <details>
-<summary>**Alternative:** running Conductor without global installation</summary>
+<summary><strong>Alternative: running Conductor without global installation</summary>
 
 Use this if you don't have permission to install npm packages globally (e.g. on a managed or shared machine), or if you prefer not to modify your global npm environment:
 
@@ -39,7 +39,7 @@ npm start -- help
 </details>
 
 <details>
-<summary>**Troubleshooting:** conflicting conductor alias</summary>
+<summary><strong>Troubleshooting: conflicting conductor alias</summary>
 
 If `conductor` resolves to an unexpected path, check for an existing alias:
 
@@ -74,7 +74,7 @@ conductor upload -f ./data/datatable1.csv -t datatable1 -i datatable1-index
 ```
 
 <details>
-<summary>**Command breakdown**</summary>
+<summary><strong>Command breakdown</strong></summary>
 
 - `upload`: the Conductor command for the full CSV → PostgreSQL → Elasticsearch pipeline
 - `-f ./data/datatable1.csv`: path to the input CSV file
@@ -105,7 +105,7 @@ For a full reference run: `conductor upload -h`
 </details>
 
 <details>
-<summary>**What happens during upload**</summary>
+<summary><strong>What happens during upload</strong></summary>
 
 Conductor processes each CSV row in two stages. First, it inserts the raw records into the PostgreSQL table (providing persistent, queryable storage). Then it reads from PostgreSQL, wraps each record in a structured JSON document, and bulk-indexes it into Elasticsearch:
 
@@ -132,7 +132,7 @@ Your CSV fields go into the `data` object. Conductor adds `submission_metadata` 
 </details>
 
 <details>
-<summary>**Upload behaviour: re-runs, interruptions, and partial failures**</summary>
+<summary><strong>Upload behaviour: re-runs, interruptions, and partial failures</strong></summary>
 
 **Re-uploading the same file:** Re-running `upload` against an already-loaded file is safe. Records that already exist in PostgreSQL are skipped automatically, nothing is duplicated in either PostgreSQL or Elasticsearch.
 
@@ -159,7 +159,7 @@ Open **http://localhost:3000** in your browser:
 4. Try sorting columns
 
 <details>
-<summary>**Verify directly via Elasticsearch**</summary>
+<summary><strong>Verify directly via Elasticsearch</strong></summary>
 
 Check the document count:
 
@@ -184,7 +184,7 @@ If you installed Elasticvue, connect to `http://localhost:9200` with credentials
 The right approach depends on what changed, expand the relevant scenario below for more information.
 
 <details>
-<summary>**Mapping changed (data already in PostgreSQL)**</summary>
+<summary><strong>Mapping changed (data already in PostgreSQL)</strong></summary>
 
 If you updated the Elasticsearch mapping but your CSV data is unchanged, use `index-db` to re-index directly from PostgreSQL, no need to re-parse the CSV:
 
@@ -209,7 +209,7 @@ If you updated the Elasticsearch mapping but your CSV data is unchanged, use `in
 </details>
 
 <details>
-<summary>**CSV corrected (data needs to be re-uploaded)**</summary>
+<summary><strong>CSV corrected (data needs to be re-uploaded)</strong></summary>
 
 If you fixed errors in the CSV itself, you need to clear both PostgreSQL and Elasticsearch. The existing table already contains the old records and re-uploading would cause duplicates:
 
@@ -240,7 +240,7 @@ If you fixed errors in the CSV itself, you need to clear both PostgreSQL and Ela
 </details>
 
 <details>
-<summary>**Other Conductor commands**</summary>
+<summary><strong>Other Conductor commands</strong></summary>
 
 The standard `upload` command runs the full CSV → PostgreSQL → Elasticsearch pipeline in one pass, which is what you need for the workshop. Conductor also exposes two targeted commands that operate on only one destination, useful when the two stages need to happen separately, for example if PostgreSQL and Elasticsearch are being managed independently, or if you need to debug one layer in isolation:
 

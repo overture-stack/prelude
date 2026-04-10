@@ -33,7 +33,6 @@ const DocumentationDropdown = () => {
 						const content = await contentResponse.text();
 						const title = extractTitle(content);
 						const dropdownId = generateId(title);
-						console.log(`[DEBUG] Creating dropdown: filename="${filename}", title="${title}", id="${dropdownId}"`);
 
 						return {
 							title,

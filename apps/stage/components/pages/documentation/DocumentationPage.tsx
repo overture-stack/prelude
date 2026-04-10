@@ -713,34 +713,59 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 
 		.admonition-info {
 			border-color: ${theme.colors.primary};
-			.admonition-heading { background: ${theme.colors.primaryLight}; color: ${theme.colors.primary}; }
-			.admonition-content { background: color-mix(in srgb, ${theme.colors.primaryLight} 40%, white); }
+			.admonition-heading {
+				background: ${theme.colors.primary};
+				color: white;
+			}
+			.admonition-content {
+				background: ${theme.colors.primaryLight};
+			}
 		}
 
 		.admonition-tip {
 			border-color: ${theme.colors.secondary};
-			.admonition-heading { background: ${theme.colors.secondaryLight}; color: ${theme.colors.secondary}; }
-			.admonition-content { background: color-mix(in srgb, ${theme.colors.secondaryLight} 40%, white); }
+			.admonition-heading {
+				background: ${theme.colors.secondary};
+				color: white;
+			}
+			.admonition-content {
+				background: ${theme.colors.secondaryLight};
+			}
 		}
 
 		.admonition-caution,
 		.admonition-warning {
-			border-color: ${theme.colors.warning};
-			.admonition-heading { background: color-mix(in srgb, ${theme.colors.warning} 15%, white); color: color-mix(in srgb, ${theme.colors.warning} 80%, black); }
-			.admonition-content { background: color-mix(in srgb, ${theme.colors.warning} 6%, white); }
+			border-color: color-mix(in srgb, ${theme.colors.warning} 80%, black);
+			.admonition-heading {
+				background: ${theme.colors.warning};
+				color: color-mix(in srgb, ${theme.colors.warning} 30%, black);
+			}
+			.admonition-content {
+				background: color-mix(in srgb, ${theme.colors.warning} 20%, white);
+			}
 		}
 
 		.admonition-important,
 		.admonition-danger {
 			border-color: ${theme.colors.accent1};
-			.admonition-heading { background: color-mix(in srgb, ${theme.colors.accent1} 12%, white); color: ${theme.colors.accent1}; }
-			.admonition-content { background: color-mix(in srgb, ${theme.colors.accent1} 5%, white); }
+			.admonition-heading {
+				background: ${theme.colors.accent1};
+				color: white;
+			}
+			.admonition-content {
+				background: color-mix(in srgb, ${theme.colors.accent1} 12%, white);
+			}
 		}
 
 		.admonition-note {
 			border-color: ${theme.colors.borderDark};
-			.admonition-heading { background: ${theme.colors.backgroundSecondary}; color: ${theme.colors.textSecondary}; }
-			.admonition-content { background: ${theme.colors.backgroundTertiary}; }
+			.admonition-heading {
+				background: ${theme.colors.borderDark};
+				color: white;
+			}
+			.admonition-content {
+				background: ${theme.colors.backgroundSecondary};
+			}
 		}
 
 		.admonition-heading {
@@ -765,18 +790,25 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				padding: ${theme.spacing[3]};
 			}
 
-			> *:first-child { margin-top: 0; }
-			> *:last-child { margin-bottom: 0; }
+			> *:first-child {
+				margin-top: 0;
+			}
+			> *:last-child {
+				margin-bottom: 0;
+			}
 
 			p {
 				font-size: ${theme.fontSize.sm};
 				line-height: 1.6;
 				margin-bottom: ${theme.spacing[3]};
 
-				&:last-child { margin-bottom: 0; }
+				&:last-child {
+					margin-bottom: 0;
+				}
 			}
 
-			ul, ol {
+			ul,
+			ol {
 				margin: ${theme.spacing[2]} 0;
 				padding-left: ${theme.spacing[5]};
 				font-size: ${theme.fontSize.sm};
@@ -792,7 +824,9 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				background: ${theme.colors.background};
 				border: 1px solid ${theme.colors.border};
 
-				code { background: none; }
+				code {
+					background: none;
+				}
 			}
 		}
 
@@ -816,23 +850,23 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 
 			&[open] {
 				summary {
-					border-bottom: 1px solid ${theme.colors.border};
-					background: ${theme.colors.primaryLight};
-					color: ${theme.colors.primary};
+					background: color-mix(in srgb, ${theme.colors.sidebarItemBackgroundActive} 65%, #bbddff);
+					color: white;
 
 					&::before {
 						transform: translateY(-50%) rotate(90deg);
+						color: blacks;
 					}
 				}
 			}
 		}
 
 		summary {
-			background: ${theme.colors.backgroundSecondary};
+			background: ${theme.colors.sidebarItemBackgroundActive};
 			padding: ${theme.spacing[4]} ${theme.spacing[5]} ${theme.spacing[4]} ${theme.spacing[8]};
 			font-weight: 600;
 			font-size: ${theme.fontSize.base};
-			color: ${theme.colors.text};
+			color: black;
 			cursor: pointer;
 			user-select: none;
 			transition: ${theme.transitions.fast};
@@ -866,7 +900,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				left: ${theme.spacing[4]};
 				top: 50%;
 				transform: translateY(-50%);
-				color: ${theme.colors.primary};
+				color: black;
 				font-size: ${theme.fontSize.sm};
 				transition: transform ${theme.transitions.fast};
 
@@ -881,8 +915,8 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			}
 
 			&:hover {
-				background: ${theme.colors.primaryLight};
-				color: ${theme.colors.primary};
+				background: color-mix(in srgb, ${theme.colors.sidebarItemBackgroundActive} 65%, #bbddff);
+				color: black;
 			}
 
 			&:focus {
@@ -920,6 +954,18 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		/* Last content element gets bottom padding */
 		details > *:not(summary):last-child {
 			padding-bottom: ${theme.spacing[4]};
+		}
+
+		/* Restore natural list indentation inside details (overridden by the container padding rule) */
+		details ul,
+		details ol {
+			padding-left: calc(${theme.spacing[5]} + ${theme.spacing[6]});
+		}
+
+		/* Give code blocks inside details breathing room on left and right */
+		details pre {
+			margin-left: ${theme.spacing[5]};
+			margin-right: ${theme.spacing[5]};
 		}
 	`,
 

@@ -22,7 +22,7 @@
 import { css } from '@emotion/react';
 
 const baseFont = css`
-	font-family: 'Lato', sans-serif;
+	font-family: var(--stage-font-base, 'Lato', sans-serif);
 `;
 
 const regular = css`

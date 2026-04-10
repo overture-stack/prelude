@@ -20,7 +20,9 @@
  */
 
 import { ThemeProvider } from '@overture-stack/lectern-ui';
-// @ts-ignore - using internal path for SchemaTable
+// SchemaTable public export is incorrectly typed in the published package (index.d.ts uses `default as SchemaTable`
+// instead of the named export, resolving to DictionaryTableProps). Using the internal path as a workaround.
+// @ts-ignore
 import SchemaTable from '@overture-stack/lectern-ui/dist/viewer-table/DataTable/SchemaTable';
 import { ReactElement } from 'react';
 import { createLecternTheme } from '../../theme/adapters/lectern';

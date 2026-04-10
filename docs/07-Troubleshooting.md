@@ -83,11 +83,11 @@ Confirm Arranger is responding:
 ```bash
 curl -X POST http://localhost:5050/graphql \
   -H "Content-Type: application/json" \
-  -d '{"query": "{ file { hits { total } } }"}'
+  -d '{"query": "{ records { hits { total } } }"}'
 ```
 
 :::info
-The GraphQL field name is set by `documentType` in `base.json`, not by the index or table name. In the demo this is `file`, so the query uses `{ file { hits { total } } }`. If you changed `documentType`, substitute that value. An error like `Cannot query field "X" on type "Root"` means the field name in the query doesn't match what Arranger is exposing, check `documentType` in `base.json`.
+The GraphQL field name is set by `documentType` in `base.json`, not by the index or table name. This is always `"records"`, so the query uses `{ records { hits { total } } }`. An error like `Cannot query field "X" on type "Root"` means the field name in the query doesn't match what Arranger is exposing — verify `documentType` in `base.json` is set to `"records"`.
 :::
 
 This should return a document count. If it fails, check `docker logs arranger-datatable1`. Common causes:

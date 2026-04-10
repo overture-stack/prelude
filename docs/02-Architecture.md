@@ -6,7 +6,6 @@ Now that you've seen the running portal, let's walk through how data flows from 
 
 | Component                                                                                                  | Type                  | Description                                                                                                                                                    |
 | ---------------------------------------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Composer**                                                                                               | CLI tool              | Generates Elasticsearch index mappings, PostgreSQL table schemas, and Arranger configuration files from your CSV data. Used during setup, not at runtime.      |
 | **Conductor**                                                                                              | CLI tool              | Reads CSV files, loads records into PostgreSQL, then indexes them into Elasticsearch as structured documents.                                                  |
 | **[PostgreSQL](https://www.postgresql.org/)**                                                              | Database              | Persistent relational storage for your data. Serves as the source of truth: data is loaded here first, then indexed into Elasticsearch for search.             |
 | **[Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html)** | Search engine         | Indexes and stores your data for search. Handles full-text search, faceted filtering, aggregations, and sorting.                                               |
@@ -17,12 +16,7 @@ Now that you've seen the running portal, let's walk through how data flows from 
 
 #### Setup Phase (one-time configuration)
 
-1. **Composer** reads your CSV headers and generates:
-   - A **PostgreSQL table schema**: defines the SQL CREATE TABLE statement with appropriate column types
-   - An **Elasticsearch index mapping**: defines field names, data types, and index structure
-   - **Arranger configuration files**: define which fields appear as facets, table columns, and their display names
-
-2. These configuration files are placed in the `setup/configs/` directory and mounted into the Docker containers via volumes.
+Configuration files defining your PostgreSQL schema, Elasticsearch mappings, and Arranger settings are placed in `setup/configs/` and mounted into the Docker containers via volumes.
 
 #### Runtime Phase (data loading and serving)
 
@@ -114,7 +108,6 @@ The infrastructure you are building today will be compatible when the CDD platfo
 
 You should now be able to answer:
 
-- [ ] What does Composer generate? (PostgreSQL table schemas + Elasticsearch mappings + Arranger config files)
 - [ ] What does Conductor do? (Loads CSV rows into PostgreSQL, then indexes them into Elasticsearch)
 - [ ] What sits between Elasticsearch and the browser? (Arranger: provides GraphQL API and UI component config)
 - [ ] Where do configuration files live? (`setup/configs/`)

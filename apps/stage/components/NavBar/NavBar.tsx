@@ -149,6 +149,44 @@ const NavBar = (): ReactElement => {
 							margin: 0;
 						`}
 					>
+						<InternalLink path={INTERNAL_PATHS.DICTIONARY}>
+							<a
+								css={(theme) => css`
+									width: 100%;
+									height: 100%;
+									display: flex;
+									align-items: center;
+									justify-content: center;
+									color: ${router.pathname === INTERNAL_PATHS.DICTIONARY
+										? theme.colors.accent_dark
+										: theme.colors.accent_dark};
+									font-size: 14px;
+									font-weight: bold;
+									text-decoration: none;
+									padding: 0 16px;
+									white-space: nowrap;
+									${router.pathname === INTERNAL_PATHS.DICTIONARY ? `background-color: ${theme.colors.grey_2};` : ''}
+								`}
+							>
+								Data Dictionary
+							</a>
+						</InternalLink>
+					</div>
+					<div
+						css={(theme) => css`
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 160px;
+							background-color: ${theme.colors.white};
+							height: 100%;
+							&:hover {
+								background-color: ${theme.colors.grey_2};
+							}
+							border-right: 2px solid ${theme.colors.white};
+							margin: 0;
+						`}
+					>
 						<DocumentationDropdown />
 					</div>
 					<div
@@ -178,9 +216,6 @@ const NavBar = (): ReactElement => {
 								font-weight: bold;
 							`}
 							data={[
-								<InternalLink path={INTERNAL_PATHS.SUBMIT}>
-									<StyledListLink>Data Submitter</StyledListLink>
-								</InternalLink>,
 								<InternalLink path={INTERNAL_PATHS.CONFIG_GENERATOR}>
 									<StyledListLink>Config Generator</StyledListLink>
 								</InternalLink>,
@@ -192,7 +227,7 @@ const NavBar = (): ReactElement => {
 								</a>,
 							]}
 							label="Resources & Tools"
-							urls={[INTERNAL_PATHS.SUBMIT, INTERNAL_PATHS.CONFIG_GENERATOR]}
+							urls={[INTERNAL_PATHS.CONFIG_GENERATOR]}
 						/>
 					</div>
 				</div>

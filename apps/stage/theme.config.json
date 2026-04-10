@@ -1,0 +1,68 @@
+{
+  "_readme": "Edit this file to customise the portal theme. Changes take effect after restarting the Stage container (make restart). All keys are optional — omit any key to keep the default value.",
+
+  "colors": {
+    "_readme": "Override any color token. All values must be valid CSS hex colors (#rrggbb or #rgb).",
+
+    "primary":           "#113052",
+    "primary_dark":      "#0A1F35",
+    "primary_darker":    "#06131F",
+    "primary_light":     "#1A4270",
+    "primary_lighter":   "#265A97",
+    "primary_lightest":  "#3373BF",
+    "primary_pale":      "#DAE2EC",
+    "primary_palest":    "#EDF1F5",
+
+    "secondary":         "#0B75A2",
+    "secondary_dark":    "#109ED9",
+    "secondary_light":   "#4BC6F0",
+    "secondary_lighter": "#66CEF2",
+    "secondary_lightest":"#AEE5F8",
+    "secondary_pale":    "#D2F1FB",
+    "secondary_palest":  "#EDF9FD",
+
+    "accent1_dark":      "#00305D",
+    "accent1_medium":    "#04518C",
+    "accent1_light":     "#4F85AE",
+
+    "accent2_dark":      "#9E005D",
+    "accent2_medium":    "#B74A89",
+    "accent2_light":     "#C772A3",
+
+    "accent3_dark":      "#CFD509",
+    "accent3_medium":    "#D9DE3A",
+    "accent3_light":     "#E4E775",
+
+    "success":           "#00A88F",
+    "success_dark":      "#00896F",
+    "success_light":     "#E6F7F4",
+
+    "error":             "#9E005D",
+    "error_dark":        "#7D0049",
+    "error_light":       "#F7E6EF",
+
+    "warning":           "#CFD509",
+    "warning_dark":      "#A9AD07",
+    "warning_light":     "#F9FAE6",
+
+    "white":             "#FFFFFF",
+    "black":             "#282A35",
+
+    "grayscale_dark":    "#282A35",
+    "grayscale_medium":  "#5E6068",
+    "grayscale_light":   "#AEAFB3",
+    "grayscale_lighter": "#DFDFE1",
+    "grayscale_lightest":"#F2F3F5",
+    "grayscale_pale":    "#F2F5F8",
+
+    "gradient_start":    "#45A0D4",
+    "gradient_end":      "#6EC9D0",
+    "gradient":          "linear-gradient(90deg, #45A0D4 0%, #6EC9D0 100%)"
+  },
+
+  "fonts": {
+    "_readme": "Set 'base' to any Google Fonts family name and provide the matching 'googleFontsUrl'. The default font is Lato. Example fonts: Inter, Source Sans Pro, Open Sans, Nunito, Roboto.",
+    "base": "Lato",
+    "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600&display=swap"
+  }
+}

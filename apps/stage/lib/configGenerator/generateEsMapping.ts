@@ -5,7 +5,7 @@ interface EsField {
 	type: EsFieldType;
 }
 
-interface EsMapping {
+export interface EsMapping {
 	index_patterns: string[];
 	aliases: Record<string, object>;
 	mappings: {

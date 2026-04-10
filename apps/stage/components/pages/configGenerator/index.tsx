@@ -6,15 +6,14 @@ import HeroBanner from '@/components/HeroBanner';
 import PageLayout from '@/components/PageLayout';
 import type { GenerateConfigsResponse } from '@/pages/api/generate-configs';
 
-type DocType = 'file' | 'analysis';
-
 const OUTPUT_TABS = [
+	{ key: 'postgresSql', label: 'postgres-table.sql' },
 	{ key: 'esMapping', label: 'elasticsearch-mapping.json' },
 	{ key: 'arrangerBase', label: 'arranger/base.json' },
 	{ key: 'arrangerExtended', label: 'arranger/extended.json' },
 	{ key: 'arrangerTable', label: 'arranger/table.json' },
 	{ key: 'arrangerFacets', label: 'arranger/facets.json' },
-	{ key: 'postgresSql', label: 'postgres-table.sql' },
+	{ key: 'lecternDictionary', label: 'lectern/dictionary.json' },
 ] as const;
 
 type OutputKey = (typeof OUTPUT_TABS)[number]['key'];
@@ -49,9 +48,8 @@ const ConfigGenerator = (): ReactElement => {
 	const [filename, setFilename] = useState('');
 	const [indexName, setIndexName] = useState('');
 	const [tableName, setTableName] = useState('');
-	const [docType, setDocType] = useState<DocType>('file');
 	const [configs, setConfigs] = useState<GenerateConfigsResponse | null>(null);
-	const [activeTab, setActiveTab] = useState<OutputKey>('esMapping');
+	const [activeTab, setActiveTab] = useState<OutputKey>('postgresSql');
 	const [copiedTab, setCopiedTab] = useState<OutputKey | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -85,12 +83,12 @@ const ConfigGenerator = (): ReactElement => {
 			const res = await fetch('/api/generate-configs', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ csvContent: csvText, indexName, documentType: docType, tableName }),
+				body: JSON.stringify({ csvContent: csvText, indexName, tableName }),
 			});
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.error ?? 'Generation failed');
 			setConfigs(data);
-			setActiveTab('esMapping');
+			setActiveTab('postgresSql');
 		} catch (err: unknown) {
 			setError(err instanceof Error ? err.message : 'Generation failed');
 		} finally {
@@ -246,7 +244,7 @@ const ConfigGenerator = (): ReactElement => {
 					{/* Step 2 – Options */}
 					<section css={sectionStyle}>
 						<h2 css={sectionHeadingStyle}>2. Configure Options</h2>
-						<div css={css`display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;`}>
+						<div css={css`display: grid; grid-template-columns: 1fr 1fr; gap: 16px;`}>
 							<div>
 								<label css={labelStyle}>Index name</label>
 								<input
@@ -264,17 +262,6 @@ const ConfigGenerator = (): ReactElement => {
 									placeholder="e.g. datatable1"
 									css={inputStyle}
 								/>
-							</div>
-							<div>
-								<label css={labelStyle}>Document type</label>
-								<select
-									value={docType}
-									onChange={(e) => setDocType(e.target.value as DocType)}
-									css={css`${inputStyle}; cursor: pointer;`}
-								>
-									<option value="file">file</option>
-									<option value="analysis">analysis</option>
-								</select>
 							</div>
 						</div>
 					</section>
