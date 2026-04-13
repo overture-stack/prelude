@@ -12,11 +12,11 @@ RUN apk upgrade --no-cache
 WORKDIR /app
 
 # Install all deps first (layer cache: only re-runs when package files change)
-COPY package*.json ./
+COPY apps/conductor/package*.json ./
 RUN npm ci
 
 # Compile TypeScript → dist/
-COPY . .
+COPY apps/conductor/ .
 RUN npm run build
 
 # ======================================================================== #
@@ -31,7 +31,7 @@ RUN apk upgrade --no-cache
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY apps/conductor/package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
