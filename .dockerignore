@@ -1,9 +1,9 @@
 # ── Git ──────────────────────────────────────────────────────────────── #
 .git
 
-# ── Monorepo apps not needed by the Stage image ──────────────────────── #
-apps/composer
-apps/conductor
+# ── Conductor build artefacts (rebuilt inside the container) ─────────── #
+apps/conductor/node_modules
+apps/conductor/dist
 
 # ── Stage build artefacts (rebuilt inside the container) ─────────────── #
 apps/stage/node_modules
