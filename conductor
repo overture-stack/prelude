@@ -1,0 +1,86 @@
+#!/usr/bin/env sh
+# =============================================================================
+# Conductor CLI wrapper
+# Runs the Conductor data upload tool via Docker — no Node.js required.
+#
+# Usage (from the repo root):
+#   ./conductor -h
+#   ./conductor upload -f ./data/datatable1.csv -t datatable1 -i datatable1-index
+#   ./conductor index-db -t datatable1 -i datatable1-index
+#
+# The platform must be running before uploading data (make platform).
+# =============================================================================
+set -e
+
+CONDUCTOR_IMAGE="ghcr.io/overture-stack/conductor:171d9ce"
+
+# Resolve repo root relative to this script so it works from any working dir
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Derive the Docker Compose project name from the repo directory name.
+# Docker Compose defaults the project name to the directory name, so the
+# network will be <dirname>_platform-network (e.g. prelude_platform-network).
+PROJECT_NAME="$(basename "$SCRIPT_DIR")"
+NETWORK="${PROJECT_NAME}_platform-network"
+
+# Verify the platform network exists before attempting to connect
+if ! docker network ls --format '{{.Name}}' | grep -q "^${NETWORK}$" 2>/dev/null; then
+  printf 'Error: Docker network "%s" not found.\n' "$NETWORK" >&2
+  printf 'Make sure the platform is running first: make platform\n' >&2
+  exit 1
+fi
+
+# Allocate a TTY when stdout is a terminal (preserves colour output).
+# Suppress TTY when piped/redirected so output can be captured cleanly.
+if [ -t 1 ]; then
+  TTY_FLAG="-it"
+else
+  TTY_FLAG="-i"
+fi
+
+# Windows Git Bash: Git's MSYS layer can mangle volume-mount paths that
+# contain a colon.  MSYS_NO_PATHCONV=1 disables that conversion.
+# winpty is required on some Git Bash setups to get a working TTY.
+WINPTY=""
+if [ "${OS:-}" = "Windows_NT" ]; then
+  export MSYS_NO_PATHCONV=1
+  if command -v winpty > /dev/null 2>&1; then
+    WINPTY="winpty"
+    TTY_FLAG="-it"
+  fi
+fi
+
+# The node base image uses docker-entrypoint.sh as ENTRYPOINT which does
+# exec "$@" — so we must explicitly pass "node dist/main.js" as the command,
+# otherwise args like "upload" are treated as standalone executables.
+#
+# Connection defaults are appended after the caller's own arguments so that
+# any flags the caller explicitly passes take precedence (first-wins parsers).
+# For help/version invocations the connection flags are omitted entirely.
+case "${1:-}" in
+  ""|-h|--help|help|-v|--version|version)
+    # shellcheck disable=SC2086
+    exec $WINPTY docker run --rm $TTY_FLAG \
+      --platform linux/amd64 \
+      --network "$NETWORK" \
+      -v "${SCRIPT_DIR}/data:/app/data" \
+      "$CONDUCTOR_IMAGE" \
+      node dist/main.js "$@"
+    ;;
+  *)
+    # shellcheck disable=SC2086
+    exec $WINPTY docker run --rm $TTY_FLAG \
+      --platform linux/amd64 \
+      --network "$NETWORK" \
+      -v "${SCRIPT_DIR}/data:/app/data" \
+      "$CONDUCTOR_IMAGE" \
+      node dist/main.js "$@" \
+      --db-host "postgres:5432" \
+      --db-name "${POSTGRES_DB:-overtureDb}" \
+      --db-user "${POSTGRES_USER:-admin}" \
+      --db-pass "${POSTGRES_PASSWORD:-admin123}" \
+      --es-host "elasticsearch:9200" \
+      --es-user "${ES_USER:-elastic}" \
+      --es-pass "${ES_PASSWORD:-myelasticpassword}"
+    ;;
+esac

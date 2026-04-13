@@ -86,12 +86,12 @@ Each data table requires its own Arranger service instance. The volume mount is 
 
 ```yaml showLineNumbers
 arranger-datatable1:
-  image: ghcr.io/overture-stack/arranger-server:3.0.0-beta.36
+  image: ghcr.io/overture-stack/arranger-server:4919f736
   container_name: arranger-datatable1
   restart: unless-stopped
   volumes:
     # highlight-next-line
-    - ./setup/configs/arrangerConfigs/datatable1:/app/modules/server/configs
+    - ./setup/configs/arrangerConfigs/datatable1:/app/apps/search-server/configs
   environment:
     ES_HOST: http://elasticsearch:9200
     # highlight-start

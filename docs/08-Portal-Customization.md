@@ -65,6 +65,10 @@ make platform
 
 Then in a separate terminal, start the Stage dev server:
 
+:::note
+This step requires Node.js `v18` or later. Install it from [nodejs.org](https://nodejs.org/) if needed.
+:::
+
 ```bash
 cd apps/stage
 npm ci

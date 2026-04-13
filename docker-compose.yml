@@ -78,16 +78,15 @@ services:
   # --------------------------------------------------------------------------------------#
   # Conductor CLI - Data Upload Service                                                  #
   # --------------------------------------------------------------------------------------#
-  # Pre-built Node.js container for running conductor CLI operations                     #
+  # Pulls the published Conductor image — no local Node.js build required.              #
+  # Used automatically by `make demo` to load sample data.                              #
+  # For interactive use, run ./conductor from the repo root instead.                    #
   # --------------------------------------------------------------------------------------#
   conductor-cli:
     profiles: ["demo", "default"]
-    build:
-      context: ./apps/conductor
-      dockerfile: Dockerfile
-    image: conductor-cli:1.0
+    image: ghcr.io/overture-stack/conductor:171d9ce
     container_name: conductor-cli
-    pull_policy: never
+    pull_policy: if_not_present
     volumes:
       - ./data:/data
     environment:
@@ -98,8 +97,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
     command: >
       sh -c '
-        echo "Starting conductor CLI 4.0 - data upload service"
-        echo "Available files in /data: $$(ls -la /data/ || echo none)"
+        echo "Starting conductor CLI - data upload service"
+        echo "Available files in /data: $$(ls /data/ || echo none)"
         node dist/main.js upload \
         -f /data/datatable1.csv \
         -t datatable1 \
@@ -110,7 +109,7 @@ services:
         --db-name "$$POSTGRES_DB" \
         --es-host elasticsearch:9200 \
         --es-user "$$ES_USER" \
-        --es-pass "$$ES_PASSWORD" \
+        --es-pass "$$ES_PASSWORD"
       '
     depends_on:
       setup:

@@ -68,10 +68,10 @@ curl -u elastic:myelasticpassword http://localhost:9200/_cluster/health?pretty
 curl -u elastic:myelasticpassword http://localhost:9200/datatable1_centric/_count?pretty
 ```
 
-If the count is zero but PostgreSQL has records, run `conductor index-db` to re-index:
+If the count is zero but PostgreSQL has records, run `./conductor index-db` to re-index:
 
 ```bash
-conductor index-db -t datatable1 -i datatable1-index
+./conductor index-db -t datatable1 -i datatable1-index
 ```
 
 If the index doesn't exist at all, run `make restart` to recreate it from the mapping template.
@@ -133,7 +133,7 @@ The most common Stage misconfiguration is `NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDE
 | Data table or facets blank in portal | Arranger config | Validate all four config JSON files                |
 | Facets or columns missing            | Arranger config | Check field notation in `facets.json`/`table.json` |
 | Upload command fails                 | PostgreSQL      | `pg_isready`, check credentials match              |
-| Data in PostgreSQL but not in portal | Elasticsearch   | `_count` query, run `conductor index-db`           |
+| Data in PostgreSQL but not in portal | Elasticsearch   | `_count` query, run `./conductor index-db`         |
 | Filters work but counts are wrong    | Elasticsearch   | Check alias name matches across all config files   |
 
 **Still stuck?** Post in the [Overture support forum](https://github.com/overture-stack/roadmap/discussions/categories/support) with the output of `docker logs <container>` for the failing service. You can also reach the team directly at [contact@overture.bio](mailto:contact@overture.bio).
