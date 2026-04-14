@@ -2,7 +2,7 @@
 
 Before building anything from scratch, let's deploy the pre-configured demo portal and see what the end result looks like. This gives you a mental model of what each component does before we dive into configuration details.
 
-![Demo search and aggregation](images/demo-portal-search-and-aggregation.gif)
+![Demo search and aggregation](img/demo-search-and-aggregation.gif)
 
 If you have not done so yet clone the following repository.
 
@@ -16,6 +16,22 @@ From the root of the cloned repository, run:
 ```bash
 make demo
 ```
+
+<details>
+<summary><strong>Running on Windows?</strong></summary>
+
+| Platform           | Command                             |
+| ------------------ | ----------------------------------- |
+| WSL2 (recommended) | `make demo` (in an Ubuntu terminal) |
+| Native PowerShell  | `.\run.ps1 demo`                    |
+
+**One-time setup for native PowerShell:** allow local scripts to run by executing this once:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+</details>
 
 The portal will be available at **http://localhost:3000** once deployment completes.
 
@@ -45,13 +61,13 @@ Once the portal loads, take a few minutes to explore:
 
 The landing page provides an overview and navigation to available data tables. Note the navigation bar, branding, and layout, all of which are configurable.
 
-![Portal home page](images/demo-portal-homepage.png)
+![Portal home page](img/homepage.png)
 
 #### Data Exploration Page
 
 Navigate to the data exploration page from the top navigation. This is where Arranger's components are at work:
 
-![exploration page](images/demo-portal-exploration-page.png)
+![exploration page](img/basicPortal.png)
 
 - **Facet Panel (left sidebar):** Filter data by clicking on field values. Each facet corresponds to a field in the Elasticsearch index. The fields shown, their order, and their display names are all controlled by Arranger configuration files.
 
@@ -65,7 +81,7 @@ Navigate to the data exploration page from the top navigation. This is where Arr
 
 The portal includes built-in documentation pages rendered from markdown files in the `docs/` directory. The content you are reading right now may be served through this same mechanism.
 
-![documentation page](images/demo-portal-documentation-page.png)
+![documentation page](img/documentation.png)
 
 ### What's Running
 
@@ -140,10 +156,10 @@ This should return the total number of indexed records. You can also open `http:
 
 Before moving on, confirm:
 
-- [ ] The portal is running at http://localhost:3000
-- [ ] You can see the data exploration page with records in the table
-- [ ] Clicking a facet value filters the table results
-- [ ] `docker ps` shows containers for `stage`, `arranger-datatable1`, `elasticsearch`, and `postgres`
+1. The portal is running at http://localhost:3000
+2. You can see the data exploration page with records in the table
+3. Clicking a facet value filters the table results
+4. `docker ps` shows containers for `stage`, `arranger-datatable1`, `elasticsearch`, and `postgres`
 
 :::info
 **Stuck?** Run `docker logs setup` to see where initialization may have failed. Common issues: Docker not running, port 3000 already in use, insufficient memory allocated to Docker.
@@ -156,5 +172,13 @@ We'll keep the demo running as a reference while we walk through the architectur
 ```bash
 make reset
 ```
+
+:::tip Windows (PowerShell)
+
+```powershell
+.\run.ps1 reset
+```
+
+:::
 
 **Next:** Now that you've seen the working portal, let's understand how the pieces fit together.

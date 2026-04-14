@@ -1,8 +1,16 @@
-# Workshop
+# Intro
+
+:::info
+This is our documentation component, if you're reading this here, you've likely already completed the prerequisites below and can skim through them.
+:::
 
 This workshop has been developed as part of the 19th Annual International Biocuration Conference, it will guide you through building a foundational data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage.
 
-![Demo search and aggregation](images/workshop-portal-preview.png)
+![Demo search and aggregation](/img/workshop-portal-preview.webp)
+
+:::info 👋 Say hello
+If you're attending, feel free to [**drop a quick introduction**](https://github.com/overture-stack/docs/discussions/new?category=new-deployments&title=%5BIBC+Workshop%5D+Hello+from+%5BName%2C+Institution%5D&body=%2A%2AName+%26+affiliation%3A%2A%2A+%0A%0A%2A%2AType+of+data+I+work+with%3A%2A%2A+%0A%0A%2A%2AWhat+I%27m+hoping+to+get+out+of+the+session%3A%2A%2A+%0A%0A%2A%2AData+management+challenges+%28optional%29%3A%2A%2A+) before the day, this helps tailor the session to the room. Entirely optional.
+:::
 
 **Objectives:**
 
@@ -11,23 +19,19 @@ This workshop has been developed as part of the 19th Annual International Biocur
 3. Gain familiarity with the tools needed to adapt this portal to your own data
 4. Understand deployment options for making portals accessible on institutional networks and beyond
 
-:::caution Complete setup before arriving
-Downloading Docker images on conference Wi-Fi is slow and unreliable. Complete the prerequisites below at home or in your office before the session starts.
-:::
-
 ## Prerequisites
 
-The following software must be installed and verified before the workshop:
+The following software should be installed and verified before the workshop:
 
 <details>
-<summary><strong>1. Git `git --version` returns a version number</strong></summary>
+<summary><strong>1. Git</strong> `git --version` returns a version number</summary>
 
 Download from [git-scm.com](https://git-scm.com/downloads) if the command is not recognised.
 
 </details>
 
 <details>
-<summary><strong>2. Docker Desktop (`28.0.0` or later)</strong></summary>
+<summary><strong>2. Docker Desktop</strong> (`28.0.0` or later)</summary>
 
 - **macOS / Windows:** Download from [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
 - **Linux:** Follow the [Docker Engine install guide](https://docs.docker.com/engine/install/)
@@ -43,7 +47,7 @@ Please ensure `docker --version` and `docker compose version` both return versio
 </details>
 
 <details>
-<summary><strong>3. Docker images pre-downloaded: run the pulls below before the workshop</strong></summary>
+<summary><strong>3. Docker images pre-downloaded</strong> Most time-consuming step, run these before the workshop</summary>
 
 Pull the required Docker images now to avoid slow downloads during the workshop:
 
@@ -54,33 +58,31 @@ docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.27
 docker pull ghcr.io/overture-stack/arranger-server:4919f736
 docker pull ghcr.io/overture-stack/conductor:171d9ce
 docker pull node:18-alpine
-docker pull nginx:alpine
 ```
 
-Verify all seven downloaded:
+Verify all six downloaded:
 
 ```bash
-docker images | grep -E "alpine/curl|postgres|elasticsearch|arranger-server|conductor|node|nginx"
+docker images | grep -E "alpine/curl|postgres|elasticsearch|arranger-server|conductor|node"
 ```
 
-You should see all seven images listed.
+You should see all six images listed.
 
 </details>
 
 <details>
-<summary><strong>4. Repository cloned: `git clone https://github.com/overture-stack/prelude.git`</strong></summary>
+<summary><strong>4. Repository cloned:</strong> `git clone -b IBCworkshop https://github.com/overture-stack/prelude.git`</summary>
 
 The `prelude` repository contains everything needed for this workshop: Docker Compose configuration, the Conductor wrapper script, and sample data. Clone it once before the workshop and you won't need internet access for the hands-on portion.
 
 ```bash
-git clone https://github.com/overture-stack/prelude.git
-cd prelude
+git clone -b IBCworkshop https://github.com/overture-stack/prelude.git
 ```
 
 </details>
 
 <details>
-<summary><strong>5. _(Windows only)_ WSL2 configured with Docker Desktop integration enabled</strong></summary>
+<summary><strong>5. _(Windows only)_ WSL2 configured</strong> with Docker Desktop integration enabled</summary>
 
 1. Install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
 2. Use Ubuntu or another Linux distribution within WSL2
@@ -89,8 +91,12 @@ cd prelude
 
 </details>
 
+#### Optional Prerequisites
+
+These are not required but will make the workshop easier to follow:
+
 <details>
-<summary><strong>6. (Optional) Elasticvue: browser-based Elasticsearch GUI</strong></summary>
+<summary><strong>6. (Optional) Elasticvue:</strong>browser-based Elasticsearch GUI</summary>
 
 [Elasticvue](https://elasticvue.com/installation) is a browser-based Elasticsearch GUI useful for inspecting indices, browsing documents, and troubleshooting. It is not required but helpful for understanding what's happening inside Elasticsearch during the workshop.
 
@@ -112,41 +118,43 @@ A PostgreSQL GUI client is useful for browsing the database during the workshop.
 </details>
 
 <details>
-<summary><strong>8. (Optional) Bring your own data: CSV file</strong></summary>
+<summary><strong>8. (Optional) Bring your own data:</strong> CSV file</summary>
 
 If you have a tabular dataset you'd like to use during or after the workshop, bring it as a CSV file. During the workshop we will use demo data, but the final section covers adapting the portal to your own dataset.
 
 </details>
 
-## Verification Checklist
-
-Before the workshop, confirm:
-
-- [ ] `git --version` returns a version number
-- [ ] `docker --version` returns 28.0.0 or later
-- [ ] `docker compose version` returns a version number
-- [ ] Docker Desktop is running with 4+ CPUs and 8 GB+ memory allocated
-- [ ] All seven Docker images are downloaded (`docker images`)
-- [ ] The repository is cloned and you can `cd` into it
-- [ ] _(Windows only)_ WSL2 is configured and Docker integration is enabled
-
-> **Troubleshooting:** If you run into issues before the workshop, reach out via the [community support channels](https://docs.overture.bio/community/support) or email [contact@overture.bio](mailto:contact@overture.bio).
-
 ## Schedule
 
-| Time      | Section                     | Description                                                                 |
-| --------- | --------------------------- | --------------------------------------------------------------------------- |
-| 2:00–2:25 | Introduction & Overview     | Workshop objectives, run the pre-built demo, and architecture walkthrough   |
-| 2:25–3:20 | Building Your Portal        | Prepare data, generate configurations with the Stage UI, and wire up Docker |
-| 3:20–3:30 | Break                       | Stretch break                                                               |
-| 3:30–4:00 | Launch, Customize & Wrap-Up | Load data with Conductor, customize the portal, and discuss next steps      |
+**Venue:** Pacific 2
+
+| Time      | Section                 | Description                                                               |
+| --------- | ----------------------- | ------------------------------------------------------------------------- |
+| 2:00–2:20 | Introduction & Overview | Workshop objectives, run the pre-built demo, and architecture walkthrough |
+| 2:20–3:30 | Building Your Portal    | Prepare data, generate configurations, wire up Docker, Launch & Load data |
+| 3:30–3:40 | Break                   | Stretch break                                                             |
+| 3:40–4:00 | Wrap-Up                 | Customize the portal, discuss next steps, and Q&A                         |
 
 ## Support
 
 |                         |                                                                                                                                  |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **During the workshop** | Slack Channel support                                                                                                            |
+| **During the workshop** | A link with Slack Channel support will be provided                                                                               |
 | **Before or after**     | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
 | **Bug reports**         | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
 
 **Facilitator:** Mitchell Shiell, Ontario Institute for Cancer Research, [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)
+
+## Verification Checklist
+
+Before the workshop, confirm:
+
+1. `git --version` returns a version number
+2. `docker --version` returns 28.0.0 or later
+3. `docker compose version` returns a version number
+4. Docker Desktop is running with 4+ CPUs and 8 GB+ memory allocated
+5. **All six Docker images are downloaded** (`docker images`) — _this is the most time-consuming step, do it before the day_
+6. The repository is cloned and you can `cd` into it
+7. _(Windows only)_ WSL2 is configured and Docker integration is enabled
+
+> **Troubleshooting:** If you run into issues before the workshop, reach out via the [community support channels](https://docs.overture.bio/community/support) or email [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca).

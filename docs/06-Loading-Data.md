@@ -149,6 +149,14 @@ If you updated the Elasticsearch mapping but your CSV data is unchanged, use `in
    make restart
    ```
 
+   :::tip Windows (PowerShell)
+
+   ```powershell
+   .\run.ps1 restart
+   ```
+
+   :::
+
 3. Re-index from PostgreSQL:
 
    ```bash
@@ -179,6 +187,14 @@ If you fixed errors in the CSV itself, you need to clear both PostgreSQL and Ela
    ```bash
    make restart
    ```
+
+   :::tip Windows (PowerShell)
+
+   ```powershell
+   .\run.ps1 restart
+   ```
+
+   :::
 
 4. Re-upload from the corrected CSV:
 
@@ -217,11 +233,11 @@ For a full list of available commands and options:
 
 Before proceeding, confirm:
 
-- [ ] `./conductor -h` runs without errors
-- [ ] The upload command completed successfully (check terminal output for record count)
-- [ ] `curl -u elastic:myelasticpassword http://localhost:9200/datatable1_centric/_count?pretty` returns a count matching your CSV row count
-- [ ] The portal at http://localhost:3000 shows data in the table
-- [ ] Facet filters work: clicking a value updates the table
+1. `./conductor -h` runs without errors
+2. The upload command completed successfully (check terminal output for record count)
+3. `curl -u elastic:myelasticpassword http://localhost:9200/datatable1_centric/_count?pretty` returns a count matching your CSV row count
+4. The portal at http://localhost:3000 shows data in the table
+5. Facet filters work: clicking a value updates the table
 
 > **Stuck?** If the upload fails with a connection error, make sure both PostgreSQL and Elasticsearch are running: `docker exec postgres pg_isready -U admin` and `curl -u elastic:myelasticpassword http://localhost:9200/_cluster/health?pretty`. If the index or table doesn't exist, run `make restart` first.
 

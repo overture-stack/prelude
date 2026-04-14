@@ -1,65 +1,79 @@
-# Search & Exploration Demo
+# IBC Workshop — Data Discovery Portal
 
-An interactive demo environment showcasing Overture's search and exploration services. This demo provides a local environment to explore Arranger search components within the Stage portal UI.
+Workshop materials for the **19th Annual International Biocuration Conference**. This repository guides you through building a data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage.
 
 <p align="center">
-   <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Search & Explore Demo" width="800">
+   <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Workshop Portal Preview" width="800">
 </p>
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+- **Git** — `git --version` returns a version number
+- **Docker Desktop 28.0.0+** — running with 4+ CPUs and 8 GB+ memory allocated
+- **Docker images pre-pulled** (most time-consuming step — do this before the workshop):
+
+  ```bash
+  docker pull alpine/curl:8.8.0
+  docker pull postgres:15-alpine
+  docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.27
+  docker pull ghcr.io/overture-stack/arranger-server:4919f736
+  docker pull ghcr.io/overture-stack/conductor:171d9ce
+  docker pull node:18-alpine
+  ```
+
+- **Windows users:** WSL2 configured with Docker Desktop integration enabled — run all commands from a Bash terminal inside WSL2
+
+See [docs.overture.bio/workshop/prerequisites](https://docs.overture.bio/workshop/prerequisites) for full setup instructions.
+
+## Quick Start
 
 1. **Clone this repository:**
 
    ```bash
-   git clone https://github.com/overture-stack/prelude.git -b demo/exploration &&
+   git clone -b IBCworkshop https://github.com/overture-stack/prelude.git
    cd prelude
    ```
 
-2. **Run the automated setup:**
+2. **Run the demo:**
+
    ```bash
    make demo
    ```
-   The portal will automatically open in your browser once deployment is complete.
 
-> [!IMPORTANT]
-> **Windows Users:** Use WSL2 with a Bash terminal for all make commands. This setup is not supported on native Windows environments. See the note below for more details.
+   The portal will open in your browser once deployment is complete.
+
+## Workshop Documentation
+
+Full step-by-step workshop documentation is available in the [`docs/`](docs/) directory and rendered in the portal UI once running.
+
+| Step | Doc |
+|------|-----|
+| 0 | [Intro & Prerequisites](docs/00-Workshop.md) |
+| 1 | [Running the Demo](docs/01-Running-the-Demo.md) |
+| 2 | [Architecture](docs/02-Architecture.md) |
+| 3 | [Data Preparation](docs/03-Data-Preparation.md) |
+| 4 | [Generating Configurations](docs/04-Generating-Configurations.md) |
+| 5 | [Docker Configuration](docs/05-Docker-Configuration.md) |
+| 6 | [Loading Data](docs/06-Loading-Data.md) |
+| 7 | [Troubleshooting](docs/07-Troubleshooting.md) |
+| 8 | [Portal Customization](docs/08-Portal-Customization.md) |
+| 9 | [Next Steps](docs/09-Next-Steps.md) |
 
 ## Architecture
 
-1. **Demo Data ETL**: CSV files with demo data are processed by Conductor
-2. **Indexing**: Data is indexed in Elasticsearch
-3. **Querying**: Arranger queries Elasticsearch via GraphQL
-4. **Portal UI**: Arranger search components in the Stage portal UI provide real-time filtering and exploration
-
-![Search & Exploration Architecture](/docs/images/search&exploration.png)
-
-### Custom Integrations
-
-This architecture can be built on top of any existing databases with a relatively simple indexing script that extracts, transforms, and loads your data into Elasticsearch.
-
-![Custom Build](/docs/images/platformintegration.png)
-
-> [!NOTE]
-> If you have any questions reach out via the [community support channels](https://docs.overture.bio/community/support) or email us at [contact@overture.bio](mailto:contact@overture.bio) we are happy to provide support.
-
-## Future Releases
-
-We're actively developing enhanced data visualization capabilities for Arranger, including interactive charts. This will extend the current search and filtering functionality with visual representations of data.
-
-![Arranger Charts](/docs/images/charts.png)
-
-> [!IMPORTANT]
-> This is a mockup of features currently under development and subject to change.
-
-## Windows Support
-
-Prelude is designed for Linux/macOS environments. Windows users should use WSL2:
-
-1. Install [WSL2 (Windows Subsystem for Linux)](https://learn.microsoft.com/en-us/windows/wsl/install)
-2. Use Ubuntu or another Linux distribution within WSL2
-3. Run all Prelude commands from the Bash terminal in your WSL2 environment
-4. Install Docker Desktop with WSL2 integration enabled
-
-WSL2 provides full Linux compatibility, allowing you to run Prelude without modification.
+1. **Data preparation:** CSV files processed by Conductor (ETL)
+2. **Indexing:** Data loaded into Elasticsearch
+3. **Querying:** Arranger queries Elasticsearch via GraphQL
+4. **Portal UI:** Stage renders Arranger search components for real-time filtering and exploration
 
 ## Support
 
-Questions? Reach out via our [community support channels](https://docs.overture.bio/community/support) or email us at [contact@overture.bio](mailto:contact@overture.bio).
+|                         |                                                                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **During the workshop** | A Slack channel link will be provided on the day                                                                                 |
+| **Before or after**     | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
+| **Bug reports**         | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
+
+**Facilitator:** Mitchell Shiell, Ontario Institute for Cancer Research — [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)

@@ -14,10 +14,10 @@ Upload a `.csv` file using the **Upload .csv file** button, or paste CSV content
 
 ### Step 2: Configure Options
 
-| Field | Description |
-|---|---|
+| Field          | Description                                                                                                    |
+| -------------- | -------------------------------------------------------------------------------------------------------------- |
 | **Index name** | The name of the Elasticsearch index. Auto-populated from the CSV filename; edit if needed (e.g. `datatable1`). |
-| **Table name** | The name of the PostgreSQL table. Defaults to the same value as the index name. |
+| **Table name** | The name of the PostgreSQL table. Defaults to the same value as the index name.                                |
 
 <!-- IMAGE: screenshot of the Configure Options fields -->
 
@@ -25,15 +25,15 @@ Upload a `.csv` file using the **Upload .csv file** button, or paste CSV content
 
 Click **Generate Configs**. Once complete, the output panel shows a tabbed view with seven files:
 
-| Tab | File | Where to save |
-|---|---|---|
-| `postgres-table.sql` | `CREATE TABLE` statement | `setup/configs/postgresConfigs/` |
-| `elasticsearch-mapping.json` | Index template and field mappings | `setup/configs/elasticsearchConfigs/` |
-| `arranger/base.json` | Arranger index and document type | `setup/configs/arrangerConfigs/<indexName>/` |
-| `arranger/extended.json` | Human-readable field display names | `setup/configs/arrangerConfigs/<indexName>/` |
-| `arranger/table.json` | Data table column configuration | `setup/configs/arrangerConfigs/<indexName>/` |
-| `arranger/facets.json` | Sidebar filter configuration | `setup/configs/arrangerConfigs/<indexName>/` |
-| `lectern/dictionary.json` | Lectern data dictionary | `setup/configs/lecternDictionary/` |
+| Tab                          | File                               | Where to save                                |
+| ---------------------------- | ---------------------------------- | -------------------------------------------- |
+| `postgres-table.sql`         | `CREATE TABLE` statement           | `setup/configs/postgresConfigs/`             |
+| `elasticsearch-mapping.json` | Index template and field mappings  | `setup/configs/elasticsearchConfigs/`        |
+| `arranger/base.json`         | Arranger index and document type   | `setup/configs/arrangerConfigs/<indexName>/` |
+| `arranger/extended.json`     | Human-readable field display names | `setup/configs/arrangerConfigs/<indexName>/` |
+| `arranger/table.json`        | Data table column configuration    | `setup/configs/arrangerConfigs/<indexName>/` |
+| `arranger/facets.json`       | Sidebar filter configuration       | `setup/configs/arrangerConfigs/<indexName>/` |
+| `lectern/dictionary.json`    | Lectern data dictionary            | `setup/configs/lecternDictionary/`           |
 
 Use the **Copy** button on each tab to copy the content, then paste it into the corresponding file in your project.
 
@@ -41,7 +41,7 @@ Use the **Copy** button on each tab to copy the content, then paste it into the 
 
 ### Reviewing the Output
 
-The generated configs are a starting point — review each file before saving and adjust as needed:
+The generated configs are a starting point; review each file before saving and adjust as needed:
 
 #### postgres-table.sql
 
@@ -95,13 +95,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_datatable1_submission_id
 ON datatable1 ((submission_metadata->>'submission_id'));
 ```
 
-| Element | What it means |
-| --- | --- |
-| `VARCHAR(50)` | A variable-length text field with a max of 50 characters. Increase this if any values in your column are longer, otherwise PostgreSQL will truncate or reject them on insert. |
-| `SMALLINT` | A 2-byte integer supporting values from −32,768 to 32,767. Change to `INTEGER` (up to ~2.1 billion) or `BIGINT` if your values can exceed that range. |
-| `submission_metadata JSONB` | A binary JSON column added by the generator and populated by Conductor with each record's tracking info: `submission_id`, `source_file_hash`, and `processed_at`. Do not remove — Conductor depends on it to ensure data is never duplicated. |
-| `CREATE TABLE IF NOT EXISTS` | PostgreSQL skips creation if the table already exists, so it's safe to re-run the script without accidentally dropping data. |
-| Unique index on `submission_id` | Enforces that each uploaded record has a unique submission ID. If Conductor encounters a duplicate during re-upload, it silently skips the row instead of inserting a duplicate or throwing an error. |
+| Element                         | What it means                                                                                                                                                                                                                                |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VARCHAR(50)`                   | A variable-length text field with a max of 50 characters. Increase this if any values in your column are longer, otherwise PostgreSQL will truncate or reject them on insert.                                                                |
+| `SMALLINT`                      | A 2-byte integer supporting values from −32,768 to 32,767. Change to `INTEGER` (up to ~2.1 billion) or `BIGINT` if your values can exceed that range.                                                                                        |
+| `submission_metadata JSONB`     | A binary JSON column added by the generator and populated by Conductor with each record's tracking info: `submission_id`, `source_file_hash`, and `processed_at`. Do not remove; Conductor depends on it to ensure data is never duplicated. |
+| `CREATE TABLE IF NOT EXISTS`    | PostgreSQL skips creation if the table already exists, so it's safe to re-run the script without accidentally dropping data.                                                                                                                 |
+| Unique index on `submission_id` | Enforces that each uploaded record has a unique submission ID. If Conductor encounters a duplicate during re-upload, it silently skips the row instead of inserting a duplicate or throwing an error.                                        |
 
 </details>
 
@@ -177,22 +177,22 @@ Field types are inferred from your CSV data. Review and correct:
 }
 ```
 
-| Element | What it means |
-| --- | --- |
-| `index_patterns: ["datatable1-*"]` | This template applies to any index whose name starts with `datatable1-`. Elasticsearch uses it automatically when a matching index is created. |
-| `aliases: { datatable1_centric }` | A stable reference name that Arranger queries. Even if you version your indices, the alias always points to the right one — do not change this without also updating `base.json`. |
-| `data` object | All your CSV columns are nested here. This separation keeps your data fields distinct from system metadata. |
-| `keyword` type | Exact-match text field, used for categorical values and faceted filtering. Cannot do range queries. |
-| `integer` type | Whole number field, supports range queries and numeric aggregations. |
-| `submission_metadata` object | Added by the generator, populated by Conductor. Contains `submission_id`, `source_file_hash`, and `processed_at` — do not remove. |
-| `null_value: "No Data"` | What Elasticsearch displays when a field has no value. Ensures missing data is visible in facets rather than silently absent. |
-| `number_of_shards: 1` | Number of primary partitions. One is appropriate for local development; increase for multi-node production clusters. |
-| `number_of_replicas: 0` | Number of copies of each shard. Zero is fine for local dev; set to 1+ in production for redundancy. |
+| Element                            | What it means                                                                                                                                                                    |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index_patterns: ["datatable1-*"]` | This template applies to any index whose name starts with `datatable1-`. Elasticsearch uses it automatically when a matching index is created.                                   |
+| `aliases: { datatable1_centric }`  | A stable reference name that Arranger queries. Even if you version your indices, the alias always points to the right one; do not change this without also updating `base.json`. |
+| `data` object                      | All your CSV columns are nested here. This separation keeps your data fields distinct from system metadata.                                                                      |
+| `keyword` type                     | Exact-match text field, used for categorical values and faceted filtering. Cannot do range queries.                                                                              |
+| `integer` type                     | Whole number field, supports range queries and numeric aggregations.                                                                                                             |
+| `submission_metadata` object       | Added by the generator, populated by Conductor. Contains `submission_id`, `source_file_hash`, and `processed_at`; do not remove.                                                 |
+| `null_value: "No Data"`            | What Elasticsearch displays when a field has no value. Ensures missing data is visible in facets rather than silently absent.                                                    |
+| `number_of_shards: 1`              | Number of primary partitions. One is appropriate for local development; increase for multi-node production clusters.                                                             |
+| `number_of_replicas: 0`            | Number of copies of each shard. Zero is fine for local dev; set to 1+ in production for redundancy.                                                                              |
 
 </details>
 
 :::info
-Date fields can be problematic. Elasticsearch is strict about date formats — if your data contains dates in mixed formats or includes timezone offsets, indexing will fail. It's safest to normalise all date values to ISO 8601 format (`YYYY-MM-DD` or `YYYY-MM-DDTHH:mm:ssZ`). If you're unsure, leaving a date field as `keyword` will allow it to index without errors, though you'll lose date-range filtering.
+Date fields can be problematic. Elasticsearch is strict about date formats; if your data contains dates in mixed formats or includes timezone offsets, indexing will fail. It's safest to normalise all date values to ISO 8601 format (`YYYY-MM-DD` or `YYYY-MM-DDTHH:mm:ssZ`). If you're unsure, leaving a date field as `keyword` will allow it to index without errors, though you'll lose date-range filtering.
 :::
 
 :::tip
@@ -211,10 +211,10 @@ For a full reference on Elasticsearch mapping types and settings, see the [Elast
 }
 ```
 
-| Field | What it means |
-| --- | --- |
-| `documentType` | The logical name for the document type. Always set to `"records"` by the generator. |
-| `esIndex` | The Elasticsearch index or alias that Arranger queries. Must match the alias defined in your mapping (`datatable1_centric`). |
+| Field          | What it means                                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `documentType` | Always set to `"records"` by the generator.                                                                                  |
+| `esIndex`      | The Elasticsearch index or alias that Arranger queries. Must match the alias defined in your mapping (`datatable1_centric`). |
 
 </details>
 
@@ -224,7 +224,7 @@ Update `esIndex` to match the **alias** from your Elasticsearch mapping (`datata
 
 #### arranger/extended.json
 
-Display names are auto-generated by converting `snake_case` to Title Case. Review and adjust any that don't read well — these are the labels shown to users in the portal UI.
+Display names are auto-generated by converting `snake_case` to Title Case. Review and adjust any that don't read well; these are the labels shown to users in the portal UI.
 
 <details>
 <summary>**Click here to see a breakdown of extended.json**</summary>
@@ -248,10 +248,10 @@ Display names are auto-generated by converting `snake_case` to Title Case. Revie
 }
 ```
 
-| Field | What it means |
-| --- | --- |
-| `fieldName` | The full dot-notation path to the field in Elasticsearch (e.g. `data.donor_id`). Must match the mapping exactly. |
-| `displayName` | The label shown to users in the portal UI for this field. Edit these freely — they have no effect on the underlying data. |
+| Field         | What it means                                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `fieldName`   | The full dot-notation path to the field in Elasticsearch (e.g. `data.donor_id`). Must match the mapping exactly.         |
+| `displayName` | The label shown to users in the portal UI for this field. Edit these freely; they have no effect on the underlying data. |
 
 </details>
 
@@ -292,15 +292,15 @@ Consider hiding metadata columns (e.g. `submission_metadata.*`) by setting `"sho
 }
 ```
 
-| Field | What it means |
-| --- | --- |
-| `rowIdFieldName` | The field used as a unique row identifier. Defaults to `submission_metadata.submission_id` — do not change. |
-| `fieldName` | Dot-notation path to the field in Elasticsearch. Must match the mapping. |
-| `show` | Whether the column is visible in the table by default. |
-| `canChangeShow` | Whether users can toggle this column's visibility using the column selector. |
-| `sortable` | Whether clicking the column header sorts the table. Disable for high-cardinality text fields. |
-| `jsonPath` | JSONPath expression used to extract the value from the response. Matches the field structure. |
-| `query` | The GraphQL sub-selection used to fetch this field. Must reflect the nested structure in your mapping. |
+| Field            | What it means                                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| `rowIdFieldName` | The field used as a unique row identifier. Defaults to `submission_metadata.submission_id`; do not change. |
+| `fieldName`      | Dot-notation path to the field in Elasticsearch. Must match the mapping.                                   |
+| `show`           | Whether the column is visible in the table by default.                                                     |
+| `canChangeShow`  | Whether users can toggle this column's visibility using the column selector.                               |
+| `sortable`       | Whether clicking the column header sorts the table. Disable for high-cardinality text fields.              |
+| `jsonPath`       | JSONPath expression used to extract the value from the response. Matches the field structure.              |
+| `query`          | The GraphQL sub-selection used to fetch this field. Must reflect the nested structure in your mapping.     |
 
 </details>
 
@@ -339,11 +339,11 @@ Remove or deactivate facets that aren't useful for filtering, such as unique ID 
 }
 ```
 
-| Field | What it means |
-| --- | --- |
+| Field       | What it means                                                                                                                                                                                    |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `fieldName` | Double-underscore notation for the field path (e.g. `data__cancer_type` for `data.cancer_type`). This is specific to `facets.json` and differs from the dot-notation used in other config files. |
-| `active` | Whether the facet is enabled and will appear in the sidebar. |
-| `show` | Whether the facet is visible by default (can be used alongside `active` to pre-collapse a facet). |
+| `active`    | Whether the facet is enabled and will appear in the sidebar.                                                                                                                                     |
+| `show`      | Whether the facet is visible by default (can be used alongside `active` to pre-collapse a facet).                                                                                                |
 
 </details>
 
@@ -355,11 +355,11 @@ For a full reference on `facets.json`, see the [Arranger facet configuration doc
 
 Before proceeding, confirm:
 
-- [ ] `setup/configs/postgresConfigs/datatable1.sql` exists and contains a CREATE TABLE statement matching your CSV columns
-- [ ] `setup/configs/elasticsearchConfigs/datatable1-mapping.json` exists and contains field mappings
-- [ ] `setup/configs/arrangerConfigs/datatable1/` contains `base.json`, `extended.json`, `table.json`, and `facets.json`
-- [ ] `base.json` has `"esIndex": "datatable1_centric"` (the alias, not the index name)
-- [ ] You've made at least one change to `facets.json` (hidden a facet or reordered entries)
-- [ ] `setup/configs/lecternDictionary/datatable1.json` exists (if using the Lectern data dictionary)
+1. `setup/configs/postgresConfigs/datatable1.sql` exists and contains a CREATE TABLE statement matching your CSV columns
+2. `setup/configs/elasticsearchConfigs/datatable1-mapping.json` exists and contains field mappings
+3. `setup/configs/arrangerConfigs/datatable1/` contains `base.json`, `extended.json`, `table.json`, and `facets.json`
+4. `base.json` has `"esIndex": "datatable1_centric"` (the alias, not the index name)
+5. You've made at least one change to `facets.json` (hidden a facet or reordered entries)
+6. `setup/configs/lecternDictionary/datatable1.json` exists (if using the Lectern data dictionary)
 
 **Next:** We will learn how `docker-compose.yml` picks up these configuration files and wires them into the running services.

@@ -338,33 +338,6 @@ services:
     networks:
       - platform-network
 
-  # ------------------------------------------------------------------------------------#
-  # Nginx — Local Reverse Proxy (Extension Activity)                                  #
-  # ------------------------------------------------------------------------------------#
-  # Workshop extension activity only. Runs Nginx inside Docker so attendees can        #
-  # access the portal at http://portal.local instead of http://localhost:3000.         #
-  #                                                                                    #
-  # Start with: make nginx  (requires the platform to already be running)             #
-  # Requires /etc/hosts entry: 127.0.0.1 portal.local datatable1-arranger.portal.local#
-  # ------------------------------------------------------------------------------------#
-  nginx:
-    profiles: ["nginx"]
-    image: nginx:alpine
-    pull_policy: if_not_present
-    container_name: nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ./setup/configs/nginxConfigs/workshop-nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      stage:
-        condition: service_healthy
-      arranger-datatable1:
-        condition: service_healthy
-    networks:
-      - platform-network
-
 volumes:
   elasticsearch-data:
   stage-data:

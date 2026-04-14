@@ -159,11 +159,27 @@ Since you previously ran `make demo`, the environment contains demo data that ne
 make reset
 ```
 
+:::tip Windows (PowerShell)
+
+```powershell
+.\run.ps1 reset
+```
+
+:::
+
 This wipes all Elasticsearch and PostgreSQL data, stops all containers, and returns the environment to a clean state. Then bring the platform back up with:
 
 ```bash
 make platform
 ```
+
+:::tip Windows (PowerShell)
+
+```powershell
+.\run.ps1 platform
+```
+
+:::
 
 :::info
 For future configuration changes (once your own data is loaded), `make restart` is sufficient, it reloads configs without wiping data. If you wish to wipe the data as-well run `make reset`
@@ -190,14 +206,22 @@ curl -u elastic:myelasticpassword http://localhost:9200/_cluster/health?pretty
 make reset
 ```
 
+:::tip Windows (PowerShell) — full reset
+
+```powershell
+.\run.ps1 reset
+```
+
+:::
+
 ## Checkpoint
 
 Before proceeding, confirm:
 
-- [ ] You can identify each service in `docker-compose.yml` and understand its role
-- [ ] You understand how config files are mounted into containers via `volumes`
-- [ ] You ran `make reset` followed by `make platform` to clear demo data and start fresh
-- [ ] The portal is accessible at http://localhost:3000
+1. You can identify each service in `docker-compose.yml` and understand its role
+2. You understand how config files are mounted into containers via `volumes`
+3. You ran `make reset` followed by `make platform` to clear demo data and start fresh
+4. The portal is accessible at http://localhost:3000
 
 **Stuck?** Run `docker ps` to check which containers are running. If a container exited, run `docker logs <container-name>` to see why.
 

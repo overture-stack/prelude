@@ -1,20 +1,21 @@
 # Troubleshooting
 
-The portal is a stack of connected services. When something goes wrong, the most effective approach is to identify which layer the problem is in and work from the bottom up.
+The portal is a stack of connected services. When something goes wrong, the most effective approach is to identify which layer the problem is in and work from left to right.
 
-```
-Browser / Stage  ← rendering, UI, API calls
-     ↑
-  Arranger       ← GraphQL API, config files
-     ↑
-Elasticsearch   ← indexing, search queries
-     ↑
-  PostgreSQL     ← persistent storage, data loading
-     ↑
-   Docker        ← containers running, network, volumes
+```mermaid
+flowchart LR
+    Docker["<b>Docker</b><br/>Are all containers running?"]
+    PG["<b>PostgreSQL</b><br/>Is the DB ready & data loaded?"]
+    ES["<b>Elasticsearch</b><br/>Is the cluster healthy & docs indexed?"]
+    Arranger["<b>Arranger</b><br/>Is the GraphQL API responding?"]
+    Stage["<b>Browser / Stage</b><br/>Any failed requests or console errors?"]
+
+    Docker --> PG --> ES --> Arranger --> Stage
+
+    classDef default font-size:16px
 ```
 
-Start at the bottom. If a container isn't running, nothing above it will work.
+Start at the left. If a container isn't running, nothing to the right of it will work.
 
 ### Step 1: Check Docker
 
@@ -87,7 +88,7 @@ curl -X POST http://localhost:5050/graphql \
 ```
 
 :::info
-The GraphQL field name is set by `documentType` in `base.json`, not by the index or table name. This is always `"records"`, so the query uses `{ records { hits { total } } }`. An error like `Cannot query field "X" on type "Root"` means the field name in the query doesn't match what Arranger is exposing — verify `documentType` in `base.json` is set to `"records"`.
+`documentType` in `base.json` is always `"records"`, so the GraphQL query always uses `{ records { hits { total } } }`. If you see a `Cannot query field` error, it means `base.json` has the wrong value; verify that `"documentType": "records"` is set correctly.
 :::
 
 This should return a document count. If it fails, check `docker logs arranger-datatable1`. Common causes:
@@ -126,14 +127,14 @@ The most common Stage misconfiguration is `NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDE
 ### Quick Reference
 
 | Symptom                              | Likely layer    | First check                                        |
-| ------------------------------------ | --------------- | -------------------------------------------------- | ------------------------------------ | ------------- | ------------------------------------------ | ------------------------------------- |
+| ------------------------------------ | --------------- | -------------------------------------------------- |
 | Container not in `docker ps`         | Docker          | `docker logs <container>`                          |
 | Portal won't load at all             | Docker / Stage  | `docker ps`, `docker logs stage`                   |
 | Portal loads, table is empty         | ES / Arranger   | ES document count, Arranger GraphQL query          |
 | Data table or facets blank in portal | Arranger config | Validate all four config JSON files                |
 | Facets or columns missing            | Arranger config | Check field notation in `facets.json`/`table.json` |
-| Upload command fails                 | PostgreSQL      |                                                    | Data in PostgreSQL but not in portal | Elasticsearch | `_count` query, run `./conductor index-db` | `pg_isready`, check credentials match |
-
-| Filters work but counts are wrong | Elasticsearch | Check alias name matches across all config files |
+| Upload command fails                 | PostgreSQL      | `pg_isready`, check credentials match              |
+| Data in PostgreSQL but not in portal | Elasticsearch   | `_count` query, run `./conductor index-db`         |
+| Filters work but counts are wrong    | Elasticsearch   | Check alias name matches across all config files   |
 
 **Still stuck?** Post in the [Overture support forum](https://github.com/overture-stack/roadmap/discussions/categories/support) with the output of `docker logs <container>` for the failing service. You can also reach the team directly at [contact@overture.bio](mailto:contact@overture.bio).

@@ -8,6 +8,7 @@ import FundingStatement from './FundingStatement';
 import { useCodeBlockCopyButtons } from './utils/useCodeBlockCopyButtons';
 import { useDictionaryHydration } from './utils/useDictionaryHydration';
 import { useHeadingAnchors } from './utils/useHeadingAnchors';
+import { useMermaidDiagrams } from './utils/useMermaidDiagrams';
 
 const DocumentationPage = ({ sections, currentSection, headings }: DocumentationData): ReactElement => {
 	const contentRef = useRef<HTMLDivElement>(null);
@@ -19,6 +20,7 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 	useDictionaryHydration(contentRef, currentSection);
 	useHeadingAnchors(contentRef, currentSection);
 	useCodeBlockCopyButtons(contentRef, currentSection);
+	useMermaidDiagrams(contentRef, currentSection);
 
 	return (
 		<div css={styles.container}>
@@ -414,6 +416,18 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		em {
 			font-style: italic;
 			color: ${theme.colors.textSecondary};
+		}
+
+		/* Mermaid diagram styles */
+		.mermaid-diagram {
+			margin: ${theme.spacing[6]} auto;
+			text-align: center;
+			overflow-x: auto;
+
+			svg {
+				max-width: 100%;
+				height: auto;
+			}
 		}
 
 		/* Image styles */
@@ -966,6 +980,11 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		details pre {
 			margin-left: ${theme.spacing[5]};
 			margin-right: ${theme.spacing[5]};
+		}
+
+		/* Give table containers inside details extra padding on all sides */
+		details .table-container {
+			margin: ${theme.spacing[4]} ${theme.spacing[3]};
 		}
 	`,
 

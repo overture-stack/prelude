@@ -48,7 +48,7 @@ Additional typography variants (heading, subheading, data) can be adjusted in th
 The portal name displayed in the UI is set via the `NEXT_PUBLIC_LAB_NAME` environment variable in `docker-compose.yml`:
 
 ```yaml
-NEXT_PUBLIC_LAB_NAME: ISB Workshop 2026
+NEXT_PUBLIC_LAB_NAME: IBC Workshop 2026
 ```
 
 Change this to your lab or project name.
@@ -63,10 +63,18 @@ Make sure the backend services are running first:
 make platform
 ```
 
+:::tip Windows (PowerShell)
+
+```powershell
+.\run.ps1 platform
+```
+
+:::
+
 Then in a separate terminal, start the Stage dev server:
 
 :::note
-This step requires Node.js `v18` or later. Install it from [nodejs.org](https://nodejs.org/) if needed.
+This step requires Node.js `v22` or later. Install it from [nodejs.org](https://nodejs.org/) if needed.
 :::
 
 ```bash
@@ -138,6 +146,14 @@ Since Stage is a compiled Next.js application, UI changes require a rebuild:
 make restart
 ```
 
+:::tip Windows (PowerShell)
+
+```powershell
+.\run.ps1 restart
+```
+
+:::
+
 The new data table will automatically appear in the navigation menu and homepage.
 
 <details>
@@ -189,9 +205,11 @@ The application uses `@emotion/react` for CSS-in-JS styling. Component-specific 
 
 The platform is considerably more flexible than what this workshop covers. Two capabilities worth highlighting for those working with more complex datasets:
 
-**QuickSearch** adds a type-ahead search input to a data table that lets users find records by typing a field value directly, rather than browsing facet filters. It works by adding edge n-gram tokenization to the Elasticsearch mapping and enabling the feature in Arranger's `extended.json` and `facets.json`. It's well-suited to datasets where users already know the identifier they're looking for (a gene name, sample ID, etc.).
+**QuickSearch (purple box)** adds a type-ahead search input to a data table that lets users find records by typing a field value directly, rather than browsing facet filters. It works by adding edge n-gram tokenization to the Elasticsearch mapping and enabling the feature in Arranger's `extended.json` and `facets.json`. It's well-suited to datasets where users already know the identifier they're looking for (a gene name, sample ID, etc.).
 
-**Cross-table search** allows a selection made in one data table to propagate as a filter in another, using a shared identifier across heterogeneous datasets. For example, selecting a gene in one table can automatically filter a second table to show only records that share that gene. This is particularly useful for multi-omics or linked clinical and molecular datasets.
+![](img/demo-portal-cross-table.png)
+
+**Cross-table search (green box)** allows a selection made in one data table to propagate as a filter in another, using a shared identifier across heterogeneous datasets. For example, selecting a gene in one table can automatically filter a second table to show only records that share that gene. This is particularly useful for multi-omics or linked clinical and molecular datasets.
 
 Both features require configuration beyond the scope of this workshop. Reach out via [contact@overture.bio](mailto:contact@overture.bio) if you'd like guidance on either.
 
@@ -199,9 +217,9 @@ Both features require configuration beyond the scope of this workshop. Reach out
 
 At this point you should understand:
 
-- [ ] Where to change the portal name (`NEXT_PUBLIC_LAB_NAME` in `docker-compose.yml`)
-- [ ] Where to replace the logo and favicon (`apps/stage/public/images/`)
-- [ ] Where theme colors and fonts are defined (`apps/stage/components/theme/`)
-- [ ] That adding a new data table requires a component, a page route, environment variables, and an Arranger service
+1. Where to change the portal name (`NEXT_PUBLIC_LAB_NAME` in `docker-compose.yml`)
+2. Where to replace the logo and favicon (`apps/stage/public/images/`)
+3. Where theme colors and fonts are defined (`apps/stage/components/theme/`)
+4. That adding a new data table requires a component, a page route, environment variables, and an Arranger service
 
-**Next:** Learn about deploying your portal on a network with Nginx.
+**Extension Task:** If you have time or want to go further, the [Extension Task](./10-Extension-Task.md) introduces schema-validated data submission using Lectern and Lyric, useful if your data is hierarchical or requires enforced data quality before it reaches the portal.

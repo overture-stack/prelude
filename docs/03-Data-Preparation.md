@@ -97,21 +97,13 @@ If you're working with data that has any access restrictions, use anonymized or 
 
 There are no strict size limits beyond Docker and Elasticsearch resource constraints. In fact we've scaled this resource to hundreds millions of records. However, for development and testing, a representative sample of approximately **500 records** works well. You can start small and load larger datasets once your configuration is working.
 
-### Flat vs. Hierarchical Data
-
-The portal in this workshop handles **flat tabular data**, each row is an independent record. If you have hierarchical data (e.g., a patient with multiple specimens, each with multiple samples), flatten it: create one row per leaf-level entity (e.g., one row per sample) with parent fields repeated.
-
-:::tip
-If your data is inherently hierarchical and flattening isn't appropriate, Overture's data management services, Lectern (data dictionaries) paired with Lyric (tabular submission) or Song (file submission), handle hierarchical schemas natively. If this intrests you can check out available documentation or reach out to us at contact@overture.bio
-:::
-
 ### Checkpoint
 
 Before proceeding, confirm:
 
-- [ ] A representative subset of your data is in the `data/` directory
-- [ ] Running `head -5 data/datatable1.csv` shows your headers and data rows
-- [ ] Headers use `snake_case` with no spaces or special characters
-- [ ] You understand that each CSV file becomes one data table in the portal
+1. A representative subset of your data is in the `data/` directory
+2. Running `head -5 data/datatable1.csv` shows your headers and data rows
+3. Headers use `snake_case` with no spaces or special characters
+4. You understand that each CSV file becomes one data table in the portal
 
 **Next:** With data prepared, we'll use the Config Generator to produce the Elasticsearch and Arranger configuration files.

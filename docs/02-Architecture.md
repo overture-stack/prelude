@@ -108,8 +108,8 @@ The infrastructure you are building today will be compatible when the CDD platfo
 
 You should now be able to answer:
 
-- [ ] What does Conductor do? (Loads CSV rows into PostgreSQL, then indexes them into Elasticsearch)
-- [ ] What sits between Elasticsearch and the browser? (Arranger: provides GraphQL API and UI component config)
-- [ ] Where do configuration files live? (`setup/configs/`)
+1. What does Conductor do? (Loads CSV rows into PostgreSQL, then indexes them into Elasticsearch)
+2. What sits between Elasticsearch and the browser? (Arranger: provides GraphQL API and UI component config)
+3. Where do configuration files live? (`setup/configs/`)
 
 **Next:** Let's look at how to prepare your data for the portal.

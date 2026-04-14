@@ -17,7 +17,6 @@ help:
 	@echo ""
 	@echo "Service Management:"
 	@echo "  make rebuild       - Rebuild and redeploy stage only"
-	@echo "  make nginx         - Start Nginx reverse proxy (extension activity)"
 	@echo "  make backup        - Back up PostgreSQL database"
 	@echo "  make check-space   - Check disk usage"
 	@echo ""
@@ -168,14 +167,6 @@ reset:
 		printf "\033[1;32mReset cancelled. No data was deleted.\033[0m\n"; \
 	fi
 
-# Start Nginx reverse proxy for the extension activity (platform must already be running)
-nginx:
-	@echo "Starting Nginx reverse proxy (extension activity)..."
-	@docker compose --profile nginx up -d nginx
-	@printf "\033[1;32m✓ Nginx started\033[0m\n"
-	@printf "Portal available at \033[1;36mhttp://portal.local\033[0m\n"
-	@printf "Ensure your /etc/hosts has: 127.0.0.1 portal.local datatable1-arranger.portal.local\n"
-
 # Complete cleanup: remove containers, volumes, AND images
 nuke:
 	@printf "\033[1;31mDANGER:\033[0m This will remove all containers, volumes, AND Docker images.\n"
@@ -189,4 +180,4 @@ nuke:
 		echo "Operation cancelled"; \
 	fi
 
-.PHONY: help phase0 demo platform start down restart status rebuild nginx backup check-space reset nuke
+.PHONY: help phase0 demo platform start down restart status rebuild backup check-space reset nuke
