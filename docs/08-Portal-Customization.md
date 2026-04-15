@@ -207,7 +207,7 @@ The platform is considerably more flexible than what this workshop covers. Two c
 
 **QuickSearch (purple box)** adds a type-ahead search input to a data table that lets users find records by typing a field value directly, rather than browsing facet filters. It works by adding edge n-gram tokenization to the Elasticsearch mapping and enabling the feature in Arranger's `extended.json` and `facets.json`. It's well-suited to datasets where users already know the identifier they're looking for (a gene name, sample ID, etc.).
 
-![](img/demo-portal-cross-table.png)
+![](img/demo-portal-cross-table.webp)
 
 **Cross-table search (green box)** allows a selection made in one data table to propagate as a filter in another, using a shared identifier across heterogeneous datasets. For example, selecting a gene in one table can automatically filter a second table to show only records that share that gene. This is particularly useful for multi-omics or linked clinical and molecular datasets.
 

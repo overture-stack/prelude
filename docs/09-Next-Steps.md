@@ -9,7 +9,7 @@ You now have a locally running data discovery portal with:
 - **Arranger:** providing a GraphQL search API and configurable UI components
 - **Stage:** rendering a browser-based portal with faceted search, sortable tables, and data export
 
-![Architecture Diagram](/img/workshop-architecture-diagram.png "Architecture Diagram")
+![Architecture Diagram](img/workshop-architecture-diagram.webp "Architecture Diagram")
 
 You've seen how to generate configuration files from CSV data, wire services together through Docker Compose, load data with Conductor, customize the portal's search interface and appearance, and understand the deployment architecture for making portals network-accessible.
 

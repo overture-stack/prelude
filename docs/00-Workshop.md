@@ -6,7 +6,7 @@ This is our documentation component, if you're reading this here, you've likely 
 
 This workshop has been developed as part of the 19th Annual International Biocuration Conference, it will guide you through building a foundational data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage.
 
-![Demo search and aggregation](/img/workshop-portal-preview.webp)
+![Demo search and aggregation](img/workshop-portal-preview.webp)
 
 :::info 👋 Say hello
 If you're attending, feel free to [**drop a quick introduction**](https://github.com/overture-stack/docs/discussions/new?category=new-deployments&title=%5BIBC+Workshop%5D+Hello+from+%5BName%2C+Institution%5D&body=%2A%2AName+%26+affiliation%3A%2A%2A+%0A%0A%2A%2AType+of+data+I+work+with%3A%2A%2A+%0A%0A%2A%2AWhat+I%27m+hoping+to+get+out+of+the+session%3A%2A%2A+%0A%0A%2A%2AData+management+challenges+%28optional%29%3A%2A%2A+) before the day, this helps tailor the session to the room. Entirely optional.

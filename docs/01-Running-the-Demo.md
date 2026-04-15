@@ -61,13 +61,13 @@ Once the portal loads, take a few minutes to explore:
 
 The landing page provides an overview and navigation to available data tables. Note the navigation bar, branding, and layout, all of which are configurable.
 
-![Portal home page](img/homepage.png)
+![Portal home page](img/homepage.webp)
 
 #### Data Exploration Page
 
 Navigate to the data exploration page from the top navigation. This is where Arranger's components are at work:
 
-![exploration page](img/basicPortal.png)
+![exploration page](img/basicPortal.webp)
 
 - **Facet Panel (left sidebar):** Filter data by clicking on field values. Each facet corresponds to a field in the Elasticsearch index. The fields shown, their order, and their display names are all controlled by Arranger configuration files.
 
@@ -81,7 +81,7 @@ Navigate to the data exploration page from the top navigation. This is where Arr
 
 The portal includes built-in documentation pages rendered from markdown files in the `docs/` directory. The content you are reading right now may be served through this same mechanism.
 
-![documentation page](img/documentation.png)
+![documentation page](img/documentation.webp)
 
 ### What's Running
 

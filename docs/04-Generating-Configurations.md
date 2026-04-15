@@ -4,13 +4,13 @@ Instead of writing PostgreSQL schemas, Elasticsearch mappings, and Arranger conf
 
 Navigate to **Config Generator** in the Stage portal navigation bar (visible once Stage is running).
 
-![Config Generator page](img/config-generator-page.png)
+![Config Generator page](img/config-generator-page.webp)
 
 ### Step 1: Provide CSV Data
 
 Upload a `.csv` file using the **Upload .csv file** button, or paste CSV content directly into the text area. Once loaded, a preview of the first five rows is shown so you can confirm the correct file was used.
 
-![CSV upload area and preview table](img/csv-upload-area.png)
+![CSV upload area and preview table](img/csv-upload-area.webp)
 
 ### Step 2: Configure Options
 
@@ -35,7 +35,7 @@ Click **Generate Configs**. Once complete, the output panel shows a tabbed view 
 
 Use the **Copy** button on each tab to copy the content, then paste it into the corresponding file in your project.
 
-![Generated output panel with tabs and Copy button](img/generated-output-panel.png)
+![Generated output panel with tabs and Copy button](img/generated-output-panel.webp)
 
 ### Reviewing the Output
 
