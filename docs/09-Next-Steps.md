@@ -9,7 +9,7 @@ You now have a locally running data discovery portal with:
 - **Arranger:** providing a GraphQL search API and configurable UI components
 - **Stage:** rendering a browser-based portal with faceted search, sortable tables, and data export
 
-![Architecture Diagram](images/workshop-architecture-diagram.png "Phase 1 Architecture Diagram")
+![Architecture Diagram](/img/workshop-architecture-diagram.png "Architecture Diagram")
 
 You've seen how to generate configuration files from CSV data, wire services together through Docker Compose, load data with Conductor, customize the portal's search interface and appearance, and understand the deployment architecture for making portals network-accessible.
 
@@ -30,7 +30,7 @@ Setting up and maintaining this infrastructure typically requires a system admin
 
 The search and exploration stack used in this workshop is part of the broader Overture platform. Depending on your needs, you can extend it with:
 
-![Platform Integration](images/overture-platform-overview.png)
+![Platform Integration](/img/overture-platform-overview.webp)
 
 | Need                       | Overture Service | What It Does                                                       |
 | -------------------------- | ---------------- | ------------------------------------------------------------------ |
