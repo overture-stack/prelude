@@ -1552,7 +1552,7 @@ export const DictionaryPlayground = ({ lecternUrl }: DictionaryPlaygroundProps):
 					onDoubleClick={() => setSplitPct(42)}
 					title="Drag to resize · Double-click to reset"
 					css={css`
-						width: 12px;
+						width: 8px;
 						flex-shrink: 0;
 						background: #e8ecef;
 						cursor: col-resize;
@@ -1609,7 +1609,7 @@ export const DictionaryPlayground = ({ lecternUrl }: DictionaryPlaygroundProps):
 				>
 					<div
 						css={css`
-							padding: 6px 12px;
+							padding: 8px 12px;
 							border-bottom: 1px solid #e0e0e0;
 							background: #f0f4f8;
 							font-size: 11px;
