@@ -1,0 +1,101 @@
+movie_id,title,director,genre,release_year,runtime_min,rating,language,country,box_office_usd
+MV001,The Shawshank Redemption,Frank Darabont,Drama,1994,142,9.3,English,USA,16000000
+MV002,The Godfather,Francis Ford Coppola,Crime,1972,175,9.2,English,USA,250000000
+MV003,The Dark Knight,Christopher Nolan,Action,2008,152,9.0,English,USA,1006000000
+MV004,Schindler's List,Steven Spielberg,Drama,1993,195,9.0,English,USA,322000000
+MV005,12 Angry Men,Sidney Lumet,Drama,1957,96,9.0,English,USA,4360000
+MV006,The Lord of the Rings: The Return of the King,Peter Jackson,Fantasy,2003,201,9.0,English,New Zealand,1142000000
+MV007,Pulp Fiction,Quentin Tarantino,Crime,1994,154,8.9,English,USA,214000000
+MV008,The Good the Bad and the Ugly,Sergio Leone,Western,1966,178,8.8,Italian,Italy,25100000
+MV009,Fight Club,David Fincher,Drama,1999,139,8.8,English,USA,101000000
+MV010,Forrest Gump,Robert Zemeckis,Drama,1994,142,8.8,English,USA,678000000
+MV011,Inception,Christopher Nolan,Sci-Fi,2010,148,8.8,English,USA,836800000
+MV012,The Matrix,Lana Wachowski,Sci-Fi,1999,136,8.7,English,USA,467000000
+MV013,Goodfellas,Martin Scorsese,Crime,1990,145,8.7,English,USA,47000000
+MV014,The Silence of the Lambs,Jonathan Demme,Thriller,1991,118,8.6,English,USA,273000000
+MV015,Interstellar,Christopher Nolan,Sci-Fi,2014,169,8.7,English,USA,773000000
+MV016,Parasite,Bong Joon-ho,Thriller,2019,132,8.6,Korean,South Korea,265000000
+MV017,The Lion King,Roger Allers,Animation,1994,88,8.5,English,USA,968000000
+MV018,Spirited Away,Hayao Miyazaki,Animation,2001,125,8.6,Japanese,Japan,395000000
+MV019,Saving Private Ryan,Steven Spielberg,War,1998,169,8.6,English,USA,482000000
+MV020,Gladiator,Ridley Scott,Action,2000,155,8.5,English,USA,460000000
+MV021,The Green Mile,Frank Darabont,Drama,1999,189,8.6,English,USA,290000000
+MV022,Terminator 2: Judgment Day,James Cameron,Action,1991,137,8.6,English,USA,520000000
+MV023,Avengers: Endgame,Anthony Russo,Action,2019,181,8.4,English,USA,2798000000
+MV024,Avatar,James Cameron,Sci-Fi,2009,162,7.9,English,USA,2923000000
+MV025,Star Wars: A New Hope,George Lucas,Sci-Fi,1977,121,8.6,English,USA,775000000
+MV026,The Empire Strikes Back,Irvin Kershner,Sci-Fi,1980,124,8.7,English,USA,538000000
+MV027,Jurassic Park,Steven Spielberg,Sci-Fi,1993,127,8.2,English,USA,1030000000
+MV028,Titanic,James Cameron,Romance,1997,194,7.9,English,USA,2201000000
+MV029,Back to the Future,Robert Zemeckis,Sci-Fi,1985,116,8.5,English,USA,388000000
+MV030,Indiana Jones and the Raiders of the Lost Ark,Steven Spielberg,Adventure,1981,115,8.4,English,USA,389000000
+MV031,Toy Story,John Lasseter,Animation,1995,81,8.3,English,USA,394000000
+MV032,Finding Nemo,Andrew Stanton,Animation,2003,100,8.1,English,USA,940000000
+MV033,WALL-E,Andrew Stanton,Animation,2008,98,8.4,English,USA,534000000
+MV034,Up,Pete Docter,Animation,2009,96,8.3,English,USA,735000000
+MV035,Coco,Lee Unkrich,Animation,2017,105,8.4,English,USA,807000000
+MV036,The Grand Budapest Hotel,Wes Anderson,Comedy,2014,99,8.1,English,USA,172000000
+MV037,La La Land,Damien Chazelle,Musical,2016,128,8.0,English,USA,446000000
+MV038,Whiplash,Damien Chazelle,Drama,2014,107,8.5,English,USA,49000000
+MV039,Black Swan,Darren Aronofsky,Thriller,2010,108,8.0,English,USA,329000000
+MV040,The Revenant,Alejandro Inarritu,Adventure,2015,156,8.0,English,USA,533000000
+MV041,Mad Max: Fury Road,George Miller,Action,2015,120,8.1,English,Australia,375000000
+MV042,Get Out,Jordan Peele,Horror,2017,104,7.7,English,USA,255000000
+MV043,Hereditary,Ari Aster,Horror,2018,127,7.3,English,USA,80000000
+MV044,A Quiet Place,John Krasinski,Horror,2018,90,7.5,English,USA,340000000
+MV045,Us,Jordan Peele,Horror,2019,116,6.9,English,USA,255000000
+MV046,The Truman Show,Peter Weir,Drama,1998,103,8.2,English,USA,264000000
+MV047,American History X,Tony Kaye,Drama,1998,119,8.5,English,USA,24000000
+MV048,Catch Me If You Can,Steven Spielberg,Crime,2002,141,8.1,English,USA,352000000
+MV049,The Departed,Martin Scorsese,Crime,2006,151,8.5,English,USA,290000000
+MV050,No Country for Old Men,Joel Coen,Crime,2007,122,8.2,English,USA,171000000
+MV051,There Will Be Blood,Paul Thomas Anderson,Drama,2007,158,8.2,English,USA,76000000
+MV052,The Social Network,David Fincher,Drama,2010,120,7.8,English,USA,224000000
+MV053,Gone Girl,David Fincher,Thriller,2014,149,8.1,English,USA,369000000
+MV054,Zodiac,David Fincher,Crime,2007,157,7.7,English,USA,84000000
+MV055,Se7en,David Fincher,Crime,1995,127,8.6,English,USA,327000000
+MV056,Memento,Christopher Nolan,Thriller,2000,113,8.4,English,USA,40000000
+MV057,The Prestige,Christopher Nolan,Drama,2006,130,8.5,English,USA,110000000
+MV058,Dunkirk,Christopher Nolan,War,2017,106,7.9,English,UK,527000000
+MV059,Tenet,Christopher Nolan,Action,2020,150,7.4,English,UK,365000000
+MV060,Oppenheimer,Christopher Nolan,Drama,2023,180,8.9,English,USA,952000000
+MV061,Barbie,Greta Gerwig,Comedy,2023,114,6.9,English,USA,1441000000
+MV062,Everything Everywhere All at Once,Daniel Kwan,Sci-Fi,2022,139,7.8,English,USA,76000000
+MV063,The Banshees of Inisherin,Martin McDonagh,Drama,2022,114,7.7,English,Ireland,10000000
+MV064,Top Gun: Maverick,Joseph Kosinski,Action,2022,130,8.3,English,USA,1493000000
+MV065,Dune,Denis Villeneuve,Sci-Fi,2021,155,8.0,English,USA,401000000
+MV066,Blade Runner 2049,Denis Villeneuve,Sci-Fi,2017,164,8.0,English,USA,260000000
+MV067,Arrival,Denis Villeneuve,Sci-Fi,2016,116,7.9,English,USA,203000000
+MV068,Prisoners,Denis Villeneuve,Thriller,2013,153,8.1,English,USA,122000000
+MV069,Sicario,Denis Villeneuve,Thriller,2015,121,7.6,English,USA,84000000
+MV070,Roma,Alfonso Cuaron,Drama,2018,135,7.7,Spanish,Mexico,0
+MV071,Gravity,Alfonso Cuaron,Sci-Fi,2013,91,7.7,English,USA,723000000
+MV072,Pan's Labyrinth,Guillermo del Toro,Fantasy,2006,118,8.2,Spanish,Spain,83000000
+MV073,Oldboy,Park Chan-wook,Action,2003,120,8.1,Korean,South Korea,15000000
+MV074,Train to Busan,Yeon Sang-ho,Horror,2016,118,7.6,Korean,South Korea,99000000
+MV075,Squid Game: The Movie,Hwang Dong-hyuk,Drama,2025,130,7.8,Korean,South Korea,90000000
+MV076,City of God,Fernando Meirelles,Crime,2002,130,8.6,Portuguese,Brazil,30000000
+MV077,Amelie,Jean-Pierre Jeunet,Romance,2001,122,8.3,French,France,174000000
+MV078,The Intouchables,Olivier Nakache,Drama,2011,112,8.5,French,France,426000000
+MV079,Life Is Beautiful,Roberto Benigni,Drama,1997,116,8.6,Italian,Italy,230000000
+MV080,Cinema Paradiso,Giuseppe Tornatore,Drama,1988,155,8.5,Italian,Italy,12000000
+MV081,Das Boot,Wolfgang Petersen,War,1981,149,8.4,German,Germany,85000000
+MV082,Run Lola Run,Tom Tykwer,Action,1998,81,7.6,German,Germany,7300000
+MV083,Crouching Tiger Hidden Dragon,Ang Lee,Action,2000,120,7.9,Mandarin,Taiwan,213000000
+MV084,In the Mood for Love,Wong Kar-wai,Romance,2000,98,8.1,Cantonese,Hong Kong,12000000
+MV085,Seven Samurai,Akira Kurosawa,Action,1954,207,8.6,Japanese,Japan,2700000
+MV086,Rashomon,Akira Kurosawa,Drama,1950,88,8.2,Japanese,Japan,4500000
+MV087,Princess Mononoke,Hayao Miyazaki,Animation,1997,134,8.4,Japanese,Japan,169000000
+MV088,My Neighbor Totoro,Hayao Miyazaki,Animation,1988,86,8.1,Japanese,Japan,50000000
+MV089,Akira,Katsuhiro Otomo,Animation,1988,124,8.0,Japanese,Japan,50000000
+MV090,Neon Genesis Evangelion: End of Evangelion,Hideaki Anno,Animation,1997,87,8.1,Japanese,Japan,20000000
+MV091,The Wolf of Wall Street,Martin Scorsese,Crime,2013,180,8.2,English,USA,392000000
+MV092,Casino,Martin Scorsese,Crime,1995,178,8.2,English,USA,116000000
+MV093,Raging Bull,Martin Scorsese,Biography,1980,129,8.2,English,USA,23000000
+MV094,Taxi Driver,Martin Scorsese,Crime,1976,113,8.2,English,USA,28000000
+MV095,Mean Streets,Martin Scorsese,Crime,1973,112,7.3,English,USA,3000000
+MV096,Once Upon a Time in Hollywood,Quentin Tarantino,Drama,2019,161,7.6,English,USA,374000000
+MV097,Django Unchained,Quentin Tarantino,Western,2012,165,8.5,English,USA,425000000
+MV098,Inglourious Basterds,Quentin Tarantino,War,2009,153,8.3,English,USA,321000000
+MV099,Kill Bill: Volume 1,Quentin Tarantino,Action,2003,111,8.2,English,USA,180000000
+MV100,Reservoir Dogs,Quentin Tarantino,Crime,1992,99,8.3,English,USA,23000000

@@ -1,0 +1,101 @@
+shop_id,name,city,country,roast_type,specialty,price_usd,seating_capacity,wifi_available,rating
+CS001,Blue Bottle Coffee,San Francisco,USA,Light,Single Origin,6.50,40,true,4.7
+CS002,Stumptown Coffee Roasters,Portland,USA,Medium,Cold Brew,5.75,55,true,4.6
+CS003,Intelligentsia Coffee,Chicago,USA,Light,Pour Over,6.00,45,true,4.6
+CS004,Counter Culture Coffee,Durham,USA,Light,Espresso,5.50,30,true,4.5
+CS005,Verve Coffee Roasters,Santa Cruz,USA,Light,Nitro Cold Brew,6.25,50,true,4.7
+CS006,Four Barrel Coffee,San Francisco,USA,Medium,Flat White,5.75,35,true,4.4
+CS007,Ritual Coffee Roasters,San Francisco,USA,Light,Cortado,5.50,40,true,4.5
+CS008,Sightglass Coffee,San Francisco,USA,Medium,Cappuccino,5.75,60,true,4.6
+CS009,Philz Coffee,San Jose,USA,Medium,Mint Mojito,6.00,45,true,4.5
+CS010,Equator Coffees,Marin,USA,Medium,Oat Milk Latte,6.50,35,true,4.6
+CS011,La Marzocco Cafe,Seattle,USA,Light,Macchiato,6.25,25,true,4.8
+CS012,Victrola Coffee Roasters,Seattle,USA,Medium,Americano,5.00,40,true,4.5
+CS013,Lighthouse Roasters,Seattle,USA,Light,Pour Over,5.50,30,true,4.4
+CS014,Caffe Vita,Seattle,USA,Dark,Espresso,4.75,50,true,4.3
+CS015,Fonte Coffee,Seattle,USA,Medium,Latte,5.25,45,true,4.4
+CS016,Onyx Coffee Lab,Bentonville,USA,Light,Aeropress,6.75,35,true,4.8
+CS017,Bird Rock Coffee Roasters,San Diego,USA,Light,Chemex,6.50,30,true,4.7
+CS018,Coava Coffee Roasters,Portland,USA,Light,Siphon,7.00,40,true,4.7
+CS019,Water Avenue Coffee,Portland,USA,Medium,Drip Coffee,4.50,55,true,4.4
+CS020,Heart Coffee Roasters,Portland,USA,Light,V60,6.25,35,true,4.6
+CS021,Toby's Estate,New York,USA,Light,Flat White,6.00,45,true,4.5
+CS022,Devocion,New York,USA,Light,Single Origin Espresso,6.50,50,true,4.7
+CS023,Variety Coffee Roasters,New York,USA,Medium,Cold Brew,5.75,40,true,4.5
+CS024,Abraco,New York,USA,Medium,Espresso,4.50,15,false,4.6
+CS025,Joe Coffee,New York,USA,Medium,Latte,5.75,35,true,4.4
+CS026,Proud Mary Coffee,Portland,USA,Light,Espresso Tonic,7.50,40,true,4.8
+CS027,Narrative Coffee,Everett,USA,Light,Pour Over,6.00,30,true,4.6
+CS028,Ruby Coffee Roasters,Nelsonville,USA,Light,Washed Ethiopian,6.50,20,true,4.8
+CS029,Madcap Coffee,Grand Rapids,USA,Light,AeroPress,6.25,35,true,4.7
+CS030,Odd Otter Coffee,Portland,USA,Medium,Flat White,5.75,25,true,4.5
+CS031,%Arabica,Kyoto,Japan,Light,Espresso,5.00,20,false,4.7
+CS032,Fuglen Coffee,Tokyo,Japan,Light,Pour Over,6.00,30,true,4.6
+CS033,Switch Coffee,Tokyo,Japan,Light,Single Origin,5.50,20,true,4.5
+CS034,Bear Pond Espresso,Tokyo,Japan,Medium,Espresso,4.75,15,false,4.8
+CS035,Koffee Mameya,Tokyo,Japan,Light,Omakase Coffee,8.00,10,false,4.9
+CS036,About Life Coffee Brewers,Tokyo,Japan,Light,Drip Coffee,5.25,15,false,4.6
+CS037,Coffee Supreme,Wellington,New Zealand,Medium,Flat White,4.50,35,true,4.5
+CS038,Customs Brew Bar,Auckland,New Zealand,Light,Single Origin,5.00,30,true,4.6
+CS039,Allpress Espresso,Auckland,New Zealand,Medium,Cappuccino,4.75,50,true,4.4
+CS040,Flight Coffee,Wellington,New Zealand,Light,Pour Over,5.50,25,true,4.5
+CS041,Market Lane Coffee,Melbourne,Australia,Light,Pour Over,5.25,35,true,4.7
+CS042,Patricia Coffee Brewers,Melbourne,Australia,Light,Espresso,4.50,10,false,4.8
+CS043,Seven Seeds,Melbourne,Australia,Medium,Cold Brew,5.75,45,true,4.6
+CS044,Brother Baba Budan,Melbourne,Australia,Medium,Latte,5.00,20,false,4.5
+CS045,Ona Coffee,Canberra,Australia,Light,Championship Blend,6.50,30,true,4.8
+CS046,Single O,Sydney,Australia,Light,Espresso,5.00,40,true,4.6
+CS047,Mecca Coffee,Sydney,Australia,Light,Pour Over,5.75,35,true,4.5
+CS048,Proud Mary,Melbourne,Australia,Light,Tasting Flight,7.50,30,true,4.7
+CS049,Dukes Coffee Roasters,Melbourne,Australia,Medium,Flat White,4.75,45,true,4.4
+CS050,Five Senses Coffee,Perth,Australia,Medium,Espresso,5.00,30,true,4.5
+CS051,The Barn,Berlin,Germany,Light,Pour Over,5.50,30,true,4.7
+CS052,Bonanza Coffee,Berlin,Germany,Light,Single Origin,5.75,40,true,4.6
+CS053,Five Elephant,Berlin,Germany,Light,Slice and Coffee,6.50,35,true,4.7
+CS054,Nano Kaffee,Berlin,Germany,Light,Espresso,4.50,15,false,4.6
+CS055,Companion Coffee,Berlin,Germany,Medium,Latte,5.00,25,true,4.4
+CS056,Drop Coffee,Stockholm,Sweden,Light,Filter Coffee,6.00,25,true,4.7
+CS057,Koppi,Helsingborg,Sweden,Light,Pour Over,6.50,20,true,4.8
+CS058,Johan and Nystrom,Stockholm,Sweden,Medium,Espresso,5.75,40,true,4.6
+CS059,Kaffeevollautomat,Stockholm,Sweden,Medium,Flat White,5.50,30,true,4.5
+CS060,Tim Wendelboe,Oslo,Norway,Light,Filter Coffee,7.00,20,false,4.9
+CS061,Supreme Roastworks,Oslo,Norway,Light,Espresso,6.00,25,true,4.7
+CS062,Kaffa,Helsinki,Finland,Light,Pour Over,5.75,30,true,4.6
+CS063,Good Life Coffee,Helsinki,Finland,Light,Single Origin,6.00,35,true,4.7
+CS064,Slurp,Helsinki,Finland,Light,Cold Brew,5.50,20,true,4.5
+CS065,The Optimist,Amsterdam,Netherlands,Light,Flat White,5.00,40,true,4.5
+CS066,Lot Sixty One Coffee Roasters,Amsterdam,Netherlands,Light,Pour Over,6.25,30,true,4.7
+CS067,White Label Coffee,Amsterdam,Netherlands,Light,Espresso,5.50,20,false,4.6
+CS068,Bocca Coffee,Amsterdam,Netherlands,Medium,Cappuccino,5.25,35,true,4.5
+CS069,Friedhats,Amsterdam,Netherlands,Light,Aeropress,6.50,25,true,4.8
+CS070,Workshop Coffee,London,UK,Light,Pour Over,6.00,35,true,4.6
+CS071,Monmouth Coffee Company,London,UK,Medium,Filter Coffee,5.50,40,true,4.7
+CS072,Square Mile Coffee Roasters,London,UK,Light,Espresso,5.75,25,true,4.7
+CS073,Ozone Coffee Roasters,London,UK,Light,Flat White,5.50,45,true,4.6
+CS074,Climpson and Sons,London,UK,Medium,Cold Brew,5.75,30,true,4.5
+CS075,Department of Coffee,London,UK,Medium,Latte,5.25,50,true,4.4
+CS076,Nude Espresso,London,UK,Light,Espresso,4.75,20,false,4.5
+CS077,Allpress Espresso London,London,UK,Medium,Flat White,5.00,40,true,4.4
+CS078,Coleman Coffee Roasters,London,UK,Light,Single Origin,6.00,20,true,4.6
+CS079,Caravan Coffee Roasters,London,UK,Light,Pour Over,6.25,45,true,4.6
+CS080,Dose Espresso,London,UK,Medium,Ristretto,5.00,15,false,4.7
+CS081,Cafe de Flore,Paris,France,Medium,Espresso,4.50,80,false,4.3
+CS082,Coutume Cafe,Paris,France,Light,Pour Over,6.00,40,true,4.6
+CS083,Ten Belles,Paris,France,Light,Flat White,5.50,25,true,4.6
+CS084,Telescope,Paris,France,Light,Single Origin,6.50,20,false,4.7
+CS085,Caffe Vergnano,Rome,Italy,Dark,Espresso,2.00,30,false,4.5
+CS086,Sant Eustachio il Caffe,Rome,Italy,Medium,Gran Caffe,3.00,25,false,4.8
+CS087,Tazza d Oro,Rome,Italy,Medium,Espresso,1.80,20,false,4.7
+CS088,Caffe Florian,Venice,Italy,Medium,Cappuccino,7.50,100,false,4.6
+CS089,Espresso Vivace,Seattle,USA,Medium,Espresso,4.50,20,false,4.7
+CS090,Caffe Ladro,Seattle,USA,Medium,Americano,4.75,35,true,4.3
+CS091,Herkimer Coffee,Seattle,USA,Light,Pour Over,5.50,25,true,4.5
+CS092,Anchorhead Coffee,Seattle,USA,Light,Cold Brew,5.75,40,true,4.6
+CS093,Elm Coffee Roasters,Seattle,USA,Light,Single Origin,6.25,30,true,4.7
+CS094,Olympia Coffee Roasting,Olympia,USA,Light,Espresso,5.25,25,true,4.6
+CS095,Kuma Coffee,Seattle,USA,Light,Drip Coffee,4.50,30,true,4.5
+CS096,Slate Coffee Roasters,Seattle,USA,Light,Brew Bar,7.00,20,false,4.8
+CS097,Ballard Coffee Works,Seattle,USA,Medium,Latte,5.25,35,true,4.4
+CS098,Makemake Roasters,Vienna,Austria,Light,Espresso,4.75,25,true,4.7
+CS099,Kaffeemodul,Vienna,Austria,Light,Filter Coffee,5.50,20,true,4.6
+CS100,Supersense,Vienna,Austria,Medium,Cappuccino,5.25,30,true,4.5

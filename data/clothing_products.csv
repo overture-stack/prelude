@@ -1,0 +1,101 @@
+product_id,name,brand,category,subcategory,gender,color,size,material,price_usd,sale_price_usd,in_stock,stock_quantity,rating,review_count,country_of_origin
+CP001,Classic White Oxford Shirt,Ralph Lauren,Tops,Shirts,Men,White,M,100% Cotton,89.99,0.00,true,142,4.5,312
+CP002,Slim Fit Chinos,Banana Republic,Bottoms,Trousers,Men,Khaki,32x32,98% Cotton 2% Elastane,79.99,55.99,true,88,4.3,205
+CP003,Wool Blend Overcoat,Theory,Outerwear,Coats,Men,Charcoal,L,70% Wool 30% Polyester,349.99,0.00,true,34,4.6,98
+CP004,Leather Chelsea Boots,Thursday Boot Co,Footwear,Boots,Men,Brown,10,Full Grain Leather,199.99,0.00,true,67,4.7,441
+CP005,Merino Crew Neck Sweater,Everlane,Tops,Knitwear,Men,Navy,M,100% Merino Wool,130.00,0.00,true,115,4.4,187
+CP006,Relaxed Fit Jeans,Levi's,Bottoms,Jeans,Men,Indigo Blue,34x30,99% Cotton 1% Elastane,69.99,49.99,true,203,4.2,876
+CP007,Bomber Jacket,Alpha Industries,Outerwear,Jackets,Men,Olive,L,Nylon Shell,169.99,129.99,true,52,4.5,334
+CP008,Linen Blend Blazer,J.Crew,Outerwear,Blazers,Men,Sand,42R,55% Linen 45% Cotton,198.00,0.00,true,29,4.3,112
+CP009,Pique Polo Shirt,Lacoste,Tops,Polo Shirts,Men,Red,L,100% Cotton,98.00,0.00,true,176,4.4,524
+CP010,Running Shorts,Nike,Activewear,Shorts,Men,Black,M,100% Polyester,40.00,0.00,true,310,4.3,689
+CP011,Floral Wrap Dress,Anthropologie,Dresses,Midi Dresses,Women,Floral,S,100% Viscose,148.00,99.00,true,73,4.5,267
+CP012,High Rise Straight Jeans,AG Jeans,Bottoms,Jeans,Women,Light Wash,27,93% Cotton 5% Elastane 2% Polyester,195.00,0.00,true,58,4.6,189
+CP013,Cashmere Turtleneck,COS,Tops,Knitwear,Women,Cream,M,100% Cashmere,250.00,175.00,true,41,4.7,143
+CP014,Tailored Blazer,Zara,Outerwear,Blazers,Women,Black,S,72% Polyester 24% Viscose 4% Elastane,79.99,0.00,true,124,4.2,432
+CP015,Satin Slip Skirt,Reformation,Bottoms,Skirts,Women,Champagne,XS,100% Recycled Polyester,128.00,0.00,true,36,4.4,198
+CP016,Oversized Trench Coat,Burberry,Outerwear,Coats,Women,Honey,M,100% Cotton,1990.00,0.00,true,12,4.8,87
+CP017,Ribbed Tank Top,Skims,Tops,Tank Tops,Women,Nude,S,57% Cotton 35% Modal 8% Elastane,38.00,0.00,true,284,4.3,1203
+CP018,Wide Leg Trousers,& Other Stories,Bottoms,Trousers,Women,Camel,34,100% Linen,89.00,0.00,true,67,4.5,156
+CP019,Leather Crossbody Bag,Coach,Accessories,Bags,Women,Saddle,One Size,100% Leather,295.00,206.50,true,43,4.6,341
+CP020,Ankle Strap Heels,Steve Madden,Footwear,Heels,Women,Black,7,Synthetic Upper,89.99,62.99,true,95,4.1,578
+CP021,Puffer Vest,Patagonia,Outerwear,Vests,Unisex,Cobalt Blue,L,100% Recycled Polyester,129.00,0.00,true,88,4.6,412
+CP022,Graphic Tee,Supreme,Tops,T-Shirts,Men,White,M,100% Cotton,48.00,0.00,false,0,4.0,892
+CP023,Yoga Leggings,Lululemon,Activewear,Leggings,Women,Black,4,79% Nylon 21% Lycra,128.00,0.00,true,167,4.8,2341
+CP024,Trail Running Shoes,Salomon,Footwear,Trainers,Unisex,Grey,9,Synthetic Mesh,149.99,0.00,true,72,4.6,567
+CP025,Canvas Tote Bag,L.L.Bean,Accessories,Bags,Unisex,Navy,One Size,100% Canvas,29.95,0.00,true,430,4.5,1876
+CP026,Corduroy Overshirt,Fjallraven,Tops,Shirts,Men,Autumn Leaf,L,100% Cotton,120.00,0.00,true,54,4.5,203
+CP027,Pleated Midi Skirt,Maje,Bottoms,Skirts,Women,Ecru,36,100% Polyester,195.00,136.50,true,28,4.3,94
+CP028,Down Puffer Jacket,Canada Goose,Outerwear,Jackets,Unisex,Black,M,Duck Down Fill,745.00,0.00,true,19,4.7,312
+CP029,Linen Shorts,Sunspel,Bottoms,Shorts,Men,White,M,100% Linen,95.00,0.00,true,62,4.4,87
+CP030,Sports Bra,Nike,Activewear,Sports Bras,Women,Pink,S,75% Nylon 25% Spandex,55.00,38.50,true,193,4.4,876
+CP031,Denim Jacket,Wrangler,Outerwear,Jackets,Unisex,Mid Wash,L,100% Cotton,79.99,0.00,true,112,4.3,543
+CP032,Knit Beanie,Acne Studios,Accessories,Hats,Unisex,Black,One Size,100% Wool,120.00,0.00,true,89,4.4,234
+CP033,Suede Loafers,Tod's,Footwear,Loafers,Men,Tan,9,100% Suede,495.00,0.00,true,22,4.7,112
+CP034,Flare Yoga Pants,Alo Yoga,Activewear,Leggings,Women,Sage,XS,87% Nylon 13% Lycra,118.00,0.00,true,74,4.5,431
+CP035,Quilted Gilet,Barbour,Outerwear,Vests,Men,Navy,M,100% Polyamide,179.00,125.30,true,46,4.5,189
+CP036,Silk Blouse,Equipment,Tops,Blouses,Women,Ivory,S,100% Silk,248.00,173.60,true,31,4.6,142
+CP037,Cargo Trousers,Dickies,Bottoms,Trousers,Men,Stone,34x32,65% Polyester 35% Cotton,54.99,0.00,true,178,4.2,672
+CP038,Crew Neck Sweatshirt,Champion,Tops,Sweatshirts,Unisex,Grey Marl,L,82% Cotton 18% Polyester,65.00,45.50,true,256,4.3,934
+CP039,Maxi Sundress,Free People,Dresses,Maxi Dresses,Women,Terracotta,XS,100% Rayon,128.00,89.60,true,55,4.4,213
+CP040,Wool Flat Cap,Lock and Co,Accessories,Hats,Men,Herringbone,M,100% Wool,95.00,0.00,true,38,4.6,87
+CP041,High Top Sneakers,Converse,Footwear,Trainers,Unisex,Black,8,Canvas Upper,70.00,0.00,true,345,4.4,2103
+CP042,Swimwear Brief,Orlebar Brown,Activewear,Swimwear,Men,Kingfisher Blue,M,78% Polyester 22% Elastane,135.00,0.00,true,67,4.5,234
+CP043,One Piece Swimsuit,Speedo,Activewear,Swimwear,Women,Coral,10,80% Nylon 20% Elastane,89.99,62.99,true,82,4.3,456
+CP044,Leather Belt,Anderson's,Accessories,Belts,Men,Black,32,Full Grain Leather,95.00,0.00,true,134,4.7,312
+CP045,Crossover Leggings,Gymshark,Activewear,Leggings,Women,Plum,S,73% Nylon 27% Elastane,55.00,0.00,true,219,4.5,1432
+CP046,Oxford Brogues,Clarks,Footwear,Formal Shoes,Men,Tan,9,Leather Upper,130.00,91.00,true,54,4.4,287
+CP047,Lace Trim Cami,Intimissimi,Tops,Camisoles,Women,Blush,S,94% Silk 6% Elastane,68.00,0.00,true,98,4.3,167
+CP048,Printed Swim Shorts,Vilebrequin,Activewear,Swimwear,Men,Multi,M,100% Polyamide,230.00,0.00,true,41,4.5,134
+CP049,Rain Jacket,Arc'teryx,Outerwear,Jackets,Unisex,Black,M,3L Gore-Tex,650.00,0.00,true,27,4.9,412
+CP050,Wool Scarf,Acne Studios,Accessories,Scarves,Unisex,Caramel,One Size,100% Wool,180.00,126.00,true,63,4.6,198
+CP051,Chambray Shirt,Gitman Brothers,Tops,Shirts,Men,Light Blue,M,100% Cotton,185.00,0.00,true,38,4.7,134
+CP052,Midi Wrap Skirt,Diane von Furstenberg,Bottoms,Skirts,Women,Leopard Print,S,93% Silk 7% Spandex,298.00,0.00,true,24,4.6,89
+CP053,Fleece Pullover,Patagonia,Tops,Sweatshirts,Unisex,Pine Green,L,100% Recycled Polyester,139.00,97.30,true,91,4.7,678
+CP054,Platform Sneakers,New Balance,Footwear,Trainers,Women,White,6,Leather Upper,110.00,0.00,true,124,4.5,543
+CP055,Merino Cardigan,Uniqlo,Tops,Knitwear,Unisex,Light Grey,M,100% Merino Wool,79.90,55.93,true,187,4.3,1234
+CP056,Trench Coat,A.P.C.,Outerwear,Coats,Women,Camel,36,65% Cotton 35% Polyester,600.00,420.00,true,16,4.7,78
+CP057,Bike Shorts,Girlfriend Collective,Activewear,Shorts,Women,Black,XS,79% RPET 21% Spandex,48.00,0.00,true,143,4.4,567
+CP058,Desert Boots,Clarks Originals,Footwear,Boots,Men,Sand,10,Suede Upper,140.00,98.00,true,72,4.5,432
+CP059,Tweed Blazer,Harris Tweed,Outerwear,Blazers,Men,Brown Check,44R,100% Harris Tweed Wool,349.00,0.00,true,18,4.8,67
+CP060,Graphic Hoodie,Palace,Tops,Hoodies,Men,Black,L,100% Cotton,145.00,0.00,false,0,4.1,543
+CP061,Floral Print Blouse,Sandro,Tops,Blouses,Women,Multi,M,100% Silk,230.00,0.00,true,32,4.5,112
+CP062,Slim Fit Suit Trousers,Paul Smith,Bottoms,Trousers,Men,Charcoal,32R,60% Wool 40% Polyester,220.00,0.00,true,27,4.6,89
+CP063,Sports Jacket,Adidas,Activewear,Jackets,Unisex,Black,L,100% Polyester,75.00,52.50,true,156,4.2,678
+CP064,Knit Polo Shirt,Fred Perry,Tops,Polo Shirts,Men,White,M,100% Cotton,110.00,0.00,true,98,4.4,312
+CP065,Wide Brim Sun Hat,Lack of Color,Accessories,Hats,Women,Natural,One Size,100% Wool Felt,95.00,0.00,true,57,4.5,234
+CP066,Bandana Print Dress,Zimmermann,Dresses,Mini Dresses,Women,Blue,0,100% Linen,450.00,0.00,true,14,4.7,67
+CP067,Compression Tights,2XU,Activewear,Leggings,Unisex,Black,M,78% Nylon 22% Elastane,90.00,63.00,true,84,4.5,345
+CP068,Leather Ankle Boots,Kurt Geiger,Footwear,Boots,Women,Black,5,Leather Upper,189.00,132.30,true,48,4.3,267
+CP069,Fisherman Knit Jumper,Aran Woollen Mills,Tops,Knitwear,Unisex,Cream,L,100% Merino Wool,159.00,0.00,true,43,4.6,178
+CP070,Board Shorts,Quiksilver,Activewear,Swimwear,Men,Blue,32,100% Polyester,59.99,41.99,true,112,4.2,543
+CP071,Silk Pocket Square,Drake's,Accessories,Accessories,Men,Navy Dot,One Size,100% Silk,65.00,0.00,true,76,4.6,112
+CP072,Bra Top,Alo Yoga,Activewear,Sports Bras,Women,White,S,73% Nylon 27% Lycra,78.00,0.00,true,134,4.4,432
+CP073,Chore Coat,Carhartt WIP,Outerwear,Jackets,Unisex,Hamilton Brown,L,100% Cotton,170.00,0.00,true,62,4.6,312
+CP074,Block Heel Mules,Mango,Footwear,Heels,Women,Beige,6,Synthetic Upper,59.99,41.99,true,87,4.1,356
+CP075,Striped Breton Top,Saint James,Tops,T-Shirts,Unisex,Navy/White,M,100% Cotton,110.00,0.00,true,93,4.5,267
+CP076,Pleated Chinos,Incotex,Bottoms,Trousers,Men,Beige,34,97% Cotton 3% Elastane,280.00,196.00,true,31,4.7,89
+CP077,Wrap Blouse,Vince,Tops,Blouses,Women,Dusty Rose,XS,100% Silk,245.00,171.50,true,22,4.5,78
+CP078,Sherpa Jacket,Levi's,Outerwear,Jackets,Unisex,Brown,M,Sherpa Fleece,110.00,77.00,true,78,4.3,456
+CP079,Longline Sports Tee,Gymshark,Activewear,T-Shirts,Men,Ash Grey,L,100% Polyester,35.00,0.00,true,213,4.3,678
+CP080,Leather Gloves,Dents,Accessories,Accessories,Unisex,Black,M,100% Leather,95.00,0.00,true,54,4.6,134
+CP081,Straight Leg Jeans,Toteme,Bottoms,Jeans,Women,Dark Indigo,26,100% Cotton,280.00,196.00,true,29,4.7,112
+CP082,Crew Neck T-Shirt,James Perse,Tops,T-Shirts,Men,White,M,100% Supima Cotton,75.00,0.00,true,167,4.4,345
+CP083,Packable Windbreaker,Montbell,Outerwear,Jackets,Unisex,Yellow,M,100% Nylon,130.00,91.00,true,48,4.7,189
+CP084,Block Colour Bikini,Hunza G,Activewear,Swimwear,Women,Red,One Size,Nylon Lycra,185.00,0.00,true,36,4.5,167
+CP085,Leather Weekender Bag,Filson,Accessories,Bags,Unisex,Tan,One Size,100% Leather,395.00,0.00,true,21,4.8,134
+CP086,Chunky Knit Cardigan,Toteme,Tops,Knitwear,Women,Camel,S,55% Wool 45% Cotton,390.00,273.00,true,17,4.6,89
+CP087,Canvas Low Top Trainers,Veja,Footwear,Trainers,Unisex,White,8,Organic Cotton Canvas,150.00,0.00,true,93,4.5,543
+CP088,Linen Trousers,Massimo Dutti,Bottoms,Trousers,Women,White,36,100% Linen,89.99,0.00,true,74,4.3,234
+CP089,Quarter Zip Fleece,Polartec,Tops,Sweatshirts,Unisex,Forest Green,L,100% Recycled Polyester,95.00,66.50,true,86,4.4,312
+CP090,Silk Tie,Hermès,Accessories,Accessories,Men,Multi,One Size,100% Silk,195.00,0.00,true,34,4.8,156
+CP091,Ribbed Knit Dress,Jacquemus,Dresses,Mini Dresses,Women,Orange,S,100% Cotton,380.00,0.00,true,19,4.6,89
+CP092,Technical Hiking Trousers,Arcteryx,Bottoms,Trousers,Unisex,Black,32,100% Nylon,225.00,0.00,true,42,4.7,234
+CP093,Graphic Sweatshirt,Stussy,Tops,Sweatshirts,Unisex,Black,L,80% Cotton 20% Polyester,110.00,0.00,false,0,4.1,765
+CP094,Slingback Flats,Celine,Footwear,Flats,Women,Black,37,100% Leather,650.00,0.00,true,11,4.7,67
+CP095,Waterproof Hiking Boots,Merrell,Footwear,Boots,Unisex,Brown,9,Leather and Mesh,175.00,0.00,true,63,4.6,543
+CP096,Printed Silk Scarf,Liberty London,Accessories,Scarves,Women,Multi,One Size,100% Silk,145.00,0.00,true,48,4.6,189
+CP097,Tailored Shorts,Orlebar Brown,Bottoms,Shorts,Men,White,32,100% Cotton,175.00,0.00,true,36,4.5,134
+CP098,Seamless Sports Top,Sweaty Betty,Activewear,Sports Bras,Women,Midnight Blue,S,57% Nylon 32% Polyester 11% Elastane,55.00,38.50,true,112,4.4,432
+CP099,Wool Peacoat,Reiss,Outerwear,Coats,Men,Navy,M,70% Wool 20% Polyester 10% Cashmere,495.00,0.00,true,24,4.7,156
+CP100,Low Profile Snapback,New Era,Accessories,Hats,Unisex,Black,One Size,100% Cotton,35.00,0.00,true,234,4.2,876

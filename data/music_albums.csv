@@ -1,0 +1,101 @@
+album_id,artist,album_title,genre,release_year,label,country,num_tracks,duration_min,rating
+AL001,The Beatles,Abbey Road,Rock,1969,Apple Records,UK,17,47,9.8
+AL002,The Beatles,Sgt. Pepper's Lonely Hearts Club Band,Rock,1967,Parlophone,UK,13,40,9.7
+AL003,Michael Jackson,Thriller,Pop,1982,Epic Records,USA,9,42,9.9
+AL004,Pink Floyd,The Dark Side of the Moon,Progressive Rock,1973,Harvest Records,UK,10,43,9.8
+AL005,Led Zeppelin,Led Zeppelin IV,Hard Rock,1971,Atlantic Records,UK,8,42,9.7
+AL006,Fleetwood Mac,Rumours,Soft Rock,1977,Warner Bros.,USA,11,40,9.6
+AL007,Nirvana,Nevermind,Grunge,1991,DGC Records,USA,13,47,9.5
+AL008,Prince,Purple Rain,Pop,1984,Warner Bros.,USA,9,44,9.6
+AL009,David Bowie,Ziggy Stardust,Glam Rock,1972,RCA Records,UK,11,39,9.5
+AL010,Bob Dylan,Highway 61 Revisited,Folk Rock,1965,Columbia Records,USA,9,51,9.6
+AL011,Kendrick Lamar,To Pimp a Butterfly,Hip-Hop,2015,Top Dawg Entertainment,USA,16,79,9.7
+AL012,Kendrick Lamar,DAMN.,Hip-Hop,2017,Top Dawg Entertainment,USA,14,55,9.5
+AL013,Jay-Z,The Blueprint,Hip-Hop,2001,Roc-A-Fella Records,USA,13,52,9.4
+AL014,Eminem,The Marshall Mathers LP,Hip-Hop,2000,Aftermath Entertainment,USA,14,73,9.5
+AL015,Nas,Illmatic,Hip-Hop,1994,Columbia Records,USA,10,39,9.7
+AL016,Taylor Swift,1989,Pop,2014,Big Machine Records,USA,13,48,9.2
+AL017,Taylor Swift,Midnights,Pop,2022,Republic Records,USA,13,44,9.0
+AL018,Beyonce,Lemonade,R&B,2016,Columbia Records,USA,12,46,9.5
+AL019,Adele,21,Pop Soul,2011,XL Recordings,UK,11,48,9.3
+AL020,Ed Sheeran,Divide,Pop,2017,Asylum Records,UK,16,55,8.8
+AL021,Radiohead,OK Computer,Alternative Rock,1997,Parlophone,UK,12,53,9.7
+AL022,Radiohead,Kid A,Experimental,2000,Parlophone,UK,10,49,9.5
+AL023,Arctic Monkeys,AM,Indie Rock,2013,Domino Records,UK,12,41,9.2
+AL024,Arctic Monkeys,Whatever People Say I Am,Indie Rock,2006,Domino Records,UK,13,41,9.1
+AL025,Daft Punk,Random Access Memories,Electronic,2013,Columbia Records,France,13,74,9.4
+AL026,Daft Punk,Discovery,Electronic,2001,Virgin Records,France,14,66,9.3
+AL027,Amy Winehouse,Back to Black,Soul,2006,Island Records,UK,11,35,9.5
+AL028,Frank Ocean,Blonde,R&B,2016,Boys Don't Cry,USA,17,60,9.6
+AL029,Kanye West,My Beautiful Dark Twisted Fantasy,Hip-Hop,2010,Roc-A-Fella Records,USA,13,68,9.6
+AL030,Kanye West,The College Dropout,Hip-Hop,2004,Roc-A-Fella Records,USA,21,75,9.4
+AL031,Bruce Springsteen,Born to Run,Rock,1975,Columbia Records,USA,8,39,9.5
+AL032,Joni Mitchell,Blue,Folk,1971,Reprise Records,Canada,10,35,9.7
+AL033,Miles Davis,Kind of Blue,Jazz,1959,Columbia Records,USA,5,46,9.9
+AL034,John Coltrane,A Love Supreme,Jazz,1965,Impulse! Records,USA,4,33,9.8
+AL035,Nina Simone,I Put a Spell on You,Jazz,1965,Philips Records,USA,12,38,9.4
+AL036,Johnny Cash,At Folsom Prison,Country,1968,Columbia Records,USA,18,46,9.6
+AL037,Dolly Parton,Coat of Many Colors,Country,1971,RCA Records,USA,10,29,9.3
+AL038,Hank Williams,40 Greatest Hits,Country,1978,Polydor Records,USA,40,90,9.5
+AL039,Elvis Presley,Elvis Presley,Rock and Roll,1956,RCA Victor,USA,12,28,9.4
+AL040,Chuck Berry,The Great Twenty-Eight,Rock and Roll,1982,Chess Records,USA,28,71,9.5
+AL041,Bob Marley,Exodus,Reggae,1977,Island Records,Jamaica,10,37,9.6
+AL042,Bob Marley,Legend,Reggae,1984,Island Records,Jamaica,14,55,9.5
+AL043,The Clash,London Calling,Punk Rock,1979,CBS Records,UK,19,65,9.6
+AL044,Sex Pistols,Never Mind the Bollocks,Punk Rock,1977,Virgin Records,UK,12,38,9.3
+AL045,Guns N Roses,Appetite for Destruction,Hard Rock,1987,Geffen Records,USA,12,53,9.5
+AL046,Metallica,The Black Album,Heavy Metal,1991,Elektra Records,USA,12,62,9.4
+AL047,Iron Maiden,The Number of the Beast,Heavy Metal,1982,EMI Records,UK,8,40,9.3
+AL048,Red Hot Chili Peppers,Blood Sugar Sex Magik,Alternative Rock,1991,Warner Bros.,USA,17,74,9.3
+AL049,Soundgarden,Superunknown,Grunge,1994,A&M Records,USA,15,70,9.4
+AL050,Pearl Jam,Ten,Grunge,1991,Epic Records,USA,11,53,9.3
+AL051,Outkast,Speakerboxxx/The Love Below,Hip-Hop,2003,LaFace Records,USA,40,135,9.5
+AL052,The Notorious B.I.G.,Ready to Die,Hip-Hop,1994,Bad Boy Records,USA,17,64,9.6
+AL053,Wu-Tang Clan,Enter the Wu-Tang (36 Chambers),Hip-Hop,1993,Loud Records,USA,12,61,9.5
+AL054,A Tribe Called Quest,The Low End Theory,Hip-Hop,1991,Jive Records,USA,14,49,9.4
+AL055,Drake,Take Care,Hip-Hop,2011,Young Money,Canada,18,79,9.1
+AL056,Post Malone,Hollywood's Bleeding,Pop Rap,2019,Republic Records,USA,17,52,8.7
+AL057,Billie Eilish,When We All Fall Asleep,Pop,2019,Interscope Records,USA,14,42,9.0
+AL058,Lorde,Pure Heroine,Indie Pop,2013,Universal Music,New Zealand,10,37,9.0
+AL059,Tame Impala,Currents,Psychedelic Pop,2015,Modular Recordings,Australia,13,51,9.3
+AL060,LCD Soundsystem,Sound of Silver,Electronic Rock,2007,DFA Records,USA,8,45,9.4
+AL061,Vampire Weekend,Father of the Bride,Indie Rock,2019,Columbia Records,USA,18,58,8.9
+AL062,Bon Iver,For Emma Forever Ago,Indie Folk,2007,Jagjaguwar,USA,9,37,9.2
+AL063,Fleet Foxes,Fleet Foxes,Indie Folk,2008,Sub Pop,USA,11,39,9.1
+AL064,sufjan Stevens,Illinois,Indie Folk,2005,Asthmatic Kitty,USA,22,74,9.4
+AL065,James Blake,James Blake,Electronic Soul,2011,Atlas,UK,11,37,9.1
+AL066,FKA Twigs,LP1,Alternative R&B,2014,Young Turks,UK,10,38,9.2
+AL067,SZA,SOS,R&B,2022,Top Dawg Entertainment,USA,23,69,9.2
+AL068,Tyler the Creator,Igor,Hip-Hop,2019,Columbia Records,USA,12,39,9.3
+AL069,Childish Gambino,Because the Internet,Hip-Hop,2013,Island Records,USA,19,60,8.9
+AL070,Frank Sinatra,In the Wee Small Hours,Jazz,1955,Capitol Records,USA,16,44,9.5
+AL071,Aretha Franklin,I Never Loved a Man the Way I Love You,Soul,1967,Atlantic Records,USA,11,33,9.6
+AL072,Marvin Gaye,What's Going On,Soul,1971,Tamla Records,USA,9,35,9.7
+AL073,Stevie Wonder,Songs in the Key of Life,Funk Soul,1976,Tamla Records,USA,21,105,9.7
+AL074,Parliament,Mothership Connection,Funk,1975,Casablanca Records,USA,8,40,9.4
+AL075,James Brown,Live at the Apollo,Soul,1963,King Records,USA,11,32,9.5
+AL076,The Cure,Disintegration,Gothic Rock,1989,Fiction Records,UK,12,65,9.4
+AL077,Depeche Mode,Violator,Synth-pop,1990,Mute Records,UK,9,40,9.4
+AL078,New Order,Power Corruption and Lies,Post-Punk,1983,Factory Records,UK,8,45,9.3
+AL079,Joy Division,Unknown Pleasures,Post-Punk,1979,Factory Records,UK,10,40,9.5
+AL080,The Smiths,The Queen Is Dead,Alternative Rock,1986,Rough Trade,UK,10,37,9.5
+AL081,Morrissey,Viva Hate,Alternative Rock,1988,HMV,UK,11,41,8.8
+AL082,R.E.M.,Automatic for the People,Alternative Rock,1992,Warner Bros.,USA,12,49,9.4
+AL083,Smashing Pumpkins,Siamese Dream,Alternative Rock,1993,Virgin Records,USA,13,62,9.3
+AL084,Nine Inch Nails,The Downward Spiral,Industrial Rock,1994,Nothing Records,USA,14,65,9.4
+AL085,Portishead,Dummy,Trip-Hop,1994,Go! Discs,UK,11,49,9.4
+AL086,Massive Attack,Blue Lines,Trip-Hop,1991,Wild Bunch,UK,9,45,9.3
+AL087,Boards of Canada,Music Has the Right to Children,Electronic,1998,Warp Records,UK,18,62,9.4
+AL088,Aphex Twin,Selected Ambient Works 85-92,Electronic,1992,Apollo Records,UK,13,74,9.5
+AL089,Brian Eno,Ambient 1: Music for Airports,Ambient,1978,EG Records,UK,4,49,9.3
+AL090,Kraftwerk,Trans-Europe Express,Electronic,1977,Kling Klang,Germany,6,43,9.3
+AL091,Giorgio Moroder,From Here to Eternity,Electronic,1977,Casablanca Records,Germany,9,40,8.8
+AL092,The Chemical Brothers,Dig Your Own Hole,Electronic,1997,Virgin Records,UK,10,53,9.1
+AL093,Prodigy,Music for the Jilted Generation,Electronic,1994,XL Recordings,UK,14,74,9.2
+AL094,The Prodigy,Fat of the Land,Electronic,1997,XL Recordings,UK,10,52,9.2
+AL095,Gorillaz,Demon Days,Alternative,2005,Parlophone,UK,15,51,9.3
+AL096,Beck,Odelay,Alternative Rock,1996,DGC Records,USA,15,50,9.3
+AL097,Bjork,Post,Art Pop,1995,One Little Indian,Iceland,10,39,9.2
+AL098,PJ Harvey,Stories from the City,Alternative Rock,2000,Island Records,UK,12,43,9.3
+AL099,Cat Power,Moon Pix,Indie Rock,1998,Matador Records,USA,11,43,9.1
+AL100,Elliott Smith,Either/Or,Indie Folk,1997,Kill Rock Stars,USA,13,38,9.3
