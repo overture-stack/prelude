@@ -31,13 +31,90 @@ import {
 import { Dictionary } from '@overture-stack/lectern-dictionary';
 import { json } from '@codemirror/lang-json';
 import { oneDark } from '@codemirror/theme-one-dark';
+import { Decoration, EditorView, ViewPlugin, ViewUpdate } from '@codemirror/view';
+import { RangeSetBuilder } from '@codemirror/state';
+import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { createLecternTheme } from '../../theme/adapters/lectern';
+import { useStageTheme } from './hooks';
 
 const SPLIT_MIN = 20; // % — minimum width for either panel
 const SPLIT_MAX = 80;
-import { createLecternTheme } from '../../theme/adapters/lectern';
-import { useStageTheme } from './hooks';
+
+// Rainbow bracket colours — 6 levels, cycling
+const BRACKET_COLORS = ['#e5c07b', '#61afef', '#c678dd', '#56b6c2', '#98c379', '#e06c75'];
+const OPEN_BRACKETS = new Set(['{', '[', '(']);
+const CLOSE_BRACKETS = new Set(['}', ']', ')']);
+
+// Mark decorations for each depth level
+const bracketDecorations = BRACKET_COLORS.map((_, i) =>
+	Decoration.mark({ class: `cm-rainbow-bracket-${i}` }),
+);
+
+// CSS theme: one rule per depth level + indentation-marker overrides
+const rainbowBracketTheme = EditorView.baseTheme({
+	...Object.fromEntries(
+		BRACKET_COLORS.map((color, i) => [
+			`& .cm-rainbow-bracket-${i}`,
+			{ color, fontWeight: 'bold' },
+		]),
+	),
+	// Style the indentation marker lines to use a subtle but visible colour
+	'& .cm-indent-markers': {
+		'--indent-marker-bg-color': 'rgba(150,160,180,0.20)',
+		'--indent-marker-active-bg-color': 'rgba(150,160,180,0.45)',
+	},
+});
+
+function buildRainbowDecorations(view: EditorView) {
+	const builder = new RangeSetBuilder<Decoration>();
+	const doc = view.state.doc;
+	const text = doc.toString();
+	let depth = 0;
+
+	// Collect (pos, depth, isOpen) tuples so we can assign closing brackets
+	// the same colour as their matching opener.
+	const stack: number[] = []; // stack of depths at open bracket
+	const marks: { from: number; to: number; depth: number }[] = [];
+
+	for (let i = 0; i < text.length; i++) {
+		const ch = text[i];
+		if (OPEN_BRACKETS.has(ch)) {
+			marks.push({ from: i, to: i + 1, depth: depth % BRACKET_COLORS.length });
+			stack.push(depth);
+			depth++;
+		} else if (CLOSE_BRACKETS.has(ch)) {
+			depth = Math.max(0, depth - 1);
+			const matchedDepth = stack.length > 0 ? stack.pop()! : depth;
+			marks.push({ from: i, to: i + 1, depth: matchedDepth % BRACKET_COLORS.length });
+		}
+	}
+
+	// RangeSetBuilder requires ranges in document order (already is)
+	for (const { from, to, depth: d } of marks) {
+		builder.add(from, to, bracketDecorations[d]);
+	}
+
+	return builder.finish();
+}
+
+const rainbowBracketsPlugin = ViewPlugin.fromClass(
+	class {
+		decorations: ReturnType<typeof buildRainbowDecorations>;
+		constructor(view: EditorView) {
+			this.decorations = buildRainbowDecorations(view);
+		}
+		update(update: ViewUpdate) {
+			if (update.docChanged) {
+				this.decorations = buildRainbowDecorations(update.view);
+			}
+		}
+	},
+	{ decorations: (v) => v.decorations },
+);
+
+const editorExtensions = [json(), rainbowBracketsPlugin, rainbowBracketTheme, indentationMarkers()];
 
 const STARTER_TEMPLATE = JSON.stringify(
 	{
@@ -1255,7 +1332,7 @@ export const DictionaryPlayground = ({ lecternUrl }: DictionaryPlaygroundProps):
 				top: 50px; /* navbar height */
 				left: 0;
 				right: 0;
-				bottom: 0;
+				bottom: 47px; /* footer height */
 				overflow: auto;
 				-webkit-overflow-scrolling: touch;
 				overscroll-behavior: auto;
@@ -1537,7 +1614,7 @@ export const DictionaryPlayground = ({ lecternUrl }: DictionaryPlaygroundProps):
 						<ReactCodeMirror
 							value={editorValue}
 							onChange={handleEditorChange}
-							extensions={[json()]}
+							extensions={editorExtensions}
 							theme={oneDark}
 							height="100%"
 							style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}

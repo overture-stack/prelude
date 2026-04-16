@@ -21,6 +21,7 @@
 		"@overture-stack/arranger-components": "^3.0.1",
 		"@overture-stack/lectern-ui": "1.0.0",
 		"@overture-stack/sqon-builder": "^1.1.0",
+		"@replit/codemirror-indentation-markers": "^6.5.3",
 		"@tanstack/react-table": "^8.21.3",
 		"@types/marked": "^5.0.2",
 		"@types/react-syntax-highlighter": "^15.5.13",
