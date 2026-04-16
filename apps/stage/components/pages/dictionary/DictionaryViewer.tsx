@@ -23,6 +23,7 @@ import {
 	DictionaryStaticDataProvider,
 	DictionaryTableStateProvider,
 	DictionaryTableViewer,
+	LecternDataProvider,
 	ThemeProvider,
 } from '@overture-stack/lectern-ui';
 import type { FilterDropdown } from '@overture-stack/lectern-ui/dist/viewer-table/DictionaryTableViewer';
@@ -32,41 +33,63 @@ import { createLecternTheme } from '../../theme/adapters/lectern';
 import { useDictionary, useStageTheme } from './hooks';
 
 interface DictionaryViewerProps {
-	/** URL to the static dictionary JSON file */
-	dictionaryUrl: string;
+	/** URL to a static dictionary JSON file — used when lecternUrl/dictionaryName are not set */
+	dictionaryUrl?: string;
+	/** Base URL of a live Lectern server (e.g. http://localhost:3031) */
+	lecternUrl?: string;
+	/** Name of the dictionary to fetch from the Lectern server */
+	dictionaryName?: string;
 	/** Optional: Filter dropdowns for schema-level metadata filtering */
 	filterDropdowns?: FilterDropdown[];
 	/** Optional: CSS class for custom styling */
 	className?: string;
 }
 
-export const DictionaryViewer = ({ dictionaryUrl, filterDropdowns, className }: DictionaryViewerProps): ReactElement => {
-	const { dictionary, loading, error } = useDictionary(dictionaryUrl);
+export const DictionaryViewer = ({
+	dictionaryUrl,
+	lecternUrl,
+	dictionaryName,
+	filterDropdowns,
+	className,
+}: DictionaryViewerProps): ReactElement => {
 	const stageTheme = useStageTheme();
 	const lecternTheme = createLecternTheme(stageTheme);
+	const isLiveMode = !!(lecternUrl && dictionaryName);
 
-	if (loading) {
+	const { dictionary, loading, error } = useDictionary(isLiveMode ? '' : (dictionaryUrl ?? ''));
+
+	if (!isLiveMode && loading) {
 		return <div className={className}>Loading dictionary...</div>;
 	}
 
-	if (error || !dictionary) {
+	if (!isLiveMode && (error || !dictionary)) {
 		return <div className={className}>Error: {error || 'Dictionary not found'}</div>;
 	}
 
+	const tableContent = (
+		<div
+			className={className}
+			css={css`
+				padding: 0 48px;
+			`}
+		>
+			<DictionaryTableStateProvider>
+				<DictionaryTableViewer filterDropdowns={filterDropdowns} />
+			</DictionaryTableStateProvider>
+		</div>
+	);
+
 	return (
 		<ThemeProvider theme={lecternTheme}>
-			<div
-				className={className}
-				css={css`
-					padding: 0 48px;
-				`}
-			>
-				<DictionaryStaticDataProvider staticDictionaries={[dictionary]}>
-					<DictionaryTableStateProvider>
-						<DictionaryTableViewer filterDropdowns={filterDropdowns} />
-					</DictionaryTableStateProvider>
+			{isLiveMode ? (
+				<LecternDataProvider lecternUrl={lecternUrl!} dictionaryName={dictionaryName!}>
+					{tableContent}
+				</LecternDataProvider>
+			) : (
+				<DictionaryStaticDataProvider staticDictionaries={dictionary ? [dictionary] : []}>
+					{tableContent}
 				</DictionaryStaticDataProvider>
-			</div>
+			)}
 		</ThemeProvider>
 	);
 };

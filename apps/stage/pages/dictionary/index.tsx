@@ -25,10 +25,15 @@ import { DictionaryViewer } from '../../components/pages/dictionary';
 import { createPage } from '../../global/utils/pages';
 
 const DictionaryPage = (): ReactElement => {
+	const lecternUrl = process.env.NEXT_PUBLIC_LECTERN_URL;
+	const dictionaryName = process.env.NEXT_PUBLIC_LECTERN_DICTIONARY_NAME;
+
 	return (
 		<PageLayout>
 			<DictionaryViewer
-				dictionaryUrl="/dictionary/pcgl-dictionary.json"
+				lecternUrl={lecternUrl}
+				dictionaryName={dictionaryName}
+				dictionaryUrl="/dictionary/dictionary.json"
 				filterDropdowns={[{ label: 'Category', filterProperty: 'meta.category' }]}
 			/>
 		</PageLayout>

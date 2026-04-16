@@ -2,7 +2,6 @@ import { css, useTheme } from '@emotion/react';
 import { ChangeEvent, ReactElement, useRef, useState } from 'react';
 
 import Button from '@/components/Button';
-import HeroBanner from '@/components/HeroBanner';
 import PageLayout from '@/components/PageLayout';
 import type { GenerateConfigsResponse } from '@/pages/api/generate-configs';
 
@@ -154,12 +153,38 @@ const ConfigGenerator = (): ReactElement => {
 					min-height: 100vh;
 				`}
 			>
-				<HeroBanner
-					title="Config Generator"
-					description="Upload or paste a CSV file to generate Elasticsearch, PostgreSQL, and Arranger configuration files."
-					breadcrumbs={[{ label: 'Home', href: '/home' }]}
-					fixed={false}
-				/>
+				<div
+					css={css`
+						display: flex;
+						align-items: center;
+						padding: 10px 24px;
+						border-bottom: 1px solid #e0e0e0;
+						background: #f8f9fa;
+						flex-shrink: 0;
+					`}
+				>
+					<div>
+						<h1
+							css={css`
+								margin: 0;
+								font-size: 16px;
+								font-weight: 600;
+								color: #1a1a2e;
+							`}
+						>
+							Config Generator
+						</h1>
+						<p
+							css={css`
+								margin: 2px 0 0;
+								font-size: 11px;
+								color: #666;
+							`}
+						>
+							Upload or paste a CSV file to generate Elasticsearch, PostgreSQL, and Arranger configuration files.
+						</p>
+					</div>
+				</div>
 
 				<div
 					css={css`

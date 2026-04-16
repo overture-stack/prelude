@@ -5,6 +5,21 @@ const withTranspileModules = require('next-transpile-modules')([
 	'swagger-ui-react',
 	'swagger-ui-dist',
 	'@overture-stack/lectern-ui',
+	'@uiw/react-codemirror',
+	'@uiw/codemirror-extensions-basic-setup',
+	'@codemirror/lang-json',
+	'@codemirror/theme-one-dark',
+	'@codemirror/state',
+	'@codemirror/view',
+	'@codemirror/language',
+	'@codemirror/commands',
+	'@codemirror/search',
+	'@codemirror/autocomplete',
+	'@codemirror/lint',
+	'@lezer/common',
+	'@lezer/highlight',
+	'@lezer/json',
+	'@lezer/lr',
 ]);
 
 module.exports = withPlugins([withTranspileModules], {

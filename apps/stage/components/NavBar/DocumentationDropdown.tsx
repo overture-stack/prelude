@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../global/utils/constants';
 import { InternalLink } from '../Link';
-import { extractOrder, extractTitle, generateId } from '../pages/documentation/utils/documentUtils';
+import { extractOrder, extractTitle, generateSlug } from '../pages/documentation/utils/documentUtils';
 import Dropdown from './Dropdown';
 import { StyledListLink } from './styles';
 
@@ -32,7 +32,7 @@ const DocumentationDropdown = () => {
 
 						const content = await contentResponse.text();
 						const title = extractTitle(content);
-						const dropdownId = generateId(title);
+						const dropdownId = generateSlug(filename);
 
 						return {
 							title,

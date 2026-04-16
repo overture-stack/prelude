@@ -21,3 +21,4 @@
 
 export { DictionaryViewer } from './DictionaryViewer';
 export { DictionaryTableOnly } from './DictionaryTableOnly';
+export { DictionaryPlayground } from './DictionaryPlayground';
