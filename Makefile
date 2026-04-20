@@ -7,27 +7,27 @@ STAGE_PORT := $(shell bash -c '(echo > /dev/tcp/localhost/3000) 2>/dev/null && e
 help:
 	@echo "================ Prelude Makefile Commands ================"
 	@echo ""
-	@echo "Development Environments:"
-	@echo "  make demo          - Start demo deployment (with sample data)"
-	@echo "  make platform      - Start platform (upload your own data)"
-	@echo "  make start         - Start existing services (no rebuild)"
-	@echo "  make restart       - Restart platform containers (preserves data)"
-	@echo "  make down          - Gracefully shutdown all containers"
-	@echo "  make status        - Show status of all services"
+	@echo "Getting Started:"
+	@echo "  make demo              - Start demo deployment (with sample data)"
+	@echo "  make platform          - Start platform (upload your own data)"
 	@echo ""
 	@echo "Service Management:"
-	@echo "  make rebuild       - Rebuild and redeploy stage only"
-	@echo "  make backup        - Back up PostgreSQL database"
-	@echo "  make check-space   - Check disk usage"
+	@echo "  make start             - Start existing services (no rebuild)"
+	@echo "  make restart           - Restart platform containers (preserves data)"
+	@echo "  make restart-arranger  - Restart the arranger service only"
+	@echo "  make rebuild           - Rebuild and redeploy stage only"
+	@echo "  make down              - Gracefully shutdown all containers"
+	@echo "  make status            - Show status of all services"
+	@echo ""
+	@echo "Maintenance:"
+	@echo "  make backup            - Back up PostgreSQL database"
+	@echo "  make check-space       - Check Docker disk usage"
 	@echo ""
 	@echo "Danger Zone:"
-	@echo "  make reset         - DANGER: Remove all containers and volumes (DATA LOSS)"
-	@echo "  make nuke          - DANGER: Complete cleanup including images"
+	@echo "  make reset             - DANGER: Remove all containers and volumes (DATA LOSS)"
+	@echo "  make nuke              - DANGER: Complete cleanup including images"
 	@echo ""
-	@echo "General Usage:"
-	@echo "  make help          - Show this help message"
-	@echo "  make <command>     - Run a specific command"
-	@echo ""
+	@echo "  make help              - Show this help message"
 	@echo "==========================================================="
 
 # Run pre-deployment checks
@@ -111,6 +111,7 @@ restart:
 restart-arranger:
 	@echo "Restarting arranger-datatable1..."
 	@docker compose -f ./docker-compose.yml restart arranger-datatable1
+	@printf "\033[1;32m✓ arranger-datatable1 restarted\033[0m\n"
 
 # Show status of all services
 status:

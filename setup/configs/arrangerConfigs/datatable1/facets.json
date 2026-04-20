@@ -4,12 +4,12 @@
       {
         "active": true,
         "fieldName": "data__donor_id",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "data__gender",
-        "show": true
+        "show": false
       },
       {
         "active": true,
