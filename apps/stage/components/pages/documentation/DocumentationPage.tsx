@@ -8,7 +8,6 @@ import FundingStatement from './FundingStatement';
 import { useCodeBlockCopyButtons } from './utils/useCodeBlockCopyButtons';
 import { useDictionaryHydration } from './utils/useDictionaryHydration';
 import { useHeadingAnchors } from './utils/useHeadingAnchors';
-import { useMermaidDiagrams } from './utils/useMermaidDiagrams';
 
 const DocumentationPage = ({ sections, currentSection, headings }: DocumentationData): ReactElement => {
 	const contentRef = useRef<HTMLDivElement>(null);
@@ -20,7 +19,6 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 	useDictionaryHydration(contentRef, currentSection);
 	useHeadingAnchors(contentRef, currentSection);
 	useCodeBlockCopyButtons(contentRef, currentSection);
-	useMermaidDiagrams(contentRef, currentSection);
 
 	return (
 		<div css={styles.container}>

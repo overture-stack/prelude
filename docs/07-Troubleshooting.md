@@ -2,17 +2,7 @@
 
 The portal is a stack of connected services. When something goes wrong, the most effective approach is to identify which layer the problem is in and work from left to right.
 
-```mermaid
-%%{init: {'flowchart': {'htmlLabels': false}}}%%
-flowchart LR
-    Docker["Docker\nAre all containers running?"]
-    PG["PostgreSQL\nIs the DB ready & data loaded?"]
-    ES["Elasticsearch\nIs the cluster healthy & docs indexed?"]
-    Arranger["Arranger\nIs the GraphQL API responding?"]
-    Stage["Browser / Stage\nAny failed requests or console errors?"]
-
-    Docker --> PG --> ES --> Arranger --> Stage
-```
+![Trouble](img/troubleshooting.png)
 
 Start at the left. If a container isn't running, nothing to the right of it will work.
 

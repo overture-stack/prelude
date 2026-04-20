@@ -122,9 +122,7 @@ View a sample document:
 curl -u elastic:myelasticpassword "http://localhost:9200/datatable1_centric/_search?pretty&size=1"
 ```
 
-:::tip
 If you installed Elasticvue, connect to `http://localhost:9200` with credentials `elastic` / `myelasticpassword`, navigate to Indices, and select `datatable1-index` to browse documents and verify the data structure.
-:::
 
 </details>
 
@@ -149,13 +147,11 @@ If you updated the Elasticsearch mapping but your CSV data is unchanged, use `in
    make restart
    ```
 
-   :::tip Windows (PowerShell)
+   Windows (PowerShell):
 
    ```powershell
    .\run.ps1 restart
    ```
-
-   :::
 
 3. Re-index from PostgreSQL:
 
@@ -188,13 +184,11 @@ If you fixed errors in the CSV itself, you need to clear both PostgreSQL and Ela
    make restart
    ```
 
-   :::tip Windows (PowerShell)
+   Windows (PowerShell):
 
    ```powershell
    .\run.ps1 restart
    ```
-
-   :::
 
 4. Re-upload from the corrected CSV:
 

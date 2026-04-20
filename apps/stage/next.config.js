@@ -2,8 +2,6 @@ const path = require('path');
 const withPlugins = require('next-compose-plugins');
 const { patchWebpackConfig: patchForGlobalCSS } = require('next-global-css');
 const withTranspileModules = require('next-transpile-modules')([
-	'swagger-ui-react',
-	'swagger-ui-dist',
 	'@overture-stack/lectern-ui',
 	'@uiw/react-codemirror',
 	'@uiw/codemirror-extensions-basic-setup',

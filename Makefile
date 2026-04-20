@@ -118,7 +118,7 @@ rebuild:
 	@echo "Rebuilding stage image..."
 	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose build --no-cache stage
 	@echo "Starting stage service..."
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose up -d stage
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose up -d --no-deps stage
 	@printf "\033[1;32m✓ Stage rebuilt and redeployed\033[0m\n"
 
 # Back up PostgreSQL database

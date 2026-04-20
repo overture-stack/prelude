@@ -41,20 +41,10 @@ export enum INTERNAL_PATHS {
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
 	ELASTICVUE = '/documentation/elasticvue',
-	SONG = '/swaggerDocs/song',
-	LYRIC = '/swaggerDocs/lyric',
-	LECTERN = '/swaggerDocs/lectern',
-	SCORE = '/swaggerDocs/score',
 	DICTIONARY = '/dictionary',
 	DICTIONARY_PLAYGROUND = '/dictionary/playground',
 	CONFIG_GENERATOR = '/configGenerator',
 }
-
-// external Swagger links
-export const LECTERN_SWAGGER = 'http://localhost:3031/api-docs';
-export const LYRIC_SWAGGER = 'http://localhost:3030/api-docs';
-export const SONG_SWAGGER = 'http://localhost:8080/swagger-ui.html';
-export const SCORE_SWAGGER = 'http://localhost:8087/swagger-ui.html';
 
 // graphql api
 export const ARRANGER_GQL = 'http://localhost:5050/graphql/apollo';
