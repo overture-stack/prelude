@@ -107,6 +107,11 @@ restart:
 	@PROFILE=platform docker compose -f ./docker-compose.yml --profile platform down
 	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
 
+# Restart only the arranger service
+restart-arranger:
+	@echo "Restarting arranger-datatable1..."
+	@docker compose -f ./docker-compose.yml restart arranger-datatable1
+
 # Show status of all services
 status:
 	@PROFILE=platform docker compose ps
@@ -118,8 +123,8 @@ rebuild:
 	@echo "Rebuilding stage image..."
 	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose build --no-cache stage
 	@echo "Starting stage service..."
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose up -d --no-deps stage
-	@printf "\033[1;32m✓ Stage rebuilt and redeployed\033[0m\n"
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose --profile platform up -d --no-deps stage
+	@printf "\033[1;32m✓ Stage rebuilt and redeployed — http://localhost:$(STAGE_PORT)\033[0m\n"
 
 # Back up PostgreSQL database
 backup:
@@ -180,4 +185,4 @@ nuke:
 		echo "Operation cancelled"; \
 	fi
 
-.PHONY: help phase0 demo platform start down restart status rebuild backup check-space reset nuke
+.PHONY: help phase0 demo platform start down restart restart-arranger status rebuild backup check-space reset nuke
