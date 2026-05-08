@@ -236,8 +236,8 @@ export const getConfig = (): Config => {
 		// Swagger Docs
 		NEXT_PUBLIC_SONG_API: publicConfig.NEXT_PUBLIC_SONG_API || 'http://localhost:8080',
 		NEXT_PUBLIC_SCORE_API: publicConfig.NEXT_PUBLIC_SCORE_API || 'http://localhost:8087',
-		NEXT_PUBLIC_LYRIC_API: publicConfig.NEXT_PUBLIC_SONG_API || 'http://localhost:3030',
-		NEXT_PUBLIC_LECTERN_API: publicConfig.NEXT_PUBLIC_SCORE_API || 'http://localhost:3031',
+		NEXT_PUBLIC_LYRIC_API: publicConfig.NEXT_PUBLIC_LYRIC_API || 'http://localhost:3030',
+		NEXT_PUBLIC_LECTERN_API: publicConfig.NEXT_PUBLIC_LECTERN_API || 'http://localhost:3031',
 
 		// Auth
 		NEXT_PUBLIC_AUTH_PROVIDER: (publicConfig.NEXT_PUBLIC_AUTH_PROVIDER || '').toLowerCase(),
