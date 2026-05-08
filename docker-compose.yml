@@ -341,6 +341,9 @@ services:
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       NEXT_PUBLIC_DISABLE_WELCOME_BANNER: false
+      # Arranger base URL — browser-facing, used by the Developer Tools dropdown links.
+      # Routes through nginx: /api/arranger/* → localhost:5050/*
+      NEXT_PUBLIC_ARRANGER_API: ${PORTAL_URL:-http://localhost:3000}/api/arranger
       # Arranger API — internal Docker DNS, used server-side by Stage's proxy only.
       # The browser never calls these URLs directly; it calls Stage at /api/dataset_N_arranger/*
       # and Stage forwards server-side to these targets.
