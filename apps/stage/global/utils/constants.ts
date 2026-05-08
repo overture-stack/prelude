@@ -23,7 +23,7 @@ import urlJoin from 'url-join';
 
 import { getConfig } from '../config';
 
-const { NEXT_PUBLIC_KEYCLOAK_HOST, NEXT_PUBLIC_KEYCLOAK_REALM } = getConfig();
+const { NEXT_PUBLIC_KEYCLOAK_HOST, NEXT_PUBLIC_KEYCLOAK_REALM, NEXT_PUBLIC_ARRANGER_API } = getConfig();
 
 export const EXPLORER_PATH = '/explorer';
 export const USER_PATH = '/user';
@@ -41,16 +41,16 @@ export enum INTERNAL_PATHS {
 }
 
 // arranger endpoints
-export const ARRANGER_INTROSPECTION = 'http://localhost:5050/introspection';
-export const ARRANGER_INTROSPECTION_SQON = 'http://localhost:5050/introspection/sqon';
-export const ARRANGER_INTROSPECTION_CORRELATION = 'http://localhost:5050/introspection/correlation';
-export const ARRANGER_INTROSPECTION_MUTATION = 'http://localhost:5050/introspection/mutation';
-export const ARRANGER_INTROSPECTION_EXPRESSION = 'http://localhost:5050/introspection/expression';
-export const ARRANGER_INTROSPECTION_PROTEIN = 'http://localhost:5050/introspection/protein';
-export const ARRANGER_GQL_CORRELATION = 'http://localhost:5050/correlation/graphql/apollo';
-export const ARRANGER_GQL_MUTATION = 'http://localhost:5050/mutation/graphql/apollo';
-export const ARRANGER_GQL_EXPRESSION = 'http://localhost:5050/expression/graphql/apollo';
-export const ARRANGER_GQL_PROTEIN = 'http://localhost:5050/protein/graphql/apollo';
+export const ARRANGER_INTROSPECTION = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'introspection');
+export const ARRANGER_INTROSPECTION_SQON = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'introspection/sqon');
+export const ARRANGER_INTROSPECTION_CORRELATION = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'introspection/correlation');
+export const ARRANGER_INTROSPECTION_MUTATION = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'introspection/mutation');
+export const ARRANGER_INTROSPECTION_EXPRESSION = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'introspection/expression');
+export const ARRANGER_INTROSPECTION_PROTEIN = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'introspection/protein');
+export const ARRANGER_GQL_CORRELATION = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'correlation/graphql/apollo');
+export const ARRANGER_GQL_MUTATION = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'mutation/graphql/apollo');
+export const ARRANGER_GQL_EXPRESSION = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'expression/graphql/apollo');
+export const ARRANGER_GQL_PROTEIN = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'protein/graphql/apollo');
 
 // external docs links
 export const ELASTICVUE_DOCS =
