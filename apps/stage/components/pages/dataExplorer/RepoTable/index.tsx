@@ -116,6 +116,7 @@ const RepoTable = ({ callerName, apiHost, exportRowIdField, exportConfig }: Repo
 			apiHost,
 			customExporters,
 			exportSelectedRowsField: exportRowIdField,
+			currentTableName,
 		}),
 	);
 
