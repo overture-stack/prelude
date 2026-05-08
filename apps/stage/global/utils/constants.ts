@@ -32,22 +32,25 @@ export const LOGIN_PATH = '/login';
 export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
-	MOLECULAR = '/molecular',
-	DATATABLE_1 = '/dataTableOne',
-	DATATABLE_2 = '/dataTableTwo',
-	DATATABLE_3 = '/dataTableThree',
-	DATATABLE_4 = '/dataTableFour',
-	DATATABLE_5 = '/dataTableFive',
+	DATATABLE_1 = '/correlationTable',
+	DATATABLE_2 = '/mutationTable',
+	DATATABLE_3 = '/expressionTable',
+	DATATABLE_4 = '/proteinTable',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
-	ELASTICVUE = '/documentation/elasticvue',
-	DICTIONARY = '/dictionary',
-	DICTIONARY_PLAYGROUND = '/dictionary/playground',
-	CONFIG_GENERATOR = '/configGenerator',
 }
 
-// graphql api
-export const ARRANGER_GQL = 'http://localhost:5050/graphql/apollo';
+// arranger endpoints
+export const ARRANGER_INTROSPECTION = 'http://localhost:5050/introspection';
+export const ARRANGER_INTROSPECTION_SQON = 'http://localhost:5050/introspection/sqon';
+export const ARRANGER_INTROSPECTION_CORRELATION = 'http://localhost:5050/introspection/correlation';
+export const ARRANGER_INTROSPECTION_MUTATION = 'http://localhost:5050/introspection/mutation';
+export const ARRANGER_INTROSPECTION_EXPRESSION = 'http://localhost:5050/introspection/expression';
+export const ARRANGER_INTROSPECTION_PROTEIN = 'http://localhost:5050/introspection/protein';
+export const ARRANGER_GQL_CORRELATION = 'http://localhost:5050/correlation/graphql/apollo';
+export const ARRANGER_GQL_MUTATION = 'http://localhost:5050/mutation/graphql/apollo';
+export const ARRANGER_GQL_EXPRESSION = 'http://localhost:5050/expression/graphql/apollo';
+export const ARRANGER_GQL_PROTEIN = 'http://localhost:5050/protein/graphql/apollo';
 
 // external docs links
 export const ELASTICVUE_DOCS =

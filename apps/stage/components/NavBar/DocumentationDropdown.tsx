@@ -9,10 +9,16 @@ import { extractOrder, extractTitle, generateSlug } from '../pages/documentation
 import Dropdown from './Dropdown';
 import { StyledListLink } from './styles';
 
+const CATEGORY_LABELS: Record<string, string> = {
+	user: 'User Guides',
+	developer: 'Developer Guides',
+};
+
 interface DocSection {
 	title: string;
 	id: string;
 	order: number;
+	category: string;
 }
 
 const DocumentationDropdown = () => {
@@ -25,22 +31,25 @@ const DocumentationDropdown = () => {
 		fetch('/api/docs')
 			.then((response) => response.json())
 			.then(async (files) => {
-				const sectionsPromises = files.map(async (filename: string) => {
+				// API returns paths like "user/00-Introduction.md"
+				const sectionsPromises = files.map(async (filepath: string) => {
 					try {
-						const contentResponse = await fetch(`/docs/${filename}`);
-						if (!contentResponse.ok) throw new Error(`Failed to load ${filename}`);
+						const contentResponse = await fetch(`/docs/${filepath}`);
+						if (!contentResponse.ok) throw new Error(`Failed to load ${filepath}`);
 
 						const content = await contentResponse.text();
-						const title = extractTitle(content);
-						const dropdownId = generateSlug(filename);
+						const slashIdx = filepath.indexOf('/');
+						const category = slashIdx !== -1 ? filepath.slice(0, slashIdx) : '';
+						const filename = slashIdx !== -1 ? filepath.slice(slashIdx + 1) : filepath;
 
 						return {
-							title,
-							id: dropdownId,
+							title: extractTitle(content) || generateSlug(filename),
+							id: generateSlug(filename),
 							order: extractOrder(filename),
+							category,
 						};
 					} catch (error) {
-						console.error(`Error processing file ${filename}:`, error);
+						console.error(`Error processing file ${filepath}:`, error);
 						return null;
 					}
 				});
@@ -58,35 +67,55 @@ const DocumentationDropdown = () => {
 			});
 	}, []);
 
-	if (loading) {
-		return null; // Or a loading indicator
-	}
-
-	// If no documentation sections, return null
-	if (docSections.length === 0) {
+	if (loading || docSections.length === 0) {
 		return null;
 	}
 
-	// Generate dropdown items with hash-based navigation
-	const dropdownItems = docSections.map((section) => (
-		<InternalLink key={section.id} path={`${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`}>
-			<StyledListLink
-				className={cx({
-					active:
-						router.asPath.includes(`#${section.id}`) ||
-						router.asPath === `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}`,
-				})}
-			>
-				{section.title}
-			</StyledListLink>
-		</InternalLink>
-	));
+	// Group sections by category, preserving order
+	const grouped = new Map<string, DocSection[]>();
+	for (const section of docSections) {
+		const cat = section.category || 'general';
+		if (!grouped.has(cat)) grouped.set(cat, []);
+		grouped.get(cat)!.push(section);
+	}
 
-	// Generate paths for active state tracking (include both hash and legacy paths)
+	// Build dropdown items with category headers
+	const dropdownItems = Array.from(grouped.entries()).flatMap(([category, sections]) => [
+		// Category header — not a link, just a label
+		<div
+			key={`header-${category}`}
+			data-no-hover
+			css={css`
+				padding: 6px 12px 4px;
+				font-size: 10px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				color: ${theme.colors.primary_dark};
+				background: ${theme.colors.grey_2};
+				cursor: default;
+			`}
+			onClick={(e) => e.stopPropagation()}
+		>
+			{CATEGORY_LABELS[category] ?? category}
+		</div>,
+		// Section links
+		...sections.map((section) => (
+			<InternalLink key={`${category}/${section.id}`} path={`${INTERNAL_PATHS.DOCUMENTATION}/${category}/${section.id}` as INTERNAL_PATHS}>
+				<StyledListLink
+					className={cx({
+						active: router.asPath === `${INTERNAL_PATHS.DOCUMENTATION}/${category}/${section.id}`,
+					})}
+				>
+					{section.title}
+				</StyledListLink>
+			</InternalLink>
+		)),
+	]);
+
 	const docPaths = [
 		INTERNAL_PATHS.DOCUMENTATION,
-		...docSections.map((section) => `${INTERNAL_PATHS.DOCUMENTATION}#${section.id}` as INTERNAL_PATHS),
-		...docSections.map((section) => `${INTERNAL_PATHS.DOCUMENTATION}/${section.id}` as INTERNAL_PATHS),
+		...docSections.map((s) => `${INTERNAL_PATHS.DOCUMENTATION}/${s.category}/${s.id}` as INTERNAL_PATHS),
 	];
 
 	return (

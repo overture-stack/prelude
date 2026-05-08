@@ -1,79 +1,105 @@
-# IBC Workshop — Data Discovery Portal
+# Overture Arranger MCP - Demo & Development Environment
 
-Workshop materials for the **19th Annual International Biocuration Conference**. This repository guides you through building a data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage.
+This repository is the central demo and development environment for building conversational AI capabilities for Overture-based cancer genomics platforms.
 
 <p align="center">
-   <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Workshop Portal Preview" width="800">
+   <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Portal Preview" width="800">
 </p>
 
-## Prerequisites
+## Project Aims
 
-Before starting, ensure you have:
+1. **Conversational data discovery** - expose Overture's GraphQL search API through the Model Context Protocol, enabling natural language queries across any Overture deployment
+2. **Pathway discovery** - integrate curated gene sets (MSigDB, 50,000+) for conversational pathway analysis alongside genomics data
+3. **Local LLM support** - orchestrate MCP servers with local models (LM Studio, Ollama) for privacy-preserving, institutionally deployable workflows
+4. **Interactive analysis & visualization** - LLM-generated code execution in sandboxed environments
+5. **Federated discovery** - unified queries across distributed Overture instances and external repositories
+6. **Platform extensibility** - MCP Integration Cookbook, workshop series, and Overture MCP Registry
 
-- **Git** — `git --version` returns a version number
-- **Docker Desktop 28.0.0+** — running with 4+ CPUs and 8 GB+ memory allocated
-- **Docker images pre-pulled** (most time-consuming step — do this before the workshop):
+## This Demo Environment
 
-  ```bash
-  docker pull alpine/curl:8.8.0
-  docker pull postgres:15-alpine
-  docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.27
-  docker pull ghcr.io/overture-stack/arranger-server:4919f736
-  docker pull ghcr.io/overture-stack/conductor:171d9ce
-  docker pull node:18-alpine
-  ```
+The portal hosts four cancer genomics datasets from the Drug Discovery Portal, covering ~405 million records across 32 cancer types:
 
-- **Windows users:** WSL2 configured with Docker Desktop integration enabled — run all commands from a Bash terminal inside WSL2
+| Dataset          | Description                                                        |
+| ---------------- | ------------------------------------------------------------------ |
+| **Mutations**    | Gene mutation frequencies with cancer type and hotspot designation |
+| **Expression**   | Gene expression profiles relative to normal tissue                 |
+| **Correlations** | Gene-gene Pearson correlation patterns                             |
+| **Proteins**     | Protein-protein interaction network data                           |
 
-See [docs.overture.bio/workshop/prerequisites](https://docs.overture.bio/workshop/prerequisites) for full setup instructions.
+These datasets are the primary validation environment for **Aim 1** - demonstrating conversational data discovery through the Overture Arranger MCP Server.
 
-## Quick Start
+## Running the Demo
 
-1. **Clone this repository:**
+Clone the repository and start the full stack:
 
-   ```bash
-   git clone -b IBCworkshop https://github.com/overture-stack/prelude.git
-   cd prelude
-   ```
+```bash
+git clone https://github.com/overture-stack/prelude.git
+cd prelude
+make demo
+```
 
-2. **Run the demo:**
+The portal will be available at **http://localhost:3000** once deployment completes.
 
-   ```bash
-   make demo
-   ```
+<details>
+<summary><strong>What this command does</strong></summary>
 
-   The portal will open in your browser once deployment is complete.
+1. Runs system checks (Docker version, available resources)
+2. Builds the Stage frontend image
+3. Starts all services via Docker Compose
+4. Initializes PostgreSQL schemas
+5. Creates Elasticsearch indices from the pre-configured mappings
+6. Loads the Drug Discovery Portal sample data into Elasticsearch
+7. Starts Arranger (search API) and Stage (portal UI)
+8. Opens the portal in your browser automatically
 
-## Workshop Documentation
+</details>
 
-Full step-by-step workshop documentation is available in the [`docs/`](docs/) directory and rendered in the portal UI once running.
+:::info
+The first run takes longer because Docker needs to build the Stage image. Subsequent runs will be faster.
+:::
 
-| Step | Doc |
-|------|-----|
-| 0 | [Intro & Prerequisites](docs/00-Workshop.md) |
-| 1 | [Running the Demo](docs/01-Running-the-Demo.md) |
-| 2 | [Architecture](docs/02-Architecture.md) |
-| 3 | [Data Preparation](docs/03-Data-Preparation.md) |
-| 4 | [Generating Configurations](docs/04-Generating-Configurations.md) |
-| 5 | [Docker Configuration](docs/05-Docker-Configuration.md) |
-| 6 | [Loading Data](docs/06-Loading-Data.md) |
-| 7 | [Troubleshooting](docs/07-Troubleshooting.md) |
-| 8 | [Portal Customization](docs/08-Portal-Customization.md) |
-| 9 | [Next Steps](docs/09-Next-Steps.md) |
+## Services
 
-## Architecture
+Once running, the following containers are active:
 
-1. **Data preparation:** CSV files processed by Conductor (ETL)
-2. **Indexing:** Data loaded into Elasticsearch
-3. **Querying:** Arranger queries Elasticsearch via GraphQL
-4. **Portal UI:** Stage renders Arranger search components for real-time filtering and exploration
+| Container             | Port | Role               |
+| --------------------- | ---- | ------------------ |
+| `stage`               | 3000 | Portal frontend    |
+| `arranger-datatable1` | 5050 | Search API         |
+| `elasticsearch`       | 9200 | Search engine      |
+| `postgres`            | 5435 | Persistent storage |
+
+```bash
+docker ps
+```
+
+:::info
+**Stuck?** Run `docker logs setup` to see where initialization failed. Common causes: Docker not running, port 3000 already in use, insufficient memory allocated to Docker (8 GB recommended).
+:::
+
+## Stopping and Resetting
+
+Stop all containers:
+
+```bash
+make down
+```
+
+Stop and wipe all data (full reset):
+
+```bash
+make reset
+```
+
+## Documentation
+
+Full documentation is available in the [`docs/`](docs/) directory and rendered in the portal UI once running.
 
 ## Support
 
-|                         |                                                                                                                                  |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **During the workshop** | A Slack channel link will be provided on the day                                                                                 |
-| **Before or after**     | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
-| **Bug reports**         | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
+|                 |                                                                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Questions**   | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
+| **Bug reports** | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
 
-**Facilitator:** Mitchell Shiell, Ontario Institute for Cancer Research — [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)
+**Lead:** Mitchell Shiell, Ontario Institute for Cancer Research - [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)

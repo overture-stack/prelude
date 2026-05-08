@@ -9,7 +9,7 @@
  */
 export function extractTitle(content: string): string {
 	const titleMatch = content.match(/^#\s+(.+?)(?:\s+\{#.+\})?$/m);
-	return titleMatch ? titleMatch[1].trim() : 'Untitled Section';
+	return titleMatch ? titleMatch[1].trim() : '';
 }
 
 /**

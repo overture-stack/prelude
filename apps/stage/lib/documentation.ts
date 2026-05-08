@@ -19,6 +19,7 @@ export interface DocumentationSection {
 	htmlContent: string;
 	order: number;
 	filePath: string;
+	category: string;
 }
 
 export interface DocumentationHeading {
@@ -31,7 +32,75 @@ export interface DocumentationData {
 	sections: Omit<DocumentationSection, 'content' | 'htmlContent'>[];
 	currentSection: DocumentationSection | null;
 	headings: DocumentationHeading[];
+	categoryLabels: Record<string, string>;
 }
+
+// ─── Config types ────────────────────────────────────────────────────────────
+
+interface DocsConfigCategory {
+	id: string;
+	label: string;
+}
+
+interface DocsConfig {
+	categories: DocsConfigCategory[];
+}
+
+function loadDocsConfig(docsDirectory: string): DocsConfig | null {
+	const configPath = path.join(docsDirectory, 'docs.config.json');
+	if (!fs.existsSync(configPath)) return null;
+	try {
+		return JSON.parse(fs.readFileSync(configPath, 'utf8')) as DocsConfig;
+	} catch (e) {
+		console.warn('Failed to parse docs.config.json:', e);
+		return null;
+	}
+}
+
+// ─── HTML processing helpers ─────────────────────────────────────────────────
+
+async function buildHtmlContent(fileContent: string): Promise<string> {
+	const withAdmonitions = await processAdmonitions(fileContent);
+	const processedContent = processCustomComponents(withAdmonitions);
+	const htmlContent = await marked(processedContent);
+
+	return htmlContent
+		.replace(
+			/<h([1-6])(?:\s+id="[^"]*")?\s*>([^<]+)<\/h[1-6]>/g,
+			(_match, level, text) => {
+				const id = generateHeadingId(text);
+				return `<h${level} id="${id}">${text}</h${level}>`;
+			},
+		)
+		.replace(/(<img\s[^>]*src=")(?!\/|https?:\/\/)([^"]+)"/g, '$1/docs/$2"')
+		.replace(/<summary>([\s\S]*?)<\/summary>/g, (_m, content) => {
+			let c = content.replace(/<strong>([\s\S]*?)<\/strong>/g, '$1');
+			c = c
+				.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+				.replace(/`([^`\n]+)`/g, '<code>$1</code>')
+				.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+			return `<summary>${c}</summary>`;
+		});
+}
+
+// ─── Category helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Returns category folder names in config order, or sorted alphabetically if no config.
+ */
+function getCategoryOrder(docsDirectory: string, config: DocsConfig | null): string[] {
+	if (config) return config.categories.map(c => c.id).filter(id => {
+		return fs.existsSync(path.join(docsDirectory, id));
+	});
+
+	const entries = fs.readdirSync(docsDirectory, { withFileTypes: true });
+	return entries
+		.filter(e => e.isDirectory() && e.name !== 'img')
+		.map(e => e.name)
+		.sort();
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
  * Load all documentation sections at build time
@@ -39,96 +108,78 @@ export interface DocumentationData {
 export async function loadDocumentationSections(): Promise<DocumentationSection[]> {
 	const docsDirectory = path.join(process.cwd(), 'public/docs');
 
-	// Check if docs directory exists
 	if (!fs.existsSync(docsDirectory)) {
 		console.warn('Documentation directory not found:', docsDirectory);
 		return [];
 	}
 
-	const fileNames = fs.readdirSync(docsDirectory);
-	const markdownFiles = fileNames.filter(name => name.endsWith('.md'));
+	const config = loadDocsConfig(docsDirectory);
+	const categories = getCategoryOrder(docsDirectory, config);
+	const allSections: DocumentationSection[] = [];
 
-	const sections = await Promise.all(
-		markdownFiles.map(async (fileName) => {
-			const filePath = path.join(docsDirectory, fileName);
-			const fileContent = fs.readFileSync(filePath, 'utf8');
+	for (const category of categories) {
+		const categoryDir = path.join(docsDirectory, category);
+		const fileNames = fs.readdirSync(categoryDir)
+			.filter(name => name.endsWith('.md'))
+			.sort();
 
-			// Extract title from first heading or filename
-			const title = extractTitle(fileContent) || fileName.replace('.md', '');
+		const sections = await Promise.all(
+			fileNames.map(async (fileName) => {
+				const filePath = path.join(categoryDir, fileName);
+				const fileContent = fs.readFileSync(filePath, 'utf8');
+				const title = extractTitle(fileContent) || fileName.replace(/^\d+-/, '').replace(/\.md$/, '');
+				const id = generateId(fileName);
+				const order = extractOrder(fileName);
+				const htmlContent = await buildHtmlContent(fileContent);
 
-			// Generate ID from filename
-			const id = generateId(fileName);
+				return {
+					id,
+					title,
+					content: fileContent,
+					htmlContent,
+					order,
+					filePath: `${category}/${fileName}`,
+					category,
+				};
+			})
+		);
 
-			// Extract order from filename prefix
-			const order = extractOrder(fileName);
+		allSections.push(...sections.sort((a, b) => a.order - b.order));
+	}
 
-			// Process admonitions and custom components before markdown rendering
-			const withAdmonitions = await processAdmonitions(fileContent);
-			const processedContent = processCustomComponents(withAdmonitions);
-
-			// Convert markdown to HTML with custom heading IDs
-			const htmlContent = await marked(processedContent);
-
-			// Post-process: normalise heading IDs and rewrite relative image paths
-			const processedHtml = htmlContent
-				.replace(
-					/<h([1-6])(?:\s+id="[^"]*")?\s*>([^<]+)<\/h[1-6]>/g,
-					(_match, level, text) => {
-						const id = generateHeadingId(text);
-						return `<h${level} id="${id}">${text}</h${level}>`;
-					},
-				)
-				.replace(/(<img\s[^>]*src=")(?!\/|https?:\/\/)([^"]+)"/g, '$1/docs/$2"')
-			.replace(/<summary>([\s\S]*?)<\/summary>/g, (_m, content) => {
-				// Unwrap redundant <strong> wrappers so nested **markdown** can be processed cleanly
-				let c = content.replace(/<strong>([\s\S]*?)<\/strong>/g, '$1');
-				c = c
-					.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
-					.replace(/`([^`\n]+)`/g, '<code>$1</code>')
-					.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
-				return `<summary>${c}</summary>`;
-			});
-
-			return {
-				id,
-				title,
-				content: fileContent,
-				htmlContent: processedHtml,
-				order,
-				filePath: fileName,
-			};
-		})
-	);
-
-	// Sort by order
-	return sections.sort((a, b) => a.order - b.order);
+	return allSections;
 }
 
 /**
  * Get documentation data for a specific section
- * Optimized to only load necessary data
  */
-export async function getDocumentationData(sectionId?: string): Promise<DocumentationData> {
-	const sections = await loadDocumentationSectionsSummary(); // Load only titles and IDs for navigation
+export async function getDocumentationData(sectionId?: string, category?: string): Promise<DocumentationData> {
+	const docsDirectory = path.join(process.cwd(), 'public/docs');
+	const config = loadDocsConfig(docsDirectory);
 
-	// Find and load the current section with full content
+	const categoryLabels: Record<string, string> = config
+		? Object.fromEntries(config.categories.map(c => [c.id, c.label]))
+		: {};
+
+	const sections = await loadDocumentationSectionsSummary();
+
 	let currentSection: DocumentationSection | null = null;
-	if (sectionId) {
-		currentSection = await loadSingleSection(sectionId);
+	if (sectionId && category) {
+		currentSection = await loadSingleSection(sectionId, category);
 	}
 
-	// Default to first section if none specified
 	if (!currentSection && sections.length > 0) {
-		currentSection = await loadSingleSection(sections[0].id);
+		const first = sections[0];
+		currentSection = await loadSingleSection(first.id, first.category);
 	}
 
-	// Extract headings from current section
 	const headings = currentSection ? extractHeadings(currentSection.content) : [];
 
 	return {
 		sections,
 		currentSection,
 		headings,
+		categoryLabels,
 	};
 }
 
@@ -143,87 +194,82 @@ export async function loadDocumentationSectionsSummary(): Promise<Omit<Documenta
 		return [];
 	}
 
-	const fileNames = fs.readdirSync(docsDirectory);
-	const markdownFiles = fileNames.filter(name => name.endsWith('.md'));
+	const config = loadDocsConfig(docsDirectory);
+	const categories = getCategoryOrder(docsDirectory, config);
+	const allSections: Omit<DocumentationSection, 'content' | 'htmlContent'>[] = [];
 
-	const sections = markdownFiles.map((fileName) => {
-		const filePath = path.join(docsDirectory, fileName);
-		const fileContent = fs.readFileSync(filePath, 'utf8');
+	for (const category of categories) {
+		const categoryDir = path.join(docsDirectory, category);
+		const fileNames = fs.readdirSync(categoryDir)
+			.filter(name => name.endsWith('.md'))
+			.sort();
 
-		// Extract only the title (don't process full content)
-		const title = extractTitle(fileContent) || fileName.replace('.md', '');
-		const id = generateId(fileName);
-		const order = extractOrder(fileName);
+		const sections = fileNames.map((fileName) => {
+			const filePath = path.join(categoryDir, fileName);
+			const fileContent = fs.readFileSync(filePath, 'utf8');
+			const title = extractTitle(fileContent) || fileName.replace(/^\d+-/, '').replace(/\.md$/, '');
+			const id = generateId(fileName);
+			const order = extractOrder(fileName);
 
-		return {
-			id,
-			title,
-			order,
-			filePath: fileName,
-		};
-	});
+			return {
+				id,
+				title,
+				order,
+				filePath: `${category}/${fileName}`,
+				category,
+			};
+		});
 
-	return sections.sort((a, b) => a.order - b.order);
+		allSections.push(...sections.sort((a, b) => a.order - b.order));
+	}
+
+	return allSections;
 }
 
 /**
  * Load a single section with full content
  */
-export async function loadSingleSection(sectionId: string): Promise<DocumentationSection | null> {
+export async function loadSingleSection(sectionId: string, category: string): Promise<DocumentationSection | null> {
 	const docsDirectory = path.join(process.cwd(), 'public/docs');
-	const fileNames = fs.readdirSync(docsDirectory);
-	const markdownFiles = fileNames.filter(name => name.endsWith('.md'));
+	const categoryDir = path.join(docsDirectory, category);
 
-	// Find the file that matches the section ID
-	const fileName = markdownFiles.find(name => generateId(name) === sectionId);
-	if (!fileName) {
-		return null;
-	}
+	if (!fs.existsSync(categoryDir)) return null;
 
-	const filePath = path.join(docsDirectory, fileName);
+	// Resolve file by matching the generated ID
+	const fileNames = fs.readdirSync(categoryDir).filter(name => name.endsWith('.md'));
+	const fileName = fileNames.find(name => generateId(name) === sectionId);
+	if (!fileName) return null;
+
+	const filePath = path.join(categoryDir, fileName);
 	const fileContent = fs.readFileSync(filePath, 'utf8');
 
-	const title = extractTitle(fileContent) || fileName.replace('.md', '');
+	const title = extractTitle(fileContent) ?? fileName.replace('.md', '');
+
 	const id = generateId(fileName);
 	const order = extractOrder(fileName);
-
-	// Process admonitions and custom components before markdown rendering
-	const withAdmonitions = await processAdmonitions(fileContent);
-	const processedContent = processCustomComponents(withAdmonitions);
-
-	// Convert markdown to HTML with custom heading IDs
-	const htmlContent = await marked(processedContent);
-
-	// Post-process: normalise heading IDs and rewrite relative image paths
-	const processedHtml = htmlContent
-		.replace(
-			/<h([1-6])(?:\s+id="[^"]*")?\s*>([^<]+)<\/h[1-6]>/g,
-			(_match, level, text) => {
-				const id = generateHeadingId(text);
-				return `<h${level} id="${id}">${text}</h${level}>`;
-			},
-		)
-		.replace(/(<img\s[^>]*src=")(?!\/|https?:\/\/)([^"]+)"/g, '$1/docs/$2"');
+	const htmlContent = await buildHtmlContent(fileContent);
 
 	return {
 		id,
 		title,
 		content: fileContent,
-		htmlContent: processedHtml,
+		htmlContent,
 		order,
-		filePath: fileName,
+		filePath: `${category}/${fileName}`,
+		category,
 	};
 }
 
 /**
- * Get all section IDs for static path generation
+ * Get all section paths for static path generation
  */
-export async function getAllSectionIds(): Promise<string[]> {
+export async function getAllSectionPaths(): Promise<{ category: string; id: string }[]> {
 	const sections = await loadDocumentationSectionsSummary();
-	return sections.map(section => section.id);
+	return sections.map(s => ({ category: s.category, id: s.id }));
 }
 
-// Utility functions
+// ─── Utility functions ────────────────────────────────────────────────────────
+
 function extractTitle(content: string): string | null {
 	const titleMatch = content.match(/^#\s+(.+)$/m);
 	return titleMatch ? titleMatch[1].trim() : null;
@@ -231,11 +277,11 @@ function extractTitle(content: string): string | null {
 
 function generateId(fileName: string): string {
 	return fileName
-		.replace(/^\d+-/, '') // Remove number prefix
-		.replace(/\.md$/, '') // Remove .md extension
+		.replace(/^\d+-/, '')
+		.replace(/\.md$/, '')
 		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with dashes
-		.replace(/(^-|-$)/g, ''); // Remove leading/trailing dashes
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/(^-|-$)/g, '');
 }
 
 function extractOrder(fileName: string): number {
@@ -251,9 +297,8 @@ function extractHeadings(content: string): DocumentationHeading[] {
 	while ((match = headingRegex.exec(content)) !== null) {
 		const level = match[1].length as 1 | 2 | 3 | 4 | 5 | 6;
 		const text = match[2].trim();
-		const id = generateHeadingId(text); // Use consistent ID generation
+		const id = generateHeadingId(text);
 
-		// Include h2 and h3 headings in TOC
 		if (level === 2 || level === 3) {
 			headings.push({ id, text, level });
 		}
@@ -274,7 +319,6 @@ const ADMONITION_ICONS: Record<string, string> = {
 
 /**
  * Convert :::type [optional title]\ncontent\n::: blocks into styled HTML divs.
- * Inner content is rendered as markdown independently so inline formatting works.
  */
 async function processAdmonitions(content: string): Promise<string> {
 	const admonitionRegex = /^:::(\w+)([ \t][^\n]*)?\n([\s\S]*?)^:::/gm;
@@ -310,42 +354,33 @@ async function processAdmonitions(content: string): Promise<string> {
 
 /**
  * Process custom component tags in markdown
- * Converts custom tags like <DictionaryTable> and <DictionaryViewerFull> into placeholders that will be hydrated client-side
- * IMPORTANT: Skips content inside code blocks (```) to avoid replacing examples
  */
 function processCustomComponents(content: string): string {
-	// Split content by code blocks to protect them from replacement
 	const codeBlockRegex = /```[\s\S]*?```/g;
 	const codeBlocks: string[] = [];
 	const placeholder = '___CODE_BLOCK_PLACEHOLDER___';
 
-	// Extract and protect code blocks
 	let protectedContent = content.replace(codeBlockRegex, (match) => {
 		codeBlocks.push(match);
 		return `${placeholder}${codeBlocks.length - 1}${placeholder}`;
 	});
 
-	// Process DictionaryTable components (table-only view)
 	protectedContent = protectedContent.replace(
 		/<DictionaryTable\s+url="([^"]+)"\s+showSchemaNames="([^"]+)"\s*\/?>/g,
 		(_, url, showSchemaNames) => {
-			// Create a marker that will be replaced client-side
 			const componentId = `dictionary-table-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 			return `<div class="dictionary-table-container" data-component="DictionaryTable" data-url="${url}" data-show-schema-names="${showSchemaNames}" id="${componentId}"></div>`;
 		},
 	);
 
-	// Process DictionaryViewerFull components (full viewer with header, toolbar, accordions)
 	protectedContent = protectedContent.replace(
 		/<DictionaryViewerFull\s+url="([^"]+)"\s*\/?>/g,
 		(_, url) => {
-			// Create a marker that will be replaced client-side
 			const componentId = `dictionary-viewer-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 			return `<div class="dictionary-viewer-container" data-component="DictionaryViewerFull" data-url="${url}" id="${componentId}"></div>`;
 		},
 	);
 
-	// Restore code blocks
 	const restoredContent = protectedContent.replace(
 		new RegExp(`${placeholder}(\\d+)${placeholder}`, 'g'),
 		(_, index) => codeBlocks[parseInt(index)]

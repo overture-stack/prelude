@@ -1,33 +1,36 @@
 // components/NavBar/NavBar.tsx
 import { css, useTheme } from '@emotion/react';
-import { useRouter } from 'next/router';
 import { createRef, ReactElement } from 'react';
 
 import { getConfig } from '../../global/config';
-import useAuthContext from '../../global/hooks/useAuthContext';
-import { ARRANGER_GQL, ELASTICVUE_DOCS, INTERNAL_PATHS, LOGIN_PATH, USER_PATH } from '../../global/utils/constants';
-import { InternalLink, StyledLinkAsButton } from '../Link';
+import {
+	ARRANGER_GQL_CORRELATION,
+	ARRANGER_GQL_EXPRESSION,
+	ARRANGER_GQL_MUTATION,
+	ARRANGER_GQL_PROTEIN,
+	ARRANGER_INTROSPECTION,
+	ARRANGER_INTROSPECTION_CORRELATION,
+	ARRANGER_INTROSPECTION_EXPRESSION,
+	ARRANGER_INTROSPECTION_MUTATION,
+	ARRANGER_INTROSPECTION_PROTEIN,
+	ARRANGER_INTROSPECTION_SQON,
+	INTERNAL_PATHS,
+} from '../../global/utils/constants';
+import { InternalLink } from '../Link';
 import defaultTheme from '../theme';
-import UserDropdown from '../UserDropdown';
 
 import labIcon from '@/public/images/navbar-logo.png';
 import DataTablesDropdown from './DataTablesDropdown';
 import DocumentationDropdown from './DocumentationDropdown';
 import Dropdown from './Dropdown';
+import FlyoutMenuItem from './FlyoutMenuItem';
 import { StyledListLink } from './styles';
 
 export const navBarRef = createRef<HTMLDivElement>();
 
 const NavBar = (): ReactElement => {
-	const router = useRouter();
 	const theme: typeof defaultTheme = useTheme();
-	const { user } = useAuthContext();
-	const { NEXT_PUBLIC_AUTH_PROVIDER, NEXT_PUBLIC_LAB_NAME } = getConfig();
-
-	const activeLinkStyle = `
-    background-color: ${theme.colors.grey_2};
-    color: ${theme.colors.accent2_dark};
-  `;
+	const { NEXT_PUBLIC_LAB_NAME } = getConfig();
 
 	return (
 		<div
@@ -178,73 +181,37 @@ const NavBar = (): ReactElement => {
 								font-weight: bold;
 							`}
 							data={[
-								<InternalLink path={INTERNAL_PATHS.CONFIG_GENERATOR}>
-									<StyledListLink>Config Generator</StyledListLink>
-								</InternalLink>,
-								<InternalLink path={INTERNAL_PATHS.DICTIONARY_PLAYGROUND}>
-									<StyledListLink>Dictionary Playground</StyledListLink>
-								</InternalLink>,
-								<a href={ARRANGER_GQL} target="_blank" rel="noopener noreferrer">
-									<StyledListLink>GraphQL API</StyledListLink>
+								<a href={ARRANGER_INTROSPECTION} target="_blank" rel="noopener noreferrer">
+									<StyledListLink>Server Introspection</StyledListLink>
 								</a>,
-								<a href={ELASTICVUE_DOCS} target="_blank" rel="noopener noreferrer">
-									<StyledListLink>ElasticVue</StyledListLink>
+								<a href={ARRANGER_INTROSPECTION_SQON} target="_blank" rel="noopener noreferrer">
+									<StyledListLink>SQON Introspection</StyledListLink>
 								</a>,
+								<FlyoutMenuItem
+									label="Field Definitions"
+									items={[
+										{ label: 'Correlation', href: ARRANGER_INTROSPECTION_CORRELATION },
+										{ label: 'Mutation', href: ARRANGER_INTROSPECTION_MUTATION },
+										{ label: 'Expression', href: ARRANGER_INTROSPECTION_EXPRESSION },
+										{ label: 'Protein', href: ARRANGER_INTROSPECTION_PROTEIN },
+									]}
+								/>,
+								<FlyoutMenuItem
+									label="GraphQL Playground"
+									items={[
+										{ label: 'Correlation', href: ARRANGER_GQL_CORRELATION },
+										{ label: 'Mutation', href: ARRANGER_GQL_MUTATION },
+										{ label: 'Expression', href: ARRANGER_GQL_EXPRESSION },
+										{ label: 'Protein', href: ARRANGER_GQL_PROTEIN },
+									]}
+								/>,
 							]}
-							label="Resources & Tools"
-							urls={[INTERNAL_PATHS.CONFIG_GENERATOR, INTERNAL_PATHS.DICTIONARY_PLAYGROUND]}
+							label="Developer Tools"
+							urls={[]}
 						/>
 					</div>
 				</div>
 
-				{/* Auth Section */}
-				{NEXT_PUBLIC_AUTH_PROVIDER && (
-					<div
-						css={css`
-							display: flex;
-							align-items: center;
-							margin-right: 16px;
-						`}
-					>
-						{user ? (
-							<div
-								css={(theme) => css`
-									width: 195px;
-									height: ${theme.dimensions.navbar.height}px;
-									position: relative;
-									display: flex;
-									${router.pathname === USER_PATH ? activeLinkStyle : ''}
-									&:hover {
-										background-color: ${theme.colors.grey_2};
-									}
-								`}
-							>
-								<UserDropdown />
-							</div>
-						) : (
-							<div
-								css={css`
-									width: 145px;
-									display: flex;
-									align-items: center;
-									justify-content: center;
-								`}
-							>
-								<InternalLink path={LOGIN_PATH}>
-									<StyledLinkAsButton
-										css={(theme) => css`
-											width: 70px;
-											${theme.typography.button};
-											line-height: 20px;
-										`}
-									>
-										Log in
-									</StyledLinkAsButton>
-								</InternalLink>
-							</div>
-						)}
-					</div>
-				)}
 			</div>
 		</div>
 	);

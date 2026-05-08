@@ -29,6 +29,7 @@ import {
 } from '@overture-stack/arranger-components';
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { useMemo } from 'react';
+import { useRouter } from 'next/router';
 import { ExportConfig } from '../types';
 import { createTableTheme } from '../theme/tableTheme';
 
@@ -72,6 +73,8 @@ interface RepoTableProps {
  */
 const RepoTable = ({ callerName, apiHost, exportRowIdField, exportConfig }: RepoTableProps) => {
 	const theme = useTheme();
+	const router = useRouter();
+	const currentTableName = router.pathname.replace('/', '') || 'unknown';
 
 	/**
 	 * Create default export configuration.

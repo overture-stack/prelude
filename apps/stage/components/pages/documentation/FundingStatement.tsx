@@ -13,7 +13,8 @@ const FundingStatement: React.FC = () => {
 			<div css={styles.inner}>
 				<h4 css={styles.title}>Supported by</h4>
 				<p css={styles.text}>
-					Grant #U24CA253529 from the National Cancer Institute at the US National Institutes of Health
+					The Digital Research Alliance of Canada, and Grant #U24CA253529 from the National Cancer Institute
+					at the US National Institutes of Health.
 				</p>
 			</div>
 		</div>

@@ -49,10 +49,12 @@ check_ping() {
 
 # Validates the GraphQL schema by querying __typename
 # Returns success only when arranger's schema built correctly
+# Accepts optional second arg to override the graphql path (e.g. /correlation/graphql for multi-catalogue)
 check_graphql_schema() {
     local arranger_url="$1"
+    local graphql_path="${2:-/graphql}"
 
-    graphql_response=$(curl -s -X POST "${arranger_url}/graphql" \
+    graphql_response=$(curl -s -X POST "${arranger_url}${graphql_path}" \
         -H "Content-Type: application/json" \
         -d '{"query":"{ __typename }"}' \
         --max-time "$TIMEOUT" 2>/dev/null)
@@ -163,7 +165,10 @@ check_arrangers() {
         printf "   └─ \033[1;36mInfo:\033[0m Arranger instance %d is responding\n" "$i"
 
         # Step 2: Validate the GraphQL schema
-        if ! check_graphql_schema "$arranger_url"; then
+        # ARRANGER_${i}_GRAPHQL_PATH overrides the default /graphql path (used for multi-catalogue mode)
+        graphql_path_var="ARRANGER_${i}_GRAPHQL_PATH"
+        graphql_path=$(eval "echo \$$graphql_path_var")
+        if ! check_graphql_schema "$arranger_url" "$graphql_path"; then
             check_container_logs "$container_name"
             printf "\n%s\n" "$TROUBLESHOOTING_TIPS"
             all_healthy=false

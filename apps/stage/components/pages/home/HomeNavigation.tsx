@@ -6,11 +6,23 @@ import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
 import { extractOrder, extractTitle, generateSlug } from '../documentation/utils/documentUtils';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
+const CATEGORY_LABELS: Record<string, string> = {
+	user: 'User Guides',
+	developer: 'Developer Guides',
+};
+
+interface SubItem {
+	title: string;
+	link: string;
+	external?: boolean;
+	isHeader?: boolean;
+}
+
 interface CardItem {
 	title: string;
 	link: string;
 	description: string;
-	subItems?: { title: string; link: string; external?: boolean }[];
+	subItems?: SubItem[];
 	external?: boolean;
 	isDynamic?: boolean;
 }
@@ -19,6 +31,7 @@ interface SectionItem {
 	title: string;
 	id: string;
 	order: number;
+	category: string;
 }
 
 const HomeNavigation = (): ReactElement => {
@@ -34,9 +47,9 @@ const HomeNavigation = (): ReactElement => {
 			isDynamic: true,
 		},
 		{
-			title: 'IBC Workshop',
+			title: 'Project Overview',
 			link: INTERNAL_PATHS.DOCUMENTATION,
-			description: 'All workshop materials can be found here',
+			description: 'Project aims, datasets, and goals',
 			isDynamic: true,
 		},
 		{
@@ -68,24 +81,29 @@ const HomeNavigation = (): ReactElement => {
 					setDataTables(tables);
 				}
 
-				// Fetch documentation
+				// Fetch documentation — API returns paths like "user/00-Introduction.md"
 				const docsResponse = await fetch('/api/docs');
 				if (!docsResponse.ok) throw new Error('Failed to fetch documentation list');
 
 				const files = await docsResponse.json();
-				const sectionsPromises = files.map(async (filename: string) => {
+				const sectionsPromises = files.map(async (filepath: string) => {
 					try {
-						const contentResponse = await fetch(`/docs/${filename}`);
-						if (!contentResponse.ok) throw new Error(`Failed to load ${filename}`);
+						const contentResponse = await fetch(`/docs/${filepath}`);
+						if (!contentResponse.ok) throw new Error(`Failed to load ${filepath}`);
 
 						const content = await contentResponse.text();
+						// filepath is "category/NN-Title.md" — parse category and filename separately
+						const slashIdx = filepath.indexOf('/');
+						const category = slashIdx !== -1 ? filepath.slice(0, slashIdx) : '';
+						const filename = slashIdx !== -1 ? filepath.slice(slashIdx + 1) : filepath;
 						return {
-							title: extractTitle(content),
+							title: extractTitle(content) || generateSlug(filename),
 							id: generateSlug(filename),
 							order: extractOrder(filename),
+							category,
 						};
 					} catch (error) {
-						console.error(`Error processing file ${filename}:`, error);
+						console.error(`Error processing file ${filepath}:`, error);
 						return null;
 					}
 				});
@@ -125,14 +143,22 @@ const HomeNavigation = (): ReactElement => {
 						})),
 					};
 				}
-				if (card.title === 'Documentation' && card.isDynamic) {
-					return {
-						...card,
-						subItems: docSections.map((section) => ({
+				if (card.title === 'Project Overview' && card.isDynamic) {
+					// Group by category and insert header items
+					const grouped = new Map<string, SectionItem[]>();
+					for (const section of docSections) {
+						const cat = section.category || 'general';
+						if (!grouped.has(cat)) grouped.set(cat, []);
+						grouped.get(cat)!.push(section);
+					}
+					const subItems: SubItem[] = Array.from(grouped.entries()).flatMap(([category, sections]) => [
+						{ title: CATEGORY_LABELS[category] ?? category, link: '', isHeader: true },
+						...sections.map((section) => ({
 							title: section.title,
-							link: `${INTERNAL_PATHS.DOCUMENTATION}#${section.id}`,
+							link: `${INTERNAL_PATHS.DOCUMENTATION}/${section.category}/${section.id}`,
 						})),
-					};
+					]);
+					return { ...card, subItems };
 				}
 				return card;
 			}),
@@ -151,8 +177,9 @@ const HomeNavigation = (): ReactElement => {
 		}
 	};
 
-	const handleSubItemClick = (subItem: { title: string; link: string; external?: boolean }, e: React.MouseEvent) => {
+	const handleSubItemClick = (subItem: SubItem, e: React.MouseEvent) => {
 		e.preventDefault();
+		if (subItem.isHeader || !subItem.link) return;
 		if (subItem.external) {
 			window.open(subItem.link, '_blank', 'noopener,noreferrer');
 		} else {
@@ -245,6 +272,16 @@ const HomeNavigation = (): ReactElement => {
 				border-bottom: 1px solid ${theme.colors.grey_3};
 			}
 		`,
+		dropdownHeader: css`
+			padding: 6px 8px 4px;
+			font-size: 0.65rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+			color: ${theme.colors.primary};
+			background: ${theme.colors.grey_2};
+			cursor: default;
+		`,
 		acknowledgements: css`
 			margin-top: 20px;
 		`,
@@ -286,11 +323,17 @@ const HomeNavigation = (): ReactElement => {
 							{card.subItems && openDropdown === index && (
 								<div css={styles.dropdownContent}>
 									{card.subItems.length > 0 ? (
-										card.subItems.map((subItem, subIndex) => (
-											<div key={subIndex} onClick={(e) => handleSubItemClick(subItem, e)} css={styles.dropdownItem}>
-												{subItem.title}
-											</div>
-										))
+										card.subItems.map((subItem, subIndex) =>
+											subItem.isHeader ? (
+												<div key={subIndex} css={styles.dropdownHeader}>
+													{subItem.title}
+												</div>
+											) : (
+												<div key={subIndex} onClick={(e) => handleSubItemClick(subItem, e)} css={styles.dropdownItem}>
+													{subItem.title}
+												</div>
+											)
+										)
 									) : (
 										<div css={styles.emptySubItems}>No items available</div>
 									)}

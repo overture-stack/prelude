@@ -134,8 +134,7 @@ const Dropdown = ({
 						left: 0;
 						top: calc(100% + 5px);
 						z-index: 1000;
-						border-left: 4px solid ${theme.colors.primary_dark};
-						max-height: calc(100vh - 80px);
+							max-height: calc(100vh - 80px);
 						overflow-y: auto;
 
 						li {
@@ -147,6 +146,13 @@ const Dropdown = ({
 							&:focus,
 							&:hover {
 								background: ${theme.colors.grey_3};
+							}
+
+							&:has([data-no-hover]) {
+								&:focus,
+								&:hover {
+									background: none;
+								}
 							}
 						}
 					`}

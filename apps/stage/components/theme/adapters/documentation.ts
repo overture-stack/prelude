@@ -43,7 +43,8 @@ export const createDocumentationTheme = (stageTheme: StageThemeInterface) => {
 			primary: colors.secondary,
 			primaryHover: colors.secondary_dark,
 			primaryLight: colors.secondary_palest,
-			primaryDark: colors.secondary,
+			// accent1_medium (#04518C) gives 7.5:1 on pale gray — safely above AA 4.5:1
+			primaryDark: colors.accent1_medium,
 
 			// Secondary palette - Teal/Green
 			secondary: colors.success,

@@ -23,15 +23,42 @@ import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Ta
 
 /**
  * Configuration for QuickSearch functionality in the Facets sidebar.
- * QuickSearch allows users to quickly filter data by searching specific fields.
+ * QuickSearch provides autocomplete search across specified fields.
+ *
+ * Important: Use data field names (e.g., 'data.hugo_symbol'), NOT aggregation field names.
  */
 export interface QuickSearchConfig {
-	/** The field name(s) to search against (e.g., 'donors.specimens.submitter_specimen_id') */
-	fieldNames: string;
-	/** Title displayed in the QuickSearch header */
+	/**
+	 * Field name(s) to search against - must be data fields, not aggregation fields.
+	 * Examples:
+	 * - Single field: 'data.hugo_symbol'
+	 * - Multiple fields: ['data.hugo_symbol_a', 'data.hugo_symbol_b']
+	 */
+	fieldNames: string | string[];
+
+	/**
+	 * Field name to use for filtering when a value is selected.
+	 * If not provided, defaults to the first field in fieldNames.
+	 */
+	displayFieldName?: string;
+
+	/** Title displayed in the QuickSearch facet header */
 	headerTitle: string;
-	/** Placeholder text shown in the search input */
+
+	/** Placeholder text shown in the search input box */
 	placeholder: string;
+}
+
+/**
+ * Configuration for multiple QuickSearch instances on a single page.
+ * Used when a table needs separate QuickSearch components for different fields.
+ *
+ * Example use cases:
+ * - Correlation/Protein tables with separate searches for hugo_symbol_a and hugo_symbol_b
+ */
+export interface MultiQuickSearchConfig {
+	/** Array of QuickSearch configurations, one for each search instance */
+	configs: QuickSearchConfig[];
 }
 
 /**
@@ -73,10 +100,10 @@ export interface DataExplorerConfig {
 	enableQuickSearch?: boolean;
 
 	// ========== Optional Configurations ==========
-	/** Configuration for QuickSearch (required if enableQuickSearch is true) */
+	/** Configuration for single QuickSearch instance (mutually exclusive with multiQuickSearchConfig) */
 	quickSearchConfig?: QuickSearchConfig;
+	/** Configuration for multiple QuickSearch instances (mutually exclusive with quickSearchConfig) */
+	multiQuickSearchConfig?: MultiQuickSearchConfig;
 	/** Configuration for data export functionality */
 	exportConfig?: ExportConfig;
-
-	// Note: Theme customizations will be added in a later step
 }

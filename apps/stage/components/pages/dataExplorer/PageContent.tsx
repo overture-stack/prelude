@@ -25,6 +25,7 @@ import { useArrangerData } from '@overture-stack/arranger-components';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types.js';
 import stringify from 'fast-json-stable-stringify';
 import { isEqual } from 'lodash';
+import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import Facets from './Facets';
 import QueryBar from './QueryBar';
@@ -60,6 +61,8 @@ interface PageContentProps {
  */
 const PageContent = ({ config }: PageContentProps) => {
 	const theme = useTheme();
+	const router = useRouter();
+	const currentTableName = router.pathname.replace('/', '') || 'unknown';
 
 	/**
 	 * React Hook: useState
@@ -195,72 +198,56 @@ const PageContent = ({ config }: PageContentProps) => {
 		() => (
 			<div
 				css={css`
-					flex: 1;
-					width: 100vw;
+					display: flex;
+					flex-direction: row;
+					height: calc(100vh - ${theme.dimensions.footer.height + theme.dimensions.navbar.height}px);
+					overflow: hidden;
 				`}
 			>
-				<div
+				{/* Sidebar: Filters/Facets */}
+				<aside
 					css={css`
+						flex: 0 0 ${sidebarWidth}px;
 						display: flex;
-						flex-direction: row;
-						margin-left: 0;
+						flex-direction: column;
+						background-color: ${theme.colors.white};
+						z-index: 1;
+						${theme.shadow.right};
+						height: 100%;
+						overflow-y: auto;
 					`}
 				>
-					{/*
-						Future feature: Toggle sidebar visibility
-						Currently commented out but shows how you could add this
+					<Facets
+						callerName={config.callerName}
+						enableQuickSearch={config.enableQuickSearch}
+						quickSearchConfig={config.quickSearchConfig}
+						multiQuickSearchConfig={config.multiQuickSearchConfig}
+					/>
+				</aside>
 
-					<button
-						onClick={() => setShowSidebar(!showSidebar)}
-					>
-						{showSidebar ? 'Hide' : 'Show'} Filters
-					</button>
-					*/}
-
-					{/* Sidebar: Filters/Facets */}
-					<aside
-						css={css`
-							flex: 0 0 ${sidebarWidth}px;
-							flex-direction: column;
-							background-color: ${theme.colors.white};
-							z-index: 1;
-							${theme.shadow.right};
-							height: calc(100vh - ${theme.dimensions.footer.height + theme.dimensions.navbar.height}px);
-							overflow-y: scroll;
-						`}
-					>
-						<Facets
-							callerName={config.callerName}
-							enableQuickSearch={config.enableQuickSearch}
-							quickSearchConfig={config.quickSearchConfig}
-						/>
-					</aside>
-
-					{/* Main content area: QueryBar + Table */}
+				{/* Main content area: QueryBar + Table */}
+				<div
+					css={css`
+						flex: 1;
+						display: flex;
+						flex-direction: column;
+						height: 100%;
+						overflow-y: auto;
+						overflow-x: hidden;
+					`}
+				>
 					<div
 						css={css`
-							display: flex;
-							flex-direction: column;
-							width: 100%;
-							height: calc(100vh - ${theme.dimensions.footer.height + theme.dimensions.navbar.height}px);
-							overflow-y: scroll;
+							margin: 0 15px 0 15px;
 						`}
 					>
-						<div
-							css={css`
-								flex: 8.5;
-								margin: 0 15px 0 15px;
-								max-width: calc(100vw - ${sidebarWidth + 10}px);
-							`}
-						>
-							<QueryBar callerName={config.callerName} />
-							<RepoTable
-								callerName={config.callerName}
-								apiHost={config.arrangerApi}
-								exportRowIdField={config.exportRowIdField}
-								exportConfig={config.exportConfig}
-							/>
-						</div>
+						<QueryBar callerName={config.callerName} />
+						<RepoTable
+							callerName={config.callerName}
+							apiHost={config.arrangerApi}
+							exportRowIdField={config.exportRowIdField}
+							exportConfig={config.exportConfig}
+						/>
 					</div>
 				</div>
 			</div>

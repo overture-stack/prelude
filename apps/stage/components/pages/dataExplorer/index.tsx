@@ -19,7 +19,7 @@
  *
  */
 
-import { css, useTheme } from '@emotion/react';
+import { Global, css, useTheme } from '@emotion/react';
 import { ArrangerDataProvider } from '@overture-stack/arranger-components';
 import { ReactElement, useEffect, useState } from 'react';
 import ErrorNotification from '@/components/ErrorNotification';
@@ -125,7 +125,7 @@ const DataExplorerPage = ({ config }: DataExplorerPageProps): ReactElement => {
 		 * .catch() → runs on error
 		 */
 		arrangerFetcher({
-			endpoint: 'graphql',
+			endpoint: 'graphql/hasValidConfig',
 			body: JSON.stringify({
 				variables: {
 					documentType: config.arrangerDocumentType,
@@ -309,6 +309,12 @@ const DataExplorerPage = ({ config }: DataExplorerPageProps): ReactElement => {
 					 * - Facets, QueryBar, Table
 					 * - Has access to ArrangerDataProvider context
 					 */}
+					<Global styles={css`
+						.currentlyDisplayed .type { font-size: 0; }
+						.currentlyDisplayed .type::after { font-size: 0.8rem; content: 'records'; }
+						.currentlyDisplayed .loading { font-size: 0; }
+						.currentlyDisplayed .loading::after { font-size: 0.8rem; content: 'Loading records...'; }
+					`} />
 					<PageContent config={config} />
 				</ArrangerDataProvider>
 			)}

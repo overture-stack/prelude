@@ -120,12 +120,13 @@ status:
 # Rebuild and redeploy stage service only
 rebuild:
 	@echo "Stopping stage service..."
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose stop stage
+	@PROFILE=platform docker compose stop stage
 	@echo "Rebuilding stage image..."
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose build --no-cache stage
+	@PROFILE=platform docker compose build --no-cache stage
 	@echo "Starting stage service..."
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose --profile platform up -d --no-deps stage
-	@printf "\033[1;32m✓ Stage rebuilt and redeployed — http://localhost:$(STAGE_PORT)\033[0m\n"
+	@PORT=$$(bash -c '(echo > /dev/tcp/localhost/3000) 2>/dev/null && echo 3001 || echo 3000'); \
+	STAGE_PORT=$$PORT PROFILE=platform docker compose --profile platform up -d --no-deps stage; \
+	printf "\033[1;32m✓ Stage rebuilt and redeployed — http://localhost:$$PORT\033[0m\n"
 
 # Back up PostgreSQL database
 backup:

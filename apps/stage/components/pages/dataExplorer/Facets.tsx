@@ -23,77 +23,52 @@ import { css, useTheme } from '@emotion/react';
 import { Aggregations, QuickSearch, useArrangerTheme } from '@overture-stack/arranger-components';
 import { ReactElement } from 'react';
 import { createFacetsTheme } from './theme/facetsTheme';
-import { QuickSearchConfig } from './types';
+import { MultiQuickSearchConfig, QuickSearchConfig } from './types';
 
 /**
- * Props interface for the Facets component.
- *
- * TypeScript Concepts:
- * - Interface for type safety
- * - Optional properties with ?
+ * Props for the Facets component.
  */
 interface FacetsProps {
-	/** Unique identifier for debugging */
+	/** Unique identifier used for Arranger debugging and theming */
 	callerName: string;
-	/** Whether to show QuickSearch feature */
+
+	/** Enable QuickSearch functionality (defaults to false if not provided) */
 	enableQuickSearch?: boolean;
-	/** Configuration for QuickSearch (required if enableQuickSearch is true) */
+
+	/**
+	 * Configuration for a single QuickSearch instance.
+	 * Mutually exclusive with multiQuickSearchConfig.
+	 * Used by: Expression Table, Mutation Table
+	 */
 	quickSearchConfig?: QuickSearchConfig;
+
+	/**
+	 * Configuration for multiple QuickSearch instances.
+	 * Mutually exclusive with quickSearchConfig.
+	 * Used by: Correlation Table, Protein Table
+	 */
+	multiQuickSearchConfig?: MultiQuickSearchConfig;
 }
 
 /**
- * Facets Component
+ * Renders the filter sidebar with faceted search and optional QuickSearch functionality.
  *
- * The sidebar that displays filterable facets (like filters in an e-commerce site).
- *
- * What this component does:
- * - Shows filterable fields (e.g., Gender, Age, Study)
- * - Each filter shows available values and counts
- * - Optionally includes QuickSearch for specific field searches
- * - Users can select/deselect values to filter the data table
- *
- * React Concepts:
- * 1. Conditional Rendering - Shows QuickSearch only if enabled
- * 2. Component Composition - Combines Aggregations and QuickSearch
- * 3. Props - Receives configuration from parent
- *
- * @param props - Component properties
- * @returns ReactElement (JSX)
+ * QuickSearch Patterns:
+ * - Single QuickSearch: Pass quickSearchConfig (e.g., Expression/Mutation tables)
+ * - Multi QuickSearch: Pass multiQuickSearchConfig (e.g., Correlation/Protein tables)
  */
-const Facets = ({ callerName, enableQuickSearch, quickSearchConfig }: FacetsProps): ReactElement => {
-	/**
-	 * React Hook: useTheme()
-	 * - Access to the application's theme
-	 */
+const Facets = ({
+	callerName,
+	enableQuickSearch,
+	quickSearchConfig,
+	multiQuickSearchConfig,
+}: FacetsProps): ReactElement => {
 	const theme = useTheme();
 
-	/**
-	 * Apply custom theme to Arranger components.
-	 *
-	 * Pattern: Conditional configuration
-	 * - Pass quickSearchConfig only if QuickSearch is enabled
-	 * - Factory function handles the conditional logic
-	 */
 	useArrangerTheme(createFacetsTheme(theme, callerName, quickSearchConfig));
 
-	/**
-	 * JSX Return with Conditional Rendering
-	 *
-	 * React Concept: Conditional Rendering with &&
-	 * - {condition && <Component />}
-	 * - If condition is true, render Component
-	 * - If condition is false, render nothing
-	 *
-	 * Example: enableQuickSearch && <QuickSearch />
-	 * - Shows QuickSearch only when enableQuickSearch is true
-	 */
 	return (
-		<div
-			css={css`
-				padding-bottom: 2rem;
-			`}
-		>
-			{/* Header for the filters sidebar */}
+		<div>
 			<h2
 				css={css`
 					${theme.typography.subheading}
@@ -105,32 +80,34 @@ const Facets = ({ callerName, enableQuickSearch, quickSearchConfig }: FacetsProp
 				Filters
 			</h2>
 
-			{/**
-			 * Conditional Rendering: QuickSearch
-			 *
-			 * Boolean short-circuit evaluation:
-			 * - If enableQuickSearch is true, evaluate the right side
-			 * - If enableQuickSearch is false, stop (nothing renders)
-			 *
-			 * This is equivalent to:
-			 * {enableQuickSearch ? <QuickSearch /> : null}
-			 */}
-			{enableQuickSearch && <QuickSearch />}
+			{/* Multi-QuickSearch: Render multiple instances with direct props */}
+			{enableQuickSearch && multiQuickSearchConfig && (
+				<>
+					{multiQuickSearchConfig.configs.map((config, index) => (
+						<QuickSearch
+							key={`quicksearch-${index}`}
+							name={`quicksearch-${index}`}
+							fieldNames={config.fieldNames}
+							displayFieldName={
+								config.displayFieldName ||
+								(typeof config.fieldNames === 'string' ? config.fieldNames : config.fieldNames[0])
+							}
+							theme={{
+								headerTitle: config.headerTitle,
+								placeholder: config.placeholder,
+								FilterInput: {
+									placeholder: config.placeholder,
+								},
+							}}
+						/>
+					))}
+				</>
+			)}
 
-			{/**
-			 * Aggregations Component (from Arranger)
-			 *
-			 * What it does:
-			 * - Automatically renders all configured facets
-			 * - Shows filter values with counts
-			 * - Handles user interactions (selecting/deselecting)
-			 * - Updates the global SQON (filter state)
-			 *
-			 * React Concept: Smart Component
-			 * - Contains its own logic and state
-			 * - Connected to Arranger's data context
-			 * - We just declare we want it, it handles everything
-			 */}
+			{/* Single QuickSearch: Configuration comes from global theme */}
+			{enableQuickSearch && quickSearchConfig && !multiQuickSearchConfig && <QuickSearch />}
+
+			{/* Aggregations: Renders all configured facets automatically */}
 			<Aggregations />
 		</div>
 	);

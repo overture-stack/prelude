@@ -9,7 +9,9 @@ import { useCodeBlockCopyButtons } from './utils/useCodeBlockCopyButtons';
 import { useDictionaryHydration } from './utils/useDictionaryHydration';
 import { useHeadingAnchors } from './utils/useHeadingAnchors';
 
-const DocumentationPage = ({ sections, currentSection, headings }: DocumentationData): ReactElement => {
+const DocumentationPage = ({ sections, currentSection, headings, categoryLabels }: DocumentationData): ReactElement => {
+	const getCategoryLabel = (category: string) =>
+		categoryLabels[category] ?? category.charAt(0).toUpperCase() + category.slice(1);
 	const contentRef = useRef<HTMLDivElement>(null);
 
 	const stageTheme = useTheme() as StageThemeInterface;
@@ -20,22 +22,43 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 	useHeadingAnchors(contentRef, currentSection);
 	useCodeBlockCopyButtons(contentRef, currentSection);
 
+	// Group sections by category, preserving insertion order
+	const groupedSections = useMemo(() => {
+		const groups = new Map<string, typeof sections>();
+		for (const section of sections) {
+			const cat = section.category ?? 'general';
+			if (!groups.has(cat)) groups.set(cat, []);
+			groups.get(cat)!.push(section);
+		}
+		return groups;
+	}, [sections]);
+
 	return (
 		<div css={styles.container}>
 			<aside css={styles.sidebar}>
 				<nav css={styles.nav}>
-					<h3 css={styles.sidebarTitle}>IBC Workshop</h3>
-					<ul css={styles.navList}>
-						{sections.map((section) => (
-							<li key={section.id} css={styles.navItem}>
-								<Link href={`/documentation/${section.id}`}>
-									<a css={styles.navLink} className={currentSection?.id === section.id ? 'active' : ''}>
-										{section.title}
-									</a>
-								</Link>
-							</li>
-						))}
-					</ul>
+					<h3 css={styles.sidebarTitle}>Documentation</h3>
+					{Array.from(groupedSections.entries()).map(([category, categorySections]) => (
+						<div key={category} css={styles.navCategory}>
+							<p css={styles.navCategoryLabel}>{getCategoryLabel(category)}</p>
+							<ul css={styles.navList}>
+								{categorySections.map((section) => (
+									<li key={`${category}/${section.id}`} css={styles.navItem}>
+										<Link href={`/documentation/${category}/${section.id}`}>
+											<a
+												css={styles.navLink}
+												className={
+													currentSection?.id === section.id && currentSection?.category === category ? 'active' : ''
+												}
+											>
+												{section.title}
+											</a>
+										</Link>
+									</li>
+								))}
+							</ul>
+						</div>
+					))}
 				</nav>
 				<FundingStatement />
 			</aside>
@@ -122,7 +145,27 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		color: ${theme.colors.text};
 		margin: 0 0 ${theme.spacing[4]} 0;
 		padding-bottom: ${theme.spacing[3]};
+		padding-left: ${theme.spacing[3]};
 		border-bottom: 1px solid ${theme.colors.sidebarBorder};
+	`,
+
+	navCategory: css`
+		margin-bottom: ${theme.spacing[4]};
+
+		& + & {
+			border-top: 1px solid ${theme.colors.border};
+			padding-top: ${theme.spacing[4]};
+		}
+	`,
+
+	navCategoryLabel: css`
+		font-size: ${theme.fontSize.xs};
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: ${theme.colors.text};
+		margin: 0 0 ${theme.spacing[2]} 0;
+		padding: 3px ${theme.spacing[3]};
 	`,
 
 	navList: css`
@@ -155,14 +198,15 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 
 		&.active {
 			background: ${theme.colors.sidebarItemBackgroundActive};
-			color: ${theme.colors.primary};
+			color: ${theme.colors.primaryDark};
 			font-weight: 600;
-			border-left-color: ${theme.colors.primary};
+			border-left-color: ${theme.colors.primaryDark};
 		}
 
-		&:focus {
-			outline: 2px solid ${theme.colors.primary};
-			outline-offset: -2px;
+		&:focus-visible {
+			outline: 2px solid ${theme.colors.primaryDark};
+			outline-offset: 2px;
+			border-radius: 2px;
 		}
 	`,
 
@@ -451,16 +495,16 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		/* Link styles */
 		a {
 			color: ${theme.colors.linkText};
-			text-decoration: none;
+			text-decoration: underline;
 			transition: ${theme.transitions.fast};
 
 			&:hover {
-				color: ${theme.colors.primary};
-				text-decoration: none;
+				color: ${theme.colors.primaryDark};
+				text-decoration: underline;
 			}
 
-			&:focus {
-				outline: 2px solid ${theme.colors.primary};
+			&:focus-visible {
+				outline: 2px solid ${theme.colors.primaryDark};
 				outline-offset: 2px;
 			}
 		}
@@ -528,7 +572,9 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				font-family: ${theme.fonts.base};
 				cursor: pointer;
 				opacity: 0;
-				transition: opacity 0.15s ease, color 0.15s ease;
+				transition:
+					opacity 0.15s ease,
+					color 0.15s ease;
 				line-height: 1;
 
 				&:hover {
@@ -537,7 +583,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 				}
 
 				&.copied {
-					color: ${theme.colors.secondary};
+					color: ${theme.colors.text};
 					border-color: ${theme.colors.secondary};
 				}
 			}
@@ -738,7 +784,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			border-color: ${theme.colors.secondary};
 			.admonition-heading {
 				background: ${theme.colors.secondary};
-				color: white;
+				color: ${theme.colors.text};
 			}
 			.admonition-content {
 				background: ${theme.colors.secondaryLight};
@@ -773,7 +819,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			border-color: ${theme.colors.borderDark};
 			.admonition-heading {
 				background: ${theme.colors.borderDark};
-				color: white;
+				color: ${theme.colors.text};
 			}
 			.admonition-content {
 				background: ${theme.colors.backgroundSecondary};
@@ -791,6 +837,7 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			letter-spacing: 0.08em;
 
 			svg {
+				display: block;
 				flex-shrink: 0;
 			}
 		}
@@ -863,11 +910,11 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			&[open] {
 				summary {
 					background: color-mix(in srgb, ${theme.colors.sidebarItemBackgroundActive} 65%, #bbddff);
-					color: white;
+					color: ${theme.colors.text};
 
 					&::before {
 						transform: translateY(-50%) rotate(90deg);
-						color: blacks;
+						color: ${theme.colors.text};
 					}
 				}
 			}
@@ -1039,7 +1086,13 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		transition: ${theme.transitions.fast};
 
 		&:hover {
-			color: ${theme.colors.primary};
+			color: ${theme.colors.primaryDark};
+		}
+
+		&:focus-visible {
+			outline: 2px solid ${theme.colors.primaryDark};
+			outline-offset: 2px;
+			border-radius: 2px;
 		}
 	`,
 

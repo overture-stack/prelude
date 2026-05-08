@@ -4,22 +4,22 @@
 
 When `conductor upload` is run multiple times with the same CSV file, two separate accumulation issues compound each other:
 
-1. **PostgreSQL** appends all rows on every upload — the same 21 rows become 42, then 63, and so on.
+1. **PostgreSQL** appends all rows on every upload - the same 21 rows become 42, then 63, and so on.
 2. **Elasticsearch** re-indexes the entire table on every run and, because each document was assigned a random ID, creates entirely new documents rather than overwriting existing ones.
 
 After 6 uploads of a 21-row file the result is:
-- PostgreSQL: **126 rows** (6 × 21, correct if intentional — but likely not)
+- PostgreSQL: **126 rows** (6 × 21, correct if intentional - but likely not)
 - Elasticsearch: **441 documents** (21 + 42 + 63 + 84 + 105 + 126, clearly wrong)
 
 ---
 
 ## Root Cause
 
-### PostgreSQL — no deduplication on insert
+### PostgreSQL - no deduplication on insert
 
 The bulk insert used a plain `INSERT INTO ... VALUES ...` with no conflict handling. Every row was inserted unconditionally regardless of whether identical data already existed.
 
-### Elasticsearch — auto-generated document IDs
+### Elasticsearch - auto-generated document IDs
 
 Elasticsearch only upserts (overwrites) a document when it receives the **same `_id`** as an existing one. Previously, no `_id` was set on documents being indexed, so Elasticsearch auto-generated a new random ID for each document on every run. The index grew with every re-index.
 
@@ -39,11 +39,11 @@ At the heart of both issues was `createRecordMetadata()` in `metadata.ts`, which
 submission_id = SHA-256(sorted JSON of data columns)
 ```
 
-The hash is computed from the data columns only — `submission_metadata` itself is excluded to avoid a circular dependency. Sorting the keys before hashing ensures column ordering in the object does not affect the result.
+The hash is computed from the data columns only - `submission_metadata` itself is excluded to avoid a circular dependency. Sorting the keys before hashing ensures column ordering in the object does not affect the result.
 
 **Effect:** The same row of data always produces the same `submission_id`, across any number of uploads and re-indexes.
 
-### 2. PostgreSQL — `ON CONFLICT DO NOTHING`
+### 2. PostgreSQL - `ON CONFLICT DO NOTHING`
 
 The bulk INSERT statement now appends:
 
@@ -51,11 +51,11 @@ The bulk INSERT statement now appends:
 ON CONFLICT ((submission_metadata->>'submission_id')) DO NOTHING
 ```
 
-When a row arrives whose `submission_id` hash already exists in the table, PostgreSQL skips it silently. No rows are read or compared — the database resolves the conflict using the unique index (see below), which is an O(log n) index lookup regardless of table size. This approach scales to hundreds of millions of records.
+When a row arrives whose `submission_id` hash already exists in the table, PostgreSQL skips it silently. No rows are read or compared - the database resolves the conflict using the unique index (see below), which is an O(log n) index lookup regardless of table size. This approach scales to hundreds of millions of records.
 
 The conflict clause is only added when `submission_metadata` is present in the insert headers, so tables without metadata are unaffected.
 
-### 3. PostgreSQL — unique index on `submission_id`
+### 3. PostgreSQL - unique index on `submission_id`
 
 All four table schemas now define a **unique functional index** on the `submission_id` field extracted from the `submission_metadata` JSONB column:
 
@@ -64,9 +64,9 @@ CREATE UNIQUE INDEX idx_<table>_submission_id
 ON <table> ((submission_metadata->>'submission_id'));
 ```
 
-This index is what makes `ON CONFLICT` work — PostgreSQL requires a unique constraint or unique index to enforce conflict detection. The `DROP INDEX IF EXISTS` before each `CREATE` handles existing deployments where a non-unique version of the index was previously created.
+This index is what makes `ON CONFLICT` work - PostgreSQL requires a unique constraint or unique index to enforce conflict detection. The `DROP INDEX IF EXISTS` before each `CREATE` handles existing deployments where a non-unique version of the index was previously created.
 
-### 4. Elasticsearch — stable document `_id`
+### 4. Elasticsearch - stable document `_id`
 
 When building Elasticsearch documents during indexing, the `submission_id` from `submission_metadata` is now surfaced as the document's `_id`:
 
@@ -74,7 +74,7 @@ When building Elasticsearch documents during indexing, the `submission_id` from 
 { _id: metadata.submission_id, submission_metadata: {...}, data: {...} }
 ```
 
-The existing bulk write function already supports `_id`-based upserts — if a document with that `_id` exists, it is overwritten; if not, it is created. Re-indexing the full table is now fully **idempotent**: the same postgres row always produces the same ES document ID, so running `conductor upload` six times with the same file results in exactly 21 documents in Elasticsearch, not 441.
+The existing bulk write function already supports `_id`-based upserts - if a document with that `_id` exists, it is overwritten; if not, it is created. Re-indexing the full table is now fully **idempotent**: the same postgres row always produces the same ES document ID, so running `conductor upload` six times with the same file results in exactly 21 documents in Elasticsearch, not 441.
 
 ---
 

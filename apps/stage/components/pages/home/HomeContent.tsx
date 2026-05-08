@@ -13,10 +13,10 @@ const HomeContent = (): ReactElement => {
 				min-height: 100vh;
 			`}
 		>
-			<WelcomeBanner />
+			<WelcomeBanner disabled={true} />
 			<HeroBanner
-				title="IBC Workshop 2026"
-				description="Welcome, lets get started."
+				title="Drug Discovery Portal"
+				description="Conversational data discovery demo"
 				breadcrumbs={[{ label: 'Home', href: '/' }]}
 				fixed={false}
 			/>

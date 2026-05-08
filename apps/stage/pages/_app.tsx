@@ -1,12 +1,8 @@
 import { getSession, SessionProvider } from 'next-auth/react';
 import { AppContext } from 'next/app';
-import Router from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Root from '../components/Root';
-import { getConfig } from '../global/config';
 import type { ThemeConfig } from '../lib/themeConfig';
-import { AUTH_PROVIDER, LOGIN_PATH } from '../global/utils/constants';
-import getInternalLink from '../global/utils/getInternalLink';
 import { PageWithConfig } from '../global/utils/pages/types';
 
 const DMSApp = ({
@@ -24,18 +20,6 @@ const DMSApp = ({
 }) => {
 	// Initialised once from SSR data — client navigations won't reset this
 	const [resolvedThemeConfig] = useState<ThemeConfig>(themeConfig ?? {});
-	const { NEXT_PUBLIC_AUTH_PROVIDER } = getConfig();
-
-	useEffect(() => {
-		if (NEXT_PUBLIC_AUTH_PROVIDER === AUTH_PROVIDER.KEYCLOAK) {
-			if (!session && !Component.isPublic) {
-				Router.push({
-					pathname: getInternalLink({ path: LOGIN_PATH }),
-					query: { session_expired: true },
-				});
-			}
-		}
-	}, [session, Component.isPublic, NEXT_PUBLIC_AUTH_PROVIDER]);
 
 	return (
 		<SessionProvider session={session}>

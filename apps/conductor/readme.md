@@ -27,7 +27,7 @@ npm start -- <command> [options]
 
 ## Commands
 
-### `upload` — CSV → PostgreSQL → Elasticsearch
+### `upload` - CSV → PostgreSQL → Elasticsearch
 
 Loads one or more CSV files into a PostgreSQL table and streams the inserted rows directly into an Elasticsearch index. Rows are deduplicated on re-upload using a SHA-256 hash of the row data.
 
@@ -37,9 +37,9 @@ conductor upload -f data.csv -t my_table -i my-index
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `-f, --file <files...>` | Input CSV files | — |
-| `-t, --table <name>` | PostgreSQL table name | — |
-| `-i, --index <name>` | Elasticsearch index name | — |
+| `-f, --file <files...>` | Input CSV files | - |
+| `-t, --table <name>` | PostgreSQL table name | - |
+| `-i, --index <name>` | Elasticsearch index name | - |
 | `-b, --batch-size <n>` | Records per batch | `5000` |
 | `--delimiter <char>` | CSV delimiter | `,` |
 | `--db-host <host:port>` | PostgreSQL host | `localhost:5435` |
@@ -52,7 +52,7 @@ conductor upload -f data.csv -t my_table -i my-index
 
 ---
 
-### `upload-es` — CSV → Elasticsearch
+### `upload-es` - CSV → Elasticsearch
 
 Uploads CSV files directly to an Elasticsearch index, bypassing PostgreSQL.
 
@@ -62,8 +62,8 @@ conductor upload-es -f data.csv -i my-index
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `-f, --file <files...>` | Input CSV files | — |
-| `-i, --index <name>` | Elasticsearch index name | — |
+| `-f, --file <files...>` | Input CSV files | - |
+| `-i, --index <name>` | Elasticsearch index name | - |
 | `-b, --batch-size <n>` | Records per batch | `5000` |
 | `--delimiter <char>` | CSV delimiter | `,` |
 | `--es-host <host:port>` | Elasticsearch host | `localhost:9200` |
@@ -72,7 +72,7 @@ conductor upload-es -f data.csv -i my-index
 
 ---
 
-### `upload-db` — CSV → PostgreSQL
+### `upload-db` - CSV → PostgreSQL
 
 Loads CSV files into a PostgreSQL table only. No Elasticsearch interaction.
 
@@ -82,8 +82,8 @@ conductor upload-db -f data.csv -t my_table
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `-f, --file <files...>` | Input CSV files | — |
-| `-t, --table <name>` | PostgreSQL table name | — |
+| `-f, --file <files...>` | Input CSV files | - |
+| `-t, --table <name>` | PostgreSQL table name | - |
 | `-b, --batch-size <n>` | Records per batch | `5000` |
 | `--delimiter <char>` | CSV delimiter | `,` |
 | `--db-host <host:port>` | PostgreSQL host | `localhost:5435` |
@@ -93,7 +93,7 @@ conductor upload-db -f data.csv -t my_table
 
 ---
 
-### `index-db` — PostgreSQL → Elasticsearch
+### `index-db` - PostgreSQL → Elasticsearch
 
 Reads an existing PostgreSQL table and indexes all rows into Elasticsearch. Uses a server-side cursor for memory-efficient streaming of large tables.
 
@@ -103,8 +103,8 @@ conductor index-db -t my_table -i my-index
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `-t, --table <name>` | PostgreSQL table name | — |
-| `-i, --index <name>` | Elasticsearch index name | — |
+| `-t, --table <name>` | PostgreSQL table name | - |
+| `-i, --index <name>` | Elasticsearch index name | - |
 | `-b, --batch-size <n>` | Records per ES batch | `5000` |
 | `--db-host <host:port>` | PostgreSQL host | `localhost:5435` |
 | `--db-name <name>` | Database name | `overtureDb` |
