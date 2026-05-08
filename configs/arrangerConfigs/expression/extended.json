@@ -2,7 +2,8 @@
   "extended": [
     {
       "fieldName": "hugo_symbol_autocomplete",
-      "displayName": "Hugo Symbol Autocomplete"
+      "displayName": "Hugo Symbol Autocomplete",
+      "quickSearchEnabled": true
     },
     {
       "displayName": "Entrez Gene Id",
