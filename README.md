@@ -93,5 +93,3 @@ Full documentation is available in the [`docs/`](docs/) directory and rendered i
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **Questions**   | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
 | **Bug reports** | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
-
-**Lead:** Mitchell Shiell, Ontario Institute for Cancer Research - [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)
