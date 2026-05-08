@@ -33,7 +33,7 @@ These datasets are the primary validation environment for **Aim 1** - demonstrat
 Clone the repository and start the full stack:
 
 ```bash
-git clone https://github.com/overture-stack/prelude.git
+git clone --recurse-submodules https://github.com/overture-stack/prelude.git
 cd prelude
 make demo
 ```
