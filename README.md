@@ -54,10 +54,6 @@ The portal will be available at **http://localhost:3000** once deployment comple
 
 </details>
 
-:::info
-The first run takes longer because Docker needs to build the Stage image. Subsequent runs will be faster.
-:::
-
 ## Services
 
 Once running, the following containers are active:
@@ -72,10 +68,6 @@ Once running, the following containers are active:
 ```bash
 docker ps
 ```
-
-:::info
-**Stuck?** Run `docker logs setup` to see where initialization failed. Common causes: Docker not running, port 3000 already in use, insufficient memory allocated to Docker (8 GB recommended).
-:::
 
 ## Stopping and Resetting
 
