@@ -265,7 +265,7 @@ services:
     profiles: ["demo", "platform", "default"]
     build:
       context: ./apps/arranger
-      dockerfile: docker/Dockerfile.local
+      dockerfile: ./docker/Dockerfile.local
     image: arranger-local:latest
     container_name: arranger
     platform: linux/amd64
