@@ -181,12 +181,12 @@ const NavBar = (): ReactElement => {
 								font-weight: bold;
 							`}
 							data={[
-								<a href={ARRANGER_INTROSPECTION} target="_blank" rel="noopener noreferrer">
-									<StyledListLink>Server Introspection</StyledListLink>
-								</a>,
-								<a href={ARRANGER_INTROSPECTION_SQON} target="_blank" rel="noopener noreferrer">
-									<StyledListLink>SQON Introspection</StyledListLink>
-								</a>,
+								<StyledListLink href={ARRANGER_INTROSPECTION} target="_blank" rel="noopener noreferrer">
+									Server Introspection
+								</StyledListLink>,
+								<StyledListLink href={ARRANGER_INTROSPECTION_SQON} target="_blank" rel="noopener noreferrer">
+									SQON Introspection
+								</StyledListLink>,
 								<FlyoutMenuItem
 									label="Field Definitions"
 									items={[

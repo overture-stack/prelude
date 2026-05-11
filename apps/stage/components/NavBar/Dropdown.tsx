@@ -127,8 +127,8 @@ const Dropdown = ({
 						color: ${theme.colors.grey_6};
 						list-style: none;
 						margin: 0;
-						max-width: 300px;
-						min-width: 100%;
+						max-width: 340px;
+						min-width: 220px;
 						padding: 0;
 						position: absolute;
 						left: 0;
@@ -153,6 +153,10 @@ const Dropdown = ({
 								&:hover {
 									background: none;
 								}
+							}
+
+							&:last-child > * {
+								border-bottom: none !important;
 							}
 						}
 					`}

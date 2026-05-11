@@ -76,20 +76,24 @@ export const StyledListLink = styled.a<{ theme?: typeof defaultTheme }>`
 	${({ theme }) => css`
 		align-items: center;
 		background-color: ${theme?.colors.white};
-		border: 1px solid ${theme?.colors.grey_2};
+		border-bottom: 1px solid ${theme?.colors.grey_2};
 		box-sizing: border-box;
 		color: ${theme?.colors.black};
 		cursor: pointer;
 		display: flex;
-		font-size: 14px;
-		min-height: 40px;
+		font-size: 13px;
+		font-weight: 400;
+		letter-spacing: 0.01em;
+		min-height: 36px;
 		outline: none;
-		padding: 8px 12px;
+		padding: 9px 16px;
 		text-decoration: none;
+		transition: background-color 0.1s ease;
 		width: 100%;
 
 		&:hover {
 			background-color: ${theme?.colors.grey_1};
+			color: ${theme?.colors.primary_dark};
 		}
 
 		&:active {

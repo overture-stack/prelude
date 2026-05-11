@@ -232,33 +232,48 @@ const HomeNavigation = (): ReactElement => {
 		`,
 		dropdownContent: css`
 			border-top: 1px solid ${theme.colors.grey_3};
-			padding: 12px;
 			max-height: 260px;
 			overflow-y: auto;
 		`,
 		dropdownItem: css`
 			display: block;
-			padding: 8px 0;
+			padding: 9px 16px;
 			color: ${theme.colors.grey_6};
 			text-decoration: none;
-			font-size: 0.875rem;
-			transition: color 0.2s ease;
+			font-size: 0.8125rem;
+			font-weight: 400;
+			letter-spacing: 0.01em;
+			transition:
+				background-color 0.1s ease,
+				color 0.1s ease;
 			cursor: pointer;
-			&:hover {
-				color: ${theme.colors.secondary};
+			border-bottom: 1px solid ${theme.colors.grey_2};
+			&:last-child {
+				border-bottom: none;
+				padding-bottom: 14px;
 			}
-			&:not(:last-child) {
-				border-bottom: 1px solid ${theme.colors.grey_3};
+			&:hover {
+				background-color: ${theme.colors.grey_1};
+				color: ${theme.colors.primary_dark};
 			}
 		`,
 		dropdownHeader: css`
-			padding: 6px 8px 4px;
-			font-size: 0.65rem;
+			padding: 12px 16px 6px;
+			font-size: 0.625rem;
 			font-weight: 700;
 			text-transform: uppercase;
-			letter-spacing: 0.1em;
-			color: ${theme.colors.primary};
-			background: ${theme.colors.grey_2};
+			letter-spacing: 0.12em;
+			color: ${theme.colors.accent_dark};
+			cursor: default;
+		`,
+		dropdownHeaderWithDivider: css`
+			padding: 16px 16px 6px;
+			font-size: 0.625rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.12em;
+			color: ${theme.colors.accent_dark};
+			border-top: 1px solid ${theme.colors.grey_2};
 			cursor: default;
 		`,
 		acknowledgements: css`
@@ -302,17 +317,18 @@ const HomeNavigation = (): ReactElement => {
 							{card.subItems && openDropdown === index && (
 								<div css={styles.dropdownContent}>
 									{card.subItems.length > 0 ? (
-										card.subItems.map((subItem, subIndex) =>
-											subItem.isHeader ? (
-												<div key={subIndex} css={styles.dropdownHeader}>
+										card.subItems.map((subItem, subIndex) => {
+											const headersBefore = card.subItems!.slice(0, subIndex).filter((s) => s.isHeader).length;
+											return subItem.isHeader ? (
+												<div key={subIndex} css={headersBefore === 0 ? styles.dropdownHeader : styles.dropdownHeaderWithDivider}>
 													{subItem.title}
 												</div>
 											) : (
 												<div key={subIndex} onClick={(e) => handleSubItemClick(subItem, e)} css={styles.dropdownItem}>
 													{subItem.title}
 												</div>
-											),
-										)
+											);
+										})
 									) : (
 										<div css={styles.emptySubItems}>No items available</div>
 									)}

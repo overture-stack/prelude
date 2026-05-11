@@ -60,19 +60,23 @@ const FlyoutMenuItem = ({ label, items }: { label: string; items: FlyoutItem[] }
 				css={css`
 					align-items: center;
 					background-color: ${theme.colors.white};
-					border: 1px solid ${theme.colors.grey_2};
+					border-bottom: 1px solid ${theme.colors.grey_2};
 					box-sizing: border-box;
 					color: ${theme.colors.black};
 					cursor: default;
 					display: flex;
-					font-size: 14px;
+					font-size: 13px;
+					font-weight: 400;
+					letter-spacing: 0.01em;
 					justify-content: space-between;
-					min-height: 40px;
-					padding: 8px 12px;
+					min-height: 36px;
+					padding: 9px 16px;
+					transition: background-color 0.1s ease;
 					width: 100%;
 
 					&:hover {
 						background-color: ${theme.colors.grey_1};
+						color: ${theme.colors.primary_dark};
 					}
 				`}
 			>
@@ -99,12 +103,11 @@ const FlyoutMenuItem = ({ label, items }: { label: string; items: FlyoutItem[] }
 						onMouseLeave={scheduleClose}
 						css={css`
 							background: ${theme.colors.white};
-							border-left: 4px solid ${theme.colors.primary_dark};
 							box-shadow: 0 8px 21px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
 							font-family: var(--stage-font-base, 'Lato', sans-serif);
 							list-style: none;
 							margin: 0;
-							min-width: 180px;
+							min-width: 200px;
 							padding: 0;
 							position: fixed;
 							top: ${panelPos.top}px;

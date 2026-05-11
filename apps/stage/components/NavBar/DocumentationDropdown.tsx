@@ -11,6 +11,7 @@ import { StyledListLink } from './styles';
 const CATEGORY_LABELS: Record<string, string> = {
 	user: 'User Guides',
 	developer: 'Developer Guides',
+	admin: 'Admin Guides',
 };
 
 interface DocSection {
@@ -51,6 +52,8 @@ const DocumentationDropdown = () => {
 		grouped.get(cat)!.push(section);
 	}
 
+	const categories = Array.from(grouped.keys());
+
 	// Build dropdown items with category headers
 	const dropdownItems = Array.from(grouped.entries()).flatMap(([category, sections]) => [
 		// Category header — not a link, just a label
@@ -58,13 +61,12 @@ const DocumentationDropdown = () => {
 			key={`header-${category}`}
 			data-no-hover
 			css={css`
-				padding: 6px 12px 4px;
+				padding: ${categories.indexOf(category) === 0 ? '12px 16px 6px' : '10px 16px 6px'};
 				font-size: 10px;
 				font-weight: 700;
 				text-transform: uppercase;
-				letter-spacing: 0.1em;
-				color: ${theme.colors.primary_dark};
-				background: ${theme.colors.grey_2};
+				letter-spacing: 0.12em;
+				color: ${theme.colors.accent_dark};
 				cursor: default;
 			`}
 			onClick={(e) => e.stopPropagation()}
@@ -72,12 +74,20 @@ const DocumentationDropdown = () => {
 			{CATEGORY_LABELS[category] ?? category}
 		</div>,
 		// Section links
-		...sections.map((section) => (
-			<InternalLink key={`${category}/${section.id}`} path={`${INTERNAL_PATHS.DOCUMENTATION}/${category}/${section.id}` as INTERNAL_PATHS}>
+		...sections.map((section, i) => (
+			<InternalLink
+				key={`${category}/${section.id}`}
+				path={`${INTERNAL_PATHS.DOCUMENTATION}/${category}/${section.id}` as INTERNAL_PATHS}
+			>
 				<StyledListLink
 					className={cx({
 						active: router.asPath === `${INTERNAL_PATHS.DOCUMENTATION}/${category}/${section.id}`,
 					})}
+					css={css`
+						${i === sections.length - 1 && category === categories[categories.length - 1]
+							? 'padding-bottom: 14px;'
+							: ''}
+					`}
 				>
 					{section.title}
 				</StyledListLink>
