@@ -3,18 +3,17 @@ import { css, useTheme } from '@emotion/react';
 import Link from 'next/link';
 import { ReactElement, ReactNode } from 'react';
 
-// Define the breadcrumb item interface
 export interface BreadcrumbItem {
 	label: string;
 	href?: string;
 }
 
-// Define the component props interface
 export interface HeroBannerProps {
-	title: string | ReactNode; // Updated to accept ReactNode
-	description?: string | ReactNode; // Updated to accept ReactNode
+	title: string | ReactNode;
+	description?: string | ReactNode;
 	breadcrumbs?: BreadcrumbItem[];
 	backgroundColor?: string;
+	backgroundContent?: ReactNode;
 	textColor?: string;
 	height?: number;
 	fixed?: boolean;
@@ -25,6 +24,7 @@ const HeroBanner = ({
 	description,
 	breadcrumbs = [],
 	backgroundColor,
+	backgroundContent,
 	textColor = '#ffffff',
 	height = 120,
 	fixed = true,
@@ -52,6 +52,7 @@ const HeroBanner = ({
 				left: 0;
 				right: 0;
 				z-index: 100;
+				overflow: hidden;
 
 				@media (max-width: 768px) {
 					padding: 15px;
@@ -64,8 +65,11 @@ const HeroBanner = ({
 				}
 			`}
 		>
+			{backgroundContent}
 			<section
 				css={css`
+					position: relative;
+					z-index: 1;
 					display: flex;
 					flex-direction: column;
 					width: 100%;
@@ -119,6 +123,7 @@ const HeroBanner = ({
 						font-size: 26px;
 						font-weight: 600;
 						margin: 0;
+						text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
 
 						@media (min-width: 1345px) {
 							font-size: 30px;
@@ -144,6 +149,7 @@ const HeroBanner = ({
 							font-weight: normal;
 							max-width: 650px;
 							opacity: 0.9;
+							text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
 
 							@media (max-width: 768px) {
 								font-size: 14px;

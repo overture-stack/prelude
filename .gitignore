@@ -7,3 +7,4 @@ __MACOSX
 dist
 backups/
 planningDocs/
+configs/nginxConfigs/

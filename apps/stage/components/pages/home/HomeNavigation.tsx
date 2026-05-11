@@ -9,6 +9,7 @@ import HomeAcknowledgements from './HomeAcknowledgements';
 const CATEGORY_LABELS: Record<string, string> = {
 	user: 'User Guides',
 	developer: 'Developer Guides',
+	admin: 'Admin Guides',
 };
 
 interface SubItem {
@@ -43,29 +44,33 @@ const HomeNavigation = (): ReactElement => {
 		{
 			title: 'Explore the Data',
 			link: '#',
-			description: 'Browse and interact with your data',
+			description: 'Browse and interact with the data',
 			isDynamic: true,
 		},
 		{
-			title: 'Project Overview',
+			title: 'Conversational Data Discovey Setup',
+			link: `${INTERNAL_PATHS.DOCUMENTATION}/user/setup`,
+			description: 'Connect LM Studio and run your first query',
+		},
+		{
+			title: 'Project Documentation',
 			link: INTERNAL_PATHS.DOCUMENTATION,
-			description: 'Project aims, datasets, and goals',
+			description: 'User, admin and developer documentation',
 			isDynamic: true,
-		},
-		{
-			title: 'Find Support',
-			link: 'https://docs.overture.bio/community/support',
-			description: 'Connect and get help',
-			external: true,
 		},
 		{
 			title: 'Resources',
 			link: '#',
-			description: 'Additional Overture resources',
+			description: 'Overture docs, source code, and community',
 			subItems: [
-				{ title: 'Overture Docs', link: 'https://docs.overture.bio/', external: true },
+				{ title: 'MCP Server Source code', link: 'https://github.com/overture-stack', external: true },
+				{
+					title: 'Search API (Arranger) Documentation',
+					link: 'https://docs.overture.bio/docs/core-software/Arranger/overview',
+					external: true,
+				},
 				{ title: 'Overture.bio', link: 'https://overture.bio/', external: true },
-				{ title: 'Overture-Stack GitHub', link: 'https://github.com/overture-stack', external: true },
+				{ title: 'Community Support', link: 'https://docs.overture.bio/community/support', external: true },
 			],
 		},
 	]);
@@ -143,7 +148,7 @@ const HomeNavigation = (): ReactElement => {
 						})),
 					};
 				}
-				if (card.title === 'Project Overview' && card.isDynamic) {
+				if (card.title === 'Project Documentation' && card.isDynamic) {
 					// Group by category and insert header items
 					const grouped = new Map<string, SectionItem[]>();
 					for (const section of docSections) {
@@ -210,7 +215,9 @@ const HomeNavigation = (): ReactElement => {
 		`,
 		card: css`
 			cursor: pointer;
-			transition: transform 0.25s ease, box-shadow 0.25s ease;
+			transition:
+				transform 0.25s ease,
+				box-shadow 0.25s ease;
 			&:hover {
 				transform: translateY(-1px);
 			}
@@ -332,7 +339,7 @@ const HomeNavigation = (): ReactElement => {
 												<div key={subIndex} onClick={(e) => handleSubItemClick(subItem, e)} css={styles.dropdownItem}>
 													{subItem.title}
 												</div>
-											)
+											),
 										)
 									) : (
 										<div css={styles.emptySubItems}>No items available</div>

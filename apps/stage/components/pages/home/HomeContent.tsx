@@ -1,9 +1,23 @@
 import HeroBanner from '@/components/HeroBanner';
+import HeroNodeCanvas from '@/components/HeroNodeCanvas';
 import { css } from '@emotion/react';
 import { ReactElement } from 'react';
 import defaultTheme from '../../theme';
 import HomeNavigation from './HomeNavigation';
 import WelcomeBanner from './WelcomeBanner';
+
+const heroBackground = (
+	<div
+		css={css`
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(125deg, #06131f 0%, #113052 45%, #0b4a6e 100%);
+			pointer-events: none;
+		`}
+	>
+		<HeroNodeCanvas />
+	</div>
+);
 
 const HomeContent = (): ReactElement => {
 	return (
@@ -15,9 +29,10 @@ const HomeContent = (): ReactElement => {
 		>
 			<WelcomeBanner disabled={true} />
 			<HeroBanner
-				title="Drug Discovery Portal"
-				description="Conversational data discovery demo"
+				title="Overture AI Development Portal"
+				description="Trustworthy AI workflows for discovery over shared research data"
 				breadcrumbs={[{ label: 'Home', href: '/' }]}
+				backgroundContent={heroBackground}
 				fixed={false}
 			/>
 			<HomeNavigation />
