@@ -30,7 +30,7 @@ const HomeContent = (): ReactElement => {
 			<WelcomeBanner disabled={true} />
 			<HeroBanner
 				title="Overture AI Development Portal"
-				description="Trustworthy AI workflows for discovery over shared research data"
+				description="Building trustworthy AI workflows for discovery over shared research data"
 				breadcrumbs={[{ label: 'Home', href: '/' }]}
 				backgroundContent={heroBackground}
 				fixed={false}
