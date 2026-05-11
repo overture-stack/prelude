@@ -123,7 +123,7 @@ const HeroBanner = ({
 						font-size: 26px;
 						font-weight: 600;
 						margin: 0;
-						text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+						text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8), 0 2px 16px rgba(0, 0, 0, 0.5);
 
 						@media (min-width: 1345px) {
 							font-size: 30px;
@@ -149,7 +149,7 @@ const HeroBanner = ({
 							font-weight: normal;
 							max-width: 650px;
 							opacity: 0.9;
-							text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+							text-shadow: 0 1px 4px rgba(0, 0, 0, 0.75), 0 2px 12px rgba(0, 0, 0, 0.45);
 
 							@media (max-width: 768px) {
 								font-size: 14px;

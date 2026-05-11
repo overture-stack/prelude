@@ -1,6 +1,19 @@
 import fs from 'fs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
+import {
+	extractOrder,
+	extractTitle,
+	generateSlug,
+} from '../../components/pages/documentation/utils/documentUtils';
+
+export interface DocSectionMeta {
+	filepath: string;
+	title: string;
+	id: string;
+	order: number;
+	category: string;
+}
 
 function getCategoryOrder(docsDirectory: string): string[] {
 	const configPath = path.join(docsDirectory, 'docs.config.json');
@@ -32,23 +45,41 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 		}
 
 		const categories = getCategoryOrder(docsDirectory);
-		const filenames: string[] = [];
+		const sections: DocSectionMeta[] = [];
 
 		for (const category of categories) {
 			const categoryDir = path.join(docsDirectory, category);
 			const categoryFiles = fs
 				.readdirSync(categoryDir)
 				.filter((f) => f.endsWith('.md'))
-				.sort()
-				.map((f) => `${category}/${f}`);
-			filenames.push(...categoryFiles);
+				.sort();
+
+			for (const filename of categoryFiles) {
+				const filepath = `${category}/${filename}`;
+				let title = '';
+				try {
+					const content = fs.readFileSync(path.join(categoryDir, filename), 'utf8');
+					title = extractTitle(content);
+				} catch (err) {
+					console.error(`Failed to read ${filepath}:`, err);
+				}
+				sections.push({
+					filepath,
+					title: title || generateSlug(filename),
+					id: generateSlug(filename),
+					order: extractOrder(filename),
+					category,
+				});
+			}
 		}
 
-		if (filenames.length === 0) {
+		if (sections.length === 0) {
 			return res.status(404).json({ error: 'No documentation files found' });
 		}
 
-		res.status(200).json(filenames);
+		// Cache for a minute — file list rarely changes; saves disk reads on repeated nav renders.
+		res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+		res.status(200).json(sections);
 	} catch (error) {
 		console.error('Error reading docs directory:', error);
 		res.status(500).json({ error: 'Unable to read documentation files' });

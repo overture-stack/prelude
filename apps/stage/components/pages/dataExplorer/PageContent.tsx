@@ -24,7 +24,7 @@ import { css, useTheme } from '@emotion/react';
 import { useArrangerData } from '@overture-stack/arranger-components';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types.js';
 import stringify from 'fast-json-stable-stringify';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import Facets from './Facets';

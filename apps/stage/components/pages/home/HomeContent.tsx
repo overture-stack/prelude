@@ -16,6 +16,14 @@ const heroBackground = (
 		`}
 	>
 		<HeroNodeCanvas />
+		<div
+			css={css`
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 100%);
+				pointer-events: none;
+			`}
+		/>
 	</div>
 );
 

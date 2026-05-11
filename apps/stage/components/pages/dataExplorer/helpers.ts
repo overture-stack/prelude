@@ -22,7 +22,7 @@
 import createArrangerFetcher from '@/components/utils/arrangerFetcher';
 import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types';
 import SQON from '@overture-stack/sqon-builder';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 /**
  * Creates a custom fetcher function for a specific Arranger API endpoint.

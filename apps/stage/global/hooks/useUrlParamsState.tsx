@@ -19,7 +19,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 
 const entriesToObj = (entriesArr: [string, string][], cb = (val: string, param: string) => val) =>
 	entriesArr.length

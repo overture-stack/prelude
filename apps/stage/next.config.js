@@ -1,24 +1,7 @@
 const path = require('path');
 const withPlugins = require('next-compose-plugins');
 const { patchWebpackConfig: patchForGlobalCSS } = require('next-global-css');
-const withTranspileModules = require('next-transpile-modules')([
-	'@overture-stack/lectern-ui',
-	'@uiw/react-codemirror',
-	'@uiw/codemirror-extensions-basic-setup',
-	'@codemirror/lang-json',
-	'@codemirror/theme-one-dark',
-	'@codemirror/state',
-	'@codemirror/view',
-	'@codemirror/language',
-	'@codemirror/commands',
-	'@codemirror/search',
-	'@codemirror/autocomplete',
-	'@codemirror/lint',
-	'@lezer/common',
-	'@lezer/highlight',
-	'@lezer/json',
-	'@lezer/lr',
-]);
+const withTranspileModules = require('next-transpile-modules')(['@overture-stack/lectern-ui']);
 
 module.exports = withPlugins([withTranspileModules], {
 	typescript: {

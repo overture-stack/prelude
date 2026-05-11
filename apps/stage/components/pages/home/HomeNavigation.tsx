@@ -3,7 +3,6 @@ import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
 import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
-import { extractOrder, extractTitle, generateSlug } from '../documentation/utils/documentUtils';
 import HomeAcknowledgements from './HomeAcknowledgements';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -50,7 +49,7 @@ const HomeNavigation = (): ReactElement => {
 		{
 			title: 'Conversational Data Discovey Setup',
 			link: `${INTERNAL_PATHS.DOCUMENTATION}/user/setup`,
-			description: 'Connect LM Studio and run your first query',
+			description: 'Connect a host application and run your first query',
 		},
 		{
 			title: 'Project Documentation',
@@ -78,48 +77,21 @@ const HomeNavigation = (): ReactElement => {
 	// Load data tables and documentation sections
 	useEffect(() => {
 		const fetchData = async () => {
-			try {
-				// Fetch data tables
-				const dataTablesResponse = await fetch('/api/data-tables');
-				if (dataTablesResponse.ok) {
-					const tables = await dataTablesResponse.json();
-					setDataTables(tables);
-				}
+			const [dataTablesResult, docsResult] = await Promise.allSettled([
+				fetch('/api/data-tables').then((r) => (r.ok ? r.json() : Promise.reject(new Error('data-tables')))),
+				fetch('/api/docs').then((r) => (r.ok ? r.json() : Promise.reject(new Error('docs')))),
+			]);
 
-				// Fetch documentation — API returns paths like "user/00-Introduction.md"
-				const docsResponse = await fetch('/api/docs');
-				if (!docsResponse.ok) throw new Error('Failed to fetch documentation list');
+			if (dataTablesResult.status === 'fulfilled') {
+				setDataTables(dataTablesResult.value);
+			} else {
+				console.error('Error fetching data tables:', dataTablesResult.reason);
+			}
 
-				const files = await docsResponse.json();
-				const sectionsPromises = files.map(async (filepath: string) => {
-					try {
-						const contentResponse = await fetch(`/docs/${filepath}`);
-						if (!contentResponse.ok) throw new Error(`Failed to load ${filepath}`);
-
-						const content = await contentResponse.text();
-						// filepath is "category/NN-Title.md" — parse category and filename separately
-						const slashIdx = filepath.indexOf('/');
-						const category = slashIdx !== -1 ? filepath.slice(0, slashIdx) : '';
-						const filename = slashIdx !== -1 ? filepath.slice(slashIdx + 1) : filepath;
-						return {
-							title: extractTitle(content) || generateSlug(filename),
-							id: generateSlug(filename),
-							order: extractOrder(filename),
-							category,
-						};
-					} catch (error) {
-						console.error(`Error processing file ${filepath}:`, error);
-						return null;
-					}
-				});
-
-				const sections = (await Promise.all(sectionsPromises))
-					.filter((section): section is SectionItem => section !== null)
-					.sort((a, b) => a.order - b.order);
-
-				setDocSections(sections);
-			} catch (error) {
-				console.error('Error fetching data:', error);
+			if (docsResult.status === 'fulfilled') {
+				setDocSections(docsResult.value as SectionItem[]);
+			} else {
+				console.error('Error fetching documentation:', docsResult.reason);
 			}
 		};
 

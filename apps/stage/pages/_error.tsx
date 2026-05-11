@@ -19,7 +19,7 @@
  *
  */
 
-import { get } from 'lodash';
+import get from 'lodash/get';
 import React from 'react';
 import ClientError from '../components/ClientError';
 

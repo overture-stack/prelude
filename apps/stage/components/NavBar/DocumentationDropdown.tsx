@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../global/utils/constants';
 import { InternalLink } from '../Link';
-import { extractOrder, extractTitle, generateSlug } from '../pages/documentation/utils/documentUtils';
 import Dropdown from './Dropdown';
 import { StyledListLink } from './styles';
 
@@ -30,34 +29,7 @@ const DocumentationDropdown = () => {
 	useEffect(() => {
 		fetch('/api/docs')
 			.then((response) => response.json())
-			.then(async (files) => {
-				// API returns paths like "user/00-Introduction.md"
-				const sectionsPromises = files.map(async (filepath: string) => {
-					try {
-						const contentResponse = await fetch(`/docs/${filepath}`);
-						if (!contentResponse.ok) throw new Error(`Failed to load ${filepath}`);
-
-						const content = await contentResponse.text();
-						const slashIdx = filepath.indexOf('/');
-						const category = slashIdx !== -1 ? filepath.slice(0, slashIdx) : '';
-						const filename = slashIdx !== -1 ? filepath.slice(slashIdx + 1) : filepath;
-
-						return {
-							title: extractTitle(content) || generateSlug(filename),
-							id: generateSlug(filename),
-							order: extractOrder(filename),
-							category,
-						};
-					} catch (error) {
-						console.error(`Error processing file ${filepath}:`, error);
-						return null;
-					}
-				});
-
-				const sections = (await Promise.all(sectionsPromises))
-					.filter((section): section is DocSection => section !== null)
-					.sort((a, b) => a.order - b.order);
-
+			.then((sections: DocSection[]) => {
 				setDocSections(sections);
 				setLoading(false);
 			})
