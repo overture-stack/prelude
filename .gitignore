@@ -6,5 +6,5 @@ node_modules
 __MACOSX
 dist
 backups/
-planningDocs/
+drafts/
 configs/nginxConfigs/
