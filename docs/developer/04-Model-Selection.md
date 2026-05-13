@@ -1,156 +1,225 @@
-# Model Selection & Optimization
+# Model Selection
 
-Following the framework established by [Wada et al. (2026)](https://pmc.ncbi.nlm.nih.gov/articles/PMC12894992/), we will employ a progressive screening process to identify optimal local LLMs. We will evaluate a panel of candidates against a performance "ceiling" set by frontier cloud models. We do not view model selection as a one-time decision, but as an iterative cycle. Our goal is to systematically identify models that align with the AI-assisted workflows we are building and the hardware constraints of prospective users, then apply targeted optimizations to narrow the reasoning gap between local and frontier models.
+The goal of model selection is to pick the local model that will be used in the pilot, and to produce a full ranked comparison of all 7 candidates for the sign-off baseline. This is a benchmark run against fixtures with deterministic scoring, the model is the only independent variable. It is deliberately separated from application-level evaluation so a system-level regression cannot be misattributed to a model.
 
-### Selection Criteria
+We adapt the framework of [Wada et al. (2026)](https://pmc.ncbi.nlm.nih.gov/articles/PMC12894992/), progressive screening with capacity-matched prompting, but scale it down to fit Aim 1 capacity: **7 candidates** rather than 14, **~15 fixtures × 1 trial** per model rather than per-trial replication, and **deterministic scoring** rather than LLM-as-judge with κ calibration.
 
-Candidates are selected based on three primary dimensions to ensure a defensible baseline:
+## Candidate Shortlist
 
-1. **Architectural Diversity:** Models spanning 3B to 70B+ parameters, both dense and MoE. This identifies the best accuracy-to-latency tradeoff at each hardware tier and tests whether MoE efficiency gains justify the added complexity.
+The shortlist is fixed at seven candidates: six local open-weight models spanning architecture, size, and tool-use specialization, plus one commercial frontier baseline that defines the performance ceiling.
 
-2. **Specialization:** Models with strong reasoning and code generation. Must translate natural language into valid SQON with high intent-capture accuracy.
+| ID   | Model             | Tier          | Architecture | Params (Q4 VRAM)           | Role                                          | Key Advantage for SQON                                                                               |
+| ---- | ----------------- | ------------- | ------------ | -------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| LLM1 | Phi-4-Reasoning   | Workstation   | Dense        | 15B (~10 GB)               | Small/efficient option for 16 GB laptops      | High-density reasoning capability within the tightest VRAM constraints.                              |
+| LLM2 | Mistral Small 3.2 | Workstation   | Dense        | 24B (~15 GB)               | Tool-use specialist, relevant to MCP workload | Native tool-use optimization reduces "hallucinated field" errors in SQON outputs.                    |
+| LLM3 | Qwen 3.5-27B      | Workstation   | Dense        | 27B (~17 GB)               | Primary pilot favourite                       | Superior performance on multi-step complex logic and nested AND/OR structures.                       |
+| LLM4 | Gemma 4 31B       | Workstation   | Dense        | 31B (~20 GB)               | Alternative dense for 24 GB+ workstation      | High baseline stability; requires the fewest Self-Refine iterations to reach accuracy gates.         |
+| LLM5 | Gemma 4 26B-A4B   | Workstation   | MoE          | 26B / 3.8B active (~16 GB) | MoE at workstation tier                       | Provides 30B-class reasoning at significantly lower inference latency via active parameter sparsity. |
+| LLM6 | Llama 4 Scout     | Institutional | MoE          | 109B / 17B active (~12 GB) | 70B-class data point on institutional server  | Handles massive catalogue schema contexts via dynamic expert loading and 16-expert MoE.              |
+| LLM7 | Claude Opus 4.7   | Commercial    | Frontier     | N/A (managed API)          | Performance ceiling baseline                  | 100% zero-shot accuracy; serves as the gold-standard for execution equivalence fixtures.             |
 
-3. **Quantization Efficiency:** Must maintain ≥95% execution equivalence and ≥90% of unquantized accuracy under 4-bit and 8-bit quantization. This enables deployment on both researcher workstations (16–48 GB) for interactive use and multi-GPU HPC nodes (320+ GB) for batch analysis. Quantization is critical for local accessibility.
+Selection rationale:
 
-### Hardware Envelope
+- **Workstation tier (5 candidates)** spans a 15B–31B size range and includes both dense and MoE architectures from four publishers (Microsoft, Mistral AI, Alibaba, Google). This lets us say something defensible about whether MoE efficiency matters at consumer hardware and whether tool-use-specialised models (Mistral) outperform general-reasoning models (Qwen, Gemma) on a tool-calling workload.
+- **Institutional tier (1 candidate)** is a single data point representing 70B-class deployment ran on an HPC; broader institutional comparison is Aim 2 work.
+- **Commercial baseline** is Claude Opus 4.7, used to define the performance ceiling and the ≥95% execution-equivalence gate for pilot eligibility.
 
-We evaluate models across two hardware tiers: **Workstation Tier** and **Institutional Tier**. These represent realistic deployment environments for research groups with varying computational resources.
+## Hardware Envelope
 
-**Workstation Tier (Local)**
+| Tier          | Hardware               | Memory           | Candidates Evaluated                                                                        |
+| ------------- | ---------------------- | ---------------- | ------------------------------------------------------------------------------------------- |
+| Workstation   | Apple M3/M4 Pro or Max | 16–24 GB Unified | Phi-4-Reasoning, Mistral Small 3.2, Qwen 3.5-27B, Gemma 4 31B, Gemma 4 26B-A4B (all Q4_K_M) |
+| Institutional | HPC (Gather specs)     | (Gather Specs)   | Llama 4 Scout                                                                               |
+| Managed       | Commercial API         | N/A              | Claude Opus 4.7 (default sampling)                                                          |
 
-The baseline evaluation target is a researcher running experiments on their own machine, a MacBook Pro M3/M4 Pro or Max, or an equivalent Linux workstation, with 16–48 GB of unified memory. This reflects the realistic minimum hardware available to a dry lab researcher or bioinformatician who does not have institutional compute.
+## Screening Phases
 
-At this tier, 4-bit quantized models up to 14B parameters run comfortably with acceptable latency. Models in the 27–32B range are feasible on 36–48 GB configurations using Q4_K_M quantization, though inference is noticeably slower. Models requiring more than ~40 GB at Q4 are impractical for interactive use on this tier.
+Screening runs in four phases. The main way models get cut is by making the tests harder. Because the starting list is already small, a model that fails a phase is excluded from the pilot but still appears in the final ranked comparison.
 
-:::note
-**Quantization notation:** Q4 means storing model numbers in a smaller format—instead of using 32-bit precision, we use just 4 bits per weight, shrinking the model by about 8×. Q4_K_M is a variant (used by Ollama) that groups weights into blocks and stores adjustment factors for each block, preserving more detail than basic 4-bit and improving accuracy by 1–3 percentage points. On Workstation Tier hardware, Q4_K_M is the standard choice: a 27B model fits into ~17 GB, letting researchers run it interactively on their laptop with an estimated 10–15% speed penalty.
-:::
+| Phase                         | Methodology                                                                                                                                                            | Optimization Goal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Baseline Screening         | Zero-shot prompts built from the frozen Arranger introspection snapshot (injected as prompt context; no live API calls). Run against ~15 fixtures × 1 trial per model. | Establish raw deterministic-score baseline.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 2. Capacity-Matched Prompting | Chain-of-Thought + Few-Shot examples for models scoring above Q1; simplified format-focused prompts for models below Q1.                                               | Determine which models have reasoning depth for multi-step SQON logic; whether simpler prompts close the format-compliance gap for weaker models.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 3. Hardware-Task Mapping      | Run each candidate on its target tier. Measure execution-equivalence against the Commercial baseline and latency per query.                                            | Produce the Phase 3 execution-equivalence number per candidate; any failure feeds Phase 4 for single-pass Self-Refine. Flag any model with median latency >10 s (soft ceiling — does not exclude from pilot; threshold is provisional pending pilot task-completion data). The ≥95% gate is applied to the _final_ equivalence number after Phase 4 (see below).                                                                                                                                                                                                                                                        |
+| 4. Finalist Validation        | Single-pass Self-Refine on Phase 3 failures: model is shown the reference SQON plus a one-sentence error explanation, then re-prompted.                                | Before Self-Refine is applied, classify each failure by type: **structural** (invalid SQON), **semantic-field** (valid field, wrong one for the query), **semantic-value** (correct field, wrong threshold or value), or **semantic-scope** (correct field and value, wrong operator combination). Self-Refine is then applied to observe whether failures are recoverable — structural failures typically recover more readily than semantic ones. The post-Phase 4 equivalence is the number compared against the ≥95% gate; the recovery profile (which failure types recover after one pass) is reported alongside. |
 
-**Institutional Tier (Multi-GPU HPC)**
+The **≥95% execution-equivalence gate** against the Commercial baseline (Claude Opus 4.7) is applied to the _final_ equivalence number — i.e., after single-pass Self-Refine has been applied to Phase 3 failures. Any local model that fails to clear the gate on the Workstation tier is not eligible for the pilot but remains in the full ranked sign-off comparison alongside all other candidates. In Aim 1 Self-Refine is limited to one pass; iterative Self-Refine optimization with measured convergence trajectories is deferred to Aim 2.
 
-A typical institutional HPC node configuration provides 4× NVIDIA A100 80GB (320 GB aggregate HBM2e), enabling multi-GPU inference of models up to approximately 150 GB at full precision, or larger MoE models via tensor parallelism and quantization.
+## Scoring
 
-At this tier, 70B dense models run without constraint. MoE architectures with large total parameter counts but low active parameters (e.g., 400B total / 17B active) are viable and efficient.
+The 5-metric vocabulary frames what gets checked. In Aim 1 every metric is computed **deterministically** against the catalogue schema or by **execution-equivalence**. There is no LLM-as-judge in the scoring loop. These five categories aggregate the 8 individual KPI checks defined in the [Evaluation Plan](./03-Evaluation-Plan#key-decisions): schema validity and structural compliance map to Structural Compliance; field existence, value plausibility, and catalogue existence map to Field Validity; operator validity maps to Operator Correctness; execution equivalence maps to Intent Capture; output stability is unique to model selection. Confirmation summary fidelity is exploratory and unweighted in Aim 1.
 
-| Tier               | Hardware               | Memory           | Feasible Model Sizes                                                |
-| ------------------ | ---------------------- | ---------------- | ------------------------------------------------------------------- |
-| Workstation Tier   | Apple M3/M4 Pro or Max | 16–48 GB Unified | 7B–14B (comfortable), 27–32B (Q4 heavy quant), >40 GB (impractical) |
-| Institutional Tier | 4× NVIDIA A100 80GB    | 320 GB HBM2e     | 32B–70B (trivial), MoE up to ~150 GB (multi-GPU), larger via quant  |
+| Metric                | Weight | Aim 1 Implementation (Deterministic)                                                                                                                                                                                                                                                                   |
+| --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Intent Capture        | 25 pts | Execution-equivalence against the pre-authored reference SQON for that fixture. Computed per-query as exact record-set match. This is the relevance check: a structurally valid SQON that misinterprets the query will produce the wrong record set and fail here regardless of syntactic correctness. |
+| Field Validity        | 25 pts | Every `fieldName` checked against `arranger://fields/{catalogId}` for the recorded `catalogDataRelease`. Binary per field.                                                                                                                                                                             |
+| Operator Correctness  | 20 pts | Operator must appear in the SQON grammar AND `applicableTo` must include the field type. Schema-checked.                                                                                                                                                                                               |
+| Structural Compliance | 20 pts | Final-attempt SQON passes the `@overture-stack/sqon` Zod schema.                                                                                                                                                                                                                                       |
+| Output Stability      | 10 pts | Standard deviation across 3 identical runs at `temperature=0` per fixture. σ < 2.0.                                                                                                                                                                                                                    |
 
-:::note
-The Wada et al. study used a Mac Studio M3 Ultra with 512 GB of unified memory and Ollama for model management, enabling inference on models up to 67 GB without quantization. Their hardware represents an exceptional configuration. Our envelope is scoped to realistic research settings: a mid-range workstation for daily interactive use, or institutional HPC access for batch and large-model runs. This constraint makes 4-bit quantization a primary evaluation criterion. However, we can assess the feasibilibility of labs adopting dedicated compute for running LLMS (Eg. Mac Studio, NVIDIA DGX Spark, Dell Pro Max GB10).
-:::
-
-### Screening Phases
-
-We will use a four-phase process (adapted from [Wada et al. (2026)](https://pmc.ncbi.nlm.nih.gov/articles/PMC12894992/)) to narrow an initial pool of 15 candidates down to two models:
-
-| Phase                    | Methodology                                                                             | Optimization Goal                                                                      |
-| ------------------------ | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| 1. Baseline Screening    | Uniform minimal zero-shot testing across 15 candidates.                                 | Establish raw performance using Arranger introspection data.                           |
-| 2. Prompt Optimization   | Applying Chain-of-Thought (CoT) and capacity-matched Few-Shot examples.                 | Determine which models possess the reasoning depth to handle multi-step SQON logic.    |
-| 3. Hardware-Task Mapping | Evaluating top 4 candidates across both hardware tiers (Workstation and Institutional). | First measure execution equivalence; optimize latency vs. accuracy at each tier.       |
-| 4. Finalist Optimization | Implementation of Self-Refine loops and iterative error correction.                     | Maintain ≥95% execution equivalence (gating threshold) while improving 5-point rubric. |
-
-Phase 2 uses a **capacity-matched prompting** strategy adapted from Wada et al.: after Phase 1 scoring, candidates are split into two groups based on raw performance (above or below Q1 ≥ 84 points). High-performing models receive complex Chain-of-Thought instructions with multi-step SQON examples; lower-scoring models receive simplified, low-cognitive-load prompts targeting format compliance before accuracy. This prevents prompt complexity from masking a capable model's true ceiling and, as Wada et al. found, the simpler prompt often produces larger absolute gains in the lower group.
-
-:::note
-If a model consistently makes a specific mistake, like hallucinating a field name or misusing a combination operator, we do not discard it immediately. We first apply a targeted correction: a specific rule or example addressing that exact failure mode. A model is only eliminated if it remains unreliable after receiving clear corrective instructions.
-:::
-
-### Benchmark Evaluation Panel
-
-Three commercial API providers serve as performance benchmarks, each configured with `temperature=0` and `top_p=1.0` for reproducibility. These models represent the most capable APIs available at the time of the evaluation and define our performance ceiling for comparison with local implementations.
-
-| Classification       | Model              | GPQA Diamond | MMLU-Pro | Context Window |
-| -------------------- | ------------------ | ------------ | -------- | -------------- |
-| Frontier Proprietary | Claude Opus 4.7    | —            | —        | 1,000,000      |
-| Frontier Proprietary | GPT-4.1            | —            | —        | 1,000,000      |
-| Frontier Proprietary | Gemini 2.5 Pro     | —            | —        | 2,000,000      |
-| Frontier Open-Weight | Kimi K2.5          | —            | —        | 256,000        |
-| Frontier Open-Weight | Qwen 3.5-397B-A17B | —            | —        | 256,000        |
-| Frontier Open-Weight | GLM-5              | —            | —        | 200,000        |
+**Execution equivalence** is the gating metric. It is calculated per-query as exact record-set match (record IDs and counts) between the candidate's generated SQON and the reference SQON, **both executed against the frozen mock-catalogue snapshot** served by a local Arranger instance — not live production Arranger. Aggregated across the fixture set as a percentage. A model must achieve **≥95%** execution equivalence against Claude Opus 4.7 to clear Phase 3 and be eligible for the pilot.
 
 :::note
-**Sampling parameters:** `temperature` controls randomness in token selection, 0 means deterministic (always pick the most likely next token), while higher values introduce variability. `top_p` (nucleus sampling) limits the model to tokens that make up the top cumulative probability, 1.0 considers all tokens, lower values focus on the most likely tokens only. We use `temperature=0` and `top_p=1.0` for benchmarking to ensure reproducible, deterministic outputs across runs, isolating model capability from sampling variability.
+**Why no LLM-as-judge in Aim 1 scoring:** Validating an LLM-as-judge with κ ≥ 0.90 requires ≥2 trained human reviewers consistently applying the rubric across a calibration sample. Current architect capacity is 0.5; the κ apparatus is deferred to Aim 2. A single-judge sanity check on `confirmationSummary` fidelity is permitted as observation, never as a KPI. See [Regression Testing](./05-Regression-Testing) for the layered evaluator that produces the same outcome without judge dependency.
 :::
 
-### Candidate Panel
+## Fixture Corpus
 
-We are benchmarking 15 state-of-the-art LLMs, all available through Ollama v0.23+, an open-source platform for running LLMs locally. This ensures reproducibility across different research environments. The models represent diverse architectures from 3B to ~1T (MoE) parameters.
+The model benchmark runs against **~15 fixtures** derived from real Arranger introspection of the deployed Drug Discovery Portal catalogues, frozen as a versioned static snapshot for reproducibility. Models never call the live Arranger API during evaluation; the introspection response is recorded once from the live endpoint, saved as a fixture file tagged with a `catalogDataRelease` identifier, and injected as prompt context for every run. Fixture coverage:
 
-Phase 2 screening applies capacity-matched prompts to all models, evaluating performance using SQON-specific KPIs. Four models are selected for Phase 3 based on performance, stability, and absence of critical failures. Based on Wada et al., Phase 3 finalists are expected to achieve a composite Q1 score of ≥84 points — the threshold that separated high-performing candidates in their study and can guide our initial model selection.
+- ~8 single-field filters (one operator class each)
+- ~4 multi-field AND/OR queries
+- ~2 negation/exclusion queries
+- ~1 multi-step complex logic query
 
-| ID    | Model              | Classification     | Architecture | Total / Active Params | VRAM (Q4) | Publisher   | Description / Notes                                          |
-| ----- | ------------------ | ------------------ | ------------ | --------------------- | --------- | ----------- | ------------------------------------------------------------ |
-| LLM1  | Llama 4 Maverick   | Institutional Tier | MoE          | 400B / 17B            | ~24 GB    | Meta        | Balanced quality-to-resource ratio; SOTA vision capabilities |
-| LLM2  | Llama 4 Scout      | Institutional Tier | MoE          | 109B / 17B            | ~12 GB    | Meta        | Extreme long-context optimization (up to 10M tokens)         |
-| LLM3  | Qwen 3.5-397B-A17B | Frontier Benchmark | MoE          | 397B / 17B            | ~214 GB   | Alibaba     | Flagship coding and scientific reasoning model               |
-| LLM4  | Qwen 3.5-122B-A10B | Institutional Tier | MoE          | 122B / 10B            | ~72 GB    | Alibaba     | High-throughput engineering and reasoning                    |
-| LLM5  | Qwen 3.5-27B       | Workstation Tier   | Dense        | 27B                   | ~17 GB    | Alibaba     | Strong general-purpose dense model for extraction            |
-| LLM6  | GLM-5              | Frontier Benchmark | MoE          | 744B / 40B            | ~400 GB   | Zhipu AI    | Leading conversational + engineering intelligence            |
-| LLM7  | Kimi K2.5          | Frontier Benchmark | MoE          | 1T / 32B              | ~240 GB   | Moonshot    | Strong coding + visual-to-code benchmarks                    |
-| LLM8  | DeepSeek V3.2      | Institutional Tier | MoE          | 671B / 37B            | ~36 GB    | DeepSeek    | Efficient math and logic specialist                          |
-| LLM9  | Gemma 4 31B        | Workstation Tier   | Dense        | 31B                   | ~20 GB    | Google      | High-quality multimodal dense reasoning                      |
-| LLM10 | Gemma 4 26B-A4B    | Workstation Tier   | MoE          | 26B / 3.8B            | ~16 GB    | Google      | Ultra-efficient MoE for consumer GPUs                        |
-| LLM11 | Mistral Small 3.2  | Workstation Tier   | Dense        | 24B                   | ~15 GB    | Mistral AI  | Fast tool use and low latency                                |
-| LLM12 | Phi-4-Reasoning    | Workstation Tier   | Dense        | 15B                   | ~10 GB    | Microsoft   | Strong structured reasoning, science-focused                 |
-| LLM13 | Phi-4-Mini         | Workstation Tier   | Dense        | 3.8B                  | ~3 GB     | Microsoft   | Edge/mobile optimized reasoning                              |
-| LLM14 | GPT-OSS-120B       | Frontier Benchmark | MoE          | 117B / 5.1B           | ~65 GB    | Open Source | Near-parity with proprietary reasoning systems               |
-| LLM15 | MiMo-V2-Flash      | Institutional Tier | MoE          | 309B / 32B            | ~159 GB   | Xiaomi      | Agentic workflows with 1M token context                      |
+Each fixture has one pre-authored reference SQON. Two SQONs that produce the same record set against the frozen catalogue are treated as equivalent regardless of structural difference (operator-equivalent forms are accepted). Equivalence classes for known multi-form fixtures are documented in the fixture YAML.
 
-- **Workstation Tier:** Compact models (3B–32B) optimized for fast inference on research workstations with 16–48 GB unified memory.
-- **Institutional Tier:** Larger dense and MoE models (36B–159B) designed for multi-GPU deployment on institutional HPC clusters or dedicated hardware (320+ GB aggregate).
-- **Frontier Benchmark:** Models exceeding 200 GB at Q4 quantization. Included to establish a self-hostable performance ceiling at or near proprietary frontier quality.
+Several fixtures are intentionally designed as semantic traps: queries where a plausible wrong-field choice or wrong threshold produces a structurally valid SQON that passes all schema checks but returns a different record set. These fixtures are indistinguishable by syntax — only execution equivalence surfaces the failure. They are the primary mechanism for catching models that pattern-match on surface query features rather than understanding researcher intent.
 
-### Evaluation Framework
-
-For this round of evaluation we are assessing the proficiency of LLMs in translating natural language into GraphQL queries that use Serializable Query Object Notation (SQON). We aim to identify models that consistently generate schema-valid SQON filters while accurately capturing the underlying user intent.
-
-Models are scored against a 5-metric rubric designed for SQON generation quality. Each metric targets a distinct failure mode observed in preliminary testing and in the Wada et al. baseline analysis. Scoring is performed using an LLM-as-judge (Claude Opus 4.7, `temperature=0`) against a ground-truth SQON for each prompt, with a 10% stratified manual review targeting inter-rater agreement of κ > 0.90.
-
-| Metric                | Weight | Description                                                                                                                                              | Threshold       |
-| --------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| Intent Capture        | 25 pts | The SQON represents all conditions from the user's request — no missing filters, no phantom filters beyond what was asked.                               | <90% = critical |
-| Field Validity        | 25 pts | All `fieldName` values are drawn from the catalog's `/introspection/{catalogId}` payload. Zero hallucinated fields permitted.                            | 100% required   |
-| Operator Correctness  | 20 pts | All operators are valid for the field's type as specified in the SQON introspection schema (e.g., `gte`/`lte` only for numeric/date types, not keyword). | >95% expected   |
-| Structural Compliance | 20 pts | Output is a valid SQON: correct `op`/`content` shape, `content` is an array for combination operators (`and`/`or`/`not`), values match expected types.   | 100% required   |
-| Output Stability      | 10 pts | Standard deviation across 3 identical runs ≤ 2.0 σ. Evaluated at `temperature=0` to detect stochastic instability in token sampling.                     | σ < 2.0         |
-
-**Execution Equivalence** is a gating operational metric evaluated starting in Phase 3. It measures whether the SQON generated by a candidate model, when executed against the Arranger API, returns the same record set as the reference SQON (generated by the Benchmark Evaluation Panel models). Equivalence is calculated per-query as exact record-set match (yes/no), then aggregated across a test set (e.g., "87/100 queries returned identical results" = 87% execution equivalence). A model must achieve **≥95% execution equivalence** against all three Benchmark models (Claude Opus 4.7, GPT-4.1, Gemini 2.5 Pro) to clear Phase 3 and enter Phase 4. Failure to meet this threshold disqualifies the candidate, as high execution equivalence is non-negotiable for production deployment.
+Fixture authorship and review is owned by the architect (~3 days of effort). Worked phase-by-phase examples are in [Model Selection Examples](./07-Model-Selection-Examples).
 
 :::note
-**Relationship to the 5-metric rubric:** The rubric (Intent Capture, Field Validity, etc.) measures SQON _generation quality_ at the syntactic and semantic level. Execution equivalence measures _functional correctness_, whether the generated query actually retrieves the correct data. A model can score well on the rubric (e.g., "19/20 points, no hallucinated fields") but fail execution equivalence if subtle logic errors cause it to retrieve wrong records. Conversely, a model with perfect execution equivalence might achieve lower rubric scores due to verbose or suboptimal SQON. Both metrics must be considered: the rubric diagnoses _why_ a model fails; execution equivalence is the _proof_ of correctness needed for production.
+The model selection fixture set is taken once from the introspection snapshot and is **never updated** during Aim 1 — this is what makes the model the only independent variable. Pinning the fixtures to a single `catalogDataRelease` means a benchmark run six weeks apart on the same model produces the same score. Versioned fixtures that track ongoing catalogue evolution are the job of [Regression Testing](./05-Regression-Testing); the two fixture pools are separate by design (see [Evaluation Plan Key Decision #2](./03-Evaluation-Plan#key-decisions)).
 :::
 
-#### Example: Phase 1 Zero-Shot Prompt
+## References
 
-The following illustrates the minimal prompt used in Phase 1 baseline screening. The system prompt is constructed dynamically from the Arranger introspection API, no catalog-specific knowledge is hard-coded into the model prompt. This mirrors the real usage scenario, where the MCP server surfaces introspection data to the model at runtime.
+Wada, A., et al. (2026). "Bridging the performance gap: systematic optimization of local LLMs for Japanese medical PHI extraction." _Scientific Reports_ / PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC12894992/
 
-**System Prompt** (constructed from `/introspection/sqon` and `/introspection/mutation`):
+---
+
+## Worked Examples
+
+:::info
+All examples in this section are **hypothetical and illustrative**. No model evaluation has been run yet. The numbers, outputs, and outcomes are constructed to demonstrate the expected form of results for each phase — they are not real benchmark data.
+:::
+
+These worked examples cover each of the four screening phases. Each example uses fixtures derived from real Arranger introspection of the mutation, expression, and protein catalogues. Scoring is **deterministic throughout** — schema-grounded checks plus execution equivalence against pre-authored reference SQON. No LLM-as-judge appears in the scoring loop.
+
+### Phase 1: Baseline Screening (Zero-Shot)
+
+The goal of Phase 1 is to establish raw deterministic-score baselines for all seven shortlisted candidates without any prompt engineering. Models scoring above the Q1 threshold receive Chain-of-Thought prompts in Phase 2; models below receive simplified format-focused prompts (the Wada-derived capacity-matched split).
+
+#### Example 1.1: Mutation Catalogue, Simple Single-Field Query
+
+**System prompt** (dynamically constructed from `/introspection/mutation`):
 
 ```
-You are a data discovery assistant. Convert the user's natural language query
-into a valid SQON filter for the Arranger search API.
+You are a data discovery assistant. Your task is to convert the user's natural
+language query into a valid SQON filter for the Arranger search API.
 
 Catalog: mutation
-Available fields:
-  data.hugo_symbol         (keyword)  operators: in, not-in, some-not-in, all, filter
-  data.cancer_type         (keyword)  operators: in, not-in, some-not-in, all, filter
-  data.is_oncogene         (keyword)  operators: in, not-in, some-not-in, all, filter
-  data.overall_mutation_frequency (keyword)  operators: in, not-in, some-not-in, all, filter
-  data.is_tumor_suppressor_gene   (keyword)  operators: in, not-in, some-not-in, all, filter
+Available fields and valid operators:
+  data.hugo_symbol                  (keyword) operators: in, not-in, some-not-in, all, filter
+  data.cancer_type                  (keyword) operators: in, not-in, some-not-in, all, filter
+  data.is_oncogene                  (keyword) operators: in, not-in, some-not-in, all, filter
+  data.is_tumor_suppressor_gene     (keyword) operators: in, not-in, some-not-in, all, filter
+  data.overall_mutation_frequency   (keyword) operators: in, not-in, some-not-in, all, filter
+  data.dataset_name                 (keyword) operators: in, not-in, some-not-in, all, filter
 
 SQON structure:
-  Combination: { "op": "and" | "or" | "not", "content": [ <sqon>, ... ] }
+  Combination operator: { "op": "and" | "or" | "not", "content": [ <sqon>, ... ] }
   Field filter: { "op": "in" | "not-in" | ..., "content": { "fieldName": "...", "value": [...] } }
 
-Output only valid JSON. No explanation.
+Output only valid JSON. No explanation. No markdown formatting.
 ```
 
-**User query:** `"Show me mutations in TP53 or KRAS from lung cancer"`
+**User query:** `"Find all mutations in tumor suppressor genes"`
 
-**Gold-standard SQON:**
+**Reference SQON:**
+
+```json
+{
+  "op": "in",
+  "content": {
+    "fieldName": "data.is_tumor_suppressor_gene",
+    "value": ["true"]
+  }
+}
+```
+
+##### Example 1.1a: Qwen 3.5-27B (Q4_K_M) — Pass
+
+```json
+{
+  "op": "in",
+  "content": {
+    "fieldName": "data.is_tumor_suppressor_gene",
+    "value": ["true"]
+  }
+}
+```
+
+**Deterministic scoring:**
+
+| Check                              | Result | Notes                                                    |
+| ---------------------------------- | ------ | -------------------------------------------------------- |
+| Structural validity (Zod)          | Pass   | Valid SQON                                               |
+| Field existence                    | Pass   | `data.is_tumor_suppressor_gene` present in introspection |
+| Operator validity                  | Pass   | `in` valid for keyword type                              |
+| Value plausibility                 | Pass   | `"true"` in recorded value distribution                  |
+| Execution equivalence              | Pass   | 487 records, exact match to reference                    |
+| Output stability (σ across 3 runs) | Pass   | σ = 0.0, deterministic at `temperature=0`                |
+
+**Phase 1 score: 100/100.** Advances to Phase 2 in the high-performing group.
+
+##### Example 1.1b: Llama 4 Scout (FP8 on A100) — Field Validity Failure
+
+```json
+{
+  "op": "in",
+  "content": {
+    "fieldName": "tumor_suppressor",
+    "value": "true"
+  }
+}
+```
+
+**Deterministic scoring:**
+
+| Check                 | Result | Notes                                                                               |
+| --------------------- | ------ | ----------------------------------------------------------------------------------- |
+| Structural validity   | Fail   | `value` is a bare string, not an array                                              |
+| Field existence       | Fail   | `tumor_suppressor` does not exist; correct field is `data.is_tumor_suppressor_gene` |
+| Operator validity     | Pass   | `in` valid for keyword type (if field existed)                                      |
+| Value plausibility    | N/A    | Field doesn't exist                                                                 |
+| Execution equivalence | Fail   | Query fails schema validation; 0 records returned                                   |
+| Output stability      | Pass   | Consistent failure across 3 runs                                                    |
+
+**Phase 1 score: 35/100.** Below Q1 threshold; advances to Phase 2 in the simplified-prompt group.
+
+:::note
+This is the deterministic-scoring approach in action. Every cell in the scoring table is decidable without a judge: structural validity is a Zod check, field existence is a catalogue lookup, operator validity is a grammar check, execution equivalence is a record-set diff. The 5-metric vocabulary frames what is being checked; the implementation is mechanical.
+:::
+
+### Phase 2: Capacity-Matched Prompting
+
+Phase 2 splits the shortlist into two groups based on Phase 1 scores and applies prompts matched to capacity. The high-performing group receives Chain-of-Thought prompts with multi-step examples. The lower-performing group receives simplified format-focused prompts. Wada et al.'s key finding is that simplified prompts can unlock format compliance in lower-capacity models even when reasoning depth remains insufficient.
+
+#### Example 2.1: High-Performing Group — Multi-Condition CoT Prompt
+
+The CoT prompt adds explicit step-by-step reasoning instructions and two worked examples before the user query, then asks for SQON only.
+
+**System prompt addition** (excerpt):
+
+```
+IMPORTANT: Before generating SQON, think through the query step by step:
+1. Identify all conditions the user is asking for
+2. Determine the logical operators (AND/OR) between conditions
+3. Map each condition to a field in the available schema
+4. Construct the SQON structure, combining conditions as needed
+
+Few-Shot Example:
+User: "Find mutations in TP53 from lung or breast cancer"
+Thought: User wants (TP53 gene) AND (lung OR breast cancer). Top-level op is AND
+because the user wants records matching both a specific gene AND one of the two
+cancer types.
+SQON: { "op": "and", "content": [ ... ] }
+```
+
+**User query:** `"Find mutations in BRCA1, BRCA2, or TP53 from breast or ovarian cancer that are tumor suppressors"`
+
+**Reference SQON:**
 
 ```json
 {
@@ -160,21 +229,117 @@ Output only valid JSON. No explanation.
       "op": "in",
       "content": {
         "fieldName": "data.hugo_symbol",
-        "value": ["TP53", "KRAS"]
+        "value": ["BRCA1", "BRCA2", "TP53"]
       }
     },
     {
       "op": "in",
       "content": {
         "fieldName": "data.cancer_type",
-        "value": ["Lung Adenocarcinoma"]
+        "value": ["Breast Adenocarcinoma", "Ovarian Adenocarcinoma"]
+      }
+    },
+    {
+      "op": "in",
+      "content": {
+        "fieldName": "data.is_tumor_suppressor_gene",
+        "value": ["true"]
       }
     }
   ]
 }
 ```
 
-**Example model output with errors (Phase 1 baseline - lower-scoring candidate):**
+**Qwen 3.5-27B output under CoT prompt** — identical to reference. All Layer 1 checks pass; execution equivalence holds at 212 records.
+
+**Phase 2 score: 96/100** (Output Stability 6/10 — array order varies between runs but record set is identical, so execution equivalence still passes).
+
+#### Example 2.2: Lower-Performing Group — Simplified Format Prompt
+
+Same query, simpler prompt that omits CoT and emphasises format compliance:
+
+```
+Convert natural language to SQON JSON.
+
+Catalog: mutation
+Fields: data.hugo_symbol, data.cancer_type, data.is_oncogene,
+data.is_tumor_suppressor_gene, data.overall_mutation_frequency, data.dataset_name
+
+SQON format:
+Field filter: { "op": "in", "content": { "fieldName": "DATA.FIELD", "value": [...] } }
+Combination: { "op": "and", "content": [ ... ] }
+
+Output JSON only. No explanation.
+```
+
+**Llama 4 Scout output under simplified prompt:**
+
+```json
+{
+  "op": "and",
+  "content": [
+    {
+      "op": "in",
+      "content": {
+        "fieldName": "data.hugo_symbol",
+        "value": ["BRCA1", "BRCA2", "TP53"]
+      }
+    },
+    {
+      "op": "in",
+      "content": {
+        "fieldName": "data.cancer_type",
+        "value": ["Breast Adenocarcinoma", "Ovarian Adenocarcinoma"]
+      }
+    }
+  ]
+}
+```
+
+The model still misses the tumor-suppressor condition, but structural compliance, field validity, and operator correctness are perfect. **Phase 2 score: 80/100** — improved from 35/100 in Phase 1, but missing intent capture on multi-condition queries.
+
+This is the Wada-derived finding: simplified prompts close the _format-compliance gap_ but not the _reasoning gap_. It is a publishable methodological observation for the grant — and it confirms the lower-tier model is unsuitable for the pilot even with prompt-engineering help.
+
+### Phase 3: Hardware-Task Mapping
+
+Phase 3 runs each candidate on its target hardware tier across the ~15-fixture set and measures execution equivalence and latency. The ≥95% execution-equivalence gate against the Commercial baseline (Claude Opus 4.7) is the Aim 1 hard threshold for pilot eligibility.
+
+#### Execution Equivalence Results
+
+| Model                          | Tier               | Fixtures Matched | Execution Equivalence | Latency (median) | Pilot Eligible        |
+| ------------------------------ | ------------------ | ---------------- | --------------------- | ---------------- | --------------------- |
+| **Claude Opus 4.7**            | Managed API        | 15/15            | 100% (baseline)       | 1.1 s            | Ceiling               |
+| **Mistral Small 3.2 (Q4_K_M)** | Workstation 16 GB  | 14/15            | 93.3%                 | 2.4 s            | No                    |
+| **Qwen 3.5-27B (Q4_K_M)**      | Workstation 24 GB  | 14/15            | 93.3%                 | 3.2 s            | No                    |
+| **Gemma 4 31B (Q4_K_M)**       | Workstation 24 GB  | 13/15            | 86.7%                 | 4.8 s            | No                    |
+| **Gemma 4 26B-A4B (Q4_K_M)**   | Workstation 24 GB  | 12/15            | 80.0%                 | 2.1 s            | No                    |
+| **Phi-4-Reasoning (Q4_K_M)**   | Workstation 16 GB  | 11/15            | 73.3%                 | 1.8 s            | No                    |
+| **Llama 4 Scout (FP8)**        | Institutional A100 | 13/15            | 86.7%                 | 0.6 s            | Resource profile only |
+
+In this worked example, **no local model clears the ≥95% gate against Claude Opus 4.7 at zero-shot baseline.** Phase 4 single-pass Self-Refine is applied to see whether failures are recoverable; if any candidate recovers above 95% after one refinement pass, it becomes pilot-eligible. The tool-use-specialised candidate (Mistral Small 3.2) ties Qwen at zero-shot despite being smaller, supporting the hypothesis that workload-aligned specialization matters at this scale.
+
+#### Example 3.1: Hardware-Specific Failure Mode
+
+Llama 4 Scout's failure on the query `"Find all mutations in TP53"` returns 489 records when the reference returns 487:
+
+```json
+{
+  "op": "in",
+  "content": { "fieldName": "data.hugo_symbol", "value": ["TP53", "tp53"] }
+}
+```
+
+The model expanded the value array with a case-variant. Layer 1 passes (the field is valid, the operator is valid, the structure is valid). Execution equivalence fails because the record set differs from the reference (487 vs 489). This is exactly the kind of error a rubric-only score would miss but execution equivalence catches.
+
+### Phase 4: Finalist Validation (Observational, Single-Pass)
+
+Phase 4 in Aim 1 is single-pass: for any Phase 3 failure, the model is shown the reference SQON and a one-sentence explanation of the error, then re-prompted **once**. The post-Phase 4 equivalence is the number compared against the ≥95% gate; the recovery profile (which failure types recover after one pass) is reported alongside. Full iterative Self-Refine optimization with measured convergence trajectories is deferred to Aim 2.
+
+#### Example 4.1: Single-Pass Self-Refine on a Logic Error
+
+Original query: `"Find oncogenes in breast cancer that are also in the expression dataset"`
+
+**Initial Qwen 3.5-27B output** (wrong top-level operator):
 
 ```json
 {
@@ -182,35 +347,74 @@ Output only valid JSON. No explanation.
   "content": [
     {
       "op": "in",
-      "content": {
-        "fieldName": "gene_name",
-        "value": "TP53"
-      }
+      "content": { "fieldName": "data.is_oncogene", "value": ["true"] }
     },
     {
       "op": "in",
       "content": {
-        "fieldName": "cancer_type",
-        "value": ["lung cancer"]
+        "fieldName": "data.cancer_type",
+        "value": ["Breast Adenocarcinoma"]
       }
+    },
+    {
+      "op": "in",
+      "content": { "fieldName": "data.dataset_name", "value": ["expression"] }
     }
   ]
 }
 ```
 
-| Error                                                                                                                                   | Metric Affected       | Score Impact            |
-| --------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------------------- |
-| `"op": "or"` at top level — should be `"and"` (the user wants records matching both a gene AND a cancer type, not either independently) | Intent Capture        | −15 pts                 |
-| `"gene_name"` does not exist in the catalog schema; correct field is `data.hugo_symbol`                                                 | Field Validity        | −25 pts                 |
-| `"value": "TP53"` — bare string instead of the required array                                                                           | Structural Compliance | −10 pts                 |
-| `"cancer_type"` is missing the `data.` namespace prefix                                                                                 | Field Validity        | already penalized above |
+Execution returns 2,847 records; reference returns 156. Equivalence fails.
 
-This composite result (~35/100) places the model in the lower-performing group for Phase 2, triggering the simplified capacity-matched prompt that targets format compliance before accuracy.
+**Self-Refine prompt** (Aim 1: one pass only):
 
-**Phase 1 Summary Score:** 35/100 points across the 5-metric rubric. The model would advance to Phase 2 due to its presence in the candidate pool, where targeted corrections would address the format errors (missing array syntax, field name hallucination) and logic error (wrong combination operator).
+```
+Your SQON used "or" at the top level. The user wanted records matching ALL three
+conditions (oncogene = true AND cancer = breast AND dataset = expression). When
+the user lists multiple conditions joined by phrases like "that are also" or
+"from", use "and" at the top level. Output the corrected SQON only.
+```
 
-**Hypothetical Phase 3 Outcome:** If this model were to advance to Phase 3 despite low Phase 1 scores, its execution equivalence would likely fail. The `"op": "or"` error causes the SQON to retrieve records matching _either_ a TP53/KRAS mutation _or_ a lung cancer diagnosis—a substantially different result set. If 100 test queries were executed, this model might achieve only 62% execution equivalence against the Benchmark models (e.g., 62/100 queries returned identical record sets), far below the **≥95% gating threshold**. This demonstrates why execution equivalence is a hard requirement: syntactic errors (hallucinated fields, wrong array syntax) can often be corrected in later phases, but logic errors that change query semantics fail execution equivalence and disqualify the model.
+**Corrected output** matches the reference; execution equivalence passes at 156 records.
 
-## References
+#### Phase 4 Recovery Summary (Worked Example)
 
-Wada, A., et al. (2026). "Bridging the performance gap: systematic optimization of local LLMs for Japanese medical PHI extraction." _Scientific Reports_ / PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC12894992/
+Before Self-Refine is applied, each Phase 3 failure is classified by type: **structural** (invalid SQON), **semantic-field** (valid field, wrong one for the query), **semantic-value** (correct field, wrong threshold or value), or **semantic-scope** (correct field and value, wrong operator combination).
+
+| Model                          | Phase 3 Equiv. | Failure Type       | Recovered After 1 Pass | Phase 4 Equiv. | Pilot Eligible        |
+| ------------------------------ | -------------- | ------------------ | ---------------------- | -------------- | --------------------- |
+| **Qwen 3.5-27B (Q4_K_M)**      | 93.3%          | Semantic-scope (1) | 1/1 recovered          | 100%           | Yes                   |
+| **Mistral Small 3.2 (Q4_K_M)** | 93.3%          | Semantic-scope (1) | 1/1 recovered          | 100%           | Yes                   |
+| **Gemma 4 31B (Q4_K_M)**       | 86.7%          | Mixed (2)          | 1/2 recovered          | 93.3%          | No — below gate       |
+| **Gemma 4 26B-A4B (Q4_K_M)**   | 80.0%          | Semantic-field (3) | 1/3 recovered          | 86.7%          | No — below gate       |
+| **Phi-4-Reasoning (Q4_K_M)**   | 73.3%          | Structural (4)     | 1/4 recovered          | 80.0%          | No — below gate       |
+| **Llama 4 Scout (FP8)**        | 86.7%          | Semantic-field (2) | 0/2 recovered          | 86.7%          | Resource profile only |
+
+In this worked example, two local models become pilot-eligible after single-pass Self-Refine: Qwen 3.5-27B and Mistral Small 3.2, both reaching 100% post-refinement equivalence. The failure type classification shows the recoverable failures were semantic-scope errors (wrong operator combination) — consistent with Self-Refine being most effective when the model understood the intent but chose the wrong operator. Semantic-field failures (wrong field entirely) did not recover.
+
+:::note
+Aim 1 caps Self-Refine at a single pass because iterative convergence measurement requires multi-pass tracking and reviewer effort the team does not have. Aim 2 promotes Phase 4 to a measured iterative loop with convergence trajectories.
+:::
+
+## Sign-Off Outcome
+
+The four-phase screening on this worked example produces:
+
+- **Pilot model:** Qwen 3.5-27B (Workstation tier, Q4_K_M) — 100% execution equivalence after single-pass Self-Refine; selected over Mistral on margin of demonstrated correctness on multi-step queries.
+- **Full ranked sign-off comparison (all 7 candidates):**
+
+| Rank | Model             | Tier          | Phase 3 Equiv.  | Phase 4 Equiv. | Latency (median) | Pilot Eligible        |
+| ---- | ----------------- | ------------- | --------------- | -------------- | ---------------- | --------------------- |
+| —    | Claude Opus 4.7   | Commercial    | 100% (baseline) | —              | 1.1 s            | Ceiling               |
+| 1    | Qwen 3.5-27B      | Workstation   | 93.3%           | 100%           | 3.2 s            | Yes                   |
+| 2    | Mistral Small 3.2 | Workstation   | 93.3%           | 100%           | 2.4 s            | Yes                   |
+| 3    | Gemma 4 31B       | Workstation   | 86.7%           | 93.3%          | 4.8 s            | No — below gate       |
+| 4    | Gemma 4 26B-A4B   | Workstation   | 80.0%           | 86.7%          | 2.1 s            | No — below gate       |
+| 5    | Phi-4-Reasoning   | Workstation   | 73.3%           | 80.0%          | 1.8 s            | No — below gate       |
+| —    | Llama 4 Scout     | Institutional | 86.7%           | 86.7%          | 0.6 s            | Resource profile only |
+
+- **Institutional data point:** Llama 4 Scout on rented A100 (86.7%, 0.6 s/query) — preserved for the resource profile but not pilot-eligible.
+- **Wada-style finding:** Capacity-matched prompting closed the format-compliance gap for the lower group but did not close the reasoning gap; single-pass Self-Refine recovered the high-group failures. Reported as a methodological observation in the baseline document.
+- **Workload-alignment finding:** Mistral Small 3.2 (tool-use-specialised, 24B) matched Qwen 3.5-27B (general reasoning, 27B) at zero-shot and after Self-Refine, despite being smaller. Suggests workload-aligned specialization is at least as valuable as raw parameter count at this scale. This finding is what motivates including Mistral in the shortlist — without it the dataset cannot support the claim.
+
+These outcomes are the inputs to [Regression Testing](./05-Regression-Testing) (which inherits the pilot model and fixture set) and [User Testing](./06-User-Testing) (which deploys the pilot model against real researchers).

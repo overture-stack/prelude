@@ -8,4 +8,5 @@ dist
 backups/
 referenceMaterials/
 configs/nginxConfigs/
-docs/developer/07-Model-Selection-Examples.md
+docs/developer/05-Regression-Testing.md
+docs/developer/05-Regression-Testing.md
