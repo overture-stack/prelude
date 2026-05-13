@@ -8,6 +8,7 @@ import FundingStatement from './FundingStatement';
 import { useCodeBlockCopyButtons } from './utils/useCodeBlockCopyButtons';
 import { useDictionaryHydration } from './utils/useDictionaryHydration';
 import { useHeadingAnchors } from './utils/useHeadingAnchors';
+import { useMermaidDiagrams } from './utils/useMermaidDiagrams';
 
 const DocumentationPage = ({ sections, currentSection, headings, categoryLabels }: DocumentationData): ReactElement => {
 	const getCategoryLabel = (category: string) =>
@@ -21,6 +22,7 @@ const DocumentationPage = ({ sections, currentSection, headings, categoryLabels 
 	useDictionaryHydration(contentRef, currentSection);
 	useHeadingAnchors(contentRef, currentSection);
 	useCodeBlockCopyButtons(contentRef, currentSection);
+	useMermaidDiagrams(contentRef, currentSection);
 
 	// Group sections by category, preserving insertion order
 	const groupedSections = useMemo(() => {
@@ -460,15 +462,71 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			color: ${theme.colors.textSecondary};
 		}
 
-		/* Mermaid diagram styles */
+		/* Mermaid diagram viewer */
+		.mermaid-viewer {
+			position: relative;
+			margin: ${theme.spacing[6]} 0;
+			border: 1px solid ${theme.colors.border};
+			border-radius: ${theme.borderRadius.md};
+			overflow: hidden;
+			background: ${theme.colors.backgroundSecondary};
+
+			&:hover .mermaid-toolbar {
+				opacity: 1;
+			}
+		}
+
+		.mermaid-toolbar {
+			position: absolute;
+			top: ${theme.spacing[2]};
+			right: ${theme.spacing[2]};
+			display: flex;
+			gap: ${theme.spacing[1]};
+			z-index: 10;
+			opacity: 0;
+			transition: opacity 0.15s ease;
+		}
+
+		.mermaid-toolbar-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 28px;
+			height: 28px;
+			padding: 0;
+			background: ${theme.colors.background};
+			color: ${theme.colors.textSecondary};
+			border: 1px solid ${theme.colors.border};
+			border-radius: ${theme.borderRadius.sm};
+			font-size: 16px;
+			line-height: 1;
+			cursor: pointer;
+			transition:
+				color 0.15s ease,
+				border-color 0.15s ease;
+
+			&:hover {
+				color: ${theme.colors.primary};
+				border-color: ${theme.colors.primary};
+			}
+		}
+
+		.mermaid-canvas {
+			width: 100%;
+			cursor: grab;
+			transform-origin: 0 0;
+			will-change: transform;
+			display: block;
+		}
+
 		.mermaid-diagram {
-			margin: ${theme.spacing[6]} auto;
-			text-align: center;
-			overflow-x: auto;
+			padding: ${theme.spacing[4]};
 
 			svg {
-				max-width: 100%;
+				display: block;
+				width: 100%;
 				height: auto;
+				max-width: 100%;
 			}
 		}
 

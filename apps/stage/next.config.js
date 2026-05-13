@@ -35,7 +35,26 @@ module.exports = withPlugins([withTranspileModules], {
 			'dist',
 		);
 
-		process.env.NODE_ENV === 'development' && (config.optimization.minimize = false);
+		// Skip babel transformation for mermaid to avoid class static block issues
+		config.module.rules = config.module.rules.map(rule => {
+			if (rule.test && rule.test.test && rule.test.test('test.js')) {
+				// This is likely the babel-loader rule
+				if (rule.exclude) {
+					rule.exclude = [rule.exclude, /node_modules\/mermaid/];
+				} else {
+					rule.exclude = /node_modules\/mermaid/;
+				}
+			}
+			return rule;
+		});
+
+		// For production builds, disable minification since mermaid uses class static blocks
+		// which are not compatible with the version of Terser in Next.js 12
+		if (process.env.NODE_ENV === 'production') {
+			config.optimization.minimize = false;
+		} else {
+			config.optimization.minimize = false;
+		}
 
 		return patchForGlobalCSS(config, options);
 	},

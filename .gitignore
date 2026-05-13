@@ -6,5 +6,6 @@ node_modules
 __MACOSX
 dist
 backups/
-drafts/
+referenceMaterials/
 configs/nginxConfigs/
+docs/developer/07-Model-Selection-Examples.md
