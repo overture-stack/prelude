@@ -1085,9 +1085,28 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 			margin-right: ${theme.spacing[5]};
 		}
 
-		/* Give table containers inside details extra padding on all sides */
-		details .table-container {
-			margin: ${theme.spacing[4]} ${theme.spacing[3]};
+		/* Tables rendered from markdown are raw <table> elements (no wrapper).
+		   The generic details > *:not(summary) padding rule applies to them but
+		   <table> ignores padding-left/right for its own box, so we need to
+		   shrink the table's width and offset it with margin. */
+		details > table {
+			width: calc(100% - ${theme.spacing[5]} * 2);
+			margin-left: ${theme.spacing[5]};
+			margin-right: ${theme.spacing[5]};
+			padding-left: 0;
+			padding-right: 0;
+
+			@media (max-width: ${theme.breakpoints.md}) {
+				width: calc(100% - ${theme.spacing[4]} * 2);
+				margin-left: ${theme.spacing[4]};
+				margin-right: ${theme.spacing[4]};
+			}
+
+			@media (max-width: ${theme.breakpoints.sm}) {
+				width: calc(100% - ${theme.spacing[3]} * 2);
+				margin-left: ${theme.spacing[3]};
+				margin-right: ${theme.spacing[3]};
+			}
 		}
 	`,
 
