@@ -156,6 +156,7 @@ const HomeNavigation = (): ReactElement => {
 
 	const handleSubItemClick = (subItem: SubItem, e: React.MouseEvent) => {
 		e.preventDefault();
+		e.stopPropagation();
 		if (subItem.isHeader || !subItem.link) return;
 		if (subItem.external) {
 			window.open(subItem.link, '_blank', 'noopener,noreferrer');
