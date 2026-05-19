@@ -217,6 +217,19 @@ Output only valid JSON. No explanation. No markdown formatting.
 }
 ```
 
+**Executed result (harness, not model output):**
+
+The harness posts this SQON to Arranger and compares the returned record set against the reference. The model is never shown the records; they are the basis of the execution-equivalence check only.
+
+```json
+[
+  { "mutation_id": "MUT-000123", "data": { "hugo_symbol": "TP53",  "cancer_type": "Lung Adenocarcinoma",     "is_tumor_suppressor_gene": "true" } },
+  { "mutation_id": "MUT-000841", "data": { "hugo_symbol": "BRCA1", "cancer_type": "Breast Adenocarcinoma",   "is_tumor_suppressor_gene": "true" } },
+  { "mutation_id": "MUT-001207", "data": { "hugo_symbol": "PTEN",  "cancer_type": "Ovarian Adenocarcinoma",  "is_tumor_suppressor_gene": "true" } }
+  // … 484 more records (487 total)
+]
+```
+
 **Deterministic checks:**
 
 | Metric                      | Result | Notes                                                                   |
@@ -226,9 +239,9 @@ Output only valid JSON. No explanation. No markdown formatting.
 | Field and Operator Validity | Pass   | `data.is_tumor_suppressor_gene` exists; `in` valid for keyword type     |
 | Output Stability            | Pass   | All 3 runs at `temperature=0.3` return execution-equivalent record sets |
 
-Fixture passes execution equivalence; all diagnostics clean. Contributes a pass toward this candidate's aggregate equivalence percentage. Whether the candidate as a whole advances in the high-performing group is decided once the full 20-fixture sweep is complete and the Q1 threshold is computed.
+Fixture passes execution equivalence; all diagnostics clean. Contributes a pass toward this candidate's aggregate equivalence percentage. Whether the candidate advances in the high-performing group is decided once the full 20-fixture sweep is complete and the Q1 threshold is computed.
 
-##### Example 1.1b: Llama 4 Scout (FP8 on A100), Field Validity Failure
+##### Example 1.1b: Llama 4 Scout (FP8 on A100) — Field Validity Failure
 
 ```json
 {
@@ -316,8 +329,6 @@ SQON: { "op": "and", "content": [ ... ] }
 }
 ```
 
-**Qwen 3.5-27B output under CoT prompt** is identical to the reference. Execution Equivalence passes at 212 records; all three diagnostics pass. Output Stability holds across the three runs at `temperature=0.3`: array order varies between runs, but the executed record sets are identical, which is the basis of the stability check.
-
 #### Example 2.2: Lower-Performing Group, Simplified Format Prompt
 
 Same query, simpler prompt that omits CoT and emphasises format compliance:
@@ -330,39 +341,13 @@ Fields: data.hugo_symbol, data.cancer_type, data.is_oncogene,
 data.is_tumor_suppressor_gene, data.overall_mutation_frequency, data.dataset_name
 
 SQON format:
-Field filter: { "op": "in", "content": { "fieldName": "DATA.FIELD", "value": [...] } }
-Combination: { "op": "and", "content": [ ... ] }
+  Field filter: { "op": "in", "content": { "fieldName": "DATA.FIELD", "value": [...] } }
+  Combination: { "op": "and", "content": [ ... ] }
 
 Output JSON only. No explanation.
 ```
 
-**Llama 4 Scout output under simplified prompt:**
-
-```json
-{
-  "op": "and",
-  "content": [
-    {
-      "op": "in",
-      "content": {
-        "fieldName": "data.hugo_symbol",
-        "value": ["BRCA1", "BRCA2", "TP53"]
-      }
-    },
-    {
-      "op": "in",
-      "content": {
-        "fieldName": "data.cancer_type",
-        "value": ["Breast Adenocarcinoma", "Ovarian Adenocarcinoma"]
-      }
-    }
-  ]
-}
-```
-
-The model misses the tumor-suppressor condition. Diagnostics: Structural Compliance pass, Field and Operator Validity pass, Output Stability pass. Execution Equivalence fails: the returned set is a strict superset of the reference, so the record-set diff is non-empty.
-
-This is the Wada-derived finding: simplified prompts close the _format-compliance gap_ (all three diagnostics now pass) but not the _reasoning gap_ (execution equivalence remains a miss on multi-condition queries). It is a publishable methodological observation for the grant; it confirms the lower-tier model is unsuitable for the pilot even with prompt-engineering help.
+Confirms the lower-tier models are unsuitable for the pilot even with prompt-engineering help.
 
 </details>
 
@@ -383,27 +368,14 @@ Phase 3 runs each candidate on its assigned hardware tier across the 20-fixture 
 | **Phi-4-Reasoning (Q4_K_M)**   | Workstation 16 GB  | 15/20            | 75.0%                 | 1.8 s            | No                    |
 | **Llama 4 Scout (FP8)**        | Institutional A100 | 17/20            | 85.0%                 | 0.6 s            | Resource profile only |
 
-In this worked example, **three local models clear the ≥85% gate at zero-shot baseline** (Qwen 3.5-27B and Mistral Small 3.2 at 18/20, Gemma 4 31B at 17/20). The remaining two workstation candidates fall below the gate at zero-shot and proceed to Phase 4 to see whether failures are recoverable from minimal feedback. The tool-use-specialised candidate (Mistral Small 3.2) ties Qwen at zero-shot despite being smaller, supporting the hypothesis that workload-aligned specialization matters at this scale.
-
-#### Example 3.1: Record-Set Drift Failure
-
-Llama 4 Scout's failure on the query `"Find all mutations in TP53"` returns 489 records when the reference returns 487:
-
-```json
-{
-  "op": "in",
-  "content": { "fieldName": "data.hugo_symbol", "value": ["TP53", "tp53"] }
-}
-```
-
-The model expanded the value array with a case-variant. Diagnostics are clean: Structural Compliance pass, Field and Operator Validity pass, Output Stability pass. Execution Equivalence fails because the record set differs from the reference (489 vs 487). This is exactly the kind of error a structure-only check would miss but execution equivalence catches.
+In this worked example, three local models cleared our gated threshold (85%) at the zero-shot baseline: Qwen 3.5-27B and Mistral Small 3.2 at 18/20, and Gemma 4 31B at 17/20. The remaining two workstation candidates fall below the gate and proceed to Phase 4 to see whether failures are recoverable from minimal feedback.
 
 </details>
 
 <details>
 <summary><strong>Phase 4: Failure Recovery</strong></summary>
 
-In Phase 4, each Phase 3 failure is classified by failure type and the model is re-prompted **once** with the classification label alone, without being shown the reference SQON. The four classes are **structural** (invalid SQON), **semantic-field** (valid field, wrong one for the query), **semantic-value** (correct field, wrong threshold or value), and **semantic-scope** (correct field and value, wrong operator combination). The post-Phase 4 equivalence is the number compared against the ≥85% gate; the recovery profile (which failure types recover after one pass) is reported alongside. Full iterative recovery with measured convergence trajectories is deferred to Aim 2.
+In Phase 4, each Phase 3 failure is classified by failure type and the model is re-prompted once with the classification label alone, without being shown the reference SQON.
 
 #### Example 4.1: Single-Pass Recovery on a Semantic-Scope Failure
 
@@ -458,11 +430,7 @@ combined and output the corrected SQON only.
 | **Phi-4-Reasoning (Q4_K_M)**   | 75.0%          | Structural (5)     | 1/5 recovered          | 80.0%          | No (below gate)       |
 | **Llama 4 Scout (FP8)**        | 85.0%          | Semantic-field (3) | 0/3 recovered          | 85.0%          | Resource profile only |
 
-In this worked example, three local models are pilot-eligible after Phase 4: Qwen 3.5-27B and Mistral Small 3.2 (both already clear at zero-shot, reaching 100% post-recovery) and Gemma 4 31B (recovers from 85.0% to 90.0%, just clearing the gate). The recovery profile shows that semantic-scope failures (wrong operator combination) respond well to classification-only feedback, while semantic-field failures (wrong field entirely) do not. This is consistent with the prior that scope errors reflect a mis-selected combinator over an otherwise-correct field set, whereas field errors require information the classification label alone cannot supply.
-
-:::note
-Aim 1 caps recovery at a single pass because iterative convergence measurement requires multi-pass tracking and reviewer effort the team does not have. Aim 2 promotes Phase 4 to a measured iterative loop with convergence trajectories.
-:::
+Three local models are pilot-eligible after Phase 4: Qwen 3.5-27B and Mistral Small 3.2 (both reaching 100% post-recovery) and Gemma 4 31B (recovering from 85.0% to 90.0%). The recovery profile shows that semantic-scope failures respond well to classification-only feedback, while semantic-field failures do not. Scope errors reflect a mis-selected combinator over an otherwise-correct field set, whereas field errors require information the classification label alone cannot supply.
 
 </details>
 
@@ -471,24 +439,17 @@ Aim 1 caps recovery at a single pass because iterative convergence measurement r
 
 The final deliverable of model selection is a sign-off summary: pilot model, full ranked comparison across all 7 candidates, gate eligibility, and any methodological findings worth surfacing to the grant. These outcomes are the inputs to [Regression Testing](./05-Regression-Testing) (which inherits the pilot model and fixture set) and [User Testing](./06-User-Testing) (which deploys the pilot model against real researchers). See the **Mock Sign-Off Outcome** dropdown at the end of Worked Examples for the form this report takes.
 
-The four-phase screening on this worked example produces:
+**Pilot model:** Qwen 3.5-27B (Workstation tier, Q4_K_M): 100% execution equivalence after single-pass Phase 4 recovery; selected over Mistral on margin of demonstrated correctness on multi-step queries.
 
-- **Pilot model:** Qwen 3.5-27B (Workstation tier, Q4_K_M): 100% execution equivalence after single-pass Phase 4 recovery; selected over Mistral on margin of demonstrated correctness on multi-step queries.
-- **Full ranked sign-off comparison (all 7 candidates):**
-
-| Rank | Model             | Tier          | Phase 3 Equivalence | Phase 4 Equivalence | Latency (median) | Pilot Eligible        |
-| ---- | ----------------- | ------------- | ------------------- | ------------------- | ---------------- | --------------------- |
-| N/A  | Claude Opus 4.7   | Commercial    | 100% (baseline)     | N/A                 | 1.1 s            | Ceiling               |
-| 1    | Qwen 3.5-27B      | Workstation   | 90.0%               | 100%                | 3.2 s            | Yes                   |
-| 2    | Mistral Small 3.2 | Workstation   | 90.0%               | 100%                | 2.4 s            | Yes                   |
-| 3    | Gemma 4 31B       | Workstation   | 85.0%               | 90.0%               | 4.8 s            | Yes                   |
-| 4    | Gemma 4 26B-A4B   | Workstation   | 80.0%               | 85.0%               | 2.1 s            | Yes                   |
-| 5    | Phi-4-Reasoning   | Workstation   | 75.0%               | 80.0%               | 1.8 s            | No (below gate)       |
-| N/A  | Llama 4 Scout     | Institutional | 85.0%               | 85.0%               | 0.6 s            | Resource profile only |
-
-- **Institutional data point:** Llama 4 Scout on rented A100 (85.0%, 0.6 s/query), preserved for the resource profile but not pilot-eligible.
-- **Wada-style finding:** Capacity-matched prompting closed the format-compliance gap for the lower group but did not close the reasoning gap; single-pass Phase 4 recovery recovered the high-group failures. Reported as a methodological observation in the baseline document.
-- **Workload-alignment finding:** Mistral Small 3.2 (tool-use-specialised, 24B) matched Qwen 3.5-27B (general reasoning, 27B) at zero-shot and after Phase 4 recovery, despite being smaller. Suggests workload-aligned specialization is at least as valuable as raw parameter count at this scale. This finding is what motivates including Mistral in the shortlist; without it the dataset cannot support the claim.
+| Rank | Model             | Tier          | Phase 3 Equiv.  | Phase 4 Equiv. | Latency (median) | Pilot Eligible        |
+| ---- | ----------------- | ------------- | --------------- | -------------- | ---------------- | --------------------- |
+| N/A  | Claude Opus 4.7   | Commercial    | 100% (baseline) | N/A            | 1.1 s            | Ceiling               |
+| 1    | Qwen 3.5-27B      | Workstation   | 90.0%           | 100%           | 3.2 s            | Yes                   |
+| 2    | Mistral Small 3.2 | Workstation   | 90.0%           | 100%           | 2.4 s            | Yes                   |
+| 3    | Gemma 4 31B       | Workstation   | 85.0%           | 90.0%          | 4.8 s            | Yes                   |
+| 4    | Gemma 4 26B-A4B   | Workstation   | 80.0%           | 85.0%          | 2.1 s            | Yes                   |
+| 5    | Phi-4-Reasoning   | Workstation   | 75.0%           | 80.0%          | 1.8 s            | No (below gate)       |
+| N/A  | Llama 4 Scout     | Institutional | 85.0%           | 85.0%          | 0.6 s            | Resource profile only |
 
 </details>
 
