@@ -26,23 +26,23 @@ import { createPage } from '../../global/utils/pages';
 import { registerTableMetadata } from '../../global/utils/tableConfig';
 
 /**
- * Protein Table Data Explorer Page
+ * Fixture Table Data Explorer Page
  *
- * Displays protein interaction data between two Hugo symbols (A and B).
+ * Displays fixture data between two Hugo symbols (A and B).
  * Features multi-QuickSearch with separate autocomplete for each Hugo symbol field.
  */
 
 const {
-	NEXT_PUBLIC_ARRANGER_DATATABLE_4_ADMIN_UI,
-	NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE,
-	NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX,
-	NEXT_PUBLIC_DATATABLE_4_EXPORT_ROW_ID_FIELD,
-	NEXT_PUBLIC_ENABLE_DATATABLE_4_QUICKSEARCH,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_5_ADMIN_UI,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_5_DOCUMENT_TYPE,
+	NEXT_PUBLIC_ARRANGER_DATATABLE_5_INDEX,
+	NEXT_PUBLIC_DATATABLE_5_EXPORT_ROW_ID_FIELD,
+	NEXT_PUBLIC_ENABLE_DATATABLE_5_QUICKSEARCH,
 } = getConfig();
 
 const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
-const DataSetFourExplorationPage = createPage({
+const DataSetFiveExplorationPage = createPage({
 	getInitialProps: async ({ query, egoJwt }) => {
 		return { query, egoJwt };
 	},
@@ -51,41 +51,23 @@ const DataSetFourExplorationPage = createPage({
 	return (
 		<DataExplorerPage
 			config={{
-				arrangerApi: INTERNAL_API_PROXY.DATATABLE_4_ARRANGER,
-				arrangerDocumentType: NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE,
-				arrangerIndex: NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX,
-				arrangerAdminUI: NEXT_PUBLIC_ARRANGER_DATATABLE_4_ADMIN_UI,
-				exportRowIdField: NEXT_PUBLIC_DATATABLE_4_EXPORT_ROW_ID_FIELD,
+				arrangerApi: INTERNAL_API_PROXY.DATATABLE_5_ARRANGER,
+				arrangerDocumentType: NEXT_PUBLIC_ARRANGER_DATATABLE_5_DOCUMENT_TYPE,
+				arrangerIndex: NEXT_PUBLIC_ARRANGER_DATATABLE_5_INDEX,
+				arrangerAdminUI: NEXT_PUBLIC_ARRANGER_DATATABLE_5_ADMIN_UI,
+				exportRowIdField: NEXT_PUBLIC_DATATABLE_5_EXPORT_ROW_ID_FIELD,
 
-				pageSubtitle: 'Protein Table',
-				callerName: 'ProteinTable',
+				pageSubtitle: 'Fixture Table',
+				callerName: 'FixtureTable',
 
-				enableQuickSearch: NEXT_PUBLIC_ENABLE_DATATABLE_4_QUICKSEARCH,
-
-				// Multi-QuickSearch: Separate autocomplete for Hugo Symbol A and B
-				multiQuickSearchConfig: {
-					configs: [
-						{
-							fieldNames: ['data.hugo_symbol_a'],
-							displayFieldName: 'data.hugo_symbol_a',
-							headerTitle: 'Hugo Symbol A',
-							placeholder: 'e.g. TP53',
-						},
-						{
-							fieldNames: ['data.hugo_symbol_b'],
-							displayFieldName: 'data.hugo_symbol_b',
-							headerTitle: 'Hugo Symbol B',
-							placeholder: 'e.g. BRCA1',
-						},
-					],
-				},
+				enableQuickSearch: NEXT_PUBLIC_ENABLE_DATATABLE_5_QUICKSEARCH,
 
 				exportConfig: {
-					fileName: `protein-data-export.${today}.tsv`,
+					fileName: `fixture-data-export.${today}.tsv`,
 					customExporters: [
 						{
 							label: 'Download',
-							fileName: `protein-data-export.${today}.tsv`,
+							fileName: `fixture-data-export.${today}.tsv`,
 						},
 					],
 				},
@@ -94,4 +76,4 @@ const DataSetFourExplorationPage = createPage({
 	);
 });
 
-export default DataSetFourExplorationPage;
+export default DataSetFiveExplorationPage;

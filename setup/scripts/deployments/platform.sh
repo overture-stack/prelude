@@ -44,28 +44,32 @@ echo -e "\033[1;36m║   Spinning up the Search & Exploration Demo Portal   ║\
 echo -e "\033[1;36m╚══════════════════════════════════════════════════════╝\033[0m\n"
 
 # PostgreSQL Setup (NEW - Step 1)
-echo -e "\033[1;35m[1/6]\033[0m Setting up PostgreSQL Schemas"
+echo -e "\033[1;35m[1/7]\033[0m Setting up PostgreSQL Schemas"
 rs "$SCRIPT_DIR/postgres/setup_postgres.sh"
 
 # Elasticsearch Check
-echo -e "\n\033[1;35m[2/6]\033[0m Checking Elasticsearch (this may take a few minutes)"
+echo -e "\n\033[1;35m[2/7]\033[0m Checking Elasticsearch (this may take a few minutes)"
 rs "${SCRIPT_DIR}/elasticsearch/elasticsearch_check.sh"
 
 # Elasticsearch Setup
-echo -e "\n\033[1;35m[3/6]\033[0m Setting up Elasticsearch Indices"
+echo -e "\n\033[1;35m[3/7]\033[0m Setting up Elasticsearch Indices"
 rs "$SCRIPT_DIR/elasticsearch/setup_indices.sh"
 
+# Elasticsearch Index Verification
+echo -e "\n\033[1;35m[4/7]\033[0m Verifying Elasticsearch Indices"
+rs "$SCRIPT_DIR/elasticsearch/elasticsearch_index_check.sh"
+
 # Update Conductor to Healthy Status
-echo -e "\n\033[1;35m[4/6]\033[0m Updating Conductor health status"
+echo -e "\n\033[1;35m[5/7]\033[0m Updating Conductor health status"
 echo "healthy" > setup/volumes/health/setup_health
 echo -e "   └─ \033[1;36mSetup:\033[0m Updating Container Status. Health check file created"
 
 # Check Stage
-echo -e "\n\033[1;35m[5/6]\033[0m Checking Stage"
+echo -e "\n\033[1;35m[6/7]\033[0m Checking Stage"
 rs "$SCRIPT_DIR/stage/stage_check.sh"
 
 # Check Arranger
-echo -e "\n\033[1;35m[6/6]\033[0m Checking Arranger Instances"
+echo -e "\n\033[1;35m[7/7]\033[0m Checking Arranger Instances"
 rs "$SCRIPT_DIR/arranger/arranger_check.sh"
 
 # Remove Health Check File

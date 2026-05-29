@@ -38,8 +38,8 @@ const HeroNodeCanvas = () => {
 				particles.push({
 					x: Math.random() * canvas.width,
 					y: Math.random() * canvas.height,
-					vx: (Math.random() - 0.5) * (isHub ? 0.25 : 0.45),
-					vy: (Math.random() - 0.5) * (isHub ? 0.25 : 0.45),
+					vx: (Math.random() - 0.5) * (isHub ? 0.06 : 0.11),
+					vy: (Math.random() - 0.5) * (isHub ? 0.06 : 0.11),
 					radius: isHub ? Math.random() * 3 + 4 : Math.random() * 2 + 1.5,
 					alpha: isHub ? 0.9 : Math.random() * 0.4 + 0.4,
 					isHub,

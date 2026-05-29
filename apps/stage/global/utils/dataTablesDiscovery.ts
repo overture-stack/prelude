@@ -50,7 +50,11 @@ export function discoverDataTables(): DataTableInfo[] {
 		 * - dataTable* prefix: dataTableOne (legacy, kept for backwards compatibility)
 		 */
 		const dataTableDirs = entries.filter(
-			(entry) => entry.isDirectory() && (entry.name.endsWith('Table') || entry.name.startsWith('dataTable')),
+			(entry) =>
+				entry.isDirectory() &&
+				// fixtureTable has its own dedicated navbar item, so exclude it from the Explore Data dropdown
+				entry.name !== 'fixtureTable' &&
+				(entry.name.endsWith('Table') || entry.name.startsWith('dataTable')),
 		);
 
 		/**

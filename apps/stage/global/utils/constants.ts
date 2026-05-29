@@ -36,6 +36,7 @@ export enum INTERNAL_PATHS {
 	DATATABLE_2 = '/mutationTable',
 	DATATABLE_3 = '/expressionTable',
 	DATATABLE_4 = '/proteinTable',
+	FIXTURE_TABLE = '/fixtureTable',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
 }

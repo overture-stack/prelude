@@ -1,4 +1,4 @@
-# Regression Testing
+# System Testing
 
 ## What it is
 

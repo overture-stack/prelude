@@ -31,31 +31,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       # Elasticsearch Index Configuration
-      ES_INDEX_COUNT: 4
-      # Correlation index
-      ES_INDEX_0_NAME: correlation-index
-      ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/correlation-mapping.json
-      ES_INDEX_0_TEMPLATE_NAME: correlation-index
-      ES_INDEX_0_ALIAS_NAME: correlation_centric
-      # Mutation index
-      ES_INDEX_1_NAME: mutation-index
-      ES_INDEX_1_TEMPLATE_FILE: configs/elasticsearchConfigs/mutation-mapping.json
-      ES_INDEX_1_TEMPLATE_NAME: mutation-index
-      ES_INDEX_1_ALIAS_NAME: mutation_centric
-      # Expression index
-      ES_INDEX_2_NAME: expression-index
-      ES_INDEX_2_TEMPLATE_FILE: configs/elasticsearchConfigs/expression-mapping.json
-      ES_INDEX_2_TEMPLATE_NAME: expression-index
-      ES_INDEX_2_ALIAS_NAME: expression_centric
-      # Protein index
-      ES_INDEX_3_NAME: protein-index
-      ES_INDEX_3_TEMPLATE_FILE: configs/elasticsearchConfigs/protein-mapping.json
-      ES_INDEX_3_TEMPLATE_NAME: protein-index
-      ES_INDEX_3_ALIAS_NAME: protein_centric
+      # Indices are discovered from the mapping files in this directory following the
+      # "<name>-mapping.json" -> index "<name>-index", alias "<name>_centric" convention.
+      # Add an index by dropping a mapping file here — no per-index env vars to maintain.
+      ES_INDEX_CONFIG_DIR: /configs/elasticsearchConfigs
       # Arranger Services Configuration
-      ARRANGER_COUNT: 1
-      ARRANGER_0_URL: http://arranger:5050
-      ARRANGER_0_GRAPHQL_PATH: /correlation/graphql
+      # The healthcheck auto-discovers catalogues by scanning the mounted config
+      # directory, so adding/removing a catalogue needs no changes here, just
+      # add/remove its folder under configs/arrangerConfigs.
+      ARRANGER_URL: http://arranger:5050
+      ARRANGER_CONFIG_DIR: /configs/arrangerConfigs
       # Service Connections
       ES_USER: ${ES_USER:-elastic}
       ES_PASS: ${ES_PASSWORD:-myelasticpassword}
@@ -293,7 +278,7 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:5050/",
+          "http://localhost:5050/ping",
         ]
       interval: 30s
       timeout: 10s
@@ -371,6 +356,12 @@ services:
       NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: protein_centric
       NEXT_PUBLIC_DATATABLE_4_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
       NEXT_PUBLIC_ENABLE_DATATABLE_4_QUICKSEARCH: true
+      # Fixture Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_5_API: http://arranger:5050/fixture
+      NEXT_PUBLIC_ARRANGER_DATATABLE_5_DOCUMENT_TYPE: records
+      NEXT_PUBLIC_ARRANGER_DATATABLE_5_INDEX: fixture_centric
+      NEXT_PUBLIC_DATATABLE_5_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
+      NEXT_PUBLIC_ENABLE_DATATABLE_5_QUICKSEARCH: true
       # Auth Variables
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
       SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
