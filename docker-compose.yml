@@ -1,3 +1,14 @@
+# ====================================================================================== #
+# Shared config blocks (YAML anchors).                                                    #
+# Define once here, reference with `*name` below — change in one place, applies            #
+# everywhere it's referenced.                                                              #
+# ====================================================================================== #
+x-default-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "10"
+
 services:
   # ================================================================================== #
   # ================================================================================== #
@@ -52,13 +63,8 @@ services:
         set -e
         echo "Profile is set to: $PROFILE"
         case "$PROFILE" in
-          "demo")
-            echo "Running demo deployment..."
-            chmod +x setup/scripts/deployments/platform.sh
-            setup/scripts/deployments/platform.sh
-            ;;
-          "platform")
-            echo "Running platform deployment..."
+          "demo"|"platform")
+            echo "Running $PROFILE deployment..."
             chmod +x setup/scripts/deployments/platform.sh
             setup/scripts/deployments/platform.sh
             ;;
@@ -93,60 +99,36 @@ services:
     pull_policy: if_not_present
     volumes:
       - ./data:/data
+    # Tables to load. Add a table by listing it here AND providing /data/<name>.csv
+    # (file -> /data/<name>.csv, type -> <name>, index -> <name>-index).
+    # Note: the "fixture" table is scaffolded in configs but has no data file yet,
+    # so it is intentionally not listed here.
     environment:
       ES_USER: ${ES_USER:-elastic}
       ES_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
+      DATA_TABLES: "correlation expression mutation protein"
     command: >
       sh -c '
+        set -e
         echo "Starting conductor CLI - data upload service"
         echo "Available files in /data: $$(ls /data/ || echo none)"
-        node dist/main.js upload \
-        -f /data/correlation.csv \
-        -t correlation \
-        -i correlation-index \
-        --db-host postgres:5432 \
-        --db-user "$$POSTGRES_USER" \
-        --db-pass "$$POSTGRES_PASSWORD" \
-        --db-name "$$POSTGRES_DB" \
-        --es-host elasticsearch:9200 \
-        --es-user "$$ES_USER" \
-        --es-pass "$$ES_PASSWORD" && \
-        node dist/main.js upload \
-        -f /data/expression.csv \
-        -t expression \
-        -i expression-index \
-        --db-host postgres:5432 \
-        --db-user "$$POSTGRES_USER" \
-        --db-pass "$$POSTGRES_PASSWORD" \
-        --db-name "$$POSTGRES_DB" \
-        --es-host elasticsearch:9200 \
-        --es-user "$$ES_USER" \
-        --es-pass "$$ES_PASSWORD" && \
-        node dist/main.js upload \
-        -f /data/mutation.csv \
-        -t mutation \
-        -i mutation-index \
-        --db-host postgres:5432 \
-        --db-user "$$POSTGRES_USER" \
-        --db-pass "$$POSTGRES_PASSWORD" \
-        --db-name "$$POSTGRES_DB" \
-        --es-host elasticsearch:9200 \
-        --es-user "$$ES_USER" \
-        --es-pass "$$ES_PASSWORD" && \
-        node dist/main.js upload \
-        -f /data/protein.csv \
-        -t protein \
-        -i protein-index \
-        --db-host postgres:5432 \
-        --db-user "$$POSTGRES_USER" \
-        --db-pass "$$POSTGRES_PASSWORD" \
-        --db-name "$$POSTGRES_DB" \
-        --es-host elasticsearch:9200 \
-        --es-user "$$ES_USER" \
-        --es-pass "$$ES_PASSWORD"
+        for t in $$DATA_TABLES; do
+          echo "Uploading $$t ..."
+          node dist/main.js upload \
+            -f /data/$$t.csv \
+            -t $$t \
+            -i $$t-index \
+            --db-host postgres:5432 \
+            --db-user "$$POSTGRES_USER" \
+            --db-pass "$$POSTGRES_PASSWORD" \
+            --db-name "$$POSTGRES_DB" \
+            --es-host elasticsearch:9200 \
+            --es-user "$$ES_USER" \
+            --es-pass "$$ES_PASSWORD"
+        done
       '
     depends_on:
       setup:
@@ -178,11 +160,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 20s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "10"
+    logging: *default-logging
     deploy:
       resources:
         limits:
@@ -209,30 +187,30 @@ services:
     environment:
       discovery.type: single-node
       cluster.name: workflow.elasticsearch
-      ES_JAVA_OPTS: -Xms512m -Xmx2048m
+      # Heap size. Tune for smaller machines (e.g. workshop laptops) via .env.
+      # Keep -Xmx at or below the deploy memory limit below.
+      ES_JAVA_OPTS: ${ES_JAVA_OPTS:--Xms512m -Xmx2048m}
       ES_USER: ${ES_USER:-elastic}
       ELASTIC_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
       xpack.security.enabled: "true"
     ports:
       - "127.0.0.1:9200:9200" # Localhost only — not accessible from the network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "10"
+    logging: *default-logging
     deploy:
       resources:
         limits:
-          memory: 3G
+          memory: ${ES_MEM_LIMIT:-3G}
           cpus: "2"
         reservations:
-          memory: 2G
+          memory: ${ES_MEM_RESERVATION:-2G}
     volumes:
-      - elasticsearch-data:/usr/share/configs/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
     healthcheck:
       test:
-        "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
-        exit 1"
+        [
+          "CMD-SHELL",
+          "curl -s -f 'localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s' || exit 1",
+        ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -248,7 +226,7 @@ services:
   # ------------------------------------------------------------------------------------#
   arranger:
     profiles: ["demo", "platform", "default"]
-    image: ghcr.io/overture-stack/arranger-server:f7dea0d2
+    image: ghcr.io/overture-stack/arranger-server:9eea6de7
     pull_policy: if_not_present
     container_name: arranger
     platform: linux/amd64
@@ -284,11 +262,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "10"
+    logging: *default-logging
     deploy:
       resources:
         limits:
@@ -320,7 +294,7 @@ services:
       # Stage Variables
       # PORTAL_URL: set this in .env for production (e.g. http://overturemcp.genomeinformatics)
       NEXTAUTH_URL: ${PORTAL_URL:-http://localhost:3000}/api/auth
-      NEXT_PUBLIC_LAB_NAME: ${NEXT_PUBLIC_LAB_NAME:-MCP Test Portal}
+      NEXT_PUBLIC_LAB_NAME: ${NEXT_PUBLIC_LAB_NAME:-My Data Portal}
       NEXT_PUBLIC_ADMIN_EMAIL: ${NEXT_PUBLIC_ADMIN_EMAIL:-admin@example.org}
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
@@ -366,8 +340,8 @@ services:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
       SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
       SESSION_ENCRYPTION_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
-      # CORS
-      CORS_ALLOWED_ORIGIN: ${PORTAL_URL:-}
+      # CORS — honours CORS_ALLOWED_ORIGIN if set in .env, otherwise falls back to PORTAL_URL.
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-${PORTAL_URL:-}}
     healthcheck:
       test:
         [
@@ -382,11 +356,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "10"
+    logging: *default-logging
     deploy:
       resources:
         limits:

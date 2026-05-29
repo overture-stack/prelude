@@ -56,6 +56,40 @@ To reset all data:
 make reset
 ```
 
+## Troubleshooting
+
+### A catalogue returns HTTP 500 on its GraphQL endpoint after a cold boot
+
+On a cold start, setup may report a catalogue as unhealthy with a GraphQL error like:
+
+```
+Error: GraphQL schema unavailable or invalid at /correlation/graphql
+Response: {"message":"resource_already_exists_exception: ... index [arranger-sets/...] already exists", ...}
+```
+
+**Cause:** all catalogues boot concurrently and each tries to create the shared
+`arranger-sets` index. It's a check-then-act race — most catalogues see the index
+already exists, but one occasionally calls create anyway and the non-idempotent
+create throws, aborting GraphQL schema generation for that one catalogue. The
+failure is per-boot and non-deterministic; the `ES_ARRANGER_SET_INDEX` env var is
+ignored by the current Arranger image, so catalogues cannot be given separate sets
+indices to avoid it.
+
+**Workaround:** restart Arranger. The index already exists on the second boot, so
+the race usually doesn't recur.
+
+```bash
+docker restart arranger
+```
+
+Verify the affected catalogue recovers (expect `{"data":{"__typename":"Root"}}`):
+
+```bash
+curl -s -X POST http://localhost:5050/correlation/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ __typename }"}'
+```
+
 ## Service Port Reference
 
 | Service           | Default Port                     | Notes                                 |
