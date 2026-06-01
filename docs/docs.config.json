@@ -2,6 +2,6 @@
   "categories": [
     { "id": "user", "label": "Users" },
     { "id": "admin", "label": "Administrators" },
-    { "id": "developer", "label": "Developers" }
+    { "id": "development", "label": "Development" }
   ]
 }
