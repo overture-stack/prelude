@@ -61,7 +61,7 @@ demo: phase0
 	@echo ""
 	@printf "\033[1;32mStage Portal UI built\033[0m\n"
 	@echo ""
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=demo docker compose --progress quiet -f ./docker-compose.yml --profile demo up --attach setup
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=demo docker compose -f ./docker-compose.yml --profile demo up --attach setup
 
 # Start platform services without data upload (user uploads their own data via conductor)
 platform: phase0
@@ -88,7 +88,7 @@ platform: phase0
 	@echo ""
 	@printf "\033[1;32mStage Portal UI built\033[0m\n"
 	@echo ""
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose --progress quiet -f ./docker-compose.yml --profile platform up --attach setup
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
 
 # Start existing services without rebuild
 start:
@@ -105,7 +105,7 @@ down:
 restart:
 	@echo "Restarting platform containers..."
 	@PROFILE=platform docker compose -f ./docker-compose.yml --profile platform down
-	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose --progress quiet -f ./docker-compose.yml --profile platform up --attach setup
+	@STAGE_PORT=$(STAGE_PORT) PROFILE=platform docker compose -f ./docker-compose.yml --profile platform up --attach setup
 
 # Restart only the arranger service
 restart-arranger:

@@ -39,6 +39,7 @@ export enum INTERNAL_PATHS {
 	FIXTURE_TABLE = '/fixtureTable',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
+	CONFIG_GENERATOR = '/configGenerator',
 }
 
 // arranger endpoints

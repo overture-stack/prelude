@@ -4,195 +4,171 @@
     "columns": [
       {
         "canChangeShow": true,
-        "fieldName": "data.hugo_symbol_a",
+        "fieldName": "data.id",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.hugo_symbol_a",
-        "query": "data { hugo_symbol_a }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.hugo_symbol_b",
+        "fieldName": "data.source",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.hugo_symbol_b",
-        "query": "data { hugo_symbol_b }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.neighborhood",
+        "fieldName": "data.corpus",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.neighborhood",
-        "query": "data { neighborhood }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.neighborhood_transferred",
+        "fieldName": "data.fixture_set_version",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.neighborhood_transferred",
-        "query": "data { neighborhood_transferred }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.fusion",
+        "fieldName": "data.introspection_commit",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.fusion",
-        "query": "data { fusion }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.cooccurence",
+        "fieldName": "data.index_commit",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.cooccurence",
-        "query": "data { cooccurence }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.homology",
+        "fieldName": "data.author",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.homology",
-        "query": "data { homology }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.coexpression",
+        "fieldName": "data.date_authored",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.coexpression",
-        "query": "data { coexpression }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.coexpression_transferred",
+        "fieldName": "data.filter_complexity",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.coexpression_transferred",
-        "query": "data { coexpression_transferred }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.experiments",
+        "fieldName": "data.schema_reach",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.experiments",
-        "query": "data { experiments }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.experiments_transferred",
+        "fieldName": "data.requires_aggregation",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.experiments_transferred",
-        "query": "data { experiments_transferred }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.database",
+        "fieldName": "data.feasible",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.database",
-        "query": "data { database }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.database_transferred",
+        "fieldName": "data.catalogues",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.database_transferred",
-        "query": "data { database_transferred }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.textmining",
+        "fieldName": "data.negative_reason",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.textmining",
-        "query": "data { textmining }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.textmining_transferred",
+        "fieldName": "data.prompt",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.textmining_transferred",
-        "query": "data { textmining_transferred }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.combined_score",
+        "fieldName": "data.reference_sqon",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.combined_score",
-        "query": "data { combined_score }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.dataset_name",
+        "fieldName": "data.reference_ast",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.dataset_name",
-        "query": "data { dataset_name }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.is_oncogene_a",
+        "fieldName": "data.reference_fields",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.is_oncogene_a",
-        "query": "data { is_oncogene_a }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.is_tumor_suppressor_gene_a",
+        "fieldName": "data.reference_aggregation",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.is_tumor_suppressor_gene_a",
-        "query": "data { is_tumor_suppressor_gene_a }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.is_oncogene_b",
+        "fieldName": "data.expected_record_ids",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.is_oncogene_b",
-        "query": "data { is_oncogene_b }"
+        "sortable": true
       },
       {
         "canChangeShow": true,
-        "fieldName": "data.is_tumor_suppressor_gene_b",
+        "fieldName": "data.reference_validated",
         "show": true,
-        "sortable": true,
-        "jsonPath": "$.data.is_tumor_suppressor_gene_b",
-        "query": "data { is_tumor_suppressor_gene_b }"
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.frontier_pass",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.frontier_model",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.validation_date",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data.notes",
+        "show": true,
+        "sortable": true
       },
       {
         "canChangeShow": true,
         "fieldName": "submission_metadata.submission_id",
         "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.submission_id",
-        "query": "submission_metadata { submission_id }"
+        "sortable": false
       },
       {
         "canChangeShow": true,
         "fieldName": "submission_metadata.source_file_name",
         "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.source_file_name",
-        "query": "submission_metadata { source_file_name }"
+        "sortable": false
       },
       {
         "canChangeShow": true,
         "fieldName": "submission_metadata.processed_at",
         "show": false,
-        "sortable": true,
-        "jsonPath": "$.submission_metadata.processed_at",
-        "query": "submission_metadata { processed_at }"
+        "sortable": false
       }
     ]
   }

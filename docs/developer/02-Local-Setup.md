@@ -56,6 +56,39 @@ To reset all data:
 make reset
 ```
 
+## Adding a data table
+
+A "data table" (e.g. correlation, mutation) spans several layers. Most are driven by
+file/folder **naming convention** from a single table name (`<name>`), but the Stage
+portal uses a **fixed set of 5 numbered slots** (`DATATABLE_1`..`DATATABLE_5`) that are
+hardcoded in its source — so adding a *new* table beyond the existing ones requires app
+changes, not just config. Work through this checklist in order.
+
+Convention-driven layers (just add the file/folder — nothing else to wire):
+
+| # | Location                                          | What to add                                                              |
+| - | ------------------------------------------------- | ------------------------------------------------------------------------ |
+| 1 | `configs/elasticsearchConfigs/<name>-mapping.json` | ES mapping. Creates index `<name>-index`, alias `<name>_centric`.        |
+| 2 | `configs/arrangerConfigs/<name>/`                  | Arranger catalogue (`base.json`, `extended.json`, `facets.json`, `table.json`, `matchbox.json`). Served at `http://arranger:5050/<name>`. |
+| 3 | `data/<name>.csv` + `DATA_TABLES` in `docker-compose.yml` (conductor-cli) | Sample data + the table name in the upload loop.            |
+
+Stage portal layers (a table is shown via a **fixed slot `N`, 1–5**):
+
+| # | Location                                                   | What to add                                                                 |
+| - | ---------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 4 | `docker-compose.yml` (stage service)                        | The `NEXT_PUBLIC_ARRANGER_DATATABLE_N_*` block: `_API` → `http://arranger:5050/<name>`, `_INDEX` → `<name>_centric`, `_DOCUMENT_TYPE` → `records`. |
+| 5 | `apps/stage/next.config.js`                                 | A `DATATABLE_N` group under `publicRuntimeConfig` (forwards the env vars at runtime). |
+| 6 | `apps/stage/global/utils/constants.ts`                      | `DATATABLE_N_ARRANGER: urlJoin(PROXY_API_PATH, 'dataset_N_arranger')` in `INTERNAL_API_PROXY`. |
+| 7 | `apps/stage/pages/api/[...proxy].ts`                         | A routing branch mapping `DATATABLE_N_ARRANGER` → `NEXT_PUBLIC_ARRANGER_DATATABLE_N_API`. |
+| 8 | `apps/stage/pages/<name>Table/index.tsx`                    | The page component (bespoke per table — quick-search fields, export config). References slot `N`. The `*Table` folder name is auto-discovered into the navbar by `global/utils/dataTablesDiscovery.ts`. |
+
+After app changes, rebuild Stage: `make rebuild`. Index/arranger/data changes alone only
+need `make restart`.
+
+> The 5-slot ceiling is a Stage-source constraint, not a config one. Going beyond 5 tables
+> means extending the numbered slots in steps 5–7 (and the `publicRuntimeConfig` block) to
+> `DATATABLE_6`, etc.
+
 ## Troubleshooting
 
 ### A catalogue returns HTTP 500 on its GraphQL endpoint after a cold boot

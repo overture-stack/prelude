@@ -109,7 +109,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
-      DATA_TABLES: "correlation expression mutation protein"
+      DATA_TABLES: "correlation expression mutation protein fixture"
     command: >
       sh -c '
         set -e
@@ -226,7 +226,7 @@ services:
   # ------------------------------------------------------------------------------------#
   arranger:
     profiles: ["demo", "platform", "default"]
-    image: ghcr.io/overture-stack/arranger-server:9eea6de7
+    image: ghcr.io/overture-stack/arranger-search-server:6de99b38
     pull_policy: if_not_present
     container_name: arranger
     platform: linux/amd64
@@ -245,18 +245,22 @@ services:
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
-      ENABLE_LOGS: false
+      # Logs on so `docker logs arranger` is useful when the setup healthcheck points there.
+      ENABLE_LOGS: true
     ports:
       - "127.0.0.1:5050:5050" # Localhost only — not accessible from the network
     healthcheck:
+      # /ping only proves the server process is up — it returns 200 even when an
+      # individual catalogue's GraphQL endpoint failed to mount (the arranger-sets
+      # startup race, see docs/developer issue ticket). So probe every catalogue's
+      # GraphQL endpoint instead: a catalogue that lost the race 500s here and marks
+      # the whole container unhealthy, which surfaces in `docker ps` and blocks
+      # dependents that wait on `condition: service_healthy`.
+      # The catalogue list mirrors the directories in configs/arrangerConfigs/.
       test:
         [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:5050/ping",
+          "CMD-SHELL",
+          'for c in correlation expression fixture mutation protein; do curl -sf -X POST -H ''Content-Type: application/json'' -d ''{"query":"{ __typename }"}'' "http://localhost:5050/$$c/graphql" | grep -q __typename || exit 1; done',
         ]
       interval: 30s
       timeout: 10s
@@ -270,6 +274,63 @@ services:
           cpus: "1"
     networks:
       - platform-network
+
+  # ------------------------------------------------------------------------------------#
+  # Arranger MCP Server                                                                 #
+  # ------------------------------------------------------------------------------------#
+  # MCP server that exposes Arranger catalogues as tools/resources for LLM clients.    #
+  # Streamable HTTP transport — connect at http://localhost:<MCP_PORT>/mcp             #
+  # https://docs.overture.bio/docs/core-software/Arranger/overview                      #
+  # ------------------------------------------------------------------------------------#
+  # arranger-mcp:
+  #   profiles: ["demo", "default"]
+  #   # Built from local source (like Stage). The published arranger-mcp-server image
+  #   # tag carries no application code, so we build the mcp-server target from the
+  #   # Arranger monorepo vendored at ./apps/arranger. Dockerfile.local's "scaffolding"
+  #   # stage runs the full turbo build, then the mcp-server stage runs
+  #   # `tsx ./apps/mcp-server/src/index.ts` on port 3100.
+  #   build:
+  #     context: ./apps/arranger
+  #     dockerfile: docker/Dockerfile.local
+  #     target: mcp-server
+  #   image: arrangermcpimage:1.0
+  #   container_name: arranger-mcp
+  #   restart: unless-stopped
+  #   depends_on:
+  #     arranger:
+  #       condition: service_healthy
+  #   environment:
+  #     ARRANGER_BASE_URL: http://arranger:5050
+  #     ARRANGER_CATALOGUES: ${ARRANGER_MCP_CATALOGUES:-correlation,mutation,expression,protein}
+  #     MCP_HOST: 0.0.0.0
+  #     MCP_PORT: ${MCP_PORT:-3100}
+  #     MCP_PATH: /mcp
+  #     LOG_LEVEL: ${MCP_LOG_LEVEL:-info}
+  #   ports:
+  #     - "127.0.0.1:${MCP_PORT:-3100}:3100"
+  #   healthcheck:
+  #     # The MCP server has no dedicated health route (only POST/GET /mcp, which
+  #     # require a session). A TCP connect to the listening port is enough to confirm
+  #     # the process is up. node is always present in the image.
+  #     test:
+  #       [
+  #         "CMD",
+  #         "node",
+  #         "-e",
+  #         "require('net').connect(3100,'127.0.0.1').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))",
+  #       ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 20s
+  #   logging: *default-logging
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 256M
+  #         cpus: "0.5"
+  #   networks:
+  #     - platform-network
 
   # ------------------------------------------------------------------------------------#
   # Stage                                                                               #
@@ -306,6 +367,16 @@ services:
       # Arranger API — internal Docker DNS, used server-side by Stage's proxy only.
       # The browser never calls these URLs directly; it calls Stage at /api/dataset_N_arranger/*
       # and Stage forwards server-side to these targets.
+      #
+      # Data tables: Stage exposes a FIXED set of 5 slots (DATATABLE_1..5). The slot
+      # count is hardcoded in the Stage source (next.config.js, pages/<name>Table/,
+      # pages/api/[...proxy].ts, global/utils/constants.ts), so these env vars are the
+      # config layer for those slots — they are NOT auto-discovered from configs/.
+      # Per-table convention for a table named <name>:
+      #   _API   -> http://arranger:5050/<name>     _INDEX -> <name>_centric
+      #   _DOCUMENT_TYPE -> records                 _EXPORT_ROW_ID_FIELD -> submission_metadata.submission_id
+      # Adding or changing a table touches more than this file — see the
+      # "Adding a data table" checklist in docs/developer/02-Local-Setup.md.
       # Correlation Arranger Variables
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger:5050/correlation
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: records

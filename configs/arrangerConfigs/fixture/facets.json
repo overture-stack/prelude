@@ -3,131 +3,128 @@
     "aggregations": [
       {
         "active": true,
-        "fieldName": "hugo_symbol_autocomplete",
-        "show": false,
-        "type": "Aggregations"
-      },
-      {
-        "active": true,
-        "fieldName": "hugo_symbol_a_autocomplete",
-        "show": false,
-        "type": "Aggregations"
-      },
-      {
-        "active": true,
-        "fieldName": "hugo_symbol_b_autocomplete",
-        "show": false,
-        "type": "Aggregations"
-      },
-      {
-        "active": true,
-        "fieldName": "data__neighborhood",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__neighborhood_transferred",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__fusion",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__cooccurence",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__homology",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__coexpression",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__coexpression_transferred",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__experiments",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__experiments_transferred",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__database",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__database_transferred",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__textmining",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__textmining_transferred",
-        "show": false
-      },
-      {
-        "active": true,
-        "fieldName": "data__combined_score",
+        "fieldName": "data__id",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__dataset_name",
+        "fieldName": "data__source",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__is_oncogene_a",
+        "fieldName": "data__corpus",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__is_tumor_suppressor_gene_a",
+        "fieldName": "data__fixture_set_version",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__is_oncogene_b",
+        "fieldName": "data__introspection_commit",
         "show": true
       },
       {
         "active": true,
-        "fieldName": "data__is_tumor_suppressor_gene_b",
+        "fieldName": "data__index_commit",
         "show": true
       },
       {
-        "active": false,
-        "fieldName": "submission_metadata__submission_id",
-        "show": false
+        "active": true,
+        "fieldName": "data__author",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "submission_metadata__source_file_name",
-        "show": false
+        "active": true,
+        "fieldName": "data__date_authored",
+        "show": true
       },
       {
-        "active": false,
-        "fieldName": "submission_metadata__processed_at",
-        "show": false
+        "active": true,
+        "fieldName": "data__filter_complexity",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__schema_reach",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__requires_aggregation",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__feasible",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__catalogues",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__negative_reason",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__prompt",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__reference_sqon",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__reference_ast",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__reference_fields",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__reference_aggregation",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__expected_record_ids",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__reference_validated",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__frontier_pass",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__frontier_model",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__validation_date",
+        "show": true
+      },
+      {
+        "active": true,
+        "fieldName": "data__notes",
+        "show": true
       }
     ]
   }

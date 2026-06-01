@@ -25,6 +25,12 @@ MAX_RETRIES=10
 RETRY_DELAY=5
 TIMEOUT=10
 
+# Per-catalogue GraphQL retries. Absorbs the Arranger startup race where concurrent
+# first requests each try to create the shared "arranger-sets" index and all but one
+# fail with resource_already_exists_exception; the index exists after the first try.
+CATALOGUE_MAX_RETRIES=5
+CATALOGUE_RETRY_DELAY=5
+
 ARRANGER_URL="${ARRANGER_URL:-http://arranger:5050}"
 ARRANGER_CONFIG_DIR="${ARRANGER_CONFIG_DIR:-/configs/arrangerConfigs}"
 
@@ -112,65 +118,48 @@ wait_for_ping() {
 }
 
 # Validates a catalogue's GraphQL schema by querying __typename at the given path.
+# Retries on transient failures (see CATALOGUE_MAX_RETRIES) so the startup race on the
+# shared arranger-sets index does not fail an otherwise-healthy catalogue.
 check_graphql_schema() {
     local arranger_url="$1"
     local graphql_path="$2"
+    local attempt=1
 
-    graphql_response=$(curl -s -X POST "${arranger_url}${graphql_path}" \
-        -H "Content-Type: application/json" \
-        -d '{"query":"{ __typename }"}' \
-        --max-time "$TIMEOUT" 2>/dev/null)
+    while [ "$attempt" -le "$CATALOGUE_MAX_RETRIES" ]; do
+        graphql_response=$(curl -s -X POST "${arranger_url}${graphql_path}" \
+            -H "Content-Type: application/json" \
+            -d '{"query":"{ __typename }"}' \
+            --max-time "$TIMEOUT" 2>/dev/null)
 
-    if echo "$graphql_response" | grep -q '"__typename"'; then
-        printf "   └─ \033[1;32mSuccess:\033[0m GraphQL schema valid at %s\n" "$graphql_path"
-        return 0
-    else
-        printf "   └─ \033[1;31mError:\033[0m GraphQL schema unavailable or invalid at %s\n" "$graphql_path"
-        if [ -n "$graphql_response" ]; then
-            printf "   └─ \033[1;33mResponse:\033[0m %s\n" "$graphql_response"
+        if echo "$graphql_response" | grep -q '"__typename"'; then
+            printf "   └─ \033[1;32mSuccess:\033[0m GraphQL schema valid at %s\n" "$graphql_path"
+            return 0
         fi
-        return 1
+
+        if [ "$attempt" -lt "$CATALOGUE_MAX_RETRIES" ]; then
+            printf "   └─ \033[1;36mInfo:\033[0m Attempt %d/%d: schema not ready at %s, retrying in %ds\n" \
+                "$attempt" "$CATALOGUE_MAX_RETRIES" "$graphql_path" "$CATALOGUE_RETRY_DELAY"
+            sleep "$CATALOGUE_RETRY_DELAY"
+        fi
+        attempt=$((attempt + 1))
+    done
+
+    printf "   └─ \033[1;31mError:\033[0m GraphQL schema unavailable or invalid at %s after %d attempts\n" \
+        "$graphql_path" "$CATALOGUE_MAX_RETRIES"
+    if [ -n "$graphql_response" ]; then
+        printf "   └─ \033[1;33mResponse:\033[0m %s\n" "$graphql_response"
     fi
+    return 1
 }
 
-# Scans recent container logs for known arranger error patterns
-check_container_logs() {
+# Points the operator at the Arranger container logs. The check itself runs inside
+# the setup (alpine/curl) container, which has no docker CLI and no docker socket,
+# so it cannot read another container's logs — attempting it here silently produces
+# nothing and masks real errors. Surface the host-side command instead.
+print_logs_hint() {
     local container_name="$1"
-
-    printf "   └─ \033[1;36mInfo:\033[0m Scanning container logs for errors\n"
-
-    recent_logs=$(docker logs --tail 60 "$container_name" 2>/dev/null)
-
-    if echo "$recent_logs" | grep -q "Failed\.\.\."; then
-        failed_context=$(echo "$recent_logs" | grep -A 3 "Failed\.\.\." | tail -4)
-        printf "   └─ \033[1;31mConfig Error:\033[0m Arranger initialization failed\n"
-        printf "%s\n" "$failed_context"
-        return 1
-    fi
-
-    if echo "$recent_logs" | grep -q "Error thrown while"; then
-        error_context=$(echo "$recent_logs" | grep -A 2 "Error thrown while" | tail -3)
-        printf "   └─ \033[1;31mInit Error:\033[0m %s\n" "$error_context"
-        return 1
-    fi
-
-    if echo "$recent_logs" | grep -q "Could not get ES mappings"; then
-        printf "   └─ \033[1;31mES Error:\033[0m Could not retrieve Elasticsearch mappings — check index name and ES connectivity\n"
-        return 1
-    fi
-
-    if echo "$recent_logs" | grep -q "Could not find.*config"; then
-        printf "   └─ \033[1;31mConfig Error:\033[0m Config files not found — check volume mount for configs directory\n"
-        return 1
-    fi
-
-    if echo "$recent_logs" | grep -q "no elasticsearch host"; then
-        printf "   └─ \033[1;31mConfig Error:\033[0m ES_HOST environment variable is not set\n"
-        return 1
-    fi
-
-    printf "   └─ \033[1;32mSuccess:\033[0m No errors detected in container logs\n"
-    return 0
+    printf "   └─ \033[1;33mHint:\033[0m Inspect Arranger logs on the host: \033[1mdocker logs %s\033[0m\n" "$container_name"
+    printf "   └─ \033[1;33mHint:\033[0m If those logs are empty, set ENABLE_LOGS: true on the arranger service in docker-compose.yml\n"
 }
 
 # Main check: discover catalogues from the config dir, then validate each.
@@ -205,7 +194,7 @@ check_arrangers() {
 
     # Step 1: wait once for the server-level ping endpoint
     if ! wait_for_ping "$ARRANGER_URL"; then
-        check_container_logs "$container_name"
+        print_logs_hint "$container_name"
         printf "\n%s\n" "$TROUBLESHOOTING_TIPS"
         exit 1
     fi
@@ -230,7 +219,6 @@ check_arrangers() {
         printf "   └─ \033[1;36mChecking catalogue:\033[0m %s (%s)\n" "$catalog_id" "$graphql_path"
 
         if ! check_graphql_schema "$ARRANGER_URL" "$graphql_path"; then
-            check_container_logs "$container_name"
             all_healthy=false
         fi
     done
@@ -241,6 +229,7 @@ check_arrangers() {
         exit 0
     else
         printf "   └─ \033[1;31mError:\033[0m One or more catalogues failed health checks\n"
+        print_logs_hint "$container_name"
         printf "\n%s\n" "$TROUBLESHOOTING_TIPS"
         exit 1
     fi
