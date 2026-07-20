@@ -1,6 +1,6 @@
 # Overture Arranger MCP - Demo & Development Environment
 
-This repository is the central demo and development environment for building conversational AI capabilities for Overture-based cancer genomics platforms.
+This repository is the central demo environment for building conversational AI capabilities for Overture-based cancer genomics platforms.
 
 <p align="center">
    <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Portal Preview" width="800">

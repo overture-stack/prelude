@@ -112,10 +112,10 @@ ES document count == postgres row count ✓
 | `src/services/csvProcessor/postgresProcessor.ts` | Passes data record into `createRecordMetadata` for hashing |
 | `src/services/postgresql/bulk.ts` | Adds `ON CONFLICT ((submission_metadata->>'submission_id')) DO NOTHING` to INSERT |
 | `src/commands/postgresIndexCommand.ts` | Sets `_id: metadata.submission_id` on each ES document |
-| `apps/setup/configs/postgresConfigs/correlation.sql` | Non-unique index replaced with `UNIQUE INDEX` |
-| `apps/setup/configs/postgresConfigs/mutation.sql` | `UNIQUE INDEX` on `submission_id` added |
-| `apps/setup/configs/postgresConfigs/expression.sql` | `UNIQUE INDEX` on `submission_id` added |
-| `apps/setup/configs/postgresConfigs/protein.sql` | `UNIQUE INDEX` on `submission_id` added |
+| `apps/setup/configs/postgres/correlation.sql` | Non-unique index replaced with `UNIQUE INDEX` |
+| `apps/setup/configs/postgres/mutation.sql` | `UNIQUE INDEX` on `submission_id` added |
+| `apps/setup/configs/postgres/expression.sql` | `UNIQUE INDEX` on `submission_id` added |
+| `apps/setup/configs/postgres/protein.sql` | `UNIQUE INDEX` on `submission_id` added |
 
 ---
 
@@ -124,7 +124,7 @@ ES document count == postgres row count ✓
 The SQL schema changes take effect automatically on the next platform deployment. To apply them to a currently running environment without a full redeploy, exec into the postgres container and run the relevant SQL file manually:
 
 ```bash
-docker exec -i postgres-platform psql -U admin -d overtureDb < apps/setup/configs/postgresConfigs/correlation.sql
+docker exec -i postgres-platform psql -U admin -d overtureDb < apps/setup/configs/postgres/correlation.sql
 ```
 
 > **Note:** Rows already in postgres from previous duplicate uploads will remain. Only new uploads will deduplicate going forward. To reset to a clean state, truncate the affected tables and re-upload.

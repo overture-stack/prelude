@@ -28,7 +28,7 @@ printf "   └─ \033[1;32mSuccess:\033[0m Elasticsearch is available\n"
 # the project-wide "<name>" naming convention (see index_discovery.sh) — so adding
 # an index just means dropping a "<name>-mapping.json" file in that directory; no
 # numbered ES_INDEX_* env vars to maintain.
-ES_INDEX_CONFIG_DIR="${ES_INDEX_CONFIG_DIR:-/configs/elasticsearchConfigs}"
+ES_INDEX_CONFIG_DIR="${ES_INDEX_CONFIG_DIR:-/configs/elasticsearch}"
 . "$(dirname "$0")/index_discovery.sh"
 
 if [ ! -d "$ES_INDEX_CONFIG_DIR" ]; then

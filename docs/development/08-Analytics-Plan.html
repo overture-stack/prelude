@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Web Analytics Plan</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: #1a1a1a; line-height: 1.5; max-width: 760px; }
+  h2 { font-size: 13pt; margin-top: 22px; }
+  h3 { font-size: 11.5pt; margin-top: 16px; margin-bottom: 4px; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 10.5pt; }
+  th, td { border: 1px solid #bbb; padding: 6px 9px; text-align: left; vertical-align: top; }
+  th { background: #f0f3f7; }
+  code { font-family: "Courier New", monospace; font-size: 10pt; }
+  .confirm { color: #b5530a; font-weight: bold; }
+  ul { margin-top: 4px; }
+  li { margin: 3px 0; }
+  p { margin: 8px 0; }
+</style>
+</head>
+<body>
+
+<p>Here is a short plan for adding web analytics (Google Analytics 4 through Google Tag Manager) to the data portal. It covers the metrics you asked about plus a few low cost additions, reported monthly.</p>
+
+<h2>1. Metrics</h2>
+<table>
+  <tr><th>Metric</th><th>Definition</th><th>How it is captured</th></tr>
+
+  <tr>
+    <td><strong>Unique visitors per month</strong></td>
+    <td>Distinct users in the period (GA4 Active Users), including new vs. returning and country or region (Canada vs. international uptake, useful for grant reporting).</td>
+    <td>GA4 automatic, no extra code</td>
+  </tr>
+
+  <tr>
+    <td><strong>Monthly downloads</strong></td>
+    <td>Count of dataset export actions, broken down by download type (Metadata only vs. Metadata + File manifest) and result set size.</td>
+    <td>Custom event on the download button</td>
+  </tr>
+
+  <tr>
+    <td><strong>Session data</strong></td>
+    <td>
+      <ul>
+        <li>Time per session</li>
+        <li>Facet or filter interactions per session</li>
+        <li>Did the session end in a download?</li>
+      </ul>
+      This lets us assess the search to download conversion rate, the percentage of querying sessions that download. Did people find what they came for, and how long did it take?
+      <p>Query depth per session: the number of filters applied before download or exit (shallow vs. deep exploration).</p>
+      <p>Most used facets: which filters (for example diagnostic target, collection device, sequencing instrument) drive discovery, so curation decisions follow what users actually query.</p>
+    </td>
+    <td>Custom events on facet interactions, joined to downloads</td>
+  </tr>
+</table>
+
+<h2>2. Events to capture</h2>
+<p>GA4 standard reports should cover the metrics above automatically <span class="confirm">[please confirm]</span>. The portal specific value comes from a small set of custom events.</p>
+<table>
+  <tr><th>Event</th><th>Trigger</th><th>Key details</th></tr>
+  <tr>
+    <td><code>file_download</code></td>
+    <td>Click on a download button, covering both menu options (Metadata only, Metadata + File manifest)</td>
+    <td>download type, result count, selected rows, active filter count</td>
+  </tr>
+  <tr>
+    <td><code>facet_filter</code></td>
+    <td>A facet value is selected or deselected</td>
+    <td>facet field, add or remove, result count</td>
+  </tr>
+  <tr>
+    <td><code>explorer_view</code></td>
+    <td>Data explorer page or tab loaded</td>
+    <td>explorer name (clinical, molecular, and so on)</td>
+  </tr>
+</table>
+<p>Because every facet and download event shares the same session ID, query volume and downloads can be paired per session for the conversion funnel, with no need to send them together.</p>
+<p><strong>Privacy:</strong> we send aggregate values only (counts, field names, download type). We never send raw query values, sample IDs, or anything that identifies a user.</p>
+
+<h2>3. Implementation notes</h2>
+<ul>
+  <li><strong>Page views:</strong> the portal is a single page app, so we add a route change listener that records each move between explorer pages.</li>
+  <li><strong>Download:</strong> hook the existing download button to send a <code>file_download</code> event tagged with which menu option was chosen.</li>
+  <li><strong>Facets:</strong> hook the facet panel to send a <code>facet_filter</code> event on each change.</li>
+  <li><strong>Zero results</strong> (optional): record when a query returns no rows, which flags data gaps and friction.</li>
+</ul>
+
+<h2>4. Consent and compliance</h2>
+<ul>
+  <li>Canadian deployment, so we align with PIPEDA: a lightweight cookie consent banner with analytics gated behind consent.</li>
+  <li>Enable IP anonymisation and disable advertising features.</li>
+  <li>Document the analytics in the portal privacy policy.</li>
+</ul>
+
+<h2>5. Reporting</h2>
+<ul>
+  <li>A GA4 dashboard plus a monthly export for grant records.</li>
+  <li>Headline figures: unique users, sessions, downloads by type, search to download conversion, top facets, and geography.</li>
+</ul>
+
+</body>
+</html>

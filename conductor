@@ -5,7 +5,7 @@
 #
 # Usage (from the repo root):
 #   ./conductor -h
-#   ./conductor upload -f ./data/datatable1.csv -t datatable1 -i datatable1-index
+#   ./conductor upload -f ./data/tables/datatable1.csv -t datatable1 -i datatable1-index
 #   ./conductor index-db -t datatable1 -i datatable1-index
 #
 # The platform must be running before uploading data (make platform).

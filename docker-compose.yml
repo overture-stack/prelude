@@ -1,14 +1,3 @@
-# ====================================================================================== #
-# Shared config blocks (YAML anchors).                                                    #
-# Define once here, reference with `*name` below — change in one place, applies            #
-# everywhere it's referenced.                                                              #
-# ====================================================================================== #
-x-default-logging: &default-logging
-  driver: "json-file"
-  options:
-    max-size: "50m"
-    max-file: "10"
-
 services:
   # ================================================================================== #
   # ================================================================================== #
@@ -34,7 +23,7 @@ services:
       PROFILE: ${PROFILE:-default}
       DEBUG: false
       # PostgreSQL Configuration
-      POSTGRES_CONFIGS_DIR: configs/postgresConfigs
+      POSTGRES_CONFIGS_DIR: configs/postgres
       # PostgreSQL Connection
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
@@ -45,13 +34,13 @@ services:
       # Indices are discovered from the mapping files in this directory following the
       # "<name>-mapping.json" -> index "<name>-index", alias "<name>_centric" convention.
       # Add an index by dropping a mapping file here — no per-index env vars to maintain.
-      ES_INDEX_CONFIG_DIR: /configs/elasticsearchConfigs
+      ES_INDEX_CONFIG_DIR: /configs/elasticsearch
       # Arranger Services Configuration
       # The healthcheck auto-discovers catalogues by scanning the mounted config
       # directory, so adding/removing a catalogue needs no changes here, just
-      # add/remove its folder under configs/arrangerConfigs.
+      # add/remove its folder under configs/arranger.
       ARRANGER_URL: http://arranger:5050
-      ARRANGER_CONFIG_DIR: /configs/arrangerConfigs
+      ARRANGER_CONFIG_DIR: /configs/arranger
       # Service Connections
       ES_USER: ${ES_USER:-elastic}
       ES_PASS: ${ES_PASSWORD:-myelasticpassword}
@@ -99,10 +88,9 @@ services:
     pull_policy: if_not_present
     volumes:
       - ./data:/data
-    # Tables to load. Add a table by listing it here AND providing /data/<name>.csv
-    # (file -> /data/<name>.csv, type -> <name>, index -> <name>-index).
-    # Note: the "fixture" table is scaffolded in configs but has no data file yet,
-    # so it is intentionally not listed here.
+    # Tables to load. Add a table by listing it here AND providing
+    # /data/tables/<name>.csv (file -> /data/tables/<name>.csv, type -> <name>,
+    # index -> <name>-index).
     environment:
       ES_USER: ${ES_USER:-elastic}
       ES_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
@@ -114,11 +102,11 @@ services:
       sh -c '
         set -e
         echo "Starting conductor CLI - data upload service"
-        echo "Available files in /data: $$(ls /data/ || echo none)"
+        echo "Available files in /data/tables: $$(ls /data/tables/ || echo none)"
         for t in $$DATA_TABLES; do
           echo "Uploading $$t ..."
           node dist/main.js upload \
-            -f /data/$$t.csv \
+            -f /data/tables/$$t.csv \
             -t $$t \
             -i $$t-index \
             --db-host postgres:5432 \
@@ -235,7 +223,7 @@ services:
       setup:
         condition: service_healthy
     volumes:
-      - ./configs/arrangerConfigs:/app/configs
+      - ./configs/arranger:/app/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
@@ -256,7 +244,7 @@ services:
       # GraphQL endpoint instead: a catalogue that lost the race 500s here and marks
       # the whole container unhealthy, which surfaces in `docker ps` and blocks
       # dependents that wait on `condition: service_healthy`.
-      # The catalogue list mirrors the directories in configs/arrangerConfigs/.
+      # The catalogue list mirrors the directories in configs/arranger/.
       test:
         [
           "CMD-SHELL",
@@ -278,59 +266,57 @@ services:
   # ------------------------------------------------------------------------------------#
   # Arranger MCP Server                                                                 #
   # ------------------------------------------------------------------------------------#
-  # MCP server that exposes Arranger catalogues as tools/resources for LLM clients.    #
-  # Streamable HTTP transport — connect at http://localhost:<MCP_PORT>/mcp             #
-  # https://docs.overture.bio/docs/core-software/Arranger/overview                      #
+  # Exposes Arranger catalogues as MCP tools/resources for LLM clients (LM Studio,      #
+  # Claude Desktop, etc.). Streamable HTTP transport — once running, connect at         #
+  # http://localhost:${MCP_PORT:-3100}/mcp  (client transport type: "http").            #
+  #                                                                                      #
+  # Runs the published edge image directly: it ships the built app and launches         #
+  # `tsx apps/mcp-server/src/index.ts` on port 3100. Bump the tag below to upgrade.     #
   # ------------------------------------------------------------------------------------#
-  # arranger-mcp:
-  #   profiles: ["demo", "default"]
-  #   # Built from local source (like Stage). The published arranger-mcp-server image
-  #   # tag carries no application code, so we build the mcp-server target from the
-  #   # Arranger monorepo vendored at ./apps/arranger. Dockerfile.local's "scaffolding"
-  #   # stage runs the full turbo build, then the mcp-server stage runs
-  #   # `tsx ./apps/mcp-server/src/index.ts` on port 3100.
-  #   build:
-  #     context: ./apps/arranger
-  #     dockerfile: docker/Dockerfile.local
-  #     target: mcp-server
-  #   image: arrangermcpimage:1.0
-  #   container_name: arranger-mcp
-  #   restart: unless-stopped
-  #   depends_on:
-  #     arranger:
-  #       condition: service_healthy
-  #   environment:
-  #     ARRANGER_BASE_URL: http://arranger:5050
-  #     ARRANGER_CATALOGUES: ${ARRANGER_MCP_CATALOGUES:-correlation,mutation,expression,protein}
-  #     MCP_HOST: 0.0.0.0
-  #     MCP_PORT: ${MCP_PORT:-3100}
-  #     MCP_PATH: /mcp
-  #     LOG_LEVEL: ${MCP_LOG_LEVEL:-info}
-  #   ports:
-  #     - "127.0.0.1:${MCP_PORT:-3100}:3100"
-  #   healthcheck:
-  #     # The MCP server has no dedicated health route (only POST/GET /mcp, which
-  #     # require a session). A TCP connect to the listening port is enough to confirm
-  #     # the process is up. node is always present in the image.
-  #     test:
-  #       [
-  #         "CMD",
-  #         "node",
-  #         "-e",
-  #         "require('net').connect(3100,'127.0.0.1').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))",
-  #       ]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 20s
-  #   logging: *default-logging
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 256M
-  #         cpus: "0.5"
-  #   networks:
-  #     - platform-network
+  arranger-mcp:
+    profiles: ["demo", "default"]
+    image: ghcr.io/overture-stack/arranger-mcp-server:b4a414ce
+    pull_policy: if_not_present
+    container_name: arranger-mcp
+    platform: linux/amd64
+    restart: unless-stopped
+    depends_on:
+      arranger:
+        condition: service_healthy
+    environment:
+      # Required — the server exits on startup if either is missing or invalid.
+      ARRANGER_BASE_URL: http://arranger:5050
+      ARRANGER_CATALOGUES: ${ARRANGER_MCP_CATALOGUES:-correlation,mutation,expression,protein}
+      # Optional — listed with their image defaults for discoverability.
+      MCP_HOST: 0.0.0.0
+      MCP_PATH: /mcp
+      LOG_LEVEL: ${MCP_LOG_LEVEL:-info}
+    ports:
+      # Container always listens on 3100; MCP_PORT changes only the host-side port.
+      - "127.0.0.1:${MCP_PORT:-3100}:3100"
+    healthcheck:
+      # No dedicated health route (only /mcp, which needs a session), so a plain TCP
+      # connect to the listening port is enough to prove the process is up. node is
+      # always present in the image.
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('net').connect(3100,'127.0.0.1').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+    networks:
+      - platform-network
 
   # ------------------------------------------------------------------------------------#
   # Stage                                                                               #
@@ -445,3 +431,13 @@ volumes:
 networks:
   platform-network:
     driver: bridge
+
+# ====================================================================================== #
+# Shared config blocks (YAML anchors).                                                    #
+# Define once here, reference with `*name`                                                    #
+# ====================================================================================== #
+x-default-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "10"

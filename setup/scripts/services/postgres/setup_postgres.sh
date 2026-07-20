@@ -10,7 +10,7 @@ MAX_RETRIES=10
 RETRY_DELAY=10          
 
 # Default SQL configs directory
-SQL_CONFIGS_DIR=${POSTGRES_CONFIGS_DIR:-"setup/configs/postgresConfigs"}
+SQL_CONFIGS_DIR=${POSTGRES_CONFIGS_DIR:-"setup/configs/postgres"}
 
 # Debug function for logging
 debug() {

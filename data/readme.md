@@ -1,7 +1,18 @@
 # Data Folder
 
-This folder is for storing data files used in your project. Below are guidelines
-for optimal data management:
+This folder holds the data files used by the platform.
+
+## Layout
+
+| Path         | Contents                                                                                      |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| `tables/`    | Dataset CSVs loaded into the portal (one `<name>.csv` per table, e.g. `correlation.csv`).     |
+| `fixtures/`  | Fixture-generation toolkit (build scripts, schema, generated `fixtures.jsonl`).               |
+
+To add a table, drop `tables/<name>.csv` here and list `<name>` in the
+`DATA_TABLES` variable of the `conductor-cli` service in `docker-compose.yml`.
+
+Below are guidelines for optimal data management:
 
 ## File Format
 

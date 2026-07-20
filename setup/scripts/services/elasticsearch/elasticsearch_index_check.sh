@@ -14,10 +14,10 @@
 # Required environment:
 #   ES_URL              Base URL of Elasticsearch, e.g. http://elasticsearch:9200
 #   ES_USER, ES_PASS    Credentials
-#   ES_INDEX_CONFIG_DIR Path to the mapping config dir, e.g. /configs/elasticsearchConfigs
+#   ES_INDEX_CONFIG_DIR Path to the mapping config dir, e.g. /configs/elasticsearch
 
 TIMEOUT=10
-ES_INDEX_CONFIG_DIR="${ES_INDEX_CONFIG_DIR:-/configs/elasticsearchConfigs}"
+ES_INDEX_CONFIG_DIR="${ES_INDEX_CONFIG_DIR:-/configs/elasticsearch}"
 
 TROUBLESHOOTING_TIPS="
 Troubleshooting Tips:

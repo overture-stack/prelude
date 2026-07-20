@@ -68,8 +68,8 @@ Convention-driven layers (just add the file/folder — nothing else to wire):
 
 | # | Location                                          | What to add                                                              |
 | - | ------------------------------------------------- | ------------------------------------------------------------------------ |
-| 1 | `configs/elasticsearchConfigs/<name>-mapping.json` | ES mapping. Creates index `<name>-index`, alias `<name>_centric`.        |
-| 2 | `configs/arrangerConfigs/<name>/`                  | Arranger catalogue (`base.json`, `extended.json`, `facets.json`, `table.json`, `matchbox.json`). Served at `http://arranger:5050/<name>`. |
+| 1 | `configs/elasticsearch/<name>-mapping.json` | ES mapping. Creates index `<name>-index`, alias `<name>_centric`.        |
+| 2 | `configs/arranger/<name>/`                  | Arranger catalogue (`base.json`, `extended.json`, `facets.json`, `table.json`, `matchbox.json`). Served at `http://arranger:5050/<name>`. |
 | 3 | `data/<name>.csv` + `DATA_TABLES` in `docker-compose.yml` (conductor-cli) | Sample data + the table name in the upload loop.            |
 
 Stage portal layers (a table is shown via a **fixed slot `N`, 1–5**):

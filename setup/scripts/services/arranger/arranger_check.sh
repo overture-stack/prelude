@@ -18,7 +18,7 @@
 #
 # Required environment (set by the setup service in docker-compose):
 #   ARRANGER_URL        Base URL of the Arranger server, e.g. http://arranger:5050
-#   ARRANGER_CONFIG_DIR Path to the mounted Arranger config dir, e.g. /configs/arrangerConfigs
+#   ARRANGER_CONFIG_DIR Path to the mounted Arranger config dir, e.g. /configs/arranger
 
 RETRY_COUNT=0
 MAX_RETRIES=10
@@ -32,7 +32,7 @@ CATALOGUE_MAX_RETRIES=5
 CATALOGUE_RETRY_DELAY=5
 
 ARRANGER_URL="${ARRANGER_URL:-http://arranger:5050}"
-ARRANGER_CONFIG_DIR="${ARRANGER_CONFIG_DIR:-/configs/arrangerConfigs}"
+ARRANGER_CONFIG_DIR="${ARRANGER_CONFIG_DIR:-/configs/arranger}"
 
 TROUBLESHOOTING_TIPS="
 Troubleshooting Tips:
