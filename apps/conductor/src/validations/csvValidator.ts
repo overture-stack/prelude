@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { ConductorError, ErrorFactory } from "../utils/errors";
 import { parseCSVLine } from "../services/csvProcessor/csvParser";
 import { VALIDATION_CONSTANTS } from "./constants";

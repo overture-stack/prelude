@@ -1,3 +1,13 @@
+# ====================================================================================== #
+# Shared config blocks (YAML anchors).                                                    #
+# Define once here (before first use), reference with `*name`.                            #
+# ====================================================================================== #
+x-default-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "10"
+
 services:
   # ================================================================================== #
   # ================================================================================== #
@@ -30,11 +40,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
-      # Elasticsearch Index Configuration
+      # OpenSearch Index Configuration
       # Indices are discovered from the mapping files in this directory following the
       # "<name>-mapping.json" -> index "<name>-index", alias "<name>_centric" convention.
       # Add an index by dropping a mapping file here — no per-index env vars to maintain.
-      ES_INDEX_CONFIG_DIR: /configs/elasticsearch
+      ES_INDEX_CONFIG_DIR: /configs/opensearch
       # Arranger Services Configuration
       # The healthcheck auto-discovers catalogues by scanning the mounted config
       # directory, so adding/removing a catalogue needs no changes here, just
@@ -44,7 +54,7 @@ services:
       # Service Connections
       ES_USER: ${ES_USER:-elastic}
       ES_PASS: ${ES_PASSWORD:-myelasticpassword}
-      ES_URL: http://elasticsearch:9200
+      ES_URL: http://opensearch:9200
       STAGE_URL: http://stage:3000
       STAGE_PORT: ${STAGE_PORT:-3000}
     command: >
@@ -82,10 +92,14 @@ services:
   # --------------------------------------------------------------------------------------#
   conductor-cli:
     profiles: ["demo", "default"]
-    image: ghcr.io/overture-stack/conductor:171d9ce
+    # Built from local source (apps/conductor) so it uses the @opensearch-project/opensearch
+    # client. The published image uses @elastic/elasticsearch, whose 7.14+ product check
+    # rejects OpenSearch ("server is not Elasticsearch") and blocks all indexing.
+    build:
+      context: .
+      dockerfile: ./apps/conductor/Dockerfile
+    image: conductor-opensearch:local
     container_name: conductor-cli
-    platform: linux/amd64
-    pull_policy: if_not_present
     volumes:
       - ./data:/data
     # Tables to load. Add a table by listing it here AND providing
@@ -113,7 +127,7 @@ services:
             --db-user "$$POSTGRES_USER" \
             --db-pass "$$POSTGRES_PASSWORD" \
             --db-name "$$POSTGRES_DB" \
-            --es-host elasticsearch:9200 \
+            --es-host opensearch:9200 \
             --es-user "$$ES_USER" \
             --es-pass "$$ES_PASSWORD"
         done
@@ -127,7 +141,7 @@ services:
   # -----------------------------------------------------------------------------------#
   # PostgreSQL                                                                         #
   # -----------------------------------------------------------------------------------#
-  # Persistant storage for data being indexed into elasticsearch.                      #
+  # Persistant storage for data being indexed into opensearch.                         #
   # -----------------------------------------------------------------------------------#
   postgres:
     profiles: ["demo", "platform", "default"]
@@ -160,27 +174,37 @@ services:
       - platform-network
 
   # --------------------------------------------------------------------------------------#
-  # Elasticsearch                                                                         #
+  # OpenSearch                                                                            #
   # --------------------------------------------------------------------------------------#
   # A search and analytics engine used to help query massive datatables.                  #
-  # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/elasticsearch-intro.html #
+  # Apache-2.0 fork of Elasticsearch 7.10; https://opensearch.org/docs/latest/            #
   # --------------------------------------------------------------------------------------#
-  elasticsearch:
+  opensearch:
     profiles: ["demo", "platform", "default"]
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
+    # Pin/override the tag via OPENSEARCH_TAG in .env. 2.x serves the ES7-style index
+    # templates and queries this stack uses; the mapping files need no changes.
+    image: opensearchproject/opensearch:${OPENSEARCH_TAG:-2.17.1}
     pull_policy: if_not_present
-    container_name: elasticsearch
+    container_name: opensearch
     platform: linux/amd64
     restart: unless-stopped
     environment:
       discovery.type: single-node
-      cluster.name: workflow.elasticsearch
+      cluster.name: workflow.opensearch
+      # Security plugin OFF for this localhost-bound demo: keeps the API on plain HTTP
+      # (no self-signed TLS) so the existing http:// clients and setup scripts work
+      # unchanged, and no admin password is required. Do NOT disable security on any
+      # network-exposed deployment.
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      # NOTE: do NOT set `compatibility.override_main_response_version` here. It hides
+      # `version.distribution` on `GET /`, so Arranger auto-detects the Elasticsearch
+      # client (not OpenSearch) and fails to init with "Could not create a mapping".
+      # Arranger keys its client selection on the real `distribution: opensearch` value.
       # Heap size. Tune for smaller machines (e.g. workshop laptops) via .env.
-      # Keep -Xmx at or below the deploy memory limit below.
-      ES_JAVA_OPTS: ${ES_JAVA_OPTS:--Xms512m -Xmx2048m}
-      ES_USER: ${ES_USER:-elastic}
-      ELASTIC_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
-      xpack.security.enabled: "true"
+      # Keep -Xmx at or below the deploy memory limit below. ES_JAVA_OPTS is kept as
+      # the override key so existing .env files keep working.
+      OPENSEARCH_JAVA_OPTS: ${ES_JAVA_OPTS:--Xms512m -Xmx2048m}
     ports:
       - "127.0.0.1:9200:9200" # Localhost only — not accessible from the network
     logging: *default-logging
@@ -192,7 +216,7 @@ services:
         reservations:
           memory: ${ES_MEM_RESERVATION:-2G}
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - opensearch-data:/usr/share/opensearch/data
     healthcheck:
       test:
         [
@@ -214,7 +238,7 @@ services:
   # ------------------------------------------------------------------------------------#
   arranger:
     profiles: ["demo", "platform", "default"]
-    image: ghcr.io/overture-stack/arranger-search-server:6de99b38
+    image: ghcr.io/overture-stack/arranger-search-server:b5c6051b
     pull_policy: if_not_present
     container_name: arranger
     platform: linux/amd64
@@ -225,8 +249,8 @@ services:
     volumes:
       - ./configs/arranger:/app/configs
     environment:
-      # Elasticsearch Variables
-      ES_HOST: http://elasticsearch:9200
+      # OpenSearch connection (ES_* var names kept: Arranger reads these keys)
+      ES_HOST: http://opensearch:9200
       ES_USER: ${ES_USER:-elastic}
       ES_PASS: ${ES_PASSWORD:-myelasticpassword}
       ES_ARRANGER_SET_INDEX: arranger_set
@@ -407,7 +431,7 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:3000/",
+          "http://127.0.0.1:3000/",
         ]
       interval: 30s
       timeout: 10s
@@ -425,19 +449,9 @@ services:
       - platform-network
 
 volumes:
-  elasticsearch-data:
+  opensearch-data:
   stage-data:
   postgres-data:
 networks:
   platform-network:
     driver: bridge
-
-# ====================================================================================== #
-# Shared config blocks (YAML anchors).                                                    #
-# Define once here, reference with `*name`                                                    #
-# ====================================================================================== #
-x-default-logging: &default-logging
-  driver: "json-file"
-  options:
-    max-size: "50m"
-    max-file: "10"

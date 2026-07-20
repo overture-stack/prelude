@@ -1,4 +1,4 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { ConductorError, ErrorFactory } from "../utils/errors";
 import { Logger } from "../utils/logger";
 import { ConnectionValidationResult, IndexValidationResult } from "../types";

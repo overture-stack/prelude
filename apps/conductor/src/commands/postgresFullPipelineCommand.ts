@@ -26,7 +26,7 @@ import { postgresRowToEsDocument } from "../services/csvProcessor/metadata";
 import { setProgressStats, resetProgressStats, reserveProgressLines } from "../services/csvProcessor/progressBar";
 
 import { Pool } from "pg";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 export class PostgresFullPipelineCommand extends Command {
   constructor() {

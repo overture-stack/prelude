@@ -5,7 +5,7 @@
  * Updated with concise error handling and optional verbose logging.
  */
 
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { ErrorFactory } from "../../utils/errors";
 import { Logger } from "../../utils/logger";
 import * as fs from "fs";

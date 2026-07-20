@@ -4,7 +4,7 @@
  * Provides functions for creating and managing Elasticsearch client connections.
  */
 
-import { Client, ClientOptions } from "@elastic/elasticsearch";
+import { Client, ClientOptions } from "@opensearch-project/opensearch";
 import { Config } from "../../types/cli";
 import { ErrorFactory } from "../../utils/errors";
 import { Logger } from "../../utils/logger";

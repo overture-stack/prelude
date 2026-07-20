@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as readline from "readline";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { Config } from "../../types";
 import { validateAndCountCSVFile, parseCSVLine } from "./csvParser";
 import { Logger } from "../../utils/logger";

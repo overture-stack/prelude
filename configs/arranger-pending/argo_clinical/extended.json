@@ -1,0 +1,991 @@
+{
+  "extended": [
+    {
+      "fieldName": "submitter_donor_id_autocomplete",
+      "displayName": "Donor ID (Quick Search)",
+      "quickSearchEnabled": true
+    },
+    {
+      "displayName": "Program ID",
+      "fieldName": "program_id"
+    },
+    {
+      "displayName": "Submitter Donor ID",
+      "fieldName": "submitter_donor_id",
+      "primaryKey": true,
+      "quickSearchEnabled": true
+    },
+    {
+      "displayName": "Vital Status",
+      "fieldName": "vital_status"
+    },
+    {
+      "displayName": "Cause of Death",
+      "fieldName": "cause_of_death"
+    },
+    {
+      "displayName": "Survival Time",
+      "fieldName": "survival_time"
+    },
+    {
+      "displayName": "Primary Site",
+      "fieldName": "primary_site"
+    },
+    {
+      "displayName": "Height",
+      "fieldName": "height"
+    },
+    {
+      "displayName": "Weight",
+      "fieldName": "weight"
+    },
+    {
+      "displayName": "BMI",
+      "fieldName": "bmi"
+    },
+    {
+      "displayName": "Genetic Disorders",
+      "fieldName": "genetic_disorders"
+    },
+    {
+      "displayName": "Menopause Status",
+      "fieldName": "menopause_status"
+    },
+    {
+      "displayName": "Age at Menarche",
+      "fieldName": "age_at_menarche"
+    },
+    {
+      "displayName": "Number of Pregnancies",
+      "fieldName": "number_of_pregnancies"
+    },
+    {
+      "displayName": "Number of Children",
+      "fieldName": "number_of_children"
+    },
+    {
+      "displayName": "Hormone Replacement Therapy Type",
+      "fieldName": "hrt_type"
+    },
+    {
+      "displayName": "Hormone Replacement Therapy Duration",
+      "fieldName": "hrt_duration"
+    },
+    {
+      "displayName": "Contraception Type",
+      "fieldName": "contraception_type"
+    },
+    {
+      "displayName": "Hormonal Contraception Duration",
+      "fieldName": "contraception_duration"
+    },
+    {
+      "displayName": "Lost To Follow Up After Clinical Event",
+      "fieldName": "lost_to_followup_after_clinical_event_id"
+    },
+    {
+      "displayName": "Country of Residence at Enrollment",
+      "fieldName": "country_of_residence_at_enrollment"
+    },
+    {
+      "displayName": "sample_registration: Program ID",
+      "fieldName": "sample_registration.program_id"
+    },
+    {
+      "displayName": "sample_registration: Submitter Donor ID",
+      "fieldName": "sample_registration.submitter_donor_id"
+    },
+    {
+      "displayName": "sample_registration: Gender",
+      "fieldName": "sample_registration.gender"
+    },
+    {
+      "displayName": "sample_registration: Submitter Specimen ID",
+      "fieldName": "sample_registration.submitter_specimen_id"
+    },
+    {
+      "displayName": "sample_registration: Specimen Tissue Source",
+      "fieldName": "sample_registration.specimen_tissue_source"
+    },
+    {
+      "displayName": "sample_registration: Tumour Normal Designation",
+      "fieldName": "sample_registration.tumour_normal_designation"
+    },
+    {
+      "displayName": "sample_registration: Specimen Type",
+      "fieldName": "sample_registration.specimen_type"
+    },
+    {
+      "displayName": "sample_registration: Submitter Sample ID",
+      "fieldName": "sample_registration.submitter_sample_id"
+    },
+    {
+      "displayName": "sample_registration: Sample Type",
+      "fieldName": "sample_registration.sample_type"
+    },
+    {
+      "displayName": "specimen: Program ID",
+      "fieldName": "specimen.program_id"
+    },
+    {
+      "displayName": "specimen: Submitter Donor ID",
+      "fieldName": "specimen.submitter_donor_id"
+    },
+    {
+      "displayName": "specimen: Submitter Specimen ID",
+      "fieldName": "specimen.submitter_specimen_id"
+    },
+    {
+      "displayName": "specimen: Submitter Primary Diagnosis ID",
+      "fieldName": "specimen.submitter_primary_diagnosis_id"
+    },
+    {
+      "displayName": "specimen: Pathological Tumour Staging System",
+      "fieldName": "specimen.pathological_tumour_staging_system"
+    },
+    {
+      "displayName": "specimen: Pathological T Category",
+      "fieldName": "specimen.pathological_t_category"
+    },
+    {
+      "displayName": "specimen: Pathological N Category",
+      "fieldName": "specimen.pathological_n_category"
+    },
+    {
+      "displayName": "specimen: Pathological M Category",
+      "fieldName": "specimen.pathological_m_category"
+    },
+    {
+      "displayName": "specimen: Pathological Stage Group",
+      "fieldName": "specimen.pathological_stage_group"
+    },
+    {
+      "displayName": "specimen: Specimen Acquisition Interval",
+      "fieldName": "specimen.specimen_acquisition_interval"
+    },
+    {
+      "displayName": "specimen: Tumour Histological Type",
+      "fieldName": "specimen.tumour_histological_type"
+    },
+    {
+      "displayName": "specimen: Specimen Anatomic Location",
+      "fieldName": "specimen.specimen_anatomic_location"
+    },
+    {
+      "displayName": "specimen: Specimen Laterality",
+      "fieldName": "specimen.specimen_laterality"
+    },
+    {
+      "displayName": "specimen: Specimen Processing",
+      "fieldName": "specimen.specimen_processing"
+    },
+    {
+      "displayName": "specimen: Specimen Storage",
+      "fieldName": "specimen.specimen_storage"
+    },
+    {
+      "displayName": "specimen: Reference Pathology Confirmed",
+      "fieldName": "specimen.reference_pathology_confirmed"
+    },
+    {
+      "displayName": "specimen: Tumour Grading System",
+      "fieldName": "specimen.tumour_grading_system"
+    },
+    {
+      "displayName": "specimen: Tumour Grade",
+      "fieldName": "specimen.tumour_grade"
+    },
+    {
+      "displayName": "specimen: Percent Tumour Cells",
+      "fieldName": "specimen.percent_tumour_cells"
+    },
+    {
+      "displayName": "specimen: Percent Tumour Cells Measurement Method",
+      "fieldName": "specimen.percent_tumour_cells_measurement_method"
+    },
+    {
+      "displayName": "specimen: Percent Proliferating Cells",
+      "fieldName": "specimen.percent_proliferating_cells"
+    },
+    {
+      "displayName": "specimen: Percent Inflammatory Tissue",
+      "fieldName": "specimen.percent_inflammatory_tissue"
+    },
+    {
+      "displayName": "specimen: Percent Stromal Cells",
+      "fieldName": "specimen.percent_stromal_cells"
+    },
+    {
+      "displayName": "specimen: Percent Necrosis",
+      "fieldName": "specimen.percent_necrosis"
+    },
+    {
+      "displayName": "primary_diagnosis: Program ID",
+      "fieldName": "primary_diagnosis.program_id"
+    },
+    {
+      "displayName": "primary_diagnosis: Submitter Donor ID",
+      "fieldName": "primary_diagnosis.submitter_donor_id"
+    },
+    {
+      "displayName": "primary_diagnosis: Submitter Primary Diagnosis ID",
+      "fieldName": "primary_diagnosis.submitter_primary_diagnosis_id"
+    },
+    {
+      "displayName": "primary_diagnosis: Age at Diagnosis",
+      "fieldName": "primary_diagnosis.age_at_diagnosis"
+    },
+    {
+      "displayName": "primary_diagnosis: Cancer Type Code",
+      "fieldName": "primary_diagnosis.cancer_type_code"
+    },
+    {
+      "displayName": "primary_diagnosis: Cancer Type Additional Information",
+      "fieldName": "primary_diagnosis.cancer_type_additional_information"
+    },
+    {
+      "displayName": "primary_diagnosis: Basis of Diagnosis",
+      "fieldName": "primary_diagnosis.basis_of_diagnosis"
+    },
+    {
+      "displayName": "primary_diagnosis: Laterality",
+      "fieldName": "primary_diagnosis.laterality"
+    },
+    {
+      "displayName": "primary_diagnosis: Lymph Nodes Examined Status",
+      "fieldName": "primary_diagnosis.lymph_nodes_examined_status"
+    },
+    {
+      "displayName": "primary_diagnosis: Method Used to Examine Lymph Nodes",
+      "fieldName": "primary_diagnosis.lymph_nodes_examined_method"
+    },
+    {
+      "displayName": "primary_diagnosis: Number Of Lymph Nodes Examined",
+      "fieldName": "primary_diagnosis.number_lymph_nodes_examined"
+    },
+    {
+      "displayName": "primary_diagnosis: Number Of Lymph Nodes Positive",
+      "fieldName": "primary_diagnosis.number_lymph_nodes_positive"
+    },
+    {
+      "displayName": "primary_diagnosis: Clinical Tumour Staging System",
+      "fieldName": "primary_diagnosis.clinical_tumour_staging_system"
+    },
+    {
+      "displayName": "primary_diagnosis: Clinical T Category",
+      "fieldName": "primary_diagnosis.clinical_t_category"
+    },
+    {
+      "displayName": "primary_diagnosis: Clinical N Category",
+      "fieldName": "primary_diagnosis.clinical_n_category"
+    },
+    {
+      "displayName": "primary_diagnosis: Clinical M Category",
+      "fieldName": "primary_diagnosis.clinical_m_category"
+    },
+    {
+      "displayName": "primary_diagnosis: Clinical Stage Group",
+      "fieldName": "primary_diagnosis.clinical_stage_group"
+    },
+    {
+      "displayName": "primary_diagnosis: Presenting Symptoms",
+      "fieldName": "primary_diagnosis.presenting_symptoms"
+    },
+    {
+      "displayName": "primary_diagnosis: Performance Status",
+      "fieldName": "primary_diagnosis.performance_status"
+    },
+    {
+      "displayName": "treatment: Program ID",
+      "fieldName": "treatment.program_id"
+    },
+    {
+      "displayName": "treatment: Submitter Donor ID",
+      "fieldName": "treatment.submitter_donor_id"
+    },
+    {
+      "displayName": "treatment: Submitter Treatment ID",
+      "fieldName": "treatment.submitter_treatment_id"
+    },
+    {
+      "displayName": "treatment: Submitter Primary Diagnosis ID",
+      "fieldName": "treatment.submitter_primary_diagnosis_id"
+    },
+    {
+      "displayName": "treatment: Treatment Type",
+      "fieldName": "treatment.treatment_type"
+    },
+    {
+      "displayName": "treatment: Is Primary Treatment",
+      "fieldName": "treatment.is_primary_treatment"
+    },
+    {
+      "displayName": "treatment: Line Of treatment",
+      "fieldName": "treatment.line_of_treatment"
+    },
+    {
+      "displayName": "treatment: Treatment Start Interval",
+      "fieldName": "treatment.treatment_start_interval"
+    },
+    {
+      "displayName": "treatment: Treatment Duration",
+      "fieldName": "treatment.treatment_duration"
+    },
+    {
+      "displayName": "treatment: Days Per Cycle",
+      "fieldName": "treatment.days_per_cycle"
+    },
+    {
+      "displayName": "treatment: Number Of Cycles",
+      "fieldName": "treatment.number_of_cycles"
+    },
+    {
+      "displayName": "treatment: Treatment Intent",
+      "fieldName": "treatment.treatment_intent"
+    },
+    {
+      "displayName": "treatment: Treatment Setting",
+      "fieldName": "treatment.treatment_setting"
+    },
+    {
+      "displayName": "treatment: Response To Treatment Criteria Method",
+      "fieldName": "treatment.response_to_treatment_criteria_method"
+    },
+    {
+      "displayName": "treatment: Response To Treatment",
+      "fieldName": "treatment.response_to_treatment"
+    },
+    {
+      "displayName": "treatment: Outcome Of Treatment",
+      "fieldName": "treatment.outcome_of_treatment"
+    },
+    {
+      "displayName": "treatment: Toxicity Type",
+      "fieldName": "treatment.toxicity_type"
+    },
+    {
+      "displayName": "treatment: Hemotological Toxicity",
+      "fieldName": "treatment.hematological_toxicity"
+    },
+    {
+      "displayName": "treatment: Non-hematological Toxicity",
+      "fieldName": "treatment.non-hematological_toxicity"
+    },
+    {
+      "displayName": "treatment: Adverse Events",
+      "fieldName": "treatment.adverse_events"
+    },
+    {
+      "displayName": "treatment: Clinical Trials Database",
+      "fieldName": "treatment.clinical_trials_database"
+    },
+    {
+      "displayName": "treatment: Clinical Trial Number",
+      "fieldName": "treatment.clinical_trial_number"
+    },
+    {
+      "displayName": "chemotherapy: Program ID",
+      "fieldName": "treatment.chemotherapy.program_id"
+    },
+    {
+      "displayName": "chemotherapy: Submitter Donor ID",
+      "fieldName": "treatment.chemotherapy.submitter_donor_id"
+    },
+    {
+      "displayName": "chemotherapy: Submitter Treatment ID",
+      "fieldName": "treatment.chemotherapy.submitter_treatment_id"
+    },
+    {
+      "displayName": "chemotherapy: RxNormCUI",
+      "fieldName": "treatment.chemotherapy.drug_rxnormcui"
+    },
+    {
+      "displayName": "chemotherapy: Chemotherapy Drug Name",
+      "fieldName": "treatment.chemotherapy.drug_name"
+    },
+    {
+      "displayName": "chemotherapy: Drug Database",
+      "fieldName": "treatment.chemotherapy.drug_database"
+    },
+    {
+      "displayName": "chemotherapy: Drug ID",
+      "fieldName": "treatment.chemotherapy.drug_id"
+    },
+    {
+      "displayName": "chemotherapy: Drug Term",
+      "fieldName": "treatment.chemotherapy.drug_term"
+    },
+    {
+      "displayName": "chemotherapy: Chemotherapy Drug Dose Units",
+      "fieldName": "treatment.chemotherapy.chemotherapy_drug_dose_units"
+    },
+    {
+      "displayName": "chemotherapy: Prescribed Cumulative Drug Dose",
+      "fieldName": "treatment.chemotherapy.prescribed_cumulative_drug_dose"
+    },
+    {
+      "displayName": "chemotherapy: Actual Cumulative Drug Dose",
+      "fieldName": "treatment.chemotherapy.actual_cumulative_drug_dose"
+    },
+    {
+      "displayName": "chemotherapy: Dose Intensity Reduction",
+      "fieldName": "treatment.chemotherapy.dose_intensity_reduction"
+    },
+    {
+      "displayName": "chemotherapy: Dose Intensity Reduction Event",
+      "fieldName": "treatment.chemotherapy.dose_intensity_reduction_event"
+    },
+    {
+      "displayName": "chemotherapy: Amount of Dose Intensity Reduction",
+      "fieldName": "treatment.chemotherapy.dose_intensity_reduction_amount"
+    },
+    {
+      "displayName": "hormone_therapy: Program ID",
+      "fieldName": "treatment.hormone_therapy.program_id"
+    },
+    {
+      "displayName": "hormone_therapy: Submitter Donor ID",
+      "fieldName": "treatment.hormone_therapy.submitter_donor_id"
+    },
+    {
+      "displayName": "hormone_therapy: Submitter Treatment ID",
+      "fieldName": "treatment.hormone_therapy.submitter_treatment_id"
+    },
+    {
+      "displayName": "hormone_therapy: RxNormCUI",
+      "fieldName": "treatment.hormone_therapy.drug_rxnormcui"
+    },
+    {
+      "displayName": "hormone_therapy: Hormone Therapy Drug Name",
+      "fieldName": "treatment.hormone_therapy.drug_name"
+    },
+    {
+      "displayName": "hormone_therapy: Drug Database",
+      "fieldName": "treatment.hormone_therapy.drug_database"
+    },
+    {
+      "displayName": "hormone_therapy: Drug ID",
+      "fieldName": "treatment.hormone_therapy.drug_id"
+    },
+    {
+      "displayName": "hormone_therapy: Drug Term",
+      "fieldName": "treatment.hormone_therapy.drug_term"
+    },
+    {
+      "displayName": "hormone_therapy: Hormone Drug Dose Units",
+      "fieldName": "treatment.hormone_therapy.hormone_drug_dose_units"
+    },
+    {
+      "displayName": "hormone_therapy: Prescribed Cumulative Drug Dose",
+      "fieldName": "treatment.hormone_therapy.prescribed_cumulative_drug_dose"
+    },
+    {
+      "displayName": "hormone_therapy: Actual Cumulative Drug Dose",
+      "fieldName": "treatment.hormone_therapy.actual_cumulative_drug_dose"
+    },
+    {
+      "displayName": "radiation: Program ID",
+      "fieldName": "treatment.radiation.program_id"
+    },
+    {
+      "displayName": "radiation: Submitter Donor ID",
+      "fieldName": "treatment.radiation.submitter_donor_id"
+    },
+    {
+      "displayName": "radiation: Submitter Treatment ID",
+      "fieldName": "treatment.radiation.submitter_treatment_id"
+    },
+    {
+      "displayName": "radiation: Radiation Therapy Modality",
+      "fieldName": "treatment.radiation.radiation_therapy_modality"
+    },
+    {
+      "displayName": "radiation: Type of Radiation Therapy",
+      "fieldName": "treatment.radiation.radiation_therapy_type"
+    },
+    {
+      "displayName": "radiation: Radiation Therapy Fractions",
+      "fieldName": "treatment.radiation.radiation_therapy_fractions"
+    },
+    {
+      "displayName": "radiation: Radiation Therapy Dosage",
+      "fieldName": "treatment.radiation.radiation_therapy_dosage"
+    },
+    {
+      "displayName": "radiation: Anatomical Site Irradiated",
+      "fieldName": "treatment.radiation.anatomical_site_irradiated"
+    },
+    {
+      "displayName": "radiation: Radiation Boost",
+      "fieldName": "treatment.radiation.radiation_boost"
+    },
+    {
+      "displayName": "radiation: Reference Radiation Treatment for Boost",
+      "fieldName": "treatment.radiation.reference_radiation_treatment_id"
+    },
+    {
+      "displayName": "immunotherapy: Program ID",
+      "fieldName": "treatment.immunotherapy.program_id"
+    },
+    {
+      "displayName": "immunotherapy: Submitter Donor ID",
+      "fieldName": "treatment.immunotherapy.submitter_donor_id"
+    },
+    {
+      "displayName": "immunotherapy: Submitter Treatment ID",
+      "fieldName": "treatment.immunotherapy.submitter_treatment_id"
+    },
+    {
+      "displayName": "immunotherapy: Immunotherapy Type",
+      "fieldName": "treatment.immunotherapy.immunotherapy_type"
+    },
+    {
+      "displayName": "immunotherapy: RxNormCUI",
+      "fieldName": "treatment.immunotherapy.drug_rxnormcui"
+    },
+    {
+      "displayName": "immunotherapy: Chemotherapy Drug Name",
+      "fieldName": "treatment.immunotherapy.drug_name"
+    },
+    {
+      "displayName": "immunotherapy: Drug Database",
+      "fieldName": "treatment.immunotherapy.drug_database"
+    },
+    {
+      "displayName": "immunotherapy: Drug ID",
+      "fieldName": "treatment.immunotherapy.drug_id"
+    },
+    {
+      "displayName": "immunotherapy: Drug Term",
+      "fieldName": "treatment.immunotherapy.drug_term"
+    },
+    {
+      "displayName": "immunotherapy: Immunotherapy Drug Dose Units",
+      "fieldName": "treatment.immunotherapy.immunotherapy_drug_dose_units"
+    },
+    {
+      "displayName": "immunotherapy: Prescribed Cumulative Drug Dose",
+      "fieldName": "treatment.immunotherapy.prescribed_cumulative_drug_dose"
+    },
+    {
+      "displayName": "immunotherapy: Actual Cumulative Drug Dose",
+      "fieldName": "treatment.immunotherapy.actual_cumulative_drug_dose"
+    },
+    {
+      "displayName": "surgery: Program ID",
+      "fieldName": "treatment.surgery.program_id"
+    },
+    {
+      "displayName": "surgery: Submitter Donor ID",
+      "fieldName": "treatment.surgery.submitter_donor_id"
+    },
+    {
+      "displayName": "surgery: Submitter Specimen ID",
+      "fieldName": "treatment.surgery.submitter_specimen_id"
+    },
+    {
+      "displayName": "surgery: Submitter Treatment ID",
+      "fieldName": "treatment.surgery.submitter_treatment_id"
+    },
+    {
+      "displayName": "surgery: Surgery Type ",
+      "fieldName": "treatment.surgery.surgery_type"
+    },
+    {
+      "displayName": "surgery: Surgery Site",
+      "fieldName": "treatment.surgery.surgery_site"
+    },
+    {
+      "displayName": "surgery: Surgery Location",
+      "fieldName": "treatment.surgery.surgery_location"
+    },
+    {
+      "displayName": "surgery: Tumour Length",
+      "fieldName": "treatment.surgery.tumour_length"
+    },
+    {
+      "displayName": "surgery: Tumour Width",
+      "fieldName": "treatment.surgery.tumour_width"
+    },
+    {
+      "displayName": "surgery: Greatest Dimension Tumour",
+      "fieldName": "treatment.surgery.greatest_dimension_tumour"
+    },
+    {
+      "displayName": "surgery: Tumour Focality",
+      "fieldName": "treatment.surgery.tumour_focality"
+    },
+    {
+      "displayName": "surgery: Residual Tumour Classification",
+      "fieldName": "treatment.surgery.residual_tumour_classification"
+    },
+    {
+      "displayName": "surgery: Margin Types Involved",
+      "fieldName": "treatment.surgery.margin_types_involved"
+    },
+    {
+      "displayName": "surgery: Margin Types Not Involved",
+      "fieldName": "treatment.surgery.margin_types_not_involved"
+    },
+    {
+      "displayName": "surgery: Margin Types Not Assessed",
+      "fieldName": "treatment.surgery.margin_types_not_assessed"
+    },
+    {
+      "displayName": "surgery: Lymphovascular Invasion (LVI)",
+      "fieldName": "treatment.surgery.lymphovascular_invasion"
+    },
+    {
+      "displayName": "surgery: Perineural Invasion",
+      "fieldName": "treatment.surgery.perineural_invasion"
+    },
+    {
+      "displayName": "surgery: Extrathyroidal Extension",
+      "fieldName": "treatment.surgery.extrathyroidal_extension"
+    },
+    {
+      "displayName": "follow_up: Program ID",
+      "fieldName": "follow_up.program_id"
+    },
+    {
+      "displayName": "follow_up: Submitter Donor ID",
+      "fieldName": "follow_up.submitter_donor_id"
+    },
+    {
+      "displayName": "follow_up: Submitter Follow-Up ID",
+      "fieldName": "follow_up.submitter_follow_up_id"
+    },
+    {
+      "displayName": "follow_up: Interval Of Follow-Up",
+      "fieldName": "follow_up.interval_of_followup"
+    },
+    {
+      "displayName": "follow_up: Disease Status at Follow-Up",
+      "fieldName": "follow_up.disease_status_at_followup"
+    },
+    {
+      "displayName": "follow_up: Submitter Primary Diagnosis ID",
+      "fieldName": "follow_up.submitter_primary_diagnosis_id"
+    },
+    {
+      "displayName": "follow_up: Submitter Treatment ID",
+      "fieldName": "follow_up.submitter_treatment_id"
+    },
+    {
+      "displayName": "follow_up: Weight at Follow-Up",
+      "fieldName": "follow_up.weight_at_followup"
+    },
+    {
+      "displayName": "follow_up: Relapse Type",
+      "fieldName": "follow_up.relapse_type"
+    },
+    {
+      "displayName": "follow_up: Relapse Interval",
+      "fieldName": "follow_up.relapse_interval"
+    },
+    {
+      "displayName": "follow_up: Method Of Progression Status",
+      "fieldName": "follow_up.method_of_progression_status"
+    },
+    {
+      "displayName": "follow_up: Anatomic Site Progression or Recurrences",
+      "fieldName": "follow_up.anatomic_site_progression_or_recurrence"
+    },
+    {
+      "displayName": "follow_up: Recurrance Tumour Staging System",
+      "fieldName": "follow_up.recurrence_tumour_staging_system"
+    },
+    {
+      "displayName": "follow_up: Recurrence T Category",
+      "fieldName": "follow_up.recurrence_t_category"
+    },
+    {
+      "displayName": "follow_up: Recurrence N Category",
+      "fieldName": "follow_up.recurrence_n_category"
+    },
+    {
+      "displayName": "follow_up: Recurrence M Category",
+      "fieldName": "follow_up.recurrence_m_category"
+    },
+    {
+      "displayName": "follow_up: Recurrence Stage Group",
+      "fieldName": "follow_up.recurrence_stage_group"
+    },
+    {
+      "displayName": "follow_up: Post-therapy Tumour Staging System",
+      "fieldName": "follow_up.posttherapy_tumour_staging_system"
+    },
+    {
+      "displayName": "follow_up: Post-therapy T Category",
+      "fieldName": "follow_up.posttherapy_t_category"
+    },
+    {
+      "displayName": "follow_up: Post-therapy N Category",
+      "fieldName": "follow_up.posttherapy_n_category"
+    },
+    {
+      "displayName": "follow_up: Post-therapy M Category",
+      "fieldName": "follow_up.posttherapy_m_category"
+    },
+    {
+      "displayName": "follow_up: Post-therapy Stage Group",
+      "fieldName": "follow_up.posttherapy_stage_group"
+    },
+    {
+      "displayName": "biomarker: Program ID",
+      "fieldName": "biomarker.program_id"
+    },
+    {
+      "displayName": "biomarker: Submitter Donor ID",
+      "fieldName": "biomarker.submitter_donor_id"
+    },
+    {
+      "displayName": "biomarker: Submitter Specimen ID",
+      "fieldName": "biomarker.submitter_specimen_id"
+    },
+    {
+      "displayName": "biomarker: Submitter Primary Diagnosis ID",
+      "fieldName": "biomarker.submitter_primary_diagnosis_id"
+    },
+    {
+      "displayName": "biomarker: Submitter Treatment ID",
+      "fieldName": "biomarker.submitter_treatment_id"
+    },
+    {
+      "displayName": "biomarker: Submitter Follow-Up ID",
+      "fieldName": "biomarker.submitter_follow_up_id"
+    },
+    {
+      "displayName": "biomarker: Interval Of Test",
+      "fieldName": "biomarker.test_interval"
+    },
+    {
+      "displayName": "biomarker: CA19-9 Level",
+      "fieldName": "biomarker.ca19-9_level"
+    },
+    {
+      "displayName": "biomarker: C-reactive protein (CRP) Level",
+      "fieldName": "biomarker.crp_levels"
+    },
+    {
+      "displayName": "biomarker: Lactate Dehydrogenase (LDH) Level",
+      "fieldName": "biomarker.ldh_level"
+    },
+    {
+      "displayName": "biomarker: Absolute Neutrophil Count (ANC)",
+      "fieldName": "biomarker.anc"
+    },
+    {
+      "displayName": "biomarker: Absolute Lymphocyte Count (ALC)",
+      "fieldName": "biomarker.alc"
+    },
+    {
+      "displayName": "biomarker: BRCA Carrier",
+      "fieldName": "biomarker.brca_carrier"
+    },
+    {
+      "displayName": "biomarker: Estrogen Receptor Status",
+      "fieldName": "biomarker.er_status"
+    },
+    {
+      "displayName": "biomarker: Estrogen Receptor Allred Score",
+      "fieldName": "biomarker.er_allred_score"
+    },
+    {
+      "displayName": "biomarker: Estrogen Receptor Percent Positive",
+      "fieldName": "biomarker.er_percent_positive"
+    },
+    {
+      "displayName": "biomarker: HER2 IHC Status",
+      "fieldName": "biomarker.her2_ihc_status"
+    },
+    {
+      "displayName": "biomarker: HER2 ISH Status",
+      "fieldName": "biomarker.her2_ish_status"
+    },
+    {
+      "displayName": "biomarker: Progesterone Receptor Status",
+      "fieldName": "biomarker.pr_status"
+    },
+    {
+      "displayName": "biomarker: Progesterone Receptor Allred Score",
+      "fieldName": "biomarker.pr_allred_score"
+    },
+    {
+      "displayName": "biomarker: Progesterone Receptor Percent Positive",
+      "fieldName": "biomarker.pr_percent_positive"
+    },
+    {
+      "displayName": "biomarker: PD-L1 Status",
+      "fieldName": "biomarker.pd-l1_status"
+    },
+    {
+      "displayName": "biomarker: ALK IHC Status",
+      "fieldName": "biomarker.alk_ihc_status"
+    },
+    {
+      "displayName": "biomarker: ALK IHC Intensity",
+      "fieldName": "biomarker.alk_ihc_intensity"
+    },
+    {
+      "displayName": "biomarker: ALK FISH Status",
+      "fieldName": "biomarker.alk_fish_status"
+    },
+    {
+      "displayName": "biomarker: ROS1 IHC Status",
+      "fieldName": "biomarker.ros1_ihc_status"
+    },
+    {
+      "displayName": "biomarker: Pan-TRK IHC Status",
+      "fieldName": "biomarker.pan-trk_ihc_status"
+    },
+    {
+      "displayName": "biomarker: RET1 FISH Status",
+      "fieldName": "biomarker.ret_fish_status"
+    },
+    {
+      "displayName": "biomarker: HPV IHC Status",
+      "fieldName": "biomarker.hpv_ihc_status"
+    },
+    {
+      "displayName": "biomarker: HPV DNA Status",
+      "fieldName": "biomarker.hpv_dna_status"
+    },
+    {
+      "displayName": "comorbidity: Program ID",
+      "fieldName": "comorbidity.program_id"
+    },
+    {
+      "displayName": "comorbidity: Submitter Donor ID",
+      "fieldName": "comorbidity.submitter_donor_id"
+    },
+    {
+      "displayName": "comorbidity: Prior Malignancy",
+      "fieldName": "comorbidity.prior_malignancy"
+    },
+    {
+      "displayName": "comorbidity: Laterality at Prior Malignancy",
+      "fieldName": "comorbidity.laterality_of_prior_malignancy"
+    },
+    {
+      "displayName": "comorbidity: Age at Comorbidity Diagnosis",
+      "fieldName": "comorbidity.age_at_comorbidity_diagnosis"
+    },
+    {
+      "displayName": "comorbidity: Comorbidity Type Code",
+      "fieldName": "comorbidity.comorbidity_type_code"
+    },
+    {
+      "displayName": "comorbidity: Comorbidity Treatment",
+      "fieldName": "comorbidity.comorbidity_treatment_status"
+    },
+    {
+      "displayName": "comorbidity: Comorbidity Treatment Type",
+      "fieldName": "comorbidity.comorbidity_treatment"
+    },
+    {
+      "displayName": "exposure: Program ID",
+      "fieldName": "exposure.program_id"
+    },
+    {
+      "displayName": "exposure: Submitter Donor ID",
+      "fieldName": "exposure.submitter_donor_id"
+    },
+    {
+      "displayName": "exposure: Tobacco Smoking Status",
+      "fieldName": "exposure.tobacco_smoking_status"
+    },
+    {
+      "displayName": "exposure: Tobacco Type",
+      "fieldName": "exposure.tobacco_type"
+    },
+    {
+      "displayName": "exposure: Pack Years Smoked",
+      "fieldName": "exposure.pack_years_smoked"
+    },
+    {
+      "displayName": "exposure: Alcohol History",
+      "fieldName": "exposure.alcohol_history"
+    },
+    {
+      "displayName": "exposure: Alcohol Consumption Category",
+      "fieldName": "exposure.alcohol_consumption_category"
+    },
+    {
+      "displayName": "exposure: Alcohol Type",
+      "fieldName": "exposure.alcohol_type"
+    },
+    {
+      "displayName": "exposure: Opiate Use",
+      "fieldName": "exposure.opiate_use"
+    },
+    {
+      "displayName": "exposure: Hot Drink Consumption",
+      "fieldName": "exposure.hot_drinks_consumption"
+    },
+    {
+      "displayName": "exposure: Red Meat Consumption Frequency",
+      "fieldName": "exposure.red_meat_frequency"
+    },
+    {
+      "displayName": "exposure: Processed Meat Consumption Frequency",
+      "fieldName": "exposure.processed_meat_frequency"
+    },
+    {
+      "displayName": "exposure: Soft Drink Consumption Frequency",
+      "fieldName": "exposure.soft_drinks_frequency"
+    },
+    {
+      "displayName": "exposure: Exercise Frequency",
+      "fieldName": "exposure.exercise_frequency"
+    },
+    {
+      "displayName": "exposure: Exercise Intensity",
+      "fieldName": "exposure.exercise_intensity"
+    },
+    {
+      "displayName": "family_history: Program ID",
+      "fieldName": "family_history.program_id"
+    },
+    {
+      "displayName": "family_history: Submitter Donor ID",
+      "fieldName": "family_history.submitter_donor_id"
+    },
+    {
+      "displayName": "family_history: Family Relative ID",
+      "fieldName": "family_history.family_relative_id"
+    },
+    {
+      "displayName": "family_history: Relative with Cancer History",
+      "fieldName": "family_history.relative_with_cancer_history"
+    },
+    {
+      "displayName": "family_history: Relationship Type",
+      "fieldName": "family_history.relationship_type"
+    },
+    {
+      "displayName": "family_history: Gender of Relative",
+      "fieldName": "family_history.gender_of_relative"
+    },
+    {
+      "displayName": "family_history: Age Of Relative At Diagnosis",
+      "fieldName": "family_history.age_of_relative_at_diagnosis"
+    },
+    {
+      "displayName": "family_history: Cancer Type Code (ICD-10) of Relative",
+      "fieldName": "family_history.cancer_type_code_of_relative"
+    },
+    {
+      "displayName": "family_history: Vital Status of Relative",
+      "fieldName": "family_history.relative_vital_status"
+    },
+    {
+      "displayName": "family_history: Cause of Death of Relative",
+      "fieldName": "family_history.cause_of_death_of_relative"
+    },
+    {
+      "displayName": "family_history: Survival Time Of Relative",
+      "fieldName": "family_history.relative_survival_time"
+    }
+  ]
+}

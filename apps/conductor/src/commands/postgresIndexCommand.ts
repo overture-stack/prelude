@@ -23,7 +23,7 @@ import {
 import { sendBulkWriteRequest } from "../services/elasticsearch/bulk";
 import { Pool } from "pg";
 import Cursor from "pg-cursor";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { postgresRowToEsDocument } from "../services/csvProcessor/metadata";
 import { createProgressBar } from "../services/csvProcessor/progressBar";
 import { processCSVFileForPostgres } from "../services/postgresql/postgresProcessor";

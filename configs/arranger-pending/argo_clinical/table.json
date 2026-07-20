@@ -1,0 +1,1967 @@
+{
+  "table": {
+    "rowIdFieldName": "submitter_donor_id",
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "program_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.program_id",
+        "query": "program_id"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "submitter_donor_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.submitter_donor_id",
+        "query": "submitter_donor_id"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "vital_status",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.vital_status",
+        "query": "vital_status"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "cause_of_death",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.cause_of_death",
+        "query": "cause_of_death"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "survival_time",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.survival_time",
+        "query": "survival_time"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_site",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.primary_site",
+        "query": "primary_site"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "height",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.height",
+        "query": "height"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "weight",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.weight",
+        "query": "weight"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "bmi",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.bmi",
+        "query": "bmi"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "genetic_disorders",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.genetic_disorders",
+        "query": "genetic_disorders"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "menopause_status",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.menopause_status",
+        "query": "menopause_status"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "age_at_menarche",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.age_at_menarche",
+        "query": "age_at_menarche"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "number_of_pregnancies",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.number_of_pregnancies",
+        "query": "number_of_pregnancies"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "number_of_children",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.number_of_children",
+        "query": "number_of_children"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "hrt_type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.hrt_type",
+        "query": "hrt_type"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "hrt_duration",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.hrt_duration",
+        "query": "hrt_duration"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "contraception_type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.contraception_type",
+        "query": "contraception_type"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "contraception_duration",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.contraception_duration",
+        "query": "contraception_duration"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "lost_to_followup_after_clinical_event_id",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.lost_to_followup_after_clinical_event_id",
+        "query": "lost_to_followup_after_clinical_event_id"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "country_of_residence_at_enrollment",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.country_of_residence_at_enrollment",
+        "query": "country_of_residence_at_enrollment"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.program_id",
+        "query": "sample_registration { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.submitter_donor_id",
+        "query": "sample_registration { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.gender",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.gender",
+        "query": "sample_registration { hits { edges { node { gender } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.submitter_specimen_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.submitter_specimen_id",
+        "query": "sample_registration { hits { edges { node { submitter_specimen_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.specimen_tissue_source",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.specimen_tissue_source",
+        "query": "sample_registration { hits { edges { node { specimen_tissue_source } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.tumour_normal_designation",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.tumour_normal_designation",
+        "query": "sample_registration { hits { edges { node { tumour_normal_designation } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.specimen_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.specimen_type",
+        "query": "sample_registration { hits { edges { node { specimen_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.submitter_sample_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.submitter_sample_id",
+        "query": "sample_registration { hits { edges { node { submitter_sample_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "sample_registration.sample_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.sample_registration.hits.edges[*].node.sample_type",
+        "query": "sample_registration { hits { edges { node { sample_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.program_id",
+        "query": "specimen { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.submitter_donor_id",
+        "query": "specimen { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.submitter_specimen_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.submitter_specimen_id",
+        "query": "specimen { hits { edges { node { submitter_specimen_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.submitter_primary_diagnosis_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.submitter_primary_diagnosis_id",
+        "query": "specimen { hits { edges { node { submitter_primary_diagnosis_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.pathological_tumour_staging_system",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.pathological_tumour_staging_system",
+        "query": "specimen { hits { edges { node { pathological_tumour_staging_system } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.pathological_t_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.pathological_t_category",
+        "query": "specimen { hits { edges { node { pathological_t_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.pathological_n_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.pathological_n_category",
+        "query": "specimen { hits { edges { node { pathological_n_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.pathological_m_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.pathological_m_category",
+        "query": "specimen { hits { edges { node { pathological_m_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.pathological_stage_group",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.pathological_stage_group",
+        "query": "specimen { hits { edges { node { pathological_stage_group } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.specimen_acquisition_interval",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.specimen_acquisition_interval",
+        "query": "specimen { hits { edges { node { specimen_acquisition_interval } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.tumour_histological_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.tumour_histological_type",
+        "query": "specimen { hits { edges { node { tumour_histological_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.specimen_anatomic_location",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.specimen_anatomic_location",
+        "query": "specimen { hits { edges { node { specimen_anatomic_location } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.specimen_laterality",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.specimen_laterality",
+        "query": "specimen { hits { edges { node { specimen_laterality } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.specimen_processing",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.specimen_processing",
+        "query": "specimen { hits { edges { node { specimen_processing } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.specimen_storage",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.specimen_storage",
+        "query": "specimen { hits { edges { node { specimen_storage } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.reference_pathology_confirmed",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.reference_pathology_confirmed",
+        "query": "specimen { hits { edges { node { reference_pathology_confirmed } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.tumour_grading_system",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.tumour_grading_system",
+        "query": "specimen { hits { edges { node { tumour_grading_system } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.tumour_grade",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.tumour_grade",
+        "query": "specimen { hits { edges { node { tumour_grade } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.percent_tumour_cells",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.percent_tumour_cells",
+        "query": "specimen { hits { edges { node { percent_tumour_cells } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.percent_tumour_cells_measurement_method",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.percent_tumour_cells_measurement_method",
+        "query": "specimen { hits { edges { node { percent_tumour_cells_measurement_method } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.percent_proliferating_cells",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.percent_proliferating_cells",
+        "query": "specimen { hits { edges { node { percent_proliferating_cells } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.percent_inflammatory_tissue",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.percent_inflammatory_tissue",
+        "query": "specimen { hits { edges { node { percent_inflammatory_tissue } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.percent_stromal_cells",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.percent_stromal_cells",
+        "query": "specimen { hits { edges { node { percent_stromal_cells } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "specimen.percent_necrosis",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.specimen.hits.edges[*].node.percent_necrosis",
+        "query": "specimen { hits { edges { node { percent_necrosis } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.program_id",
+        "query": "primary_diagnosis { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.submitter_donor_id",
+        "query": "primary_diagnosis { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.submitter_primary_diagnosis_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.submitter_primary_diagnosis_id",
+        "query": "primary_diagnosis { hits { edges { node { submitter_primary_diagnosis_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.age_at_diagnosis",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.age_at_diagnosis",
+        "query": "primary_diagnosis { hits { edges { node { age_at_diagnosis } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.cancer_type_code",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.cancer_type_code",
+        "query": "primary_diagnosis { hits { edges { node { cancer_type_code } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.cancer_type_additional_information",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.cancer_type_additional_information",
+        "query": "primary_diagnosis { hits { edges { node { cancer_type_additional_information } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.basis_of_diagnosis",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.basis_of_diagnosis",
+        "query": "primary_diagnosis { hits { edges { node { basis_of_diagnosis } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.laterality",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.laterality",
+        "query": "primary_diagnosis { hits { edges { node { laterality } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.lymph_nodes_examined_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.lymph_nodes_examined_status",
+        "query": "primary_diagnosis { hits { edges { node { lymph_nodes_examined_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.lymph_nodes_examined_method",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.lymph_nodes_examined_method",
+        "query": "primary_diagnosis { hits { edges { node { lymph_nodes_examined_method } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.number_lymph_nodes_examined",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.number_lymph_nodes_examined",
+        "query": "primary_diagnosis { hits { edges { node { number_lymph_nodes_examined } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.number_lymph_nodes_positive",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.number_lymph_nodes_positive",
+        "query": "primary_diagnosis { hits { edges { node { number_lymph_nodes_positive } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.clinical_tumour_staging_system",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.clinical_tumour_staging_system",
+        "query": "primary_diagnosis { hits { edges { node { clinical_tumour_staging_system } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.clinical_t_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.clinical_t_category",
+        "query": "primary_diagnosis { hits { edges { node { clinical_t_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.clinical_n_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.clinical_n_category",
+        "query": "primary_diagnosis { hits { edges { node { clinical_n_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.clinical_m_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.clinical_m_category",
+        "query": "primary_diagnosis { hits { edges { node { clinical_m_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.clinical_stage_group",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.clinical_stage_group",
+        "query": "primary_diagnosis { hits { edges { node { clinical_stage_group } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.presenting_symptoms",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.presenting_symptoms",
+        "query": "primary_diagnosis { hits { edges { node { presenting_symptoms } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "primary_diagnosis.performance_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.primary_diagnosis.hits.edges[*].node.performance_status",
+        "query": "primary_diagnosis { hits { edges { node { performance_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.program_id",
+        "query": "treatment { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.submitter_donor_id",
+        "query": "treatment { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.submitter_treatment_id",
+        "query": "treatment { hits { edges { node { submitter_treatment_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.submitter_primary_diagnosis_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.submitter_primary_diagnosis_id",
+        "query": "treatment { hits { edges { node { submitter_primary_diagnosis_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.treatment_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.treatment_type",
+        "query": "treatment { hits { edges { node { treatment_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.is_primary_treatment",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.is_primary_treatment",
+        "query": "treatment { hits { edges { node { is_primary_treatment } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.line_of_treatment",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.line_of_treatment",
+        "query": "treatment { hits { edges { node { line_of_treatment } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.treatment_start_interval",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.treatment_start_interval",
+        "query": "treatment { hits { edges { node { treatment_start_interval } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.treatment_duration",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.treatment_duration",
+        "query": "treatment { hits { edges { node { treatment_duration } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.days_per_cycle",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.days_per_cycle",
+        "query": "treatment { hits { edges { node { days_per_cycle } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.number_of_cycles",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.number_of_cycles",
+        "query": "treatment { hits { edges { node { number_of_cycles } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.treatment_intent",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.treatment_intent",
+        "query": "treatment { hits { edges { node { treatment_intent } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.treatment_setting",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.treatment_setting",
+        "query": "treatment { hits { edges { node { treatment_setting } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.response_to_treatment_criteria_method",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.response_to_treatment_criteria_method",
+        "query": "treatment { hits { edges { node { response_to_treatment_criteria_method } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.response_to_treatment",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.response_to_treatment",
+        "query": "treatment { hits { edges { node { response_to_treatment } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.outcome_of_treatment",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.outcome_of_treatment",
+        "query": "treatment { hits { edges { node { outcome_of_treatment } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.toxicity_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.toxicity_type",
+        "query": "treatment { hits { edges { node { toxicity_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hematological_toxicity",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hematological_toxicity",
+        "query": "treatment { hits { edges { node { hematological_toxicity } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.non-hematological_toxicity",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.non-hematological_toxicity",
+        "query": "treatment { hits { edges { node { non-hematological_toxicity } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.adverse_events",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.adverse_events",
+        "query": "treatment { hits { edges { node { adverse_events } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.clinical_trials_database",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.clinical_trials_database",
+        "query": "treatment { hits { edges { node { clinical_trials_database } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.clinical_trial_number",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.clinical_trial_number",
+        "query": "treatment { hits { edges { node { clinical_trial_number } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.program_id",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { program_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.submitter_donor_id",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { submitter_donor_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.submitter_treatment_id",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { submitter_treatment_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.drug_rxnormcui",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.drug_rxnormcui",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { drug_rxnormcui } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.drug_name",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.drug_name",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { drug_name } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.drug_database",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.drug_database",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { drug_database } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.drug_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.drug_id",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { drug_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.drug_term",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.drug_term",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { drug_term } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.chemotherapy_drug_dose_units",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.chemotherapy_drug_dose_units",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { chemotherapy_drug_dose_units } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.prescribed_cumulative_drug_dose",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.prescribed_cumulative_drug_dose",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { prescribed_cumulative_drug_dose } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.actual_cumulative_drug_dose",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.actual_cumulative_drug_dose",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { actual_cumulative_drug_dose } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.dose_intensity_reduction",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.dose_intensity_reduction",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { dose_intensity_reduction } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.dose_intensity_reduction_event",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.dose_intensity_reduction_event",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { dose_intensity_reduction_event } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.chemotherapy.dose_intensity_reduction_amount",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.chemotherapy.hits.edges[*].node.dose_intensity_reduction_amount",
+        "query": "treatment { hits { edges { node { chemotherapy { hits { edges { node { dose_intensity_reduction_amount } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.program_id",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { program_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.submitter_donor_id",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { submitter_donor_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.submitter_treatment_id",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { submitter_treatment_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.drug_rxnormcui",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.drug_rxnormcui",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { drug_rxnormcui } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.drug_name",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.drug_name",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { drug_name } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.drug_database",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.drug_database",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { drug_database } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.drug_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.drug_id",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { drug_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.drug_term",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.drug_term",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { drug_term } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.hormone_drug_dose_units",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.hormone_drug_dose_units",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { hormone_drug_dose_units } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.prescribed_cumulative_drug_dose",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.prescribed_cumulative_drug_dose",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { prescribed_cumulative_drug_dose } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.hormone_therapy.actual_cumulative_drug_dose",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.hormone_therapy.hits.edges[*].node.actual_cumulative_drug_dose",
+        "query": "treatment { hits { edges { node { hormone_therapy { hits { edges { node { actual_cumulative_drug_dose } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.program_id",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { program_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.submitter_donor_id",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { submitter_donor_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.submitter_treatment_id",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { submitter_treatment_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.radiation_therapy_modality",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.radiation_therapy_modality",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { radiation_therapy_modality } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.radiation_therapy_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.radiation_therapy_type",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { radiation_therapy_type } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.radiation_therapy_fractions",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.radiation_therapy_fractions",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { radiation_therapy_fractions } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.radiation_therapy_dosage",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.radiation_therapy_dosage",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { radiation_therapy_dosage } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.anatomical_site_irradiated",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.anatomical_site_irradiated",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { anatomical_site_irradiated } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.radiation_boost",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.radiation_boost",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { radiation_boost } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.radiation.reference_radiation_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.radiation.hits.edges[*].node.reference_radiation_treatment_id",
+        "query": "treatment { hits { edges { node { radiation { hits { edges { node { reference_radiation_treatment_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.program_id",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { program_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.submitter_donor_id",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { submitter_donor_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.submitter_treatment_id",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { submitter_treatment_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.immunotherapy_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.immunotherapy_type",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { immunotherapy_type } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.drug_rxnormcui",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.drug_rxnormcui",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { drug_rxnormcui } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.drug_name",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.drug_name",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { drug_name } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.drug_database",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.drug_database",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { drug_database } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.drug_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.drug_id",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { drug_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.drug_term",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.drug_term",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { drug_term } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.immunotherapy_drug_dose_units",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.immunotherapy_drug_dose_units",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { immunotherapy_drug_dose_units } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.prescribed_cumulative_drug_dose",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.prescribed_cumulative_drug_dose",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { prescribed_cumulative_drug_dose } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.immunotherapy.actual_cumulative_drug_dose",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.immunotherapy.hits.edges[*].node.actual_cumulative_drug_dose",
+        "query": "treatment { hits { edges { node { immunotherapy { hits { edges { node { actual_cumulative_drug_dose } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.program_id",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { program_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.submitter_donor_id",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { submitter_donor_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.submitter_specimen_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.submitter_specimen_id",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { submitter_specimen_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.submitter_treatment_id",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { submitter_treatment_id } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.surgery_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.surgery_type",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { surgery_type } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.surgery_site",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.surgery_site",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { surgery_site } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.surgery_location",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.surgery_location",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { surgery_location } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.tumour_length",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.tumour_length",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { tumour_length } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.tumour_width",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.tumour_width",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { tumour_width } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.greatest_dimension_tumour",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.greatest_dimension_tumour",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { greatest_dimension_tumour } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.tumour_focality",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.tumour_focality",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { tumour_focality } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.residual_tumour_classification",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.residual_tumour_classification",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { residual_tumour_classification } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.margin_types_involved",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.margin_types_involved",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { margin_types_involved } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.margin_types_not_involved",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.margin_types_not_involved",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { margin_types_not_involved } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.margin_types_not_assessed",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.margin_types_not_assessed",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { margin_types_not_assessed } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.lymphovascular_invasion",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.lymphovascular_invasion",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { lymphovascular_invasion } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.perineural_invasion",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.perineural_invasion",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { perineural_invasion } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "treatment.surgery.extrathyroidal_extension",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.treatment.hits.edges[*].node.surgery.hits.edges[*].node.extrathyroidal_extension",
+        "query": "treatment { hits { edges { node { surgery { hits { edges { node { extrathyroidal_extension } } } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.program_id",
+        "query": "follow_up { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.submitter_donor_id",
+        "query": "follow_up { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.submitter_follow_up_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.submitter_follow_up_id",
+        "query": "follow_up { hits { edges { node { submitter_follow_up_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.interval_of_followup",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.interval_of_followup",
+        "query": "follow_up { hits { edges { node { interval_of_followup } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.disease_status_at_followup",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.disease_status_at_followup",
+        "query": "follow_up { hits { edges { node { disease_status_at_followup } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.submitter_primary_diagnosis_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.submitter_primary_diagnosis_id",
+        "query": "follow_up { hits { edges { node { submitter_primary_diagnosis_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.submitter_treatment_id",
+        "query": "follow_up { hits { edges { node { submitter_treatment_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.weight_at_followup",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.weight_at_followup",
+        "query": "follow_up { hits { edges { node { weight_at_followup } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.relapse_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.relapse_type",
+        "query": "follow_up { hits { edges { node { relapse_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.relapse_interval",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.relapse_interval",
+        "query": "follow_up { hits { edges { node { relapse_interval } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.method_of_progression_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.method_of_progression_status",
+        "query": "follow_up { hits { edges { node { method_of_progression_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.anatomic_site_progression_or_recurrence",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.anatomic_site_progression_or_recurrence",
+        "query": "follow_up { hits { edges { node { anatomic_site_progression_or_recurrence } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.recurrence_tumour_staging_system",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.recurrence_tumour_staging_system",
+        "query": "follow_up { hits { edges { node { recurrence_tumour_staging_system } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.recurrence_t_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.recurrence_t_category",
+        "query": "follow_up { hits { edges { node { recurrence_t_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.recurrence_n_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.recurrence_n_category",
+        "query": "follow_up { hits { edges { node { recurrence_n_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.recurrence_m_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.recurrence_m_category",
+        "query": "follow_up { hits { edges { node { recurrence_m_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.recurrence_stage_group",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.recurrence_stage_group",
+        "query": "follow_up { hits { edges { node { recurrence_stage_group } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.posttherapy_tumour_staging_system",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.posttherapy_tumour_staging_system",
+        "query": "follow_up { hits { edges { node { posttherapy_tumour_staging_system } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.posttherapy_t_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.posttherapy_t_category",
+        "query": "follow_up { hits { edges { node { posttherapy_t_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.posttherapy_n_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.posttherapy_n_category",
+        "query": "follow_up { hits { edges { node { posttherapy_n_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.posttherapy_m_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.posttherapy_m_category",
+        "query": "follow_up { hits { edges { node { posttherapy_m_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "follow_up.posttherapy_stage_group",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.follow_up.hits.edges[*].node.posttherapy_stage_group",
+        "query": "follow_up { hits { edges { node { posttherapy_stage_group } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.program_id",
+        "query": "biomarker { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.submitter_donor_id",
+        "query": "biomarker { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.submitter_specimen_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.submitter_specimen_id",
+        "query": "biomarker { hits { edges { node { submitter_specimen_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.submitter_primary_diagnosis_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.submitter_primary_diagnosis_id",
+        "query": "biomarker { hits { edges { node { submitter_primary_diagnosis_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.submitter_treatment_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.submitter_treatment_id",
+        "query": "biomarker { hits { edges { node { submitter_treatment_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.submitter_follow_up_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.submitter_follow_up_id",
+        "query": "biomarker { hits { edges { node { submitter_follow_up_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.test_interval",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.test_interval",
+        "query": "biomarker { hits { edges { node { test_interval } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.ca19-9_level",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.ca19-9_level",
+        "query": "biomarker { hits { edges { node { ca19-9_level } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.crp_levels",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.crp_levels",
+        "query": "biomarker { hits { edges { node { crp_levels } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.ldh_level",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.ldh_level",
+        "query": "biomarker { hits { edges { node { ldh_level } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.anc",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.anc",
+        "query": "biomarker { hits { edges { node { anc } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.alc",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.alc",
+        "query": "biomarker { hits { edges { node { alc } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.brca_carrier",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.brca_carrier",
+        "query": "biomarker { hits { edges { node { brca_carrier } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.er_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.er_status",
+        "query": "biomarker { hits { edges { node { er_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.er_allred_score",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.er_allred_score",
+        "query": "biomarker { hits { edges { node { er_allred_score } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.er_percent_positive",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.er_percent_positive",
+        "query": "biomarker { hits { edges { node { er_percent_positive } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.her2_ihc_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.her2_ihc_status",
+        "query": "biomarker { hits { edges { node { her2_ihc_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.her2_ish_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.her2_ish_status",
+        "query": "biomarker { hits { edges { node { her2_ish_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.pr_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.pr_status",
+        "query": "biomarker { hits { edges { node { pr_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.pr_allred_score",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.pr_allred_score",
+        "query": "biomarker { hits { edges { node { pr_allred_score } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.pr_percent_positive",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.pr_percent_positive",
+        "query": "biomarker { hits { edges { node { pr_percent_positive } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.pd-l1_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.pd-l1_status",
+        "query": "biomarker { hits { edges { node { pd-l1_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.alk_ihc_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.alk_ihc_status",
+        "query": "biomarker { hits { edges { node { alk_ihc_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.alk_ihc_intensity",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.alk_ihc_intensity",
+        "query": "biomarker { hits { edges { node { alk_ihc_intensity } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.alk_fish_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.alk_fish_status",
+        "query": "biomarker { hits { edges { node { alk_fish_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.ros1_ihc_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.ros1_ihc_status",
+        "query": "biomarker { hits { edges { node { ros1_ihc_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.pan-trk_ihc_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.pan-trk_ihc_status",
+        "query": "biomarker { hits { edges { node { pan-trk_ihc_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.ret_fish_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.ret_fish_status",
+        "query": "biomarker { hits { edges { node { ret_fish_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.hpv_ihc_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.hpv_ihc_status",
+        "query": "biomarker { hits { edges { node { hpv_ihc_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "biomarker.hpv_dna_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.biomarker.hits.edges[*].node.hpv_dna_status",
+        "query": "biomarker { hits { edges { node { hpv_dna_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.program_id",
+        "query": "comorbidity { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.submitter_donor_id",
+        "query": "comorbidity { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.prior_malignancy",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.prior_malignancy",
+        "query": "comorbidity { hits { edges { node { prior_malignancy } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.laterality_of_prior_malignancy",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.laterality_of_prior_malignancy",
+        "query": "comorbidity { hits { edges { node { laterality_of_prior_malignancy } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.age_at_comorbidity_diagnosis",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.age_at_comorbidity_diagnosis",
+        "query": "comorbidity { hits { edges { node { age_at_comorbidity_diagnosis } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.comorbidity_type_code",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.comorbidity_type_code",
+        "query": "comorbidity { hits { edges { node { comorbidity_type_code } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.comorbidity_treatment_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.comorbidity_treatment_status",
+        "query": "comorbidity { hits { edges { node { comorbidity_treatment_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "comorbidity.comorbidity_treatment",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.comorbidity.hits.edges[*].node.comorbidity_treatment",
+        "query": "comorbidity { hits { edges { node { comorbidity_treatment } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.program_id",
+        "query": "exposure { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.submitter_donor_id",
+        "query": "exposure { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.tobacco_smoking_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.tobacco_smoking_status",
+        "query": "exposure { hits { edges { node { tobacco_smoking_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.tobacco_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.tobacco_type",
+        "query": "exposure { hits { edges { node { tobacco_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.pack_years_smoked",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.pack_years_smoked",
+        "query": "exposure { hits { edges { node { pack_years_smoked } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.alcohol_history",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.alcohol_history",
+        "query": "exposure { hits { edges { node { alcohol_history } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.alcohol_consumption_category",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.alcohol_consumption_category",
+        "query": "exposure { hits { edges { node { alcohol_consumption_category } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.alcohol_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.alcohol_type",
+        "query": "exposure { hits { edges { node { alcohol_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.opiate_use",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.opiate_use",
+        "query": "exposure { hits { edges { node { opiate_use } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.hot_drinks_consumption",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.hot_drinks_consumption",
+        "query": "exposure { hits { edges { node { hot_drinks_consumption } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.red_meat_frequency",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.red_meat_frequency",
+        "query": "exposure { hits { edges { node { red_meat_frequency } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.processed_meat_frequency",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.processed_meat_frequency",
+        "query": "exposure { hits { edges { node { processed_meat_frequency } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.soft_drinks_frequency",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.soft_drinks_frequency",
+        "query": "exposure { hits { edges { node { soft_drinks_frequency } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.exercise_frequency",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.exercise_frequency",
+        "query": "exposure { hits { edges { node { exercise_frequency } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "exposure.exercise_intensity",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.exposure.hits.edges[*].node.exercise_intensity",
+        "query": "exposure { hits { edges { node { exercise_intensity } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.program_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.program_id",
+        "query": "family_history { hits { edges { node { program_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.submitter_donor_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.submitter_donor_id",
+        "query": "family_history { hits { edges { node { submitter_donor_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.family_relative_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.family_relative_id",
+        "query": "family_history { hits { edges { node { family_relative_id } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.relative_with_cancer_history",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.relative_with_cancer_history",
+        "query": "family_history { hits { edges { node { relative_with_cancer_history } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.relationship_type",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.relationship_type",
+        "query": "family_history { hits { edges { node { relationship_type } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.gender_of_relative",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.gender_of_relative",
+        "query": "family_history { hits { edges { node { gender_of_relative } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.age_of_relative_at_diagnosis",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.age_of_relative_at_diagnosis",
+        "query": "family_history { hits { edges { node { age_of_relative_at_diagnosis } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.cancer_type_code_of_relative",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.cancer_type_code_of_relative",
+        "query": "family_history { hits { edges { node { cancer_type_code_of_relative } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.relative_vital_status",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.relative_vital_status",
+        "query": "family_history { hits { edges { node { relative_vital_status } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.cause_of_death_of_relative",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.cause_of_death_of_relative",
+        "query": "family_history { hits { edges { node { cause_of_death_of_relative } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "family_history.relative_survival_time",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.family_history.hits.edges[*].node.relative_survival_time",
+        "query": "family_history { hits { edges { node { relative_survival_time } } } }"
+      }
+    ]
+  }
+}
