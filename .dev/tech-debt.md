@@ -12,6 +12,6 @@ context: [roadmap item or brief note — required when standalone: no]
 
 ---
 
-Root scoping doc is misspelled: `requirments.md` (should be `requirements.md`)
-fix: rename the file to `requirements.md` in a dedicated commit and update any links that reference it
+`.gitignore` still ignores `configs/nginxConfigs/`, a directory removed in the config reorg (commit `b51998e`)
+fix: delete the `configs/nginxConfigs/` line from `.gitignore`
 standalone: yes
