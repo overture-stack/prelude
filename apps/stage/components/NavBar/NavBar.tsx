@@ -21,6 +21,7 @@ import defaultTheme from '../theme';
 
 import labIcon from '@/public/images/navbar-logo.png';
 import DataTablesDropdown from './DataTablesDropdown';
+import DictionaryDropdown from './DictionaryDropdown';
 import DocumentationDropdown from './DocumentationDropdown';
 import Dropdown from './Dropdown';
 import FlyoutMenuItem from './FlyoutMenuItem';
@@ -152,24 +153,7 @@ const NavBar = (): ReactElement => {
 							margin: 0;
 						`}
 					>
-						<InternalLink path={INTERNAL_PATHS.DONOR_TABLE}>
-							<a
-								css={css`
-									width: 100%;
-									height: 100%;
-									display: flex;
-									align-items: center;
-									justify-content: center;
-									color: ${theme.colors.accent_dark};
-									font-size: 14px;
-									font-weight: bold;
-									text-decoration: none;
-									cursor: pointer;
-								`}
-							>
-								Clinical Data
-							</a>
-						</InternalLink>
+						<DictionaryDropdown />
 					</div>
 					<div
 						css={(theme) => css`

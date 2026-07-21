@@ -25,10 +25,11 @@ WORKDIR /usr/src
 COPY --chown=node:node apps/stage/package*.json ./
 RUN npm ci
 
-# Copy source and replace the docs symlink with the real docs directory
+# Copy source and replace the docs/dictionary symlinks with the real directories
 COPY --chown=node:node apps/stage ./
-RUN rm -f ./public/docs
+RUN rm -f ./public/docs ./public/dictionary
 COPY --chown=node:node docs ./public/docs
+COPY --chown=node:node configs/lectern ./public/dictionary
 
 # Build the Next.js app, then remove webpack build cache (~350 MB)
 # The cache is only useful for incremental rebuilds, not at runtime

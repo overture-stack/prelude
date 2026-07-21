@@ -17,5 +17,5 @@ apps/stage/.env.schema
 data
 setup
 
-# NOTE: docs/ is intentionally NOT excluded.
-# The Dockerfile copies docs/ into public/docs inside the image.
+# NOTE: docs/ and configs/lectern/ are intentionally NOT excluded.
+# The Dockerfile copies them into public/docs and public/dictionary inside the image.
