@@ -1,198 +1,85 @@
-# Overview
+# MCP Server Developer Guide
 
-This page covers the monorepo package structure, the relationship between Arranger's introspection endpoints and MCP resources, and how to extend the server with additional tools, resources, or prompts.
+The Arranger MCP Server is developed **upstream in the [Arranger repository](https://github.com/overture-stack/arranger)**, not in this repo. Prelude vendors it as a git submodule and runs the published image. This page orients you to where it lives and how to work on it; the canonical development documentation is in the Arranger repo itself.
 
-## Monorepo Package Structure
+> **Single source of truth.** The server's tool/resource internals, extension patterns, and SDK details are documented and maintained in the Arranger repo. This page deliberately does not duplicate them — a second copy would drift out of sync. For anything beyond orientation, follow the [canonical Arranger MCP docs](https://github.com/overture-stack/arranger/tree/main/apps/mcp-server).
 
-The prelude repository is a monorepo. The MCP server lives inside the Arranger sub-repository:
+## Where it lives in this repo
+
+The Arranger monorepo is vendored under `apps/arranger/` (a submodule pinned to a specific commit). The MCP server is one app inside it:
 
 ```
 prelude/
 ├── apps/
-│   ├── arranger/              # Arranger monorepo (git subtree / submodule)
-│   │   ├── apps/
-│   │   │   ├── mcp-server/    # Arranger MCP Server (this package)
-│   │   │   └── search-server/ # Arranger search API (introspection endpoints source)
-│   │   ├── modules/
-│   │   │   ├── components/    # React search UI components
-│   │   │   ├── server/        # Core Arranger GraphQL server
-│   │   │   ├── sqon/          # SQON query library
-│   │   │   └── ...
-│   │   └── docker/
-│   ├── stage/                 # Portal frontend (Next.js)
-│   └── conductor/             # ETL CLI (CSV → PostgreSQL → Elasticsearch)
-├── configs/                   # Arranger + Elasticsearch configuration files
-├── data/                      # Sample datasets (Drug Discovery Portal)
-├── docs/                      # Documentation
+│   ├── arranger/                    # Arranger monorepo (git submodule)
+│   │   └── apps/
+│   │       ├── mcp-server/          # Arranger MCP Server
+│   │       └── search-server/       # Arranger search API (introspection source)
+│   ├── stage/                       # Portal frontend (Next.js)
+│   └── conductor/                   # ETL CLI (CSV → PostgreSQL → OpenSearch)
+├── configs/                         # Arranger + OpenSearch + Lectern configuration
+├── data/                            # Sample catalogues
+├── docs/                            # This documentation
 └── docker-compose.yml
 ```
 
-### The `mcp-server` package
+The MCP server package itself:
 
 ```
-apps/arranger/apps/mcp-server/
-├── src/
-│   ├── arranger/
-│   │   ├── client.ts     # HTTP client for Arranger introspection endpoints
-│   │   └── types.ts      # Re-exports introspection response types from search-server
-│   ├── mcp/
-│   │   ├── resources.ts  # MCP resource definitions backed by introspection
-│   │   ├── tools.ts      # MCP tool definitions backed by introspection
-│   │   └── types.ts      # Internal MCP-ish type aliases
-│   ├── config.ts         # Environment variable parsing (ARRANGER_BASE_URL, ARRANGER_REQUEST_TIMEOUT_MS)
-│   └── index.ts          # Composition entrypoint
-├── package.json
-└── tsconfig.json
+apps/arranger/apps/mcp-server/src/
+├── arranger/
+│   ├── client.ts            # HTTP client for Arranger introspection endpoints
+│   ├── queryBuilder.ts      # builds Arranger GraphQL queries from a SQON filter
+│   ├── queryResults.ts      # shapes execute-query results
+│   ├── queryValidation.ts   # validates a query before execution
+│   ├── types.ts             # introspection + SQON response types (zod schemas)
+│   └── validation.ts        # validates the connection to Arranger at startup
+├── http/app.ts              # Express app, Streamable HTTP transport
+├── mcp/
+│   ├── tools.ts             # registers list-catalogues, get-sqon-schema, get-catalogue-fields
+│   ├── executeQueryTool.ts  # registers execute-query (with a confirmation step)
+│   └── resources.ts         # registers the three introspection resources
+├── utils/                   # config parsing, logger, in-memory event store, errors
+├── index.ts                 # entrypoint
+└── server.ts                # creates the MCP server and wires deps
 ```
 
-The `search-server` package defines the canonical introspection response types (`IntrospectionResponse`, `SqonIntrospectionResponse`, `CatalogIntrospectionResponse`). The `mcp-server` imports these types directly rather than duplicating them.
+## Tools and resources, as deployed
 
-## Introspection Endpoints
+The server registers **four tools** and **three resources**, all backed by Arranger's introspection endpoints:
 
-Arranger exposes three HTTP endpoints that describe its data. The MCP server reads these at startup and maps them to MCP resources that clients can fetch.
+| Tool                    | Underlying endpoint                | Description                                                     |
+| ----------------------- | ---------------------------------- | --------------------------------------------------------------- |
+| `list-catalogues`       | `GET /introspection`               | Returns the catalogues the connected Arranger exposes.          |
+| `get-sqon-schema`       | `GET /introspection/sqon`          | Returns the SQON grammar + machine-readable JSON Schema.        |
+| `get-catalogue-fields`  | `GET /introspection/:catalogueId`  | Returns field introspection (type, operators) for one catalogue. |
+| `execute-query`         | Arranger GraphQL                   | Runs a constructed SQON query and returns matching records.     |
 
-### Endpoint-to-resource mapping
+| Resource URI                                    | Content                                            |
+| ----------------------------------------------- | -------------------------------------------------- |
+| `arranger://introspection/server`               | Catalogue inventory, mode, SQON schema path        |
+| `arranger://introspection/sqon`                 | SQON operator schema and metadata                  |
+| `arranger://introspection/catalog/{catalogueId}` | Per-catalogue field metadata                       |
 
-| Arranger endpoint               | MCP resource URI                              | Resource name                   | Content                                            |
-| ------------------------------- | --------------------------------------------- | ------------------------------- | -------------------------------------------------- |
-| `GET /introspection`            | `arranger://introspection/server`             | `arranger_server_introspection` | Catalog inventory, mode, SQON schema path          |
-| `GET /introspection/sqon`       | `arranger://introspection/sqon`               | `arranger_sqon_schema`          | SQON operator definitions and JSON schema          |
-| `GET /introspection/:catalogId` | `arranger://introspection/catalog/:catalogId` | `arranger_catalog_<catalogId>`  | Field names, types, display names, valid operators |
+**Resources vs tools:** resources are read-only documents a client fetches by URI; tools are callable operations. A client browsing available data reads resources; a client running a query calls tools.
 
-Static resources (server + SQON) are defined in `mcp/resources.ts → buildStaticResources()`.
+## Running the server
 
-Catalog resources are generated dynamically: `buildCatalogResources()` receives the server introspection payload and creates one resource per catalog key.
+**In the demo:** the server runs automatically as the `arranger-mcp` container. Nothing to do — see [Local Setup](./03-Local-Setup.md).
 
-### Endpoint-to-tool mapping
-
-The three MCP tools give clients callable operations over the same data:
-
-| MCP tool             | Underlying endpoint             | Description                                              |
-| -------------------- | ------------------------------- | -------------------------------------------------------- |
-| `list_catalogs`      | `GET /introspection`            | Returns the list of catalog IDs and their document types |
-| `get_sqon_schema`    | `GET /introspection/sqon`       | Returns the SQON operator metadata                       |
-| `get_catalog_fields` | `GET /introspection/:catalogId` | Returns field introspection for one catalog              |
-
-Tools are defined in `mcp/tools.ts → buildFoundationTools()`.
-
-**Resources vs tools:** Resources are read-only documents the client fetches by URI; tools are callable operations with optional input parameters. A client that wants to browse all available data will read resources; a client that wants to query a specific catalog by ID will call a tool.
-
-## Configuration
-
-Environment variables are parsed in `src/config.ts` via `createArrangerMcpConfig()`:
-
-| Variable                      | Default                 | Type     | Description                                                                |
-| ----------------------------- | ----------------------- | -------- | -------------------------------------------------------------------------- |
-| `ARRANGER_BASE_URL`           | `http://localhost:5050` | `string` | Base URL of the Arranger server - trailing slash is stripped automatically |
-| `ARRANGER_REQUEST_TIMEOUT_MS` | `10000`                 | `number` | HTTP timeout in milliseconds for all introspection requests                |
-
-## Extending the Server
-
-### Adding a new tool
-
-1. Open `src/mcp/tools.ts`
-2. Add a new `McpToolDefinition` entry to the array returned by `buildFoundationTools()`:
-
-   ```typescript
-   {
-     name: 'execute_sqon_query',
-     description: 'Execute a SQON filter against a catalog and return matching records.',
-     inputSchema: {
-       type: 'object',
-       required: ['catalogId', 'sqon'],
-       properties: {
-         catalogId: {
-           type: 'string',
-           description: 'Catalog identifier from list_catalogs.',
-         },
-         sqon: {
-           type: 'object',
-           description: 'A valid SQON filter object.',
-         },
-       },
-     },
-   },
-   ```
-
-3. Implement the handler in the MCP server entrypoint (`src/index.ts`) once the MCP SDK is bootstrapped. The handler should call the Arranger GraphQL endpoint at `<arrangerBaseUrl>/<catalogId>/graphql` with the SQON embedded in the query variables.
-
-<!-- PLACEHOLDER: Add a concrete handler example once the MCP SDK bootstrap and transport are implemented. -->
-
-### Adding a new resource
-
-1. Open `src/mcp/resources.ts`
-2. Add a new `McpResourceDefinition` to `buildStaticResources()` or create a new builder function for dynamic resources:
-
-   ```typescript
-   {
-     name: 'arranger_graphql_schema',
-     uri: 'arranger://schema/graphql',
-     description: 'The full GraphQL schema for this Arranger instance.',
-   },
-   ```
-
-3. Implement the fetch handler in the server entrypoint to call the appropriate Arranger endpoint when the resource URI is requested.
-
-### Adding a prompt
-
-MCP prompts are reusable message templates that host applications can surface to users. To add one:
-
-1. Create `src/mcp/prompts.ts`
-2. Define a prompt following the MCP SDK's `Prompt` type:
-
-   ```typescript
-   export const buildFoundationPrompts = () => [
-     {
-       name: "explore_catalog",
-       description: "Start a guided exploration of a catalog.",
-       arguments: [
-         {
-           name: "catalogId",
-           description: "Which catalog to explore",
-           required: true,
-         },
-       ],
-     },
-   ];
-   ```
-
-3. Register the prompt in the MCP server entrypoint.
-
-<!-- PLACEHOLDER: Confirm prompt type shape against the installed @modelcontextprotocol/sdk version once the dependency is added to package.json. -->
-
-## Running the MCP Server Locally
-
-:::caution
-No npm scripts are defined in `mcp-server/package.json` yet. The run command below will be updated once scripts are added. Until then, use the raw node invocation.
-:::
+**From source (to develop the server):** work inside the Arranger monorepo, which supplies the build and dev scripts. From the Arranger repo root:
 
 ```bash
-# From the arranger monorepo root
-npm install
-
-# Run the MCP server (development)
-cd apps/mcp-server
-ARRANGER_BASE_URL=http://localhost:5050 node --loader ts-node/esm src/index.ts
+npm ci
+npm run modules:build
+cp apps/mcp-server/.env.schema apps/mcp-server/.env   # then edit ARRANGER_BASE_URL / ARRANGER_CATALOGUES
+npm run mcp-server:dev
 ```
 
-<!-- PLACEHOLDER: Replace the node command above with the npm script once defined in mcp-server/package.json. -->
+To exercise the tools interactively, use the MCP Inspector (`npm run mcp-server:inspect`) or connect LM Studio. Both are documented in the [Arranger MCP docs](https://github.com/overture-stack/arranger/tree/main/apps/mcp-server).
 
-The full local stack (Elasticsearch, Arranger, Stage) can be started with:
+## Extending the server
 
-```bash
-# From the prelude repository root
-make demo
-```
+Adding tools, resources, or prompts is done in the Arranger repo (`apps/mcp-server/src/mcp/`), following its conventions and the [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk). Because Prelude vendors the server at a pinned commit, changes land upstream first and are picked up here by bumping the submodule and the published image tag in `docker-compose.yml`.
 
-See the [Administrator Guide - Local Setup](../admin/00-MCP-Administrator-Guide.md) for details.
-
-## Key Files Quick Reference
-
-| File                                                                                 | Purpose                                                              |
-| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| [src/config.ts](../../apps/arranger/apps/mcp-server/src/config.ts)                   | Env var parsing; add new config keys here                            |
-| [src/arranger/client.ts](../../apps/arranger/apps/mcp-server/src/arranger/client.ts) | HTTP client for introspection endpoints; add new endpoint calls here |
-| [src/arranger/types.ts](../../apps/arranger/apps/mcp-server/src/arranger/types.ts)   | Re-exported response types from `search-server`                      |
-| [src/mcp/tools.ts](../../apps/arranger/apps/mcp-server/src/mcp/tools.ts)             | MCP tool definitions; add new tools here                             |
-| [src/mcp/resources.ts](../../apps/arranger/apps/mcp-server/src/mcp/resources.ts)     | MCP resource definitions; add new resources here                     |
-| [src/index.ts](../../apps/arranger/apps/mcp-server/src/index.ts)                     | Composition entrypoint; wire new tools/resources here                |
+For deploying the server against your own Arranger, see [MCP Server Setup](../admin/01-MCP-Server-Setup.md).

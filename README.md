@@ -17,16 +17,20 @@ This repository is the central demo environment for building conversational AI c
 
 ## This Demo Environment
 
-The portal hosts four cancer genomics datasets from the Drug Discovery Portal, covering ~405 million records across 32 cancer types:
+The portal hosts four cancer genomics catalogues derived from the Drug Discovery Portal. These are **representative samples of roughly 1,000 rows each**, not the full upstream dataset (which is ~405 million records across 32 cancer types). The samples are small enough to load in seconds on a laptop and are meant for demonstrating and testing the conversational discovery workflow, not for analysis.
 
-| Dataset          | Description                                                        |
-| ---------------- | ------------------------------------------------------------------ |
-| **Mutations**    | Gene mutation frequencies with cancer type and hotspot designation |
-| **Expression**   | Gene expression profiles relative to normal tissue                 |
-| **Correlations** | Gene-gene Pearson correlation patterns                             |
-| **Proteins**     | Protein-protein interaction network data                           |
+| Catalogue         | Description                                                        | Sample scope            |
+| ----------------- | ------------------------------------------------------------------ | ----------------------- |
+| **`mutation`**    | Gene mutation frequencies with cancer type and hotspot designation | ~1k rows, BRCA only     |
+| **`expression`**  | Gene expression profiles relative to normal tissue                 | ~1k rows, 32 cancer types |
+| **`correlation`** | Gene-gene correlation patterns                                     | ~1k rows, DLBC only     |
+| **`protein`**     | Protein-protein interaction network data                           | ~1k rows                |
 
-These datasets are the primary validation environment for **Aim 1** - demonstrating conversational data discovery through the Overture Arranger MCP Server.
+Sample coverage is not uniform across catalogues: `expression` spans 32 cancer types, but `mutation` is BRCA-only and `correlation` is DLBC-only. A separate synthetic `fixture` catalogue (44 rows) backs platform testing, and an ICGC-ARGO clinical `donor` catalogue is also loaded.
+
+`make demo` loads these samples automatically (the `demo` profile). To start the same stack empty and upload your own data instead, use `make platform`.
+
+These catalogues are the primary validation environment for **Aim 1** - demonstrating conversational data discovery through the Overture Arranger MCP Server.
 
 ## Running the Demo
 
@@ -49,23 +53,27 @@ The portal will be available at **http://localhost:3000** once deployment comple
 2. Builds the Stage frontend image
 3. Starts all services via Docker Compose
 4. Initializes PostgreSQL schemas
-5. Creates Elasticsearch indices from the pre-configured mappings
-6. Loads the Drug Discovery Portal sample data into Elasticsearch
-7. Starts Arranger (search API) and Stage (portal UI)
-8. Opens the portal in your browser automatically
+5. Creates OpenSearch indices from the pre-configured mappings
+6. Loads the sample catalogues into OpenSearch
+7. Starts Arranger (search API), the Arranger MCP server, and Stage (portal UI)
+
+When deployment completes, open the portal yourself at **http://localhost:3000** (the stack does not launch a browser for you).
 
 </details>
 
 ## Services
 
-Once running, the following containers are active:
+Once running, the following long-lived containers are active (all ports bound to `127.0.0.1` only):
 
-| Container             | Port | Role               |
-| --------------------- | ---- | ------------------ |
-| `stage`               | 3000 | Portal frontend    |
-| `arranger-datatable1` | 5050 | Search API         |
-| `elasticsearch`       | 9200 | Search engine      |
-| `postgres`            | 5435 | Persistent storage |
+| Container      | Port   | Role                                                   |
+| -------------- | ------ | ------------------------------------------------------ |
+| `stage`        | 3000\* | Portal frontend                                        |
+| `arranger`     | 5050   | Search API (GraphQL + introspection endpoints)         |
+| `arranger-mcp` | 3100   | MCP server — connect an LLM host at `/mcp`             |
+| `opensearch`   | 9200   | Search engine                                          |
+| `postgres`     | 5435   | Persistent storage                                     |
+
+\* Stage falls back to `3001` if `3000` is already in use. The `setup` and `conductor-cli` containers also run during startup, then exit once data is loaded.
 
 ```bash
 docker ps

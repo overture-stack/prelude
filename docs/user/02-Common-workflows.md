@@ -1,6 +1,8 @@
 # Workflow Examples
 
-The Drug Discovery Portal hosts four cancer genomics datasets covering ~405 million records across 32 cancer types. This walkthrough uses the **Mutations** and **Expression** tables to identify candidate genes.
+This walkthrough uses the **`mutation`** and **`expression`** catalogues to identify candidate genes. It assumes you have already connected an MCP host (LM Studio in this example) to the running server — see [MCP Host Setup](./01-Setup.md).
+
+The loaded data is a small representative sample, so keep the scope in mind while following along: `mutation` covers BRCA only, `expression` covers 32 cancer types, and `correlation` covers DLBC only. Queries outside a catalogue's coverage return no rows — that is expected, not an error.
 
 ## Discover available data
 
@@ -8,35 +10,36 @@ In the LM Studio chat, type:
 
 > _What datasets are available?_
 
-The model should call `list_catalogs` and returns a list of the four catalogs: `mutations`, `expression`, `correlations`, `proteins`.
+The model calls the **`list-catalogues`** tool and returns the catalogues the MCP server exposes: `correlation`, `mutation`, `expression`, `protein`, and `donor`. (A synthetic `fixture` catalogue also exists for platform testing.)
 
-## Explore fields in a catalog
+## Explore fields in a catalogue
 
-> _What fields are available in the mutations catalog?_
+> _What fields are available in the mutation catalogue?_
 
-The model calls `get_catalog_fields` for the `mutations` catalog and returns a list of field names, types, and valid filter operators (e.g. `gene_id`, `cancer_type`, `mutation_frequency`, `is_hotspot`).
+The model calls **`get-catalogue-fields`** for the `mutation` catalogue and returns each field with its type and valid filter operators — for example `hugo_symbol`, `cancer_type`, `overall_mutation_frequency`, `is_oncogene`, and `is_tumor_suppressor_gene`.
 
 ## Run a natural language query
 
-> _Show me genes with greater than 10% mutation frequency with hotspot designation in COADREAD_
+> _Show me BRCA genes with an overall mutation frequency above 10%_
 
-The model constructs a SQON filter from the field metadata and executes the query. Results are returned as a structured table.
+The model constructs a SQON filter from the field metadata and calls **`execute-query`** to run it against Arranger. Results are returned as a structured table.
 
 ## Iterative refinement
 
-> _Which of these genes show elevated expression compared to normal tissue?_
+> _Which of these genes show elevated average expression?_
 
-The model cross-references the `expression` catalog using the gene list from Step 3 and returns genes meeting both criteria.
+The model cross-references the `expression` catalogue using the gene list from the previous step and returns the genes that also meet the expression criterion.
 
 ## Follow-up narrowing
 
-> _Filter to genes where the correlation with TP53 is above 0.6_
+> _Of those, which are annotated as oncogenes?_
 
-The model queries the `correlations` catalog to further narrow the candidate list.
+The model adds an `is_oncogene` filter to narrow the candidate list further.
 
 ## Tips for Effective Queries
 
-- **Be specific about the catalog** the model should perform better when you name the table (e.g. "in the mutations table")
-- **Ask about available fields first** if you are unsure what filters are possible
-- **Iterate conversationally** each follow-up refines the previous result set
-- **Ask the model to explain its reasoning** it can describe the filter it constructed
+- **Name the catalogue** — the model performs better when you say which one (e.g. "in the mutation catalogue").
+- **Ask about available fields first** if you are unsure what filters are possible.
+- **Stay within a catalogue's coverage** — asking `mutation` about a non-BRCA cancer type returns nothing, because only BRCA is loaded.
+- **Iterate conversationally** — each follow-up refines the previous result set.
+- **Ask the model to explain its reasoning** — it can describe the SQON filter it constructed.

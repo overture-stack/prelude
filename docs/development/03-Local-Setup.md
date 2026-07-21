@@ -5,12 +5,12 @@ This section walks through standing up the full stack locally for development an
 ### Clone and start the platform
 
 ```bash
-git clone https://github.com/overture-stack/prelude.git
+git clone --recurse-submodules https://github.com/overture-stack/prelude.git
 cd prelude
 make demo
 ```
 
-This starts all services (Elasticsearch, PostgreSQL, Arranger, Stage) and loads the Drug Discovery Portal sample data. The portal opens automatically when all services are healthy.
+This starts all services (OpenSearch, PostgreSQL, Arranger, the Arranger MCP server, and Stage) and loads the sample catalogues. When all services are healthy, open the portal at **http://localhost:3000** (the stack does not launch a browser for you).
 
 Verify Arranger is running:
 
@@ -18,31 +18,22 @@ Verify Arranger is running:
 curl http://localhost:5050/introspection
 ```
 
-You should see a JSON response listing the `mutations`, `expression`, `correlations`, and `proteins` catalogs.
+You should see a JSON response listing the loaded catalogues: `correlation`, `expression`, `mutation`, `protein`, `fixture`, and `donor`.
 
-### Start the MCP server
+### The MCP server
 
-<!-- PLACEHOLDER: Once the MCP server Docker image is published and the transport is implemented, replace the steps below with the actual run command. Until then, the server is run from source. -->
-
-From source (development only):
+In the demo, the MCP server runs automatically as the `arranger-mcp` container, reachable over Streamable HTTP at `http://localhost:3100/mcp`. Confirm it is up:
 
 ```bash
-cd apps/arranger
-npm install
-# then from the mcp-server app directory:
-cd apps/mcp-server
-ARRANGER_BASE_URL=http://localhost:5050 node --loader ts-node/esm src/index.ts
+docker ps | grep arranger-mcp        # listening on port 3100
+docker logs arranger-mcp             # should show it connected to Arranger
 ```
 
-<!-- PLACEHOLDER: Confirm the correct dev start command once npm scripts are added to the mcp-server package.json. The current package.json has no scripts defined. -->
-
-### Verify the MCP server
-
-<!-- PLACEHOLDER: Add verification steps once the MCP server exposes a health or ready endpoint, or once the stdio/SSE transport is implemented and testable with a client. -->
+You do not need to run it from source for the demo. To develop the server itself, see the [MCP Server Developer Guide](./02-MCP-Developer-Guide.md).
 
 ### Connect your MCP host
 
-Follow the [Researcher Guide](../user/02-MCP-Researcher-Guide.md) to connect LM Studio or another MCP host to the running server.
+Follow the [MCP Host Setup guide](../user/01-Setup.md) to connect LM Studio or another MCP host to the running server.
 
 ### Stopping the stack
 
@@ -58,7 +49,7 @@ make reset
 
 ## Adding a data table
 
-A "data table" (e.g. correlation, mutation) spans several layers. Most are driven by
+A "data table" (e.g. `correlation`, `mutation`) spans several layers. Most are driven by
 file/folder **naming convention** from a single table name (`<name>`), but the Stage
 portal uses a **fixed set of 5 numbered slots** (`DATATABLE_1`..`DATATABLE_5`) that are
 hardcoded in its source — so adding a *new* table beyond the existing ones requires app
@@ -68,9 +59,9 @@ Convention-driven layers (just add the file/folder — nothing else to wire):
 
 | # | Location                                          | What to add                                                              |
 | - | ------------------------------------------------- | ------------------------------------------------------------------------ |
-| 1 | `configs/elasticsearch/<name>-mapping.json` | ES mapping. Creates index `<name>-index`, alias `<name>_centric`.        |
-| 2 | `configs/arranger/<name>/`                  | Arranger catalogue (`base.json`, `extended.json`, `facets.json`, `table.json`, `matchbox.json`). Served at `http://arranger:5050/<name>`. |
-| 3 | `data/<name>.csv` + `DATA_TABLES` in `docker-compose.yml` (conductor-cli) | Sample data + the table name in the upload loop.            |
+| 1 | `configs/opensearch/<name>-mapping.json`          | Index mapping. Creates index `<name>-index`, alias `<name>_centric`. Indices are auto-discovered from this directory — no per-index env var. |
+| 2 | `configs/arranger/<name>/`                        | Arranger catalogue (`base.json`, `extended.json`, `facets.json`, `table.json`, `matchbox.json`). Served at `http://arranger:5050/<name>`. |
+| 3 | `data/tables/<name>.csv` + `DATA_TABLES` in `docker-compose.yml` (conductor-cli) | Sample data + the table name in the upload loop. |
 
 Stage portal layers (a table is shown via a **fixed slot `N`, 1–5**):
 
@@ -112,7 +103,7 @@ indices to avoid it.
 the race usually doesn't recur.
 
 ```bash
-docker restart arranger
+make restart-arranger
 ```
 
 Verify the affected catalogue recovers (expect `{"data":{"__typename":"Root"}}`):
@@ -125,33 +116,42 @@ curl -s -X POST http://localhost:5050/correlation/graphql \
 
 ## Service Port Reference
 
-| Service           | Default Port                     | Notes                                 |
-| ----------------- | -------------------------------- | ------------------------------------- |
-| Arranger          | `5050`                           | GraphQL API + introspection endpoints |
-| Elasticsearch     | `9200`                           | Internal only - bound to localhost    |
-| Stage (portal UI) | `3000` or `3001`                 | `3001` if `3000` is occupied          |
-| PostgreSQL        | `5435`                           | Internal only                         |
-| MCP Server        | `<!-- PLACEHOLDER: port TBD -->` | Confirm when transport is implemented |
+| Service           | Default Port     | Notes                                    |
+| ----------------- | ---------------- | ---------------------------------------- |
+| Stage (portal UI) | `3000` or `3001` | `3001` if `3000` is occupied             |
+| Arranger          | `5050`           | GraphQL API + introspection endpoints    |
+| Arranger MCP      | `3100`           | Streamable HTTP transport at `/mcp`      |
+| OpenSearch        | `9200`           | Bound to localhost                       |
+| PostgreSQL        | `5435`           | Bound to localhost                       |
+
+All ports are bound to `127.0.0.1` only.
 
 <details>
 <summary><strong>Full prelude stack environment variable reference</strong></summary>
 
-The following variables are configurable in `docker-compose.yml` when running the complete prelude stack. Not required if you are deploying the MCP server against an existing Arranger instance.
+The variables below are configurable in `docker-compose.yml` (defaults) and overridable via a `.env` file at the repository root. See `.env.example` for the complete, current list — treat it and `docker-compose.yml` as the source of truth.
 
 **Setup service**
 
 | Variable                                              | What it controls                                                                             |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | Database credentials, must be consistent across all services                                 |
-| `ES_INDEX_0_NAME`                                     | The Elasticsearch index name                                                                 |
-| `ES_INDEX_0_ALIAS_NAME`                               | The alias Arranger queries, must match `aliases` in the mapping and `esIndex` in `base.json` |
+| `ES_INDEX_CONFIG_DIR`                                 | Directory of mapping files. Indices are auto-discovered here (`<name>-mapping.json` → index `<name>-index`, alias `<name>_centric`) — there are no per-index name/alias env vars |
 
 **Arranger service**
 
 | Variable                | What it controls                                                        |
 | ----------------------- | ----------------------------------------------------------------------- |
-| `ES_USER` / `ES_PASS`   | Credentials used to connect to Elasticsearch                            |
-| `ES_ARRANGER_SET_INDEX` | Internal Arranger bookmarks index, must be unique per Arranger instance |
+| `ES_HOST`               | OpenSearch connection URL (the `ES_*` names are kept — Arranger reads these exact keys) |
+| `ES_USER` / `ES_PASS`   | Credentials used to connect to OpenSearch                               |
+
+**Arranger MCP service**
+
+| Variable                  | What it controls                                                        |
+| ------------------------- | ----------------------------------------------------------------------- |
+| `MCP_PORT`                | Host-side port for the MCP server (container always listens on `3100`)  |
+| `ARRANGER_MCP_CATALOGUES` | Comma-separated catalogues the MCP server exposes                       |
+| `MCP_LOG_LEVEL`           | Pino log level for the MCP server                                       |
 
 **Stage service**
 
@@ -159,8 +159,8 @@ The following variables are configurable in `docker-compose.yml` when running th
 | ---------------------------------------- | ------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_LAB_NAME`                   | The display name shown in the portal header                               |
 | `NEXT_PUBLIC_ADMIN_EMAIL`                | Contact email shown in the portal footer                                  |
-| `NEXT_PUBLIC_ARRANGER_DATATABLE_1_API`   | The URL Stage uses to reach Arranger                                      |
-| `NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX` | The Elasticsearch alias Stage queries, must match `ES_INDEX_0_ALIAS_NAME` |
+| `NEXT_PUBLIC_ARRANGER_DATATABLE_1_API`   | The URL Stage uses to reach an Arranger catalogue                         |
+| `NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX` | The OpenSearch alias Stage queries, must match the mapping's alias        |
 | `NEXTAUTH_SECRET`                        | Authentication secret, set a strong value in production                   |
 
 For production deployments, set credentials via a `.env` file at the repository root. See `.env.example` for the full list of overridable variables.

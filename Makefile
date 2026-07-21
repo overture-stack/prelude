@@ -109,9 +109,9 @@ restart:
 
 # Restart only the arranger service
 restart-arranger:
-	@echo "Restarting arranger-datatable1..."
-	@docker compose -f ./docker-compose.yml restart arranger-datatable1
-	@printf "\033[1;32m✓ arranger-datatable1 restarted\033[0m\n"
+	@echo "Restarting arranger..."
+	@docker compose -f ./docker-compose.yml restart arranger
+	@printf "\033[1;32m✓ arranger restarted\033[0m\n"
 
 # Show status of all services
 status:
