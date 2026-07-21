@@ -40,6 +40,8 @@ make demo
 
 The portal will be available at **http://localhost:3000** once deployment completes.
 
+> **Note:** `apps/arranger/` is a git submodule vendoring the [Overture Arranger](https://github.com/overture-stack/arranger) source at a pinned commit, kept for reference and documentation — the demo's search API and MCP server run from the published images in `docker-compose.yml`, not from this checkout. If you cloned without `--recurse-submodules`, run `git submodule update --init` to fetch it.
+
 <details>
 <summary><strong>What this command does</strong></summary>
 

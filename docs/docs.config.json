@@ -2,6 +2,7 @@
   "categories": [
     { "id": "user", "label": "Users" },
     { "id": "admin", "label": "Administrators" },
-    { "id": "development", "label": "Development" }
+    { "id": "development", "label": "Development" },
+    { "id": "arranger", "label": "Arranger (Search API)", "external": true }
   ]
 }

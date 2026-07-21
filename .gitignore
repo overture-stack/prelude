@@ -7,6 +7,4 @@ __MACOSX
 dist
 backups/
 referenceMaterials/
-# Arranger monorepo checked out locally for reference (nested git repo — not vendored).
-# The MCP server runs from the published image; see the arranger-mcp service in docker-compose.yml.
 docs/developer/05-Regression-Testing.md

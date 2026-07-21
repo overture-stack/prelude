@@ -17,5 +17,10 @@ apps/stage/.env.schema
 data
 setup
 
+# ── Vendored Arranger submodule: reference only, except its docs/ tree, ─ #
+# ── which the Stage image copies into public/docs/arranger.              ─ #
+apps/arranger
+!apps/arranger/docs
+
 # NOTE: docs/ and configs/lectern/ are intentionally NOT excluded.
 # The Dockerfile copies them into public/docs and public/dictionary inside the image.

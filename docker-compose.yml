@@ -95,14 +95,14 @@ services:
   # --------------------------------------------------------------------------------------#
   conductor-cli:
     profiles: ["demo", "default"]
-    # Built from local source (apps/conductor) so it uses the @opensearch-project/opensearch
-    # client. The published image uses @elastic/elasticsearch, whose 7.14+ product check
-    # rejects OpenSearch ("server is not Elasticsearch") and blocks all indexing.
-    build:
-      context: .
-      dockerfile: ./apps/conductor/Dockerfile
-    image: conductor-opensearch:local
+    # Published from this repo's own apps/conductor source (overture-stack/conductor
+    # redirects here). Earlier published tags used @elastic/elasticsearch, whose 7.14+
+    # product check rejects OpenSearch ("server is not Elasticsearch") and blocks all
+    # indexing; this tag carries the @opensearch-project/opensearch client instead.
+    image: ghcr.io/overture-stack/conductor:d2dee75
+    pull_policy: if_not_present
     container_name: conductor-cli
+    platform: linux/amd64
     volumes:
       - ./data:/data
     # Tables to load. Add a table by listing it here AND providing

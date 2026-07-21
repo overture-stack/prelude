@@ -30,6 +30,10 @@ COPY --chown=node:node apps/stage ./
 RUN rm -f ./public/docs ./public/dictionary
 COPY --chown=node:node docs ./public/docs
 COPY --chown=node:node configs/lectern ./public/dictionary
+# docs/arranger is a symlink to the Arranger submodule's docs (../apps/arranger/docs),
+# which dangles once docs/ is copied here — replace it with the real submodule doc tree.
+RUN rm -f ./public/docs/arranger
+COPY --chown=node:node apps/arranger/docs ./public/docs/arranger
 
 # Build the Next.js app, then remove webpack build cache (~350 MB)
 # The cache is only useful for incremental rebuilds, not at runtime
