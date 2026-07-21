@@ -459,7 +459,7 @@
       },
       {
         "active": true,
-        "fieldName": "treatment__non-hematological_toxicity",
+        "fieldName": "treatment__non_hematological_toxicity",
         "show": false
       },
       {
@@ -949,7 +949,7 @@
       },
       {
         "active": false,
-        "fieldName": "biomarker__ca19-9_level",
+        "fieldName": "biomarker__ca19_9_level",
         "show": false
       },
       {
@@ -1019,7 +1019,7 @@
       },
       {
         "active": true,
-        "fieldName": "biomarker__pd-l1_status",
+        "fieldName": "biomarker__pd_l1_status",
         "show": false
       },
       {
@@ -1044,7 +1044,7 @@
       },
       {
         "active": true,
-        "fieldName": "biomarker__pan-trk_ihc_status",
+        "fieldName": "biomarker__pan_trk_ihc_status",
         "show": false
       },
       {

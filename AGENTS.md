@@ -24,7 +24,7 @@ Prelude is the **Overture Arranger MCP demo and development environment**: it ex
 ## Repository orientation
 - `apps/` — application services: `conductor` (stack orchestration), `stage` (Overture Stage portal front-end)
 - `arranger/` — vendored Overture Arranger component (own repo/conventions)
-- `configs/` — per-document-type configuration under `arranger/`, `elasticsearch/`, `postgres/` (document types: correlation, expression, fixture, mutation, protein). Renamed from `configs/arrangerConfigs/` / `configs/elasticsearchConfigs/` on the `overtureMCP` branch.
+- `configs/` — per-document-type configuration under `arranger/`, `opensearch/`, `postgres/`, `lectern/` (document types: correlation, expression, fixture, mutation, protein). The ARGO `donor` catalogue lives in `arranger-pending/` until its data is loaded (see that folder's README). Renamed from `configs/arrangerConfigs/` / `configs/elasticsearchConfigs/` on the `overtureMCP` branch; the search-engine migration then renamed `elasticsearch/` → `opensearch/`.
 - `lectern/` — Lectern data-dictionary / schema assets
 - `data/` — sample datasets: `fixtures/`, `tables/`
 - `setup/` — stack setup `scripts/` and `volumes/`

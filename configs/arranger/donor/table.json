@@ -724,11 +724,11 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "treatment.non-hematological_toxicity",
+        "fieldName": "treatment.non_hematological_toxicity",
         "show": false,
         "sortable": false,
-        "jsonPath": "$.treatment.hits.edges[*].node.non-hematological_toxicity",
-        "query": "treatment { hits { edges { node { non-hematological_toxicity } } } }"
+        "jsonPath": "$.treatment.hits.edges[*].node.non_hematological_toxicity",
+        "query": "treatment { hits { edges { node { non_hematological_toxicity } } } }"
       },
       {
         "canChangeShow": true,
@@ -1508,11 +1508,11 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "biomarker.ca19-9_level",
+        "fieldName": "biomarker.ca19_9_level",
         "show": false,
         "sortable": false,
-        "jsonPath": "$.biomarker.hits.edges[*].node.ca19-9_level",
-        "query": "biomarker { hits { edges { node { ca19-9_level } } } }"
+        "jsonPath": "$.biomarker.hits.edges[*].node.ca19_9_level",
+        "query": "biomarker { hits { edges { node { ca19_9_level } } } }"
       },
       {
         "canChangeShow": true,
@@ -1620,11 +1620,11 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "biomarker.pd-l1_status",
+        "fieldName": "biomarker.pd_l1_status",
         "show": false,
         "sortable": false,
-        "jsonPath": "$.biomarker.hits.edges[*].node.pd-l1_status",
-        "query": "biomarker { hits { edges { node { pd-l1_status } } } }"
+        "jsonPath": "$.biomarker.hits.edges[*].node.pd_l1_status",
+        "query": "biomarker { hits { edges { node { pd_l1_status } } } }"
       },
       {
         "canChangeShow": true,
@@ -1660,11 +1660,11 @@
       },
       {
         "canChangeShow": true,
-        "fieldName": "biomarker.pan-trk_ihc_status",
+        "fieldName": "biomarker.pan_trk_ihc_status",
         "show": false,
         "sortable": false,
-        "jsonPath": "$.biomarker.hits.edges[*].node.pan-trk_ihc_status",
-        "query": "biomarker { hits { edges { node { pan-trk_ihc_status } } } }"
+        "jsonPath": "$.biomarker.hits.edges[*].node.pan_trk_ihc_status",
+        "query": "biomarker { hits { edges { node { pan_trk_ihc_status } } } }"
       },
       {
         "canChangeShow": true,

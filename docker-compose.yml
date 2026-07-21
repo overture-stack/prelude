@@ -28,6 +28,9 @@ services:
       - ./setup:/setup
       - ./setup/volumes/health:/health
       - ./configs:/configs
+      # ARGO clinical docs (donor.ndjson) are bulk-loaded from here in setup_indices step;
+      # conductor's flat-CSV loader can't ingest the nested _bulk file.
+      - ./data:/data
     environment:
       # Global Configuration
       PROFILE: ${PROFILE:-default}
@@ -272,7 +275,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          'for c in correlation expression fixture mutation protein; do curl -sf -X POST -H ''Content-Type: application/json'' -d ''{"query":"{ __typename }"}'' "http://localhost:5050/$$c/graphql" | grep -q __typename || exit 1; done',
+          'for c in correlation expression fixture mutation protein donor; do curl -sf -X POST -H ''Content-Type: application/json'' -d ''{"query":"{ __typename }"}'' "http://localhost:5050/$$c/graphql" | grep -q __typename || exit 1; done',
         ]
       interval: 30s
       timeout: 10s
@@ -310,7 +313,7 @@ services:
     environment:
       # Required — the server exits on startup if either is missing or invalid.
       ARRANGER_BASE_URL: http://arranger:5050
-      ARRANGER_CATALOGUES: ${ARRANGER_MCP_CATALOGUES:-correlation,mutation,expression,protein}
+      ARRANGER_CATALOGUES: ${ARRANGER_MCP_CATALOGUES:-correlation,mutation,expression,protein,donor}
       # Optional — listed with their image defaults for discoverability.
       MCP_HOST: 0.0.0.0
       MCP_PATH: /mcp
@@ -411,11 +414,11 @@ services:
       NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: protein_centric
       NEXT_PUBLIC_DATATABLE_4_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
       NEXT_PUBLIC_ENABLE_DATATABLE_4_QUICKSEARCH: true
-      # Fixture Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_5_API: http://arranger:5050/fixture
+      # ARGO Donor (clinical) Arranger Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_5_API: http://arranger:5050/donor
       NEXT_PUBLIC_ARRANGER_DATATABLE_5_DOCUMENT_TYPE: records
-      NEXT_PUBLIC_ARRANGER_DATATABLE_5_INDEX: fixture_centric
-      NEXT_PUBLIC_DATATABLE_5_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
+      NEXT_PUBLIC_ARRANGER_DATATABLE_5_INDEX: donor_centric
+      NEXT_PUBLIC_DATATABLE_5_EXPORT_ROW_ID_FIELD: submitter_donor_id
       NEXT_PUBLIC_ENABLE_DATATABLE_5_QUICKSEARCH: true
       # Auth Variables
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}

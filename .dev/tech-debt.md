@@ -24,3 +24,7 @@ standalone: yes
 Residual "elasticsearch" naming is cosmetic and partly unavoidable
 fix: the `ES_HOST`/`ES_USER`/`ES_PASS`/`ES_URL` env vars must stay (Arranger and conductor read those exact keys), so a full de-ES rename is not possible; renaming the rest (conductor's `src/services/elasticsearch/`, `setup/scripts/services/elasticsearch/`, comments, docs) is churn for zero functional gain. Recommendation: leave as-is
 standalone: yes
+
+The ARGO `donor` Stage table exposes all 245 fields as columns (`configs/arranger/donor/table.json`) — unwieldy to browse
+fix: trim `table.json` to a sensible core subset (e.g. ARGO Core-tier donor fields + key nested identifiers), leaving the rest available via Arranger's column config; the full field set stays searchable/aggregatable regardless of which columns show
+standalone: yes

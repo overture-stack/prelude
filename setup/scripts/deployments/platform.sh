@@ -54,6 +54,7 @@ rs "${SCRIPT_DIR}/elasticsearch/elasticsearch_check.sh"
 # Elasticsearch Setup
 echo -e "\n\033[1;35m[3/7]\033[0m Setting up Elasticsearch Indices"
 rs "$SCRIPT_DIR/elasticsearch/setup_indices.sh"
+rs "$SCRIPT_DIR/elasticsearch/load_donor_documents.sh"
 
 # Elasticsearch Index Verification
 echo -e "\n\033[1;35m[4/7]\033[0m Verifying Elasticsearch Indices"

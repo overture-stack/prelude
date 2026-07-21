@@ -52,8 +52,8 @@ export function discoverDataTables(): DataTableInfo[] {
 		const dataTableDirs = entries.filter(
 			(entry) =>
 				entry.isDirectory() &&
-				// fixtureTable has its own dedicated navbar item, so exclude it from the Explore Data dropdown
-				entry.name !== 'fixtureTable' &&
+				// donorTable has its own dedicated navbar item, so exclude it from the Explore Data dropdown
+				entry.name !== 'donorTable' &&
 				(entry.name.endsWith('Table') || entry.name.startsWith('dataTable')),
 		);
 

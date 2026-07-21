@@ -1,4 +1,10 @@
 {
+  "index_patterns": [
+    "donor-*"
+  ],
+  "aliases": {
+    "donor_centric": {}
+  },
   "mappings": {
     "properties": {
       "submitter_donor_id_autocomplete": {
@@ -311,7 +317,7 @@
           "hematological_toxicity": {
             "type": "keyword"
           },
-          "non-hematological_toxicity": {
+          "non_hematological_toxicity": {
             "type": "keyword"
           },
           "adverse_events": {
@@ -640,7 +646,7 @@
           "test_interval": {
             "type": "integer"
           },
-          "ca19-9_level": {
+          "ca19_9_level": {
             "type": "integer"
           },
           "crp_levels": {
@@ -682,7 +688,7 @@
           "pr_percent_positive": {
             "type": "float"
           },
-          "pd-l1_status": {
+          "pd_l1_status": {
             "type": "keyword"
           },
           "alk_ihc_status": {
@@ -697,7 +703,7 @@
           "ros1_ihc_status": {
             "type": "keyword"
           },
-          "pan-trk_ihc_status": {
+          "pan_trk_ihc_status": {
             "type": "keyword"
           },
           "ret_fish_status": {

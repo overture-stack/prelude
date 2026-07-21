@@ -15,11 +15,10 @@ Prelude backs two grant deliverables: **Aim 1** — a local testing environment;
 
 ## App work — parallelizable
 
-- **Re-enable the Lectern dictionary UI in Stage** — machinery mostly exists but is disabled: restore the viewer via published `@overture-stack/lectern-ui` + existing theme adapter, un-stub `useDictionaryHydration.ts`, wire a route; author Drug Discovery Lectern dictionaries (none exist yet) + ARGO from `argo-lectern-schema.json`; validate against the `lectern/` reference checkout. Decide static-JSON vs deployed Lectern server; keep the dictionary source env-configurable for dev-env parity.
+- **Re-enable the Lectern dictionary UI in Stage** — machinery mostly exists but is disabled: restore the viewer via published `@overture-stack/lectern-ui` + existing theme adapter, un-stub `useDictionaryHydration.ts`, wire a route; validate against the `lectern/` reference checkout. Dictionaries now exist: `configs/lectern/{correlation,expression,mutation,protein}.json` (Drug Discovery) + `argo-data-dictionary.json` (ARGO, v142.3). Decide static-JSON vs deployed Lectern server; keep the dictionary source env-configurable for dev-env parity.
 
-## Gated on ARGO data + dictionary landing
+## Gated on dictionary landing
 
-- **ARGO wiring** — when ARGO data + dictionary are ready: `donor_centric`/`file_centric` CSVs, ES mappings, Arranger catalogues, add to `DATA_TABLES` load loop, Stage `NEXT_PUBLIC_ARRANGER_DATATABLE_*` slots (mind the 5-slot ceiling), MCP catalogues, commit `argo-lectern-schema.json` + healthcheck catalogue list. Unblocks the ARGO data claim, the ARGO half of the dictionary UI, and fixture validation.
 - **Finalize + validate the fixture corpus** — the 44 hand-authored synthetic fixtures are an explicit draft and the backbone of platform testing/evaluation. Regenerate against loaded catalogues, pin `introspection_commit`/`index_commit` to the real snapshot, run the validation pass (populate `expected_record_ids`, flip `reference_validated`/`frontier_pass`), add `domain_reviewer`/`reviewed_by` provenance + `data/fixtures/REVIEW.md`, bump `fixture_set_version` from draft `5.0.0` to the finalized release.
 
 ## Reporting & upstream (not prelude code)

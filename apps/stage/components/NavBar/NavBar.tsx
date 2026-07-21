@@ -152,7 +152,7 @@ const NavBar = (): ReactElement => {
 							margin: 0;
 						`}
 					>
-						<InternalLink path={INTERNAL_PATHS.FIXTURE_TABLE}>
+						<InternalLink path={INTERNAL_PATHS.DONOR_TABLE}>
 							<a
 								css={css`
 									width: 100%;
@@ -167,7 +167,7 @@ const NavBar = (): ReactElement => {
 									cursor: pointer;
 								`}
 							>
-								Fixture Table
+								Clinical Data
 							</a>
 						</InternalLink>
 					</div>

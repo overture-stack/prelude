@@ -26,10 +26,11 @@ import { createPage } from '../../global/utils/pages';
 import { registerTableMetadata } from '../../global/utils/tableConfig';
 
 /**
- * Fixture Table Data Explorer Page
+ * ARGO Donor (Clinical) Data Explorer Page
  *
- * Displays fixture data between two Hugo symbols (A and B).
- * Features multi-QuickSearch with separate autocomplete for each Hugo symbol field.
+ * Displays the ARGO donor-centric clinical index (donor with nested specimen,
+ * diagnosis, treatment/therapy, follow-up and biomarker entities). Columns and
+ * facets are driven by the Arranger config in configs/arranger/donor/.
  */
 
 const {
@@ -57,17 +58,17 @@ const DataSetFiveExplorationPage = createPage({
 				arrangerAdminUI: NEXT_PUBLIC_ARRANGER_DATATABLE_5_ADMIN_UI,
 				exportRowIdField: NEXT_PUBLIC_DATATABLE_5_EXPORT_ROW_ID_FIELD,
 
-				pageSubtitle: 'Fixture Table',
-				callerName: 'FixtureTable',
+				pageSubtitle: 'Clinical Data',
+				callerName: 'DonorTable',
 
 				enableQuickSearch: NEXT_PUBLIC_ENABLE_DATATABLE_5_QUICKSEARCH,
 
 				exportConfig: {
-					fileName: `fixture-data-export.${today}.tsv`,
+					fileName: `donor-clinical-export.${today}.tsv`,
 					customExporters: [
 						{
 							label: 'Download',
-							fileName: `fixture-data-export.${today}.tsv`,
+							fileName: `donor-clinical-export.${today}.tsv`,
 						},
 					],
 				},

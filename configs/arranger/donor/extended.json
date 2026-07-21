@@ -369,7 +369,7 @@
     },
     {
       "displayName": "treatment: Non-hematological Toxicity",
-      "fieldName": "treatment.non-hematological_toxicity"
+      "fieldName": "treatment.non_hematological_toxicity"
     },
     {
       "displayName": "treatment: Adverse Events",
@@ -761,7 +761,7 @@
     },
     {
       "displayName": "biomarker: CA19-9 Level",
-      "fieldName": "biomarker.ca19-9_level"
+      "fieldName": "biomarker.ca19_9_level"
     },
     {
       "displayName": "biomarker: C-reactive protein (CRP) Level",
@@ -817,7 +817,7 @@
     },
     {
       "displayName": "biomarker: PD-L1 Status",
-      "fieldName": "biomarker.pd-l1_status"
+      "fieldName": "biomarker.pd_l1_status"
     },
     {
       "displayName": "biomarker: ALK IHC Status",
@@ -837,7 +837,7 @@
     },
     {
       "displayName": "biomarker: Pan-TRK IHC Status",
-      "fieldName": "biomarker.pan-trk_ihc_status"
+      "fieldName": "biomarker.pan_trk_ihc_status"
     },
     {
       "displayName": "biomarker: RET1 FISH Status",
