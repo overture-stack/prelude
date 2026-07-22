@@ -28,14 +28,14 @@
         "show": true
       },
       {
-        "active": false,
+        "active": true,
         "fieldName": "survival_time",
-        "show": false
+        "show": true
       },
       {
         "active": true,
         "fieldName": "primary_site",
-        "show": false
+        "show": true
       },
       {
         "active": false,
@@ -48,9 +48,9 @@
         "show": false
       },
       {
-        "active": false,
+        "active": true,
         "fieldName": "bmi",
-        "show": false
+        "show": true
       },
       {
         "active": true,
@@ -58,9 +58,9 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "menopause_status",
-        "show": true
+        "show": false
       },
       {
         "active": false,
@@ -78,7 +78,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "hrt_type",
         "show": false
       },
@@ -88,7 +88,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "contraception_type",
         "show": false
       },
@@ -103,7 +103,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "country_of_residence_at_enrollment",
         "show": false
       },
@@ -128,7 +128,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "sample_registration__specimen_tissue_source",
         "show": false
       },
@@ -138,9 +138,9 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "sample_registration__specimen_type",
-        "show": true
+        "show": false
       },
       {
         "active": false,
@@ -148,9 +148,9 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "sample_registration__sample_type",
-        "show": true
+        "show": false
       },
       {
         "active": false,
@@ -173,29 +173,29 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__pathological_tumour_staging_system",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__pathological_t_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__pathological_n_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__pathological_m_category",
         "show": false
       },
       {
         "active": true,
         "fieldName": "specimen__pathological_stage_group",
-        "show": false
+        "show": true
       },
       {
         "active": false,
@@ -203,37 +203,37 @@
         "show": false
       },
       {
-        "active": false,
+        "active": true,
         "fieldName": "specimen__tumour_histological_type",
-        "show": false
-      },
-      {
-        "active": false,
-        "fieldName": "specimen__specimen_anatomic_location",
-        "show": false
+        "show": true
       },
       {
         "active": true,
+        "fieldName": "specimen__specimen_anatomic_location",
+        "show": true
+      },
+      {
+        "active": false,
         "fieldName": "specimen__specimen_laterality",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__specimen_processing",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__specimen_storage",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__reference_pathology_confirmed",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__tumour_grading_system",
         "show": false
       },
@@ -248,7 +248,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "specimen__percent_tumour_cells_measurement_method",
         "show": false
       },
@@ -288,14 +288,14 @@
         "show": false
       },
       {
-        "active": false,
+        "active": true,
         "fieldName": "primary_diagnosis__age_at_diagnosis",
-        "show": false
+        "show": true
       },
       {
-        "active": false,
+        "active": true,
         "fieldName": "primary_diagnosis__cancer_type_code",
-        "show": false
+        "show": true
       },
       {
         "active": false,
@@ -308,17 +308,17 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__laterality",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__lymph_nodes_examined_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__lymph_nodes_examined_method",
         "show": false
       },
@@ -333,22 +333,22 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__clinical_tumour_staging_system",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__clinical_t_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__clinical_n_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__clinical_m_category",
         "show": false
       },
@@ -358,7 +358,7 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "primary_diagnosis__presenting_symptoms",
         "show": false
       },
@@ -393,9 +393,9 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__is_primary_treatment",
-        "show": true
+        "show": false
       },
       {
         "active": false,
@@ -428,12 +428,12 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__treatment_setting",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__response_to_treatment_criteria_method",
         "show": false
       },
@@ -443,32 +443,32 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__outcome_of_treatment",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__toxicity_type",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__hematological_toxicity",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__non_hematological_toxicity",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__adverse_events",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__clinical_trials_database",
         "show": false
       },
@@ -503,7 +503,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__chemotherapy__drug_database",
         "show": false
       },
@@ -518,7 +518,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__chemotherapy__chemotherapy_drug_dose_units",
         "show": false
       },
@@ -533,17 +533,17 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__chemotherapy__dose_intensity_reduction",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__chemotherapy__dose_intensity_reduction_event",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__chemotherapy__dose_intensity_reduction_amount",
         "show": false
       },
@@ -573,7 +573,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__hormone_therapy__drug_database",
         "show": false
       },
@@ -588,7 +588,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__hormone_therapy__hormone_drug_dose_units",
         "show": false
       },
@@ -618,12 +618,12 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__radiation__radiation_therapy_modality",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__radiation__radiation_therapy_type",
         "show": false
       },
@@ -638,12 +638,12 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__radiation__anatomical_site_irradiated",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__radiation__radiation_boost",
         "show": false
       },
@@ -668,7 +668,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__immunotherapy__immunotherapy_type",
         "show": false
       },
@@ -683,7 +683,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__immunotherapy__drug_database",
         "show": false
       },
@@ -698,7 +698,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__immunotherapy__immunotherapy_drug_dose_units",
         "show": false
       },
@@ -733,7 +733,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__surgery_type",
         "show": false
       },
@@ -743,7 +743,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__surgery_location",
         "show": false
       },
@@ -763,42 +763,42 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__tumour_focality",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__residual_tumour_classification",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__margin_types_involved",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__margin_types_not_involved",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__margin_types_not_assessed",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__lymphovascular_invasion",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__perineural_invasion",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "treatment__surgery__extrathyroidal_extension",
         "show": false
       },
@@ -843,9 +843,9 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__relapse_type",
-        "show": true
+        "show": false
       },
       {
         "active": false,
@@ -853,7 +853,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__method_of_progression_status",
         "show": false
       },
@@ -863,52 +863,52 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__recurrence_tumour_staging_system",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__recurrence_t_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__recurrence_n_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__recurrence_m_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__recurrence_stage_group",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__posttherapy_tumour_staging_system",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__posttherapy_t_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__posttherapy_n_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__posttherapy_m_category",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "follow_up__posttherapy_stage_group",
         "show": false
       },
@@ -975,7 +975,7 @@
       {
         "active": true,
         "fieldName": "biomarker__brca_carrier",
-        "show": false
+        "show": true
       },
       {
         "active": true,
@@ -983,7 +983,7 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__er_allred_score",
         "show": false
       },
@@ -998,17 +998,17 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__her2_ish_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__pr_status",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__pr_allred_score",
         "show": false
       },
@@ -1018,47 +1018,47 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__pd_l1_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__alk_ihc_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__alk_ihc_intensity",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__alk_fish_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__ros1_ihc_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__pan_trk_ihc_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__ret_fish_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__hpv_ihc_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "biomarker__hpv_dna_status",
         "show": false
       },
@@ -1078,7 +1078,7 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "comorbidity__laterality_of_prior_malignancy",
         "show": false
       },
@@ -1093,7 +1093,7 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "comorbidity__comorbidity_treatment_status",
         "show": false
       },
@@ -1118,7 +1118,7 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__tobacco_type",
         "show": false
       },
@@ -1133,47 +1133,47 @@
         "show": true
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__alcohol_consumption_category",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__alcohol_type",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__opiate_use",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__hot_drinks_consumption",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__red_meat_frequency",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__processed_meat_frequency",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__soft_drinks_frequency",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__exercise_frequency",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "exposure__exercise_intensity",
         "show": false
       },
@@ -1193,17 +1193,17 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "family_history__relative_with_cancer_history",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "family_history__relationship_type",
-        "show": true
+        "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "family_history__gender_of_relative",
         "show": false
       },
@@ -1218,12 +1218,12 @@
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "family_history__relative_vital_status",
         "show": false
       },
       {
-        "active": true,
+        "active": false,
         "fieldName": "family_history__cause_of_death_of_relative",
         "show": false
       },

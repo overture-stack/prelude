@@ -53,7 +53,7 @@
       {
         "canChangeShow": true,
         "fieldName": "height",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.height",
         "query": "height"
@@ -61,7 +61,7 @@
       {
         "canChangeShow": true,
         "fieldName": "weight",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.weight",
         "query": "weight"
@@ -85,7 +85,7 @@
       {
         "canChangeShow": true,
         "fieldName": "menopause_status",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.menopause_status",
         "query": "menopause_status"
@@ -93,7 +93,7 @@
       {
         "canChangeShow": true,
         "fieldName": "age_at_menarche",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.age_at_menarche",
         "query": "age_at_menarche"
@@ -101,7 +101,7 @@
       {
         "canChangeShow": true,
         "fieldName": "number_of_pregnancies",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.number_of_pregnancies",
         "query": "number_of_pregnancies"
@@ -109,7 +109,7 @@
       {
         "canChangeShow": true,
         "fieldName": "number_of_children",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.number_of_children",
         "query": "number_of_children"
@@ -117,7 +117,7 @@
       {
         "canChangeShow": true,
         "fieldName": "hrt_type",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.hrt_type",
         "query": "hrt_type"
@@ -125,7 +125,7 @@
       {
         "canChangeShow": true,
         "fieldName": "hrt_duration",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.hrt_duration",
         "query": "hrt_duration"
@@ -133,7 +133,7 @@
       {
         "canChangeShow": true,
         "fieldName": "contraception_type",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.contraception_type",
         "query": "contraception_type"
@@ -141,7 +141,7 @@
       {
         "canChangeShow": true,
         "fieldName": "contraception_duration",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.contraception_duration",
         "query": "contraception_duration"
@@ -149,7 +149,7 @@
       {
         "canChangeShow": true,
         "fieldName": "lost_to_followup_after_clinical_event_id",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.lost_to_followup_after_clinical_event_id",
         "query": "lost_to_followup_after_clinical_event_id"
@@ -157,7 +157,7 @@
       {
         "canChangeShow": true,
         "fieldName": "country_of_residence_at_enrollment",
-        "show": true,
+        "show": false,
         "sortable": true,
         "jsonPath": "$.country_of_residence_at_enrollment",
         "query": "country_of_residence_at_enrollment"
