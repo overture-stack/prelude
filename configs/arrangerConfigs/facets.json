@@ -1,0 +1,16 @@
+{
+  "facets": {
+    "aggregations": [
+      { "active": true,  "fieldName": "analysis__experiment__disease_stage",      "show": true  },
+      { "active": true,  "fieldName": "analysis__experiment__primary_diagnosis",  "show": true  },
+      { "active": true,  "fieldName": "analysis__experiment__treatment_type",     "show": true  },
+      { "active": true,  "fieldName": "analysis__experiment__treatment_response", "show": true  },
+      { "active": true,  "fieldName": "analysis__experiment__vital_status",       "show": true  },
+      { "active": true,  "fieldName": "data_type",                               "show": true  },
+      { "active": true,  "fieldName": "file_type",                               "show": true  },
+      { "active": true,  "fieldName": "file_access",                             "show": true  },
+      { "active": false, "fieldName": "study_id",                                "show": false },
+      { "active": false, "fieldName": "analysis__analysisState",                 "show": false }
+    ]
+  }
+}

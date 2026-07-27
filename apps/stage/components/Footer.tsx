@@ -21,8 +21,7 @@
 
 import { css } from '@emotion/react';
 import { getConfig } from '../global/config';
-import { HELP_URL, INTERNAL_PATHS } from '../global/utils/constants';
-import getInternalLink from '../global/utils/getInternalLink';
+import { HELP_URL } from '../global/utils/constants';
 import StyledLink from './Link';
 import defaultTheme from './theme';
 import { OvertureLogoWithText } from './theme/icons';
@@ -48,15 +47,6 @@ const Footer = () => {
 				right: 0px;
 			`}
 		>
-			<StyledLink
-				css={(theme) => css`
-					${theme.typography.subheading2};
-					padding-right: 13px;
-				`}
-				href={getInternalLink({ path: INTERNAL_PATHS.CONFIG_GENERATOR })}
-			>
-				Config Generator
-			</StyledLink>
 			<StyledLink
 				css={(theme) => css`
 					${theme.typography.subheading2};

@@ -1,0 +1,54 @@
+{
+  "extended": [
+    {
+      "displayName": "Submitter Donor Id",
+      "fieldName": "analysis.samples.donor.submitterDonorId"
+    },
+    {
+      "displayName": "Disease Stage",
+      "fieldName": "analysis.experiment.disease_stage"
+    },
+    {
+      "displayName": "Primary Diagnosis",
+      "fieldName": "analysis.experiment.primary_diagnosis"
+    },
+    {
+      "displayName": "Treatment Type",
+      "fieldName": "analysis.experiment.treatment_type"
+    },
+    {
+      "displayName": "Treatment Response",
+      "fieldName": "analysis.experiment.treatment_response"
+    },
+    {
+      "displayName": "Vital Status",
+      "fieldName": "analysis.experiment.vital_status"
+    },
+    { "displayName": "Sex", "fieldName": "analysis.experiment.sex" },
+    {
+      "displayName": "Age At Diagnosis",
+      "fieldName": "analysis.experiment.age_at_diagnosis"
+    },
+    {
+      "displayName": "Diagnosis Date",
+      "fieldName": "analysis.experiment.diagnosis_date"
+    },
+    { "displayName": "Gender", "fieldName": "analysis.samples.donor.gender" },
+    { "displayName": "File Name", "fieldName": "file.name" },
+    { "displayName": "File Type", "fieldName": "file_type" },
+    { "displayName": "Data Type", "fieldName": "data_type" },
+    { "displayName": "File Size", "fieldName": "file.size" },
+    { "displayName": "File Md5sum", "fieldName": "file.md5sum" },
+    { "displayName": "Object Id", "fieldName": "object_id" },
+    { "displayName": "Study Id", "fieldName": "study_id" },
+    { "displayName": "File Access", "fieldName": "file_access" },
+    { "displayName": "Analysis Id", "fieldName": "analysis.analysisId" },
+    { "displayName": "Analysis State", "fieldName": "analysis.analysisState" },
+    {
+      "displayName": "Analysis Type",
+      "fieldName": "analysis.analysisType.name"
+    },
+    { "displayName": "Repository Code", "fieldName": "repositories.code" },
+    { "displayName": "Repository Url", "fieldName": "repositories.url" }
+  ]
+}

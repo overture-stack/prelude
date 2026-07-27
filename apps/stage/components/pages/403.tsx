@@ -66,7 +66,7 @@ const Error403 = ({ query }: { query: { error_type: EgoLoginError; provider_type
 					subtitle={`Error 403 - ${errorSubtitles[errorType]}`}
 					errorTitle={`${errorSubtitles[errorType]}`}
 				>
-					You have denied the DMS access to your {providerTypeDisplayName} profile or cancelled your log in attempt.
+					You have denied the Overture Demo Portal access to your {providerTypeDisplayName} profile or cancelled your log in attempt.
 					Please try again and approve access for {providerTypeDisplayName}, or log in with a different provider for
 					which you would prefer to allow access.
 				</ErrorPageLayout>

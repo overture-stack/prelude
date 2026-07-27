@@ -1,0 +1,4 @@
+participant_id,sex,age_at_diagnosis,vital_status,diagnosis_date,disease_stage,primary_diagnosis,treatment_type,treatment_response,snv_file,indel_file,cnv_file,sv_file
+DO001,female,55,alive,2021-03-15,Stage II,Breast Adenocarcinoma,Surgery,Complete Response,DO001.snv.vcf.gz,DO001.indel.vcf.gz,DO001.cnv.txt.gz,DO001.sv.vcf.gz
+DO002,male,67,deceased,2019-08-22,Stage III,Lung Adenocarcinoma,Chemotherapy,Partial Response,DO002.snv.vcf.gz,DO002.indel.vcf.gz,DO002.cnv.txt.gz,DO002.sv.vcf.gz
+DO003,female,61,alive,2022-01-10,Stage I,Colorectal Adenocarcinoma,Radiation,Stable Disease,DO003.snv.vcf.gz,DO003.indel.vcf.gz,DO003.cnv.txt.gz,DO003.sv.vcf.gz

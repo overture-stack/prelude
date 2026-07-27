@@ -20,7 +20,7 @@
  */
 
 import { getTableFieldMapping } from '../../../global/config/tableFieldMappings';
-import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types.js';
+import { SQONType } from '@overture-stack/arranger-components/dist/DataContext/types';
 
 /**
  * Cross-Table SQON Filter Builder

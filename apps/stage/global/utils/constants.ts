@@ -32,13 +32,9 @@ export const LOGIN_PATH = '/login';
 export const ROOT_PATH = '/';
 
 export enum INTERNAL_PATHS {
-	DATATABLE_1 = '/correlationTable',
-	DATATABLE_2 = '/mutationTable',
-	DATATABLE_3 = '/expressionTable',
-	DATATABLE_4 = '/proteinTable',
+	DATATABLE_1 = '/fileTable',
 	HOME = '/home',
 	DOCUMENTATION = '/documentation',
-	CONFIG_GENERATOR = '/configGenerator',
 }
 
 // arranger endpoints
@@ -56,7 +52,7 @@ export const ARRANGER_GQL_PROTEIN = urlJoin(NEXT_PUBLIC_ARRANGER_API, 'protein/g
 // external docs links
 export const ELASTICVUE_DOCS =
 	'https://docs.overture.bio/guides/administration-guides/customizing-the-data-portal/#viewing-elasticsearch-documents';
-export const HELP_URL = 'https://github.com/overture-stack/docs/discussions/new?category=support';
+export const HELP_URL = 'mailto:admin@example.com';
 export const EMAIL_SETTING_URL = 'admin@example.com';
 export const DOCS_URL = 'https://docs.overture.bio';
 

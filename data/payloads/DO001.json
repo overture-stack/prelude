@@ -1,0 +1,65 @@
+{
+  "studyId": "demo",
+  "analysisType": { "name": "genomicVariants" },
+  "samples": [
+    {
+      "submitterSampleId": "DO001-SA01",
+      "matchedNormalSubmitterSampleId": null,
+      "sampleType": "Total DNA",
+      "specimen": {
+        "submitterSpecimenId": "DO001-SP01",
+        "tumourNormalDesignation": "Tumour",
+        "specimenType": "Primary tumour",
+        "specimenTissueSource": "Breast"
+      },
+      "donor": {
+        "submitterDonorId": "DO001",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "fileName": "DO001.snv.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "SNV"
+    },
+    {
+      "fileName": "DO001.indel.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "INDEL"
+    },
+    {
+      "fileName": "DO001.cnv.txt.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "TXT",
+      "fileAccess": "open",
+      "dataType": "CNV"
+    },
+    {
+      "fileName": "DO001.sv.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "SV"
+    }
+  ],
+  "experiment": {
+    "sex": "female",
+    "age_at_diagnosis": 55,
+    "vital_status": "alive",
+    "diagnosis_date": "2021-03-15",
+    "disease_stage": "Stage II",
+    "primary_diagnosis": "Breast Adenocarcinoma",
+    "treatment_type": "Surgery",
+    "treatment_response": "Complete Response"
+  }
+}

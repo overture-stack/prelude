@@ -1,72 +1,60 @@
-# ====================================================================================== #
-# Shared config blocks (YAML anchors).                                                    #
-# Define once here (before first use), reference with `*name`.                            #
-# ====================================================================================== #
-x-default-logging: &default-logging
-  driver: "json-file"
-  options:
-    max-size: "50m"
-    max-file: "10"
+name: overture-demo
 
 services:
   # ================================================================================== #
-  # ================================================================================== #
-  #                                    Demo:                                           #
-  #                             Search & Exploration                                   #
+  #                                    Setup                                           #
+  #                        Orchestrates platform deployment                            #
   # ================================================================================== #
   setup:
-    # ================================================================================== #
-    #  Runs scripts thats automate general setup and configuration.                      #
-    #  Update the enviorment variables here according to your specific project           #
-    #  More information can be found within the docs folder                              #
-    # ================================================================================== #
     profiles: ["demo", "platform", "default"]
     image: alpine/curl:8.8.0
-    pull_policy: if_not_present
     container_name: setup
     volumes:
-      - ./setup:/setup
-      - ./setup/volumes/health:/health
+      - ./apps/setup:/setup
+      - ./apps/setup/volumes/health:/health
       - ./configs:/configs
-      # ARGO clinical docs (donor.ndjson) are bulk-loaded from here in setup_indices step;
-      # conductor's flat-CSV loader can't ingest the nested _bulk file.
       - ./data:/data
     environment:
-      # Global Configuration
       PROFILE: ${PROFILE:-default}
       DEBUG: false
-      # PostgreSQL Configuration
-      POSTGRES_CONFIGS_DIR: configs/postgres
-      # PostgreSQL Connection
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
-      # OpenSearch Index Configuration
-      # Indices are discovered from the mapping files in this directory following the
-      # "<name>-mapping.json" -> index "<name>-index", alias "<name>_centric" convention.
-      # Add an index by dropping a mapping file here — no per-index env vars to maintain.
-      ES_INDEX_CONFIG_DIR: /configs/opensearch
-      # Arranger Services Configuration
-      # The healthcheck auto-discovers catalogues by scanning the mounted config
-      # directory, so adding/removing a catalogue needs no changes here, just
-      # add/remove its folder under configs/arranger.
-      ARRANGER_URL: http://arranger:5050
-      ARRANGER_CONFIG_DIR: /configs/arranger
-      # Service Connections
-      ES_USER: ${ES_USER:-elastic}
-      ES_PASS: ${ES_PASSWORD:-myelasticpassword}
-      ES_URL: http://opensearch:9200
+      # Elasticsearch
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_URL: http://elasticsearch:9200
+      ES_INDEX_COUNT: 1
+      ES_INDEX_0_NAME: file-index
+      ES_INDEX_0_TEMPLATE_FILE: configs/elasticsearchConfigs/file-mapping.json
+      ES_INDEX_0_TEMPLATE_NAME: file-index
+      ES_INDEX_0_ALIAS_NAME: file_centric
+      # Arranger
+      ARRANGER_COUNT: 1
+      ARRANGER_0_URL: http://arranger-file:5050
+      # Stage
       STAGE_URL: http://stage:3000
       STAGE_PORT: ${STAGE_PORT:-3000}
+      # Song / Score / MinIO / Maestro
+      SONG_URL: http://song:8080
+      SONG_STUDY_ID: demo
+      SONG_STUDY_NAME: Demo
+      SONG_STUDY_DESCRIPTION: Overture demo genomic data portal
+      SONG_STUDY_ORGANIZATION: Overture
+      SONG_SCHEMA_DIR: configs/songConfigs
+      SONG_PAYLOAD_DIR: /data/payloads
+      SONG_FILES_DIR: data/files
+      SCORE_URL: http://score:8087
+      OBJECT_STORAGE_URL: http://minio:9000
+      MAESTRO_URL: http://maestro:11235
+      SCORE_ACCESS_TOKEN: "68fb42b4-f1ed-4e8c-beab-3724b99fe528"
+      # MinIO credentials for bucket init via curl --aws-sigv4
+      AWS_ACCESS_KEY_ID: admin
+      AWS_SECRET_ACCESS_KEY: admin123
+      AWS_DEFAULT_REGION: us-east-1
     command: >
       sh -c '
         set -e
         echo "Profile is set to: $PROFILE"
         case "$PROFILE" in
           "demo"|"platform")
-            echo "Running $PROFILE deployment..."
             chmod +x setup/scripts/deployments/platform.sh
             setup/scripts/deployments/platform.sh
             ;;
@@ -86,146 +74,72 @@ services:
     networks:
       - platform-network
 
-  # --------------------------------------------------------------------------------------#
-  # Conductor CLI - Data Upload Service                                                  #
-  # --------------------------------------------------------------------------------------#
-  # Pulls the published Conductor image — no local Node.js build required.              #
-  # Used automatically by `make demo` to load sample data.                              #
-  # For interactive use, run ./conductor from the repo root instead.                    #
-  # --------------------------------------------------------------------------------------#
-  conductor-cli:
-    profiles: ["demo", "default"]
-    # Published from this repo's own apps/conductor source (overture-stack/conductor
-    # redirects here). Earlier published tags used @elastic/elasticsearch, whose 7.14+
-    # product check rejects OpenSearch ("server is not Elasticsearch") and blocks all
-    # indexing; this tag carries the @opensearch-project/opensearch client instead.
-    image: ghcr.io/overture-stack/conductor:d2dee75
-    pull_policy: if_not_present
-    container_name: conductor-cli
-    platform: linux/amd64
-    volumes:
-      - ./data:/data
-    # Tables to load. Add a table by listing it here AND providing
-    # /data/tables/<name>.csv (file -> /data/tables/<name>.csv, type -> <name>,
-    # index -> <name>-index).
-    environment:
-      ES_USER: ${ES_USER:-elastic}
-      ES_PASSWORD: ${ES_PASSWORD:-myelasticpassword}
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
-      POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
-      DATA_TABLES: "correlation expression mutation protein fixture"
-    command: >
-      sh -c '
-        set -e
-        echo "Starting conductor CLI - data upload service"
-        echo "Available files in /data/tables: $$(ls /data/tables/ || echo none)"
-        for t in $$DATA_TABLES; do
-          echo "Uploading $$t ..."
-          node dist/main.js upload \
-            -f /data/tables/$$t.csv \
-            -t $$t \
-            -i $$t-index \
-            --db-host postgres:5432 \
-            --db-user "$$POSTGRES_USER" \
-            --db-pass "$$POSTGRES_PASSWORD" \
-            --db-name "$$POSTGRES_DB" \
-            --es-host opensearch:9200 \
-            --es-user "$$ES_USER" \
-            --es-pass "$$ES_PASSWORD"
-        done
-      '
-    depends_on:
-      setup:
-        condition: service_completed_successfully
-    networks:
-      - platform-network
+  # ================================================================================== #
+  #                              Infrastructure                                        #
+  # ================================================================================== #
 
   # -----------------------------------------------------------------------------------#
-  # PostgreSQL                                                                         #
+  # Song Database — dedicated Postgres for Song; Flyway manages the schema             #
   # -----------------------------------------------------------------------------------#
-  # Persistant storage for data being indexed into opensearch.                         #
-  # -----------------------------------------------------------------------------------#
-  postgres:
+  song-db:
     profiles: ["demo", "platform", "default"]
-    image: postgres:15-alpine
-    pull_policy: if_not_present
-    container_name: postgres
+    image: postgres:11.1
+    container_name: song-db
     platform: linux/amd64
-    restart: unless-stopped
     ports:
-      - "127.0.0.1:5435:5432" # Localhost only — not accessible from the network
+      - "5433:5432"
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_DB: ${POSTGRES_DB:-overtureDb}
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: songDb
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin}"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d songDb"]
       interval: 20s
       timeout: 10s
       retries: 10
       start_period: 20s
-    logging: *default-logging
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: "1"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - song-database-data:/var/lib/postgresql/data
     networks:
       - platform-network
 
-  # --------------------------------------------------------------------------------------#
-  # OpenSearch                                                                            #
-  # --------------------------------------------------------------------------------------#
-  # A search and analytics engine used to help query massive datatables.                  #
-  # Apache-2.0 fork of Elasticsearch 7.10; https://opensearch.org/docs/latest/            #
-  # --------------------------------------------------------------------------------------#
-  opensearch:
+  # -----------------------------------------------------------------------------------#
+  # Elasticsearch                                                                      #
+  # -----------------------------------------------------------------------------------#
+  elasticsearch:
     profiles: ["demo", "platform", "default"]
-    # Pin/override the tag via OPENSEARCH_TAG in .env. 2.x serves the ES7-style index
-    # templates and queries this stack uses; the mapping files need no changes.
-    image: opensearchproject/opensearch:${OPENSEARCH_TAG:-2.17.1}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.27
     pull_policy: if_not_present
-    container_name: opensearch
+    container_name: elasticsearch
     platform: linux/amd64
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:9200:9200"
     environment:
       discovery.type: single-node
-      cluster.name: workflow.opensearch
-      # Security plugin OFF for this localhost-bound demo: keeps the API on plain HTTP
-      # (no self-signed TLS) so the existing http:// clients and setup scripts work
-      # unchanged, and no admin password is required. Do NOT disable security on any
-      # network-exposed deployment.
-      DISABLE_SECURITY_PLUGIN: "true"
-      DISABLE_INSTALL_DEMO_CONFIG: "true"
-      # NOTE: do NOT set `compatibility.override_main_response_version` here. It hides
-      # `version.distribution` on `GET /`, so Arranger auto-detects the Elasticsearch
-      # client (not OpenSearch) and fails to init with "Could not create a mapping".
-      # Arranger keys its client selection on the real `distribution: opensearch` value.
-      # Heap size. Tune for smaller machines (e.g. workshop laptops) via .env.
-      # Keep -Xmx at or below the deploy memory limit below. ES_JAVA_OPTS is kept as
-      # the override key so existing .env files keep working.
-      OPENSEARCH_JAVA_OPTS: ${ES_JAVA_OPTS:--Xms512m -Xmx2048m}
-    ports:
-      - "127.0.0.1:9200:9200" # Localhost only — not accessible from the network
-    logging: *default-logging
+      cluster.name: workflow.elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx2048m
+      ES_USER: elastic
+      ELASTIC_PASSWORD: myelasticpassword
+      xpack.security.enabled: "true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
     deploy:
       resources:
         limits:
-          memory: ${ES_MEM_LIMIT:-3G}
+          memory: 3G
           cpus: "2"
         reservations:
-          memory: ${ES_MEM_RESERVATION:-2G}
+          memory: 2G
     volumes:
-      - opensearch-data:/usr/share/opensearch/data
+      - elasticsearch-data:/usr/share/configs/elasticsearch/data
     healthcheck:
       test:
-        [
-          "CMD-SHELL",
-          "curl -s -f 'localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s' || exit 1",
-        ]
+        "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s ||
+        exit 1"
       interval: 10s
       timeout: 10s
       retries: 5
@@ -233,55 +147,252 @@ services:
     networks:
       - platform-network
 
-  # ------------------------------------------------------------------------------------#
-  # Arranger-Server for our tabular data                                                #
-  # ------------------------------------------------------------------------------------#
-  # Search API generation with compatible search UI components                          #
-  # https://docs.overture.bio/docs/core-software/Arranger/overview                      #
-  # ------------------------------------------------------------------------------------#
-  arranger:
+  # ================================================================================== #
+  #                         File Management                                            #
+  #               Kafka  ·  MinIO  ·  Song  ·  Score                                  #
+  # ================================================================================== #
+
+  # -----------------------------------------------------------------------------------#
+  # Kafka — KRaft mode (no Zookeeper)                                                  #
+  # kafkaSetup.sh is mounted into the container and runs before the broker starts      #
+  # -----------------------------------------------------------------------------------#
+  kafka:
     profiles: ["demo", "platform", "default"]
-    image: ghcr.io/overture-stack/arranger-search-server:b5c6051b
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    platform: linux/amd64
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    volumes:
+      - ./apps/setup/scripts/services/kafka/kafkaSetup.sh:/scripts/kafkaSetup.sh
+      - kafka-data:/var/lib/kafka/data
+    environment:
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_RETENTION_BYTES: -1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_MESSAGE_MAX_BYTES: 5242880
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 5242880
+      CLUSTER_ID: "q1Sh-9_ISia_zwGINzRvyQ"
+    command: >
+      sh -c '
+        echo "Setting up Kafka topics..."
+        chmod +x /scripts/kafkaSetup.sh
+        /scripts/kafkaSetup.sh &
+        /etc/confluent/docker/run
+      '
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "kafka-topics --bootstrap-server kafka:9092 --list > /dev/null 2>&1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - platform-network
+
+  # -----------------------------------------------------------------------------------#
+  # MinIO — object storage                                                             #
+  # Must be 2018 version: Score validates ETag == MD5 per uploaded part;              #
+  # newer MinIO versions changed this behaviour and break Score uploads.               #
+  # -----------------------------------------------------------------------------------#
+  minio:
+    profiles: ["demo", "platform", "default"]
+    image: minio/minio:RELEASE.2018-05-11T00-29-24Z
+    container_name: minio
+    platform: linux/amd64
+    ports:
+      - "8085:9000"
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: admin123
+    command: server /data
+    volumes:
+      - minio-data:/data
+    networks:
+      - platform-network
+
+  # -----------------------------------------------------------------------------------#
+  # Song — metadata registry                                                           #
+  # Flyway manages songDb schema. `secure` profile omitted → no OAuth2.               #
+  # -----------------------------------------------------------------------------------#
+  song:
+    profiles: ["demo", "platform", "default"]
+    image: ghcr.io/overture-stack/song-server:5131f6f8
+    container_name: song
+    platform: linux/amd64
+    depends_on:
+      song-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev, noSecurityDev, kafka
+      SPRING_FLYWAY_ENABLED: "true"
+      ID_USELOCAL: "true"
+      SCHEMAS_ENFORCELATEST: "true"
+      SCORE_URL: http://score:8087
+      SCORE_ACCESSTOKEN: "68fb42b4-f1ed-4e8c-beab-3724b99fe528"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://song-db:5432/songDb?stringtype=unspecified
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:9092
+      SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC: song-analysis
+      SWAGGER_ALTERNATEURL: /swagger-api
+    networks:
+      - platform-network
+
+  # -----------------------------------------------------------------------------------#
+  # Score — file transfer service                                                      #
+  # `secure` / `jwt` profiles omitted; bypass token accepted in non-secure mode.      #
+  # -----------------------------------------------------------------------------------#
+  score:
+    profiles: ["demo", "platform", "default"]
+    image: ghcr.io/overture-stack/score-server:5.12.0
+    container_name: score
+    platform: linux/amd64
+    depends_on:
+      minio:
+        condition: service_healthy
+    ports:
+      - "8087:8087"
+    environment:
+      # Spring Variables
+      SPRING_PROFILES_ACTIVE: noSecurityDev, s3
+      SERVER_PORT: 8087
+      # Song Variable
+      METADATA_URL: http://song:8080
+      METADATA_USE_LEGACY_MODE: "true"
+      # Score Variables
+      SERVER_SSL_ENABLED: "false"
+      # Object Storage Variables
+      S3_ENDPOINT: http://minio:9000
+      S3_PRE_SIGNED_URL_OVERRIDE_HOST: localhost:8085
+      S3_ACCESSKEY: admin
+      S3_SECRETKEY: admin123
+      S3_SIGV4ENABLED: true
+      S3_SECURED: false
+      OBJECT_SENTINEL: heliograph
+      BUCKET_NAME_OBJECT: object
+      BUCKET_NAME_STATE: state
+      UPLOAD_PARTSIZE: 1073741824
+      UPLOAD_CONNECTION_TIMEOUT: 1200000
+    networks:
+      - platform-network
+
+  # ================================================================================== #
+  #                         Search & Indexing                                          #
+  # ================================================================================== #
+
+  # -----------------------------------------------------------------------------------#
+  # Maestro — indexes Song analyses into Elasticsearch via Kafka events                #
+  # -----------------------------------------------------------------------------------#
+  maestro:
+    profiles: ["demo", "platform", "default"]
+    image: ghcr.io/overture-stack/maestro:cc8aa3d
+    container_name: maestro
+    platform: linux/amd64
+    depends_on:
+      setup:
+        condition: service_healthy
+    ports:
+      - "11235:11235"
+    environment:
+      # Logging
+      MAESTRO_LOGGING_LEVEL: info
+      # Elasticsearch Settings
+      MAESTRO_ELASTICSEARCH_NODES: "http://elasticsearch:9200"
+      MAESTRO_ELASTICSEARCH_VERSION: 7
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_ENABLED: true
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_USER: elastic
+      MAESTRO_ELASTICSEARCH_CLIENT_BASICAUTH_PASSWORD: myelasticpassword
+      MAESTRO_ELASTICSEARCH_CLIENT_RETRY_MAX_ATTEMPTS: 3
+      MAESTRO_ELASTICSEARCH_CLIENT_RETRY_WAIT_DURATION_MILLIS: 500
+      MAESTRO_ELASTICSEARCH_CLIENT_DOCS_PER_BULK_REQ_MAX: 5000
+      MAESTRO_ELASTICSEARCH_CLIENT_CONNECTION_TIMEOUT: 5000
+      # Kafka
+      MAESTRO_KAFKA_BROKERS: kafka:9092
+      MAESTRO_KAFKA_GROUP_ID: maestro
+      MAESTRO_KAFKA_INDEX_REQUEST_TOPIC: maestro_index_requests
+      MAESTRO_KAFKA_INDEX_REQUEST_DLQ: maestro_index_requests_dlq
+      # Repository Configuration - Song
+      MAESTRO_REPOSITORIES_0_BASE_URL: http://song:8080
+      MAESTRO_REPOSITORIES_0_CODE: song.overture
+      MAESTRO_REPOSITORIES_0_NAME: Overture Song
+      MAESTRO_REPOSITORIES_0_PAGINATION_SIZE: 50
+      MAESTRO_REPOSITORIES_0_INDEX_NAME: file-index
+      MAESTRO_REPOSITORIES_0_TYPE: SONG
+      MAESTRO_REPOSITORIES_0_SONG_INDEXABLE_STUDY_STATES: PUBLISHED
+      MAESTRO_REPOSITORIES_0_SONG_INDEXING_MODE: file
+      MAESTRO_REPOSITORIES_0_SONG_ORGANIZATION: OICR
+      MAESTRO_REPOSITORIES_0_SONG_COUNTRY: CA
+      MAESTRO_REPOSITORIES_0_KAFKA_DOCUMENT_UPDATE_TOPIC: song-analysis
+      MAESTRO_REPOSITORIES_0_KAFKA_DOCUMENT_UPDATE_DLQ: song-analysis-dlq
+    networks:
+      - platform-network
+
+  # -----------------------------------------------------------------------------------#
+  # Arranger — GraphQL search API over file_centric index                              #
+  # -----------------------------------------------------------------------------------#
+  arranger-file:
+    profiles: ["demo", "platform", "default"]
+    image: ghcr.io/overture-stack/arranger-server:1f685ab4
     pull_policy: if_not_present
-    container_name: arranger
+    container_name: arranger-file
     platform: linux/amd64
     restart: unless-stopped
     depends_on:
       setup:
         condition: service_healthy
+    ports:
+      - "127.0.0.1:5050:5050"
     volumes:
-      - ./configs/arranger:/app/configs
+      - ./configs/arrangerConfigs:/app/configs
     environment:
-      # OpenSearch connection (ES_* var names kept: Arranger reads these keys)
-      ES_HOST: http://opensearch:9200
-      ES_USER: ${ES_USER:-elastic}
-      ES_PASS: ${ES_PASSWORD:-myelasticpassword}
-      ES_ARRANGER_SET_INDEX: arranger_set
-      # Arranger Variables (Port required)
+      ES_HOST: http://elasticsearch:9200
+      ES_USER: elastic
+      ES_PASS: myelasticpassword
+      ES_ARRANGER_SET_INDEX: file_arranger_set
       PORT: 5050
       DEBUG: false
-      # Logs on so `docker logs arranger` is useful when the setup healthcheck points there.
-      ENABLE_LOGS: true
-    ports:
-      - "127.0.0.1:5050:5050" # Localhost only — not accessible from the network
+      ENABLE_LOGS: false
     healthcheck:
-      # /ping only proves the server process is up — it returns 200 even when an
-      # individual catalogue's GraphQL endpoint failed to mount (the arranger-sets
-      # startup race, see docs/developer issue ticket). So probe every catalogue's
-      # GraphQL endpoint instead: a catalogue that lost the race 500s here and marks
-      # the whole container unhealthy, which surfaces in `docker ps` and blocks
-      # dependents that wait on `condition: service_healthy`.
-      # The catalogue list mirrors the directories in configs/arranger/.
       test:
         [
-          "CMD-SHELL",
-          'for c in correlation expression fixture mutation protein donor; do curl -sf -X POST -H ''Content-Type: application/json'' -d ''{"query":"{ __typename }"}'' "http://localhost:5050/$$c/graphql" | grep -q __typename || exit 1; done',
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5050/",
         ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
-    logging: *default-logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
     deploy:
       resources:
         limits:
@@ -290,67 +401,13 @@ services:
     networks:
       - platform-network
 
-  # ------------------------------------------------------------------------------------#
-  # Arranger MCP Server                                                                 #
-  # ------------------------------------------------------------------------------------#
-  # Exposes Arranger catalogues as MCP tools/resources for LLM clients (LM Studio,      #
-  # Claude Desktop, etc.). Streamable HTTP transport — once running, connect at         #
-  # http://localhost:${MCP_PORT:-3100}/mcp  (client transport type: "http").            #
-  #                                                                                      #
-  # Runs the published edge image directly: it ships the built app and launches         #
-  # `tsx apps/mcp-server/src/index.ts` on port 3100. Bump the tag below to upgrade.     #
-  # ------------------------------------------------------------------------------------#
-  arranger-mcp:
-    profiles: ["demo", "default"]
-    image: ghcr.io/overture-stack/arranger-mcp-server:b4a414ce
-    pull_policy: if_not_present
-    container_name: arranger-mcp
-    platform: linux/amd64
-    restart: unless-stopped
-    depends_on:
-      arranger:
-        condition: service_healthy
-    environment:
-      # Required — the server exits on startup if either is missing or invalid.
-      ARRANGER_BASE_URL: http://arranger:5050
-      ARRANGER_CATALOGUES: ${ARRANGER_MCP_CATALOGUES:-correlation,mutation,expression,protein,donor}
-      # Optional — listed with their image defaults for discoverability.
-      MCP_HOST: 0.0.0.0
-      MCP_PATH: /mcp
-      LOG_LEVEL: ${MCP_LOG_LEVEL:-info}
-    ports:
-      # Container always listens on 3100; MCP_PORT changes only the host-side port.
-      - "127.0.0.1:${MCP_PORT:-3100}:3100"
-    healthcheck:
-      # No dedicated health route (only /mcp, which needs a session), so a plain TCP
-      # connect to the listening port is enough to prove the process is up. node is
-      # always present in the image.
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "require('net').connect(3100,'127.0.0.1').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    logging: *default-logging
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: "0.5"
-    networks:
-      - platform-network
+  # ================================================================================== #
+  #                               Portal UI                                            #
+  # ================================================================================== #
 
-  # ------------------------------------------------------------------------------------#
-  # Stage                                                                               #
-  # ------------------------------------------------------------------------------------#
-  # The react-based, front end UI scaffolding for Overture                              #
-  # https://docs.overture.bio/docs/core-software/Stage/overview                         #
-  # ------------------------------------------------------------------------------------#
+  # -----------------------------------------------------------------------------------#
+  # Stage                                                                              #
+  # -----------------------------------------------------------------------------------#
   stage:
     profiles: ["demo", "platform", "default"]
     build:
@@ -363,69 +420,34 @@ services:
       setup:
         condition: service_healthy
     ports:
-      - "127.0.0.1:${STAGE_PORT:-3000}:3000" # Localhost only — nginx is the public entry point
+      - "${STAGE_PORT:-3000}:3000"
     environment:
-      # Stage Variables
-      # PORTAL_URL: set this in .env for production (e.g. http://overturemcp.genomeinformatics)
-      NEXTAUTH_URL: ${PORTAL_URL:-http://localhost:3000}/api/auth
-      NEXT_PUBLIC_LAB_NAME: ${NEXT_PUBLIC_LAB_NAME:-My Data Portal}
-      NEXT_PUBLIC_ADMIN_EMAIL: ${NEXT_PUBLIC_ADMIN_EMAIL:-admin@example.org}
+      NEXTAUTH_URL: http://localhost:3000/api/auth
+      NEXT_PUBLIC_LAB_NAME: Overture Demo Portal
+      NEXT_PUBLIC_ADMIN_EMAIL: admin@example.com
       NEXT_PUBLIC_DEBUG: false
       NEXT_PUBLIC_SHOW_MOBILE_WARNING: true
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       NEXT_PUBLIC_DISABLE_WELCOME_BANNER: false
-      # Arranger base URL — browser-facing, used by the Developer Tools dropdown links.
-      # Routes through nginx: /api/arranger/* → localhost:5050/*
-      NEXT_PUBLIC_ARRANGER_API: ${PORTAL_URL:-http://localhost:3000}/api/arranger
-      # Arranger API — internal Docker DNS, used server-side by Stage's proxy only.
-      # The browser never calls these URLs directly; it calls Stage at /api/dataset_N_arranger/*
-      # and Stage forwards server-side to these targets.
-      #
-      # Data tables: Stage exposes a FIXED set of 5 slots (DATATABLE_1..5). The slot
-      # count is hardcoded in the Stage source (next.config.js, pages/<name>Table/,
-      # pages/api/[...proxy].ts, global/utils/constants.ts), so these env vars are the
-      # config layer for those slots — they are NOT auto-discovered from configs/.
-      # Per-table convention for a table named <name>:
-      #   _API   -> http://arranger:5050/<name>     _INDEX -> <name>_centric
-      #   _DOCUMENT_TYPE -> records                 _EXPORT_ROW_ID_FIELD -> submission_metadata.submission_id
-      # Adding or changing a table touches more than this file — see the
-      # "Adding a data table" checklist in docs/developer/02-Local-Setup.md.
-      # Correlation Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger:5050/correlation
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: records
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: correlation_centric
-      NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_1_QUICKSEARCH: true
-      # Mutation Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_API: http://arranger:5050/mutation
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_DOCUMENT_TYPE: records
-      NEXT_PUBLIC_ARRANGER_DATATABLE_2_INDEX: mutation_centric
-      NEXT_PUBLIC_DATATABLE_2_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_2_QUICKSEARCH: true
-      # Expression Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_API: http://arranger:5050/expression
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_DOCUMENT_TYPE: records
-      NEXT_PUBLIC_ARRANGER_DATATABLE_3_INDEX: expression_centric
-      NEXT_PUBLIC_DATATABLE_3_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_3_QUICKSEARCH: true
-      # Protein Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_4_API: http://arranger:5050/protein
-      NEXT_PUBLIC_ARRANGER_DATATABLE_4_DOCUMENT_TYPE: records
-      NEXT_PUBLIC_ARRANGER_DATATABLE_4_INDEX: protein_centric
-      NEXT_PUBLIC_DATATABLE_4_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_4_QUICKSEARCH: true
-      # ARGO Donor (clinical) Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_5_API: http://arranger:5050/donor
-      NEXT_PUBLIC_ARRANGER_DATATABLE_5_DOCUMENT_TYPE: records
-      NEXT_PUBLIC_ARRANGER_DATATABLE_5_INDEX: donor_centric
-      NEXT_PUBLIC_DATATABLE_5_EXPORT_ROW_ID_FIELD: submitter_donor_id
-      NEXT_PUBLIC_ENABLE_DATATABLE_5_QUICKSEARCH: true
-      # Auth Variables
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-file:5050
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: file
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: file_centric
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_MANIFEST_COLUMNS: repositories.code,analysis.analysisId,object_id,file_type,file.name,file.size,file.md5sum,file.index_file.object_id,analysis.samples.donor.submitterDonorId,project_id,study_id
+      NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: object_id
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
       SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
       SESSION_ENCRYPTION_SECRET: ${NEXTAUTH_SECRET:-your-secure-secret-here}
-      # CORS — honours CORS_ALLOWED_ORIGIN if set in .env, otherwise falls back to PORTAL_URL.
-      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-${PORTAL_URL:-}}
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-}
+      # PostgreSQL (for data submission)
+      DB_HOST: song-db
+      DB_PORT: 5432
+      POSTGRES_DATABASE: songDb
+      POSTGRES_USERNAME: admin
+      POSTGRES_PASSWORD: admin123
+      # Elasticsearch (for data submission)
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_USER: elastic
+      ELASTICSEARCH_PASSWORD: myelasticpassword
     healthcheck:
       test:
         [
@@ -434,13 +456,17 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://127.0.0.1:3000/",
+          "http://localhost:3000/",
         ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
-    logging: *default-logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
     deploy:
       resources:
         limits:
@@ -451,10 +477,48 @@ services:
     networks:
       - platform-network
 
+  # ================================================================================== #
+  #                              Data Submission Clients                             #
+  # ================================================================================== #
+
+  # ----------------------------------------------------------------------------------#
+  # Song Client — submits analysis metadata and publishes analyses                   #
+  # ----------------------------------------------------------------------------------#
+  song-client:
+    profiles: ["submit"]
+    image: ghcr.io/overture-stack/song-client:5131f6f8
+    platform: linux/amd64
+    environment:
+      CLIENT_ACCESS_TOKEN: "68fb42b4-f1ed-4e8c-beab-3724b99fe528"
+      CLIENT_STUDY_ID: demo
+      CLIENT_SERVER_URL: http://song:8080
+    volumes:
+      - ./data:/output
+    networks:
+      - platform-network
+
+  # ----------------------------------------------------------------------------------#
+  # Score Client — uploads data files to object storage                              #
+  # ----------------------------------------------------------------------------------#
+  score-client:
+    profiles: ["submit"]
+    image: ghcr.io/overture-stack/score-client:ee758b91
+    platform: linux/amd64
+    environment:
+      ACCESSTOKEN: "68fb42b4-f1ed-4e8c-beab-3724b99fe528"
+      STORAGE_URL: http://score:8087
+      METADATA_URL: http://song:8080
+    volumes:
+      - data:/output
+    networks:
+      - platform-network
+
 volumes:
-  opensearch-data:
+  minio-data:
+  song-database-data:
+  elasticsearch-data:
+  kafka-data:
   stage-data:
-  postgres-data:
 networks:
   platform-network:
     driver: bridge

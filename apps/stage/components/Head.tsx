@@ -24,7 +24,7 @@ import NextHead from 'next/head';
 const PageHead = ({ subtitle }: { subtitle?: string }) => {
 	return (
 		<NextHead>
-			<title>Overture{subtitle ? ` - ${subtitle}` : ''}</title>
+			<title>Overture Demo Portal{subtitle ? ` - ${subtitle}` : ''}</title>
 		</NextHead>
 	);
 };

@@ -43,12 +43,12 @@ const HomeAcknowledgements = (): ReactElement => {
 							margin-bottom: 16px;
 						`}
 					>
-						This portal is developed by the OICR Genome Informatics group. It serves as the demo and development
-						environment for work on conversational data discovery using the Model Context Protocol.
+						This portal is a demonstration deployment built with Overture, an open-source suite of
+						software for managing, searching, and sharing genomics data.
 					</p>
 				</div>
 				<a
-					href="https://genome-informatics.oicr.on.ca/"
+					href="https://www.overture.bio/"
 					target="_blank"
 					rel="noopener noreferrer"
 					css={css`
@@ -69,7 +69,7 @@ const HomeAcknowledgements = (): ReactElement => {
 						}
 					`}
 				>
-					OICR Genome Informatics
+					Learn more about Overture
 				</a>
 			</div>
 		</div>

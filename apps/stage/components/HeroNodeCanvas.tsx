@@ -1,19 +1,6 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef } from 'react';
 
-interface Particle {
-	x: number;
-	y: number;
-	vx: number;
-	vy: number;
-	radius: number;
-	alpha: number;
-	isHub: boolean;
-}
-
-const EDGE_DISTANCE = 160;
-const PARTICLE_COUNT = 70;
-
 const HeroNodeCanvas = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -24,94 +11,85 @@ const HeroNodeCanvas = () => {
 		if (!ctx) return;
 
 		let animId: number;
-		const particles: Particle[] = [];
+		let phase = 0;
 
 		const resize = () => {
 			canvas.width = canvas.offsetWidth;
 			canvas.height = canvas.offsetHeight;
 		};
 
-		const init = () => {
-			particles.length = 0;
-			for (let i = 0; i < PARTICLE_COUNT; i++) {
-				const isHub = Math.random() < 0.12;
-				particles.push({
-					x: Math.random() * canvas.width,
-					y: Math.random() * canvas.height,
-					vx: (Math.random() - 0.5) * (isHub ? 0.06 : 0.11),
-					vy: (Math.random() - 0.5) * (isHub ? 0.06 : 0.11),
-					radius: isHub ? Math.random() * 3 + 4 : Math.random() * 2 + 1.5,
-					alpha: isHub ? 0.9 : Math.random() * 0.4 + 0.4,
-					isHub,
-				});
-			}
-		};
-
 		const draw = () => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-			// Edges
-			for (let i = 0; i < particles.length; i++) {
-				for (let j = i + 1; j < particles.length; j++) {
-					const a = particles[i];
-					const b = particles[j];
-					const dx = a.x - b.x;
-					const dy = a.y - b.y;
-					const dist = Math.sqrt(dx * dx + dy * dy);
-					if (dist < EDGE_DISTANCE) {
-						const strength = 1 - dist / EDGE_DISTANCE;
-						const edgeAlpha = strength * (a.isHub || b.isHub ? 0.5 : 0.22);
-						ctx.beginPath();
-						ctx.strokeStyle = `rgba(78, 185, 230, ${edgeAlpha})`;
-						ctx.lineWidth = a.isHub || b.isHub ? 1.2 : 0.7;
-						ctx.moveTo(a.x, a.y);
-						ctx.lineTo(b.x, b.y);
-						ctx.stroke();
-					}
+			const w = canvas.width;
+			const h = canvas.height;
+			const amplitude = h * 0.3;
+			const centerY = h * 0.5;
+			const wavelength = 180;
+
+			phase += 0.003;
+
+			// Base pair rungs — drawn behind the strands
+			for (let x = 0; x < w; x += 14) {
+				const angle = (x / wavelength) * Math.PI * 2 + phase;
+				const y1 = centerY + Math.sin(angle) * amplitude;
+				const y2 = centerY + Math.sin(angle + Math.PI) * amplitude;
+
+				// Depth cue: rung is most visible when strands are farthest apart
+				const depth = Math.abs(Math.cos(angle));
+				const alpha = depth * 0.3 + 0.04;
+
+				ctx.beginPath();
+				ctx.moveTo(x, y1);
+				ctx.lineTo(x, y2);
+				ctx.strokeStyle = `rgba(140, 210, 235, ${alpha})`;
+				ctx.lineWidth = 1.5;
+				ctx.stroke();
+
+				// Small nucleotide dots at rung ends when depth is significant
+				if (depth > 0.4) {
+					ctx.beginPath();
+					ctx.arc(x, y1, 2, 0, Math.PI * 2);
+					ctx.fillStyle = `rgba(140, 215, 245, ${alpha * 1.6})`;
+					ctx.fill();
+
+					ctx.beginPath();
+					ctx.arc(x, y2, 2, 0, Math.PI * 2);
+					ctx.fillStyle = `rgba(100, 200, 210, ${alpha * 1.6})`;
+					ctx.fill();
 				}
 			}
 
-			// Nodes
-			for (const p of particles) {
-				// Outer glow
-				const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * (p.isHub ? 5 : 3.5));
-				glow.addColorStop(0, `rgba(78, 185, 230, ${p.alpha * 0.35})`);
-				glow.addColorStop(1, `rgba(78, 185, 230, 0)`);
-				ctx.beginPath();
-				ctx.arc(p.x, p.y, p.radius * (p.isHub ? 5 : 3.5), 0, Math.PI * 2);
-				ctx.fillStyle = glow;
-				ctx.fill();
-
-				// Core
-				ctx.beginPath();
-				ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-				ctx.fillStyle = p.isHub
-					? `rgba(110, 201, 208, ${p.alpha})`
-					: `rgba(150, 215, 240, ${p.alpha})`;
-				ctx.fill();
-
-				p.x += p.vx;
-				p.y += p.vy;
-				if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-				if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+			// Strand 1
+			ctx.beginPath();
+			for (let x = 0; x <= w; x += 2) {
+				const y = centerY + Math.sin((x / wavelength) * Math.PI * 2 + phase) * amplitude;
+				x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
 			}
+			ctx.strokeStyle = 'rgba(78, 185, 230, 0.55)';
+			ctx.lineWidth = 2.5;
+			ctx.stroke();
+
+			// Strand 2 (complementary, 180° offset)
+			ctx.beginPath();
+			for (let x = 0; x <= w; x += 2) {
+				const y = centerY + Math.sin((x / wavelength) * Math.PI * 2 + phase + Math.PI) * amplitude;
+				x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+			}
+			ctx.strokeStyle = 'rgba(100, 205, 200, 0.5)';
+			ctx.lineWidth = 2.5;
+			ctx.stroke();
 
 			animId = requestAnimationFrame(draw);
 		};
 
-		const onResize = () => {
-			resize();
-			init();
-		};
-
 		resize();
-		init();
 		draw();
 
-		window.addEventListener('resize', onResize);
+		window.addEventListener('resize', resize);
 		return () => {
 			cancelAnimationFrame(animId);
-			window.removeEventListener('resize', onResize);
+			window.removeEventListener('resize', resize);
 		};
 	}, []);
 

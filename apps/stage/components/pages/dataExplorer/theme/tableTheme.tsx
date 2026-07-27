@@ -26,7 +26,6 @@ import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Ta
 import { UseThemeContextProps } from '@overture-stack/arranger-components/dist/ThemeContext/types';
 import { ColumnsSelectButton, DownloadButton } from '@overture-stack/arranger-components';
 import urlJoin from 'url-join';
-import { CrossTableFilterButton } from '../CrossTableFilterButton';
 
 /**
  * Props for table theme configuration.
@@ -37,7 +36,7 @@ import { CrossTableFilterButton } from '../CrossTableFilterButton';
  */
 interface TableThemeConfig {
 	apiHost: string;
-	customExporters?: CustomExporterInput[];
+	customExporters?: CustomExporterInput;
 	exportSelectedRowsField: string;
 	currentTableName: string;
 }
@@ -125,7 +124,7 @@ export const createTableTheme = (
 
 			// Download/Export button configuration
 			DownloadButton: {
-				customExporters: config.customExporters?.[0],
+				customExporters: config.customExporters,
 				exportSelectedRowsField: config.exportSelectedRowsField,
 				downloadUrl: urlJoin(config.apiHost, 'download'),
 				/**
@@ -226,7 +225,6 @@ export const createTableTheme = (
 			// Toolbar configuration with custom tools
 			Toolbar: {
 				tools: [
-					CrossTableFilterButton as any,
 					ColumnsSelectButton as any,
 					DownloadButton as any,
 				],

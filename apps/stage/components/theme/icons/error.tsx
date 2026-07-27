@@ -22,7 +22,7 @@
 import { css } from '@emotion/react';
 import { ReactElement } from 'react';
 
-import theme from '../';
+import theme from '..';
 import { IconProps } from './types';
 
 const Error = ({ fill = theme.colors.red, size = 26, style }: IconProps): ReactElement => {

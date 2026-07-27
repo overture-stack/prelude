@@ -1,105 +1,158 @@
-# Overture Arranger MCP - Demo & Development Environment
+# Overture Demo Portal — File Submission & Download
 
-This repository is the central demo environment for building conversational AI capabilities for Overture-based cancer genomics platforms.
+A local demo portal that lets you submit new genomic data to an Overture platform and download data already held in it, through the Song and Score command-line clients and a web-based data explorer.
 
-<p align="center">
-   <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Portal Preview" width="800">
-</p>
+The portal is built on [Overture](https://www.overture.bio/), an open-source suite of software for managing, searching, and sharing genomics data. This branch (`docs-demo/file-transfer`) is a self-contained demo environment that backs two guides on the Overture documentation site:
 
-## Project Aims
+- [File Submission](https://docs.overture.bio/docs/use-docs/cli-submissions) — registering analyses and uploading files with the Song and Score clients.
+- [File Download](https://docs.overture.bio/docs/use-docs/cli-downloads) — searching the portal, exporting a manifest, and pulling files with the Score client.
 
-1. **Conversational data discovery** - expose Overture's GraphQL search API through the Model Context Protocol, enabling natural language queries across any Overture deployment
-2. **Pathway discovery** - integrate curated gene sets (MSigDB, 50,000+) for conversational pathway analysis alongside genomics data
-3. **Local LLM support** - orchestrate MCP servers with local models (LM Studio, Ollama) for privacy-preserving, institutionally deployable workflows
-4. **Interactive analysis & visualization** - LLM-generated code execution in sandboxed environments
-5. **Federated discovery** - unified queries across distributed Overture instances and external repositories
-6. **Platform extensibility** - MCP Integration Cookbook, workshop series, and Overture MCP Registry
+## Prerequisites
 
-## This Demo Environment
+| Requirement    | Minimum version | Notes                                |
+| -------------- | --------------- | ------------------------------------ |
+| Docker Desktop | 4.39.0          | Allocate at least 8 GB RAM to Docker |
+| Make           | any             | Pre-installed on macOS/Linux         |
+| Git            | any             | To clone the repository              |
 
-The portal hosts four cancer genomics catalogues derived from the Drug Discovery Portal. These are **representative samples of roughly 1,000 rows each**, not the full upstream dataset (which is ~405 million records across 32 cancer types). The samples are small enough to load in seconds on a laptop and are meant for demonstrating and testing the conversational discovery workflow, not for analysis.
+> **Disk space:** Allow at least 10 GB free for Docker images and volumes.
 
-| Catalogue         | Description                                                        | Sample scope            |
-| ----------------- | ------------------------------------------------------------------ | ----------------------- |
-| **`mutation`**    | Gene mutation frequencies with cancer type and hotspot designation | ~1k rows, BRCA only     |
-| **`expression`**  | Gene expression profiles relative to normal tissue                 | ~1k rows, 32 cancer types |
-| **`correlation`** | Gene-gene correlation patterns                                     | ~1k rows, DLBC only     |
-| **`protein`**     | Protein-protein interaction network data                           | ~1k rows                |
+## Getting the Demo
 
-Sample coverage is not uniform across catalogues: `expression` spans 32 cancer types, but `mutation` is BRCA-only and `correlation` is DLBC-only. A separate synthetic `fixture` catalogue (44 rows) backs platform testing, and an ICGC-ARGO clinical `donor` catalogue is also loaded.
-
-`make demo` loads these samples automatically (the `demo` profile). To start the same stack empty and upload your own data instead, use `make platform`.
-
-These catalogues are the primary validation environment for **Aim 1** - demonstrating conversational data discovery through the Overture Arranger MCP Server.
-
-## Running the Demo
-
-Clone the repository and start the full stack:
+Clone this branch of the Prelude repository:
 
 ```bash
-git clone -b overtureMCP --recurse-submodules https://github.com/overture-stack/prelude.git
+git clone -b docs-demo/file-transfer https://github.com/overture-stack/prelude.git
 cd prelude
-make demo
 ```
 
-The portal will be available at **http://localhost:3000** once deployment completes.
-
-> **Note:** `apps/arranger/` is a git submodule vendoring the [Overture Arranger](https://github.com/overture-stack/arranger) source at a pinned commit, kept for reference and documentation — the demo's search API and MCP server run from the published images in `docker-compose.yml`, not from this checkout. If you cloned without `--recurse-submodules`, run `git submodule update --init` to fetch it.
-
-<details>
-<summary><strong>What this command does</strong></summary>
-
-1. Runs system checks (Docker version, available resources)
-2. Builds the Stage frontend image
-3. Starts all services via Docker Compose
-4. Initializes PostgreSQL schemas
-5. Creates OpenSearch indices from the pre-configured mappings
-6. Loads the sample catalogues into OpenSearch
-7. Starts Arranger (search API), the Arranger MCP server, and Stage (portal UI)
-
-When deployment completes, open the portal yourself at **http://localhost:3000** (the stack does not launch a browser for you).
-
-</details>
-
-## Services
-
-Once running, the following long-lived containers are active (all ports bound to `127.0.0.1` only):
-
-| Container      | Port   | Role                                                   |
-| -------------- | ------ | ------------------------------------------------------ |
-| `stage`        | 3000\* | Portal frontend                                        |
-| `arranger`     | 5050   | Search API (GraphQL + introspection endpoints)         |
-| `arranger-mcp` | 3100   | MCP server — connect an LLM host at `/mcp`             |
-| `opensearch`   | 9200   | Search engine                                          |
-| `postgres`     | 5435   | Persistent storage                                     |
-
-\* Stage falls back to `3001` if `3000` is already in use. The `setup` and `conductor-cli` containers also run during startup, then exit once data is loaded.
+## Starting the Platform
 
 ```bash
-docker ps
+make platform
 ```
 
-## Stopping and Resetting
+This starts all services and runs automated setup. The setup container orchestrates, in order: an Elasticsearch health check, index and alias creation, Stage and Arranger startup, MinIO bucket creation, Kafka readiness, Song study creation (the `demo` study), analysis-schema registration (`genomicVariants`), and Score and Maestro health checks.
 
-Stop all containers:
+> **First run:** Docker pulls all images before starting. This can take several minutes depending on your connection. Subsequent starts are much faster.
+
+`make platform` starts the stack empty so you can submit your own data (the File Submission guide). To start the same stack with the sample dataset already loaded, use `make demo` instead, or run `make submit` after `make platform`.
+
+## Loading Sample Data
+
+After the platform is running, load the sample dataset:
 
 ```bash
-make down
+make submit
 ```
 
-Stop and wipe all data (full reset):
+This submits 3 donor analyses (12 genomic files total) to Song and Score, then publishes them. Maestro automatically indexes the files into Elasticsearch within a few seconds, and the portal shows 12 records once indexing completes.
+
+See [docs/user/01-Data-Submission.md](docs/user/01-Data-Submission.md) for full details, including how to submit using the Song and Score client CLIs directly.
+
+## Sample Dataset
+
+The sample data is synthetic dummy data for demonstration only. It covers 3 donors, each with 4 small placeholder genomic files:
+
+| Donor   | Primary diagnosis         | Files                                    |
+| ------- | ------------------------- | ---------------------------------------- |
+| `DO001` | Breast Adenocarcinoma     | SNV, INDEL, CNV, SV (`DO001.*`)          |
+| `DO002` | Lung Adenocarcinoma       | SNV, INDEL, CNV, SV (`DO002.*`)          |
+| `DO003` | Colorectal Adenocarcinoma | SNV, INDEL, CNV, SV (`DO003.*`)          |
+
+The file contents are placeholders; Song and Score compute real file sizes and checksums from disk at submission time. Clinical fields are defined by the `genomicVariants` analysis schema and exposed as search facets in the portal.
+
+## Stopping and Restarting
 
 ```bash
-make reset
+make down        # Stop all containers (data preserved)
+make platform    # Restart
 ```
+
+Data in Elasticsearch, Song, and MinIO is stored in named Docker volumes and survives container restarts.
+
+## Resetting
+
+| Command           | What it does                                                                                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `make reset-song` | Removes only Song's database, clearing analysis registrations so data can be resubmitted from scratch. Does not affect Elasticsearch or MinIO. |
+| `make reset`      | Removes **all** containers and volumes. Complete data loss; use for a full clean start. Prompts for confirmation.                             |
+
+After `make reset-song`, re-run `make platform` to recreate the study and schema, then resubmit data.
+
+## Verifying Services
+
+```bash
+make status
+```
+
+You can also check individual service health endpoints:
+
+| Service       | Health URL                                                                         |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Song          | [http://localhost:8080/isAlive](http://localhost:8080/isAlive)                     |
+| Score         | [http://localhost:8087/download/ping](http://localhost:8087/download/ping)         |
+| Maestro       | [http://localhost:11235/health](http://localhost:11235/health)                     |
+| Elasticsearch | [http://localhost:9200/\_cluster/health](http://localhost:9200/_cluster/health)    |
+| MinIO         | [http://localhost:8085/minio/health/live](http://localhost:8085/minio/health/live) |
+| Arranger      | [http://localhost:5050/health](http://localhost:5050/health)                       |
+| Portal        | [http://localhost:3000](http://localhost:3000)                                     |
+
+## API and Swagger UIs
+
+| Service          | URL                                                                            |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Song Swagger     | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) |
+| Maestro API docs | [http://localhost:11235/api-docs](http://localhost:11235/api-docs)             |
+
+## Windows / WSL2
+
+Prelude is designed for Linux and macOS. Windows users must use WSL2:
+
+1. Install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) with Ubuntu or a similar distribution
+2. Install Docker Desktop with **WSL2 integration** enabled
+3. Clone and run all commands from the WSL2 Bash terminal
+4. Docker volume paths and Make targets work without modification inside WSL2
+
+Native Windows (PowerShell, CMD) is not supported.
+
+## Architecture
+
+```
+Researcher → Stage (portal UI)
+               ↓ GraphQL
+           Arranger (search API)
+               ↓
+         Elasticsearch (index)
+               ↑ indexed by
+            Maestro
+               ↑ Kafka events
+              Song (metadata registry)
+               ↕ validates
+             Score (file transfer)
+               ↕
+             MinIO (object storage)
+```
+
+Clinical metadata and genomic file records flow from Song through Kafka into Elasticsearch. Researchers search and filter through Stage; file downloads are served via Score presigned URLs.
 
 ## Documentation
 
-Full documentation is available in the [`docs/`](docs/) directory and rendered in the portal UI once running.
+| Document                                                                         | Audience      | Description                                       |
+| -------------------------------------------------------------------------------- | ------------- | ------------------------------------------------- |
+| [docs/user/01-Data-Submission.md](docs/user/01-Data-Submission.md)               | Data managers | Submitting analyses and files                     |
+| [docs/user/02-Data-Download.md](docs/user/02-Data-Download.md)                   | Researchers   | Searching, exporting manifests, downloading files |
+| [docs/admin/03-Data-Model-Management.md](docs/admin/03-Data-Model-Management.md) | Operators     | Managing analysis type schemas                    |
+| [docs/admin/04-Song-Schema-Reference.md](docs/admin/04-Song-Schema-Reference.md) | Operators     | Song JSON Schema authoring reference              |
 
-## Support
+## Commands
 
-|                 |                                                                                                                                  |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **Questions**   | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
-| **Bug reports** | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
+| Command           | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| `make demo`       | Start all services with the sample data pre-loaded    |
+| `make platform`   | Start all services empty (submit your own data)       |
+| `make submit`     | Load sample genomic data via Docker network           |
+| `make reset-song` | Reset Song DB only (clears analyses for resubmission) |
+| `make reset`      | Full reset; removes all containers and volumes        |
+| `make down`       | Stop all containers                                   |
+| `make status`     | Show running container health                         |

@@ -30,8 +30,8 @@ const DocumentationDropdown = () => {
 	useEffect(() => {
 		fetch('/api/docs')
 			.then((response) => response.json())
-			.then((sections: DocSection[]) => {
-				setDocSections(sections);
+			.then((sections: unknown) => {
+				setDocSections(Array.isArray(sections) ? (sections as DocSection[]) : []);
 				setLoading(false);
 			})
 			.catch((error) => {

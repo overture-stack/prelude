@@ -42,7 +42,7 @@ const HomeHero = (): ReactElement => {
 						overflow: hidden;
 					`}
 				>
-					Incrementally build your Overture data platform with Prelude.
+					Search, filter, and download genomic data from an Overture demo deployment.
 				</p>
 			</div>
 		</section>

@@ -1,8 +1,6 @@
 {
   "categories": [
-    { "id": "user", "label": "Users" },
-    { "id": "admin", "label": "Administrators" },
-    { "id": "development", "label": "Development" },
-    { "id": "arranger", "label": "Arranger (Search API)", "external": true }
+    { "id": "user", "label": "User Guides" },
+    { "id": "admin", "label": "Admin Guides" }
   ]
 }

@@ -1,0 +1,65 @@
+{
+  "studyId": "demo",
+  "analysisType": { "name": "genomicVariants" },
+  "samples": [
+    {
+      "submitterSampleId": "DO002-SA01",
+      "matchedNormalSubmitterSampleId": null,
+      "sampleType": "Total DNA",
+      "specimen": {
+        "submitterSpecimenId": "DO002-SP01",
+        "tumourNormalDesignation": "Tumour",
+        "specimenType": "Primary tumour",
+        "specimenTissueSource": "Lung"
+      },
+      "donor": {
+        "submitterDonorId": "DO002",
+        "gender": "Male"
+      }
+    }
+  ],
+  "files": [
+    {
+      "fileName": "DO002.snv.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "SNV"
+    },
+    {
+      "fileName": "DO002.indel.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "INDEL"
+    },
+    {
+      "fileName": "DO002.cnv.txt.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "TXT",
+      "fileAccess": "open",
+      "dataType": "CNV"
+    },
+    {
+      "fileName": "DO002.sv.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "SV"
+    }
+  ],
+  "experiment": {
+    "sex": "male",
+    "age_at_diagnosis": 67,
+    "vital_status": "deceased",
+    "diagnosis_date": "2019-08-22",
+    "disease_stage": "Stage III",
+    "primary_diagnosis": "Lung Adenocarcinoma",
+    "treatment_type": "Chemotherapy",
+    "treatment_response": "Partial Response"
+  }
+}

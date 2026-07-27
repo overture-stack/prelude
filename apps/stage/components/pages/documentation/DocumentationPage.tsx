@@ -6,6 +6,7 @@ import { StageThemeInterface } from '../../theme';
 import { createDocumentationTheme } from '../../theme/adapters/documentation';
 import FundingStatement from './FundingStatement';
 import { useCodeBlockCopyButtons } from './utils/useCodeBlockCopyButtons';
+import { useCodeBlockLineNumbers } from './utils/useCodeBlockLineNumbers';
 import { useDictionaryHydration } from './utils/useDictionaryHydration';
 import { useHeadingAnchors } from './utils/useHeadingAnchors';
 import { useMermaidDiagrams } from './utils/useMermaidDiagrams';
@@ -22,6 +23,7 @@ const DocumentationPage = ({ sections, currentSection, headings, categoryLabels 
 	useDictionaryHydration(contentRef, currentSection);
 	useHeadingAnchors(contentRef, currentSection);
 	useCodeBlockCopyButtons(contentRef, currentSection);
+	useCodeBlockLineNumbers(contentRef, currentSection);
 	useMermaidDiagrams(contentRef, currentSection);
 
 	// Group sections by category, preserving insertion order
@@ -590,13 +592,33 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		pre {
 			background: ${theme.colors.codeBackground};
 			color: ${theme.colors.codeText};
-			padding: ${theme.spacing[5]};
+			padding: ${theme.spacing[5]} ${theme.spacing[5]} ${theme.spacing[5]} ${theme.spacing[2]};
 			border-radius: ${theme.borderRadius.md};
 			overflow-x: auto;
 			margin: ${theme.spacing[6]} 0;
 			font-size: ${theme.fontSize.sm};
-			line-height: 1.5;
+			line-height: 0.8;
 			position: relative;
+			counter-reset: line-number;
+
+			.line {
+				counter-increment: line-number;
+				display: block;
+				padding-left: 2.25em;
+				position: relative;
+
+				&::before {
+					content: counter(line-number);
+					position: absolute;
+					left: 0;
+					width: 1.75em;
+					text-align: right;
+					color: ${theme.colors.textSecondary};
+					opacity: 0.4;
+					user-select: none;
+					pointer-events: none;
+				}
+			}
 
 			@media (max-width: ${theme.breakpoints.md}) {
 				padding: ${theme.spacing[4]};
@@ -1071,6 +1093,15 @@ const getStyles = (theme: ReturnType<typeof createDocumentationTheme>) => ({
 		/* Last content element gets bottom padding */
 		details > *:not(summary):last-child {
 			padding-bottom: ${theme.spacing[4]};
+		}
+
+		/* Extra vertical breathing room for tables at the top or bottom of a dropdown */
+		details > summary + table {
+			margin-top: ${theme.spacing[5]};
+		}
+
+		details > table:last-child {
+			margin-bottom: ${theme.spacing[5]};
 		}
 
 		/* Restore natural list indentation inside details (overridden by the container padding rule) */

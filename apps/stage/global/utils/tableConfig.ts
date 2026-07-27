@@ -16,33 +16,11 @@
 
 export interface TableConfig {
 	displayName: string;
-	/** Dataset grouping shown as a section header in the Explore Data dropdown/homepage card */
-	group?: string;
 }
 
-/** Display order for the groups above — anything not listed here sorts alphabetically after these. */
-export const DATA_TABLE_GROUP_ORDER = ['ARGO Clinical', 'Drug Discovery'];
-
 export const tableConfigs: Record<string, TableConfig> = {
-	correlationTable: {
-		displayName: 'Correlation Data',
-		group: 'Drug Discovery',
-	},
-	mutationTable: {
-		displayName: 'Mutation Data',
-		group: 'Drug Discovery',
-	},
-	expressionTable: {
-		displayName: 'Expression Data',
-		group: 'Drug Discovery',
-	},
-	proteinTable: {
-		displayName: 'Protein Data',
-		group: 'Drug Discovery',
-	},
-	donorTable: {
-		displayName: 'Clinical Data',
-		group: 'ARGO Clinical',
+	fileTable: {
+		displayName: 'File Repository',
 	},
 };
 

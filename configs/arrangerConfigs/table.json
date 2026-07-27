@@ -1,0 +1,198 @@
+{
+  "table": {
+    "rowIdFieldName": "object_id",
+    "columns": [
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.samples.donor.submitterDonorId",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.samples.hits.edges[*].node.donor.submitterDonorId",
+        "query": "analysis { samples { hits { edges { node { donor { submitterDonorId } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.disease_stage",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.disease_stage",
+        "query": "analysis { experiment { disease_stage } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.primary_diagnosis",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.primary_diagnosis",
+        "query": "analysis { experiment { primary_diagnosis } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.treatment_type",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.treatment_type",
+        "query": "analysis { experiment { treatment_type } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.treatment_response",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.treatment_response",
+        "query": "analysis { experiment { treatment_response } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.vital_status",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.vital_status",
+        "query": "analysis { experiment { vital_status } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.sex",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.sex",
+        "query": "analysis { experiment { sex } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.age_at_diagnosis",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.age_at_diagnosis",
+        "query": "analysis { experiment { age_at_diagnosis } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.experiment.diagnosis_date",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.experiment.diagnosis_date",
+        "query": "analysis { experiment { diagnosis_date } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.samples.donor.gender",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.analysis.samples.hits.edges[*].node.donor.gender",
+        "query": "analysis { samples { hits { edges { node { donor { gender } } } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file.name",
+        "show": true,
+        "sortable": true,
+        "jsonPath": "$.file.name",
+        "query": "file { name }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file_type",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "data_type",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file.size",
+        "show": true,
+        "sortable": true,
+        "displayType": "bytes",
+        "jsonPath": "$.file.size",
+        "query": "file { size }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file_access",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "object_id",
+        "show": true,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "file.md5sum",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.file.md5sum",
+        "query": "file { md5sum }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "study_id",
+        "show": false,
+        "sortable": true
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.analysisId",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.analysis.analysisId",
+        "query": "analysis { analysisId }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.analysisState",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.analysis.analysisState",
+        "query": "analysis { analysisState }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "analysis.analysisType.name",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.analysis.analysisType.name",
+        "query": "analysis { analysisType { name } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "repositories.code",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.repositories.hits.edges[*].node.code",
+        "query": "repositories { hits { edges { node { code } } } }"
+      },
+      {
+        "canChangeShow": true,
+        "fieldName": "repositories.url",
+        "show": false,
+        "sortable": true,
+        "jsonPath": "$.repositories.hits.edges[*].node.url",
+        "query": "repositories { hits { edges { node { url } } } }"
+      },
+      {
+        "canChangeShow": false,
+        "fieldName": "file.index_file.object_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.file.index_file.object_id",
+        "query": "file { index_file { object_id } }"
+      },
+      {
+        "canChangeShow": false,
+        "fieldName": "project_id",
+        "show": false,
+        "sortable": false,
+        "jsonPath": "$.study_id",
+        "query": "study_id"
+      }
+    ]
+  }
+}

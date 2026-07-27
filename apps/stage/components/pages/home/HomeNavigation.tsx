@@ -3,19 +3,7 @@ import { css, useTheme } from '@emotion/react';
 import { ReactElement, useEffect, useState } from 'react';
 import { INTERNAL_PATHS } from '../../../global/utils/constants';
 import { DataTableInfo } from '../../../global/utils/dataTablesDiscovery';
-import { DATA_TABLE_GROUP_ORDER } from '../../../global/utils/tableConfig';
 import HomeAcknowledgements from './HomeAcknowledgements';
-
-function sortGroups(groups: string[]): string[] {
-	return [...groups].sort((a, b) => {
-		const ai = DATA_TABLE_GROUP_ORDER.indexOf(a);
-		const bi = DATA_TABLE_GROUP_ORDER.indexOf(b);
-		if (ai === -1 && bi === -1) return a.localeCompare(b);
-		if (ai === -1) return 1;
-		if (bi === -1) return -1;
-		return ai - bi;
-	});
-}
 
 const CATEGORY_LABELS: Record<string, string> = {
 	user: 'User Guides',
@@ -59,9 +47,9 @@ const HomeNavigation = (): ReactElement => {
 			isDynamic: true,
 		},
 		{
-			title: 'Conversational Data Discovey Setup',
-			link: `${INTERNAL_PATHS.DOCUMENTATION}/user/setup`,
-			description: 'Connect a host application and run your first query',
+			title: 'Data Submission Guide',
+			link: `${INTERNAL_PATHS.DOCUMENTATION}/user/data-submission`,
+			description: 'Submit analyses and upload genomic files to the portal',
 		},
 		{
 			title: 'Project Documentation',
@@ -70,19 +58,9 @@ const HomeNavigation = (): ReactElement => {
 			isDynamic: true,
 		},
 		{
-			title: 'Resources',
-			link: '#',
-			description: 'Overture docs, source code, and community',
-			subItems: [
-				{ title: 'MCP Server Source code', link: 'https://github.com/overture-stack', external: true },
-				{
-					title: 'Search API (Arranger) Documentation',
-					link: 'https://docs.overture.bio/docs/core-software/Arranger/overview',
-					external: true,
-				},
-				{ title: 'Overture.bio', link: 'https://overture.bio/', external: true },
-				{ title: 'Community Support', link: 'https://docs.overture.bio/community/support', external: true },
-			],
+			title: 'Data Download Guide',
+			link: `${INTERNAL_PATHS.DOCUMENTATION}/user/data-download`,
+			description: 'Search, export a file manifest, and download data using the Score client',
 		},
 	]);
 
@@ -123,19 +101,14 @@ const HomeNavigation = (): ReactElement => {
 							subItems: undefined,
 						};
 					}
-					// Group by dataset (e.g. ARGO Clinical vs Drug Discovery) and insert header items
-					const groupedTables = new Map<string, DataTableInfo[]>();
-					for (const table of dataTables) {
-						const group = table.group || 'Other';
-						if (!groupedTables.has(group)) groupedTables.set(group, []);
-						groupedTables.get(group)!.push(table);
-					}
-					const tableGroups = sortGroups(Array.from(groupedTables.keys()));
-					const subItems: SubItem[] = tableGroups.flatMap((group) => [
-						{ title: group, link: '', isHeader: true },
-						...groupedTables.get(group)!.map((table) => ({ title: table.title, link: table.path })),
-					]);
-					return { ...card, subItems };
+					// If multiple data tables, show as dropdown
+					return {
+						...card,
+						subItems: dataTables.map((table) => ({
+							title: table.title,
+							link: table.path,
+						})),
+					};
 				}
 				if (card.title === 'Project Documentation' && card.isDynamic) {
 					// Group by category and insert header items

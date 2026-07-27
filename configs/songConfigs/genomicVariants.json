@@ -1,0 +1,51 @@
+{
+  "name": "genomicVariants",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "experiment": {
+        "type": "object",
+        "required": [
+          "sex",
+          "age_at_diagnosis",
+          "vital_status",
+          "diagnosis_date",
+          "disease_stage",
+          "primary_diagnosis",
+          "treatment_type",
+          "treatment_response"
+        ],
+        "properties": {
+          "sex": {
+            "type": "string",
+            "enum": ["male", "female", "other", "unknown"]
+          },
+          "age_at_diagnosis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 150
+          },
+          "vital_status": {
+            "type": "string",
+            "enum": ["alive", "deceased", "unknown"]
+          },
+          "diagnosis_date": {
+            "type": "string"
+          },
+          "disease_stage": {
+            "type": "string"
+          },
+          "primary_diagnosis": {
+            "type": "string"
+          },
+          "treatment_type": {
+            "type": "string"
+          },
+          "treatment_response": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

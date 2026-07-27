@@ -68,7 +68,9 @@ export interface ExportConfig {
 	/** Default filename for exported data (without extension) */
 	fileName: string;
 	/** Array of custom export options (e.g., CSV, TSV, JSON) */
-	customExporters?: CustomExporterInput[];
+	customExporters?: CustomExporterInput;
+	/** Columns to include in the file manifest export */
+	manifestColumns?: string[];
 }
 
 /**

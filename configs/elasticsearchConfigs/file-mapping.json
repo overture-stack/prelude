@@ -1,0 +1,86 @@
+{
+  "index_patterns": ["file-index*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "object_id":   { "type": "keyword" },
+      "study_id":    { "type": "keyword" },
+      "data_type":   { "type": "keyword" },
+      "file_type":   { "type": "keyword" },
+      "file_access": { "type": "keyword" },
+      "analysis": {
+        "type": "object",
+        "properties": {
+          "analysisId":    { "type": "keyword" },
+          "analysisState": { "type": "keyword" },
+          "analysisType": {
+            "type": "object",
+            "properties": {
+              "name":    { "type": "keyword" },
+              "version": { "type": "integer" }
+            }
+          },
+          "experiment": {
+            "type": "object",
+            "properties": {
+              "sex":                { "type": "keyword" },
+              "age_at_diagnosis":   { "type": "integer" },
+              "vital_status":       { "type": "keyword" },
+              "diagnosis_date":     { "type": "keyword" },
+              "disease_stage":      { "type": "keyword" },
+              "primary_diagnosis":  { "type": "keyword" },
+              "treatment_type":     { "type": "keyword" },
+              "treatment_response": { "type": "keyword" }
+            }
+          },
+          "samples": {
+            "type": "nested",
+            "properties": {
+              "submitterSampleId": { "type": "keyword" },
+              "sampleType":        { "type": "keyword" },
+              "donor": {
+                "type": "object",
+                "properties": {
+                  "gender":           { "type": "keyword" },
+                  "submitterDonorId": { "type": "keyword" }
+                }
+              },
+              "specimen": {
+                "type": "object",
+                "properties": {
+                  "specimenType":             { "type": "keyword" },
+                  "specimenTissueSource":     { "type": "keyword" },
+                  "submitterSpecimenId":      { "type": "keyword" },
+                  "tumourNormalDesignation":  { "type": "keyword" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "file": {
+        "type": "object",
+        "properties": {
+          "name":      { "type": "keyword" },
+          "data_type": { "type": "keyword" },
+          "size":      { "type": "long" },
+          "md5sum":    { "type": "keyword" }
+        }
+      },
+      "repositories": {
+        "type": "nested",
+        "properties": {
+          "code":         { "type": "keyword" },
+          "organization": { "type": "keyword" },
+          "name":         { "type": "keyword" },
+          "type":         { "type": "keyword" },
+          "country":      { "type": "keyword" },
+          "url":          { "type": "keyword" }
+        }
+      }
+    }
+  }
+}

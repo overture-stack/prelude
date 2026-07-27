@@ -30,6 +30,7 @@ import {
 import { CustomExporterInput } from '@overture-stack/arranger-components/dist/Table/DownloadButton/types';
 import { useMemo } from 'react';
 import { useRouter } from 'next/router';
+import StyledLink from '@/components/Link';
 import { ExportConfig } from '../types';
 import { createTableTheme } from '../theme/tableTheme';
 
@@ -90,17 +91,50 @@ const RepoTable = ({ callerName, apiHost, exportRowIdField, exportConfig }: Repo
 	 */
 	const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
-	/**
-	 * TypeScript Concept: Type Assertion
-	 * - as CustomExporterInput[] tells TypeScript the exact type
-	 *
-	 * JavaScript Concept: Default values with ||
-	 * - Use exportConfig if provided, otherwise use default
-	 */
-	const customExporters: CustomExporterInput[] = exportConfig?.customExporters || [
+	const manifestColumns = exportConfig?.manifestColumns ?? [];
+
+	const customExporters: CustomExporterInput = [
 		{
-			label: 'Download',
+			label: 'File Table',
 			fileName: exportConfig?.fileName || `data-export.${today}.tsv`,
+		},
+		...(manifestColumns.length > 0
+			? [
+					{
+						label: 'File Manifest',
+						fileName: `score-manifest.${today}.tsv`,
+						columns: manifestColumns,
+					},
+				]
+			: []),
+		{
+			label: () => (
+				<span
+					css={css`
+						border-top: 1px solid #dcdde1;
+						margin-top: -3px;
+						padding-top: 7px;
+						white-space: pre-line;
+
+						a {
+							margin-left: 3px;
+						}
+					`}
+				>
+					For more information, see the Data Retrieval section found on our
+					<StyledLink
+						css={css`
+							line-height: inherit;
+						`}
+						href="/documentation"
+						rel="noopener noreferrer"
+						target="_blank"
+					>
+						about this portal page
+					</StyledLink>
+					.
+				</span>
+			),
 		},
 	];
 

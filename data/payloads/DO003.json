@@ -1,0 +1,65 @@
+{
+  "studyId": "demo",
+  "analysisType": { "name": "genomicVariants" },
+  "samples": [
+    {
+      "submitterSampleId": "DO003-SA01",
+      "matchedNormalSubmitterSampleId": null,
+      "sampleType": "Total DNA",
+      "specimen": {
+        "submitterSpecimenId": "DO003-SP01",
+        "tumourNormalDesignation": "Tumour",
+        "specimenType": "Primary tumour",
+        "specimenTissueSource": "Colon"
+      },
+      "donor": {
+        "submitterDonorId": "DO003",
+        "gender": "Female"
+      }
+    }
+  ],
+  "files": [
+    {
+      "fileName": "DO003.snv.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "SNV"
+    },
+    {
+      "fileName": "DO003.indel.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "INDEL"
+    },
+    {
+      "fileName": "DO003.cnv.txt.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "TXT",
+      "fileAccess": "open",
+      "dataType": "CNV"
+    },
+    {
+      "fileName": "DO003.sv.vcf.gz",
+      "fileSize": 0,
+      "fileMd5sum": "00000000000000000000000000000000",
+      "fileType": "VCF",
+      "fileAccess": "open",
+      "dataType": "SV"
+    }
+  ],
+  "experiment": {
+    "sex": "female",
+    "age_at_diagnosis": 61,
+    "vital_status": "alive",
+    "diagnosis_date": "2022-01-10",
+    "disease_stage": "Stage I",
+    "primary_diagnosis": "Colorectal Adenocarcinoma",
+    "treatment_type": "Radiation",
+    "treatment_response": "Stable Disease"
+  }
+}

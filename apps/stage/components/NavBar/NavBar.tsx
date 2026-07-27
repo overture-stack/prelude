@@ -21,7 +21,6 @@ import defaultTheme from '../theme';
 
 import labIcon from '@/public/images/navbar-logo.png';
 import DataTablesDropdown from './DataTablesDropdown';
-import DictionaryDropdown from './DictionaryDropdown';
 import DocumentationDropdown from './DocumentationDropdown';
 import Dropdown from './Dropdown';
 import FlyoutMenuItem from './FlyoutMenuItem';
@@ -137,23 +136,6 @@ const NavBar = (): ReactElement => {
 						`}
 					>
 						<DataTablesDropdown />
-					</div>
-					<div
-						css={(theme) => css`
-							display: flex;
-							align-items: center;
-							justify-content: center;
-							width: 144px;
-							background-color: ${theme.colors.white};
-							height: 100%;
-							&:hover {
-								background-color: ${theme.colors.grey_2};
-							}
-							border-right: 2px solid ${theme.colors.white};
-							margin: 0;
-						`}
-					>
-						<DictionaryDropdown />
 					</div>
 					<div
 						css={(theme) => css`
