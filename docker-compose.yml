@@ -36,8 +36,11 @@ services:
       ES_INDEX_0_TEMPLATE_NAME: datatable1-index
       ES_INDEX_0_ALIAS_NAME: datatable1_centric
       # Arranger Services Configuration
-      ARRANGER_COUNT: 1
-      ARRANGER_0_URL: http://arranger-datatable1:5050
+      # The healthcheck auto-discovers catalogues by scanning the mounted config
+      # directory, so adding or removing a catalogue needs no changes here: just
+      # add or remove its folder under setup/configs/arrangerConfigs.
+      ARRANGER_URL: http://arranger:5050
+      ARRANGER_CONFIG_DIR: /setup/configs/arrangerConfigs
       # Service Connections
       ES_USER: ${ES_USER:-elastic}
       ES_PASS: ${ES_PASSWORD:-myelasticpassword}
@@ -209,39 +212,41 @@ services:
   # Search API generation with compatible search UI components                          #
   # https://docs.overture.bio/docs/core-software/Arranger/overview                      #
   # ------------------------------------------------------------------------------------#
-  arranger-datatable1:
+  arranger:
     profiles: ["demo", "platform", "default"]
-    image: ghcr.io/overture-stack/arranger-server:4919f736
+    image: ghcr.io/overture-stack/arranger-search-server:b5c6051b
     pull_policy: if_not_present
-    container_name: arranger-datatable1
+    container_name: arranger
     platform: linux/amd64
     restart: unless-stopped
     depends_on:
       setup:
         condition: service_healthy
     volumes:
-      - ./setup/configs/arrangerConfigs/datatable1:/app/apps/search-server/configs
+      # Mount the parent config directory: arranger-search-server treats each
+      # subdirectory (here, datatable1) as one catalogue. A single catalogue is
+      # served at /graphql; add more folders to serve them at /<catalogue>/graphql.
+      - ./setup/configs/arrangerConfigs:/app/configs
     environment:
       # Elasticsearch Variables
       ES_HOST: http://elasticsearch:9200
       ES_USER: ${ES_USER:-elastic}
       ES_PASS: ${ES_PASSWORD:-myelasticpassword}
-      ES_ARRANGER_SET_INDEX: datatable1_arranger_set
+      ES_ARRANGER_SET_INDEX: arranger_set
       # Arranger Variables (Port required)
       PORT: 5050
       DEBUG: false
-      ENABLE_LOGS: false
+      ENABLE_LOGS: true
     ports:
       - "127.0.0.1:5050:5050" # Localhost only — not accessible from the network
     healthcheck:
+      # Single catalogue: probe the root /graphql schema. arranger-search-server
+      # answers /ping before a catalogue's schema finishes mounting, so query the
+      # schema directly to prove the catalogue is actually ready.
       test:
         [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:5050/",
+          "CMD-SHELL",
+          "curl -sf -X POST -H 'Content-Type: application/json' -d '{\"query\":\"{ __typename }\"}' http://localhost:5050/graphql | grep -q __typename || exit 1",
         ]
       interval: 30s
       timeout: 10s
@@ -289,7 +294,7 @@ services:
       NEXT_PUBLIC_ENABLE_DOWNLOADS: true
       NEXT_PUBLIC_DISABLE_WELCOME_BANNER: false
       # Datatable1 Arranger Variables
-      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger-datatable1:5050
+      NEXT_PUBLIC_ARRANGER_DATATABLE_1_API: http://arranger:5050
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_DOCUMENT_TYPE: records
       NEXT_PUBLIC_ARRANGER_DATATABLE_1_INDEX: datatable1_centric
       NEXT_PUBLIC_DATATABLE_1_EXPORT_ROW_ID_FIELD: submission_metadata.submission_id

@@ -18,7 +18,7 @@ Before starting, ensure you have:
   docker pull alpine/curl:8.8.0
   docker pull postgres:15-alpine
   docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.27
-  docker pull ghcr.io/overture-stack/arranger-server:4919f736
+  docker pull ghcr.io/overture-stack/arranger-search-server:b5c6051b
   docker pull ghcr.io/overture-stack/conductor:171d9ce
   docker pull node:18-alpine
   ```
