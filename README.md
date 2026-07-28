@@ -37,7 +37,7 @@ These catalogues are the primary validation environment for **Aim 1** - demonstr
 Clone the repository and start the full stack:
 
 ```bash
-git clone -b overtureMCP --recurse-submodules https://github.com/overture-stack/prelude.git
+git clone -b docs-demo/ai-assisted-data-discovery --recurse-submodules https://github.com/overture-stack/prelude.git
 cd prelude
 make demo
 ```
