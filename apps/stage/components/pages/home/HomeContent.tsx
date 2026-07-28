@@ -15,7 +15,7 @@ const HomeContent = (): ReactElement => {
 		>
 			<WelcomeBanner />
 			<HeroBanner
-				title="IBC Workshop 2026"
+				title="My Data Portal"
 				description="Welcome, lets get started."
 				breadcrumbs={[{ label: 'Home', href: '/' }]}
 				fixed={false}

@@ -4,13 +4,9 @@
 This is our documentation component, if you're reading this here, you've likely already completed the prerequisites below and can skim through them.
 :::
 
-This workshop has been developed as part of the 19th Annual International Biocuration Conference, it will guide you through building a foundational data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage.
+This workshop guides you through building a foundational data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage.
 
 ![Demo search and aggregation](img/workshop-portal-preview.webp)
-
-:::info 👋 Say hello
-If you're attending, feel free to [**drop a quick introduction**](https://github.com/overture-stack/docs/discussions/new?category=new-deployments&title=%5BIBC+Workshop%5D+Hello+from+%5BName%2C+Institution%5D&body=%2A%2AName+%26+affiliation%3A%2A%2A+%0A%0A%2A%2AType+of+data+I+work+with%3A%2A%2A+%0A%0A%2A%2AWhat+I%27m+hoping+to+get+out+of+the+session%3A%2A%2A+%0A%0A%2A%2AData+management+challenges+%28optional%29%3A%2A%2A+) before the day, this helps tailor the session to the room. Entirely optional.
-:::
 
 **Objectives:**
 
@@ -71,12 +67,12 @@ You should see all six images listed.
 </details>
 
 <details>
-<summary><strong>4. Repository cloned:</strong> `git clone -b IBCworkshop https://github.com/overture-stack/prelude.git`</summary>
+<summary><strong>4. Repository cloned:</strong> `git clone -b docs-demo/search-portal-workshop https://github.com/overture-stack/prelude.git`</summary>
 
 The `prelude` repository contains everything needed for this workshop: Docker Compose configuration, the Conductor wrapper script, and sample data. Clone it once before the workshop and you won't need internet access for the hands-on portion.
 
 ```bash
-git clone -b IBCworkshop https://github.com/overture-stack/prelude.git
+git clone -b docs-demo/search-portal-workshop https://github.com/overture-stack/prelude.git
 ```
 
 </details>
@@ -124,26 +120,12 @@ If you have a tabular dataset you'd like to use during or after the workshop, br
 
 </details>
 
-## Schedule
-
-**Venue:** Pacific 2
-
-| Time      | Section                 | Description                                                               |
-| --------- | ----------------------- | ------------------------------------------------------------------------- |
-| 2:00–2:20 | Introduction & Overview | Workshop objectives, run the pre-built demo, and architecture walkthrough |
-| 2:20–3:30 | Building Your Portal    | Prepare data, generate configurations, wire up Docker, Launch & Load data |
-| 3:30–3:40 | Break                   | Stretch break                                                             |
-| 3:40–4:00 | Wrap-Up                 | Customize the portal, discuss next steps, and Q&A                         |
-
 ## Support
 
-|                         |                                                                                                                                  |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **During the workshop** | A link with Slack Channel support will be provided                                                                               |
-| **Before or after**     | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
-| **Bug reports**         | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
-
-**Facilitator:** Mitchell Shiell, Ontario Institute for Cancer Research, [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)
+|                 |                                                                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Questions**   | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
+| **Bug reports** | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
 
 ## Verification Checklist
 
@@ -157,4 +139,4 @@ Before the workshop, confirm:
 6. The repository is cloned and you can `cd` into it
 7. _(Windows only)_ WSL2 is configured and Docker integration is enabled
 
-> **Troubleshooting:** If you run into issues before the workshop, reach out via the [community support channels](https://docs.overture.bio/community/support) or email [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca).
+> **Troubleshooting:** If you run into issues, reach out via the [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio).

@@ -1,6 +1,6 @@
-# IBC Workshop — Data Discovery Portal
+# Build a Search Portal — Overture Demo
 
-Workshop materials for the **19th Annual International Biocuration Conference**. This repository guides you through building a data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage.
+A hands-on workshop for building a data discovery portal for tabular CSV data using Elasticsearch, Arranger, and Stage. This branch (`docs-demo/search-portal-workshop`) is a self-contained demo environment that backs the [Build a Search Portal](https://docs.overture.bio/use/workshop/prerequisites) workshop on the Overture documentation site.
 
 <p align="center">
    <img src="https://github.com/user-attachments/assets/32c5c20e-e786-4a2a-9e15-5aca3effe7a0" alt="Workshop Portal Preview" width="800">
@@ -12,7 +12,7 @@ Before starting, ensure you have:
 
 - **Git** — `git --version` returns a version number
 - **Docker Desktop 28.0.0+** — running with 4+ CPUs and 8 GB+ memory allocated
-- **Docker images pre-pulled** (most time-consuming step — do this before the workshop):
+- **Docker images pre-pulled** (most time-consuming step — do this first):
 
   ```bash
   docker pull alpine/curl:8.8.0
@@ -25,14 +25,14 @@ Before starting, ensure you have:
 
 - **Windows users:** WSL2 configured with Docker Desktop integration enabled — run all commands from a Bash terminal inside WSL2
 
-See [docs.overture.bio/workshop/prerequisites](https://docs.overture.bio/workshop/prerequisites) for full setup instructions.
+See [docs.overture.bio/use/workshop/prerequisites](https://docs.overture.bio/use/workshop/prerequisites) for full setup instructions.
 
 ## Quick Start
 
 1. **Clone this repository:**
 
    ```bash
-   git clone -b IBCworkshop https://github.com/overture-stack/prelude.git
+   git clone -b docs-demo/search-portal-workshop https://github.com/overture-stack/prelude.git
    cd prelude
    ```
 
@@ -60,6 +60,7 @@ Full step-by-step workshop documentation is available in the [`docs/`](docs/) di
 | 7 | [Troubleshooting](docs/07-Troubleshooting.md) |
 | 8 | [Portal Customization](docs/08-Portal-Customization.md) |
 | 9 | [Next Steps](docs/09-Next-Steps.md) |
+| 10 | [Extension Task](docs/10-Extension-Task.md) |
 
 ## Architecture
 
@@ -70,10 +71,7 @@ Full step-by-step workshop documentation is available in the [`docs/`](docs/) di
 
 ## Support
 
-|                         |                                                                                                                                  |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **During the workshop** | A Slack channel link will be provided on the day                                                                                 |
-| **Before or after**     | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
-| **Bug reports**         | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |
-
-**Facilitator:** Mitchell Shiell, Ontario Institute for Cancer Research — [mshiell@oicr.on.ca](mailto:mshiell@oicr.on.ca)
+|                 |                                                                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Questions**   | [community support channels](https://docs.overture.bio/community/support) or [contact@overture.bio](mailto:contact@overture.bio) |
+| **Bug reports** | [GitHub Issues](https://github.com/overture-stack/prelude/issues)                                                                |

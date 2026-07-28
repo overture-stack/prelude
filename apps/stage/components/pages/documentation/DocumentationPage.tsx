@@ -24,7 +24,7 @@ const DocumentationPage = ({ sections, currentSection, headings }: Documentation
 		<div css={styles.container}>
 			<aside css={styles.sidebar}>
 				<nav css={styles.nav}>
-					<h3 css={styles.sidebarTitle}>IBC Workshop</h3>
+					<h3 css={styles.sidebarTitle}>Documentation</h3>
 					<ul css={styles.navList}>
 						{sections.map((section) => (
 							<li key={section.id} css={styles.navItem}>

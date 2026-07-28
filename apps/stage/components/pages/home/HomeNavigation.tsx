@@ -34,7 +34,7 @@ const HomeNavigation = (): ReactElement => {
 			isDynamic: true,
 		},
 		{
-			title: 'IBC Workshop',
+			title: 'Workshop Documentation',
 			link: INTERNAL_PATHS.DOCUMENTATION,
 			description: 'All workshop materials can be found here',
 			isDynamic: true,

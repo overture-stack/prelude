@@ -48,7 +48,7 @@ Additional typography variants (heading, subheading, data) can be adjusted in th
 The portal name displayed in the UI is set via the `NEXT_PUBLIC_LAB_NAME` environment variable in `docker-compose.yml`:
 
 ```yaml
-NEXT_PUBLIC_LAB_NAME: IBC Workshop 2026
+NEXT_PUBLIC_LAB_NAME: My Data Portal
 ```
 
 Change this to your lab or project name.
