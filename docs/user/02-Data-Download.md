@@ -61,7 +61,7 @@ Files are written to `./data/downloads/`.
 | `--verify-md5` | Verify MD5 checksum after each download (default: enabled) |
 | `--threads`    | Number of parallel download threads (default: 1)           |
 
-For a full list of flags, see the [Score client reference](https://docs.overture.bio/docs/use-docs/cli-downloads).
+For a full list of flags, see the [Score client reference](https://docs.overture.bio/use/cli-downloads).
 
 </details>
 

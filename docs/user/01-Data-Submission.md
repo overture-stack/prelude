@@ -106,7 +106,7 @@ For full details on registering and managing analysis type schemas see the [Data
 
 ## Submitting Data
 
-Submission uses the Song and Score Docker client containers directly. For full CLI details see the [Overture CLI Submission guide](https://docs.overture.bio/docs/use-docs/cli-submissions).
+Submission uses the Song and Score Docker client containers directly. For full CLI details see the [Overture CLI Submission guide](https://docs.overture.bio/use/cli-submissions).
 
 :::tip
 `make submit` runs the full workflow inside a Docker container automatically. It is provided for convenience when running the demo platform and requires no additional setup beyond Docker and Make. For real data submission, follow the steps below.

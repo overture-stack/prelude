@@ -4,8 +4,8 @@ A local demo portal that lets you submit new genomic data to an Overture platfor
 
 The portal is built on [Overture](https://www.overture.bio/), an open-source suite of software for managing, searching, and sharing genomics data. This branch (`docs-demo/file-transfer`) is a self-contained demo environment that backs two guides on the Overture documentation site:
 
-- [File Submission](https://docs.overture.bio/docs/use-docs/cli-submissions) — registering analyses and uploading files with the Song and Score clients.
-- [File Download](https://docs.overture.bio/docs/use-docs/cli-downloads) — searching the portal, exporting a manifest, and pulling files with the Score client.
+- [File Submission](https://docs.overture.bio/use/cli-submissions) — registering analyses and uploading files with the Song and Score clients.
+- [File Download](https://docs.overture.bio/use/cli-downloads) — searching the portal, exporting a manifest, and pulling files with the Score client.
 
 ## Prerequisites
 
