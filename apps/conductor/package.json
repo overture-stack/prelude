@@ -25,7 +25,7 @@
     "axios": "^1.6.0",
     "chalk": "^4.1.2",
     "commander": "^9.4.1",
-    "csv-parse": "^5.3.3",
+    "csv-parse": "^7.0.2",
     "form-data": "^4.0.3",
     "uuid": "^9.0.0"
   },
